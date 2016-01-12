@@ -91,9 +91,10 @@
 
 - (void)importFileWithJO:(NSString *)theFile duration:(NSNumber *)duration
 {
-    NSLog(@"importFileWithJO: %@", theFile);
+   // NSLog(@"importFileWithJO: %@", theFile);
     //[self testRunServer];
-    NSData *imageData = [NSData dataWithContentsOfFile:@"/var/mobile/Library/Preferences/imageTest.png"];
+    //NSData *imageData = [NSData dataWithContentsOfFile:@"/var/mobile/Library/Preferences/imageTest.png"];
+    NSData *imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
     NSDictionary *theDict = @{@"albumName": @"Unknown Album 2", @"artist": @"Unknown Artist", @"duration": duration, @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
     Class joitih = NSClassFromString(@"JOiTunesImportHelper");
     [joitih importAudioFileAtPath:theFile mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];
