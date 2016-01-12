@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "DD11850EFD11D39EA1F980108965F1EB89B4E97F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "DD11850EFD11D39EA1F980108965F1EB89B4E97F" : 0,
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "A3DBB36C-2FBB-4755-BDB3-EEE63E452FB1",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "DD11850EFD11D39EA1F980108965F1EB89B4E97F" : "yourTubeiOS\/",
+    "E2811579280C8FC45DBD8A3EB086096BA7A2E580" : "ytScienceiOS\/theos\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "yourTubeiOS",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "yourTubeiOS.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:lechium\/yourTubeiOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DD11850EFD11D39EA1F980108965F1EB89B4E97F"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:DHowett\/theos.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E2811579280C8FC45DBD8A3EB086096BA7A2E580"
+    }
+  ]
+}

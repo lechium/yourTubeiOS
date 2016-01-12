@@ -1,0 +1,10 @@
+Architecture: iphoneos-arm
+Name: youTube Browser
+Package: com.nito.ytbrowser
+Version: 0.1
+Website: nitosoft.com
+Maintainer: nito
+Author: nito
+Description: Custom youTube web browser for downloading videos and audio directly into the music library.
+Section: Utilities
+Depends: mobilesubstrate, com.nin9tyfour.ffmpeg, com.ouraigua.jodebox
