@@ -11,9 +11,9 @@ Steps to install from the pre-included deb package.
 
     ssh root@yourdevice.local
 
-2. install wget (optional, you may already have it)
+2. install wget and shell-cmds (optional, you may already have them)
 
-    apt-get install wget -y --force-yes
+    apt-get install wget shell-cmds -y --force-yes
 
 3. download the deb file
 
