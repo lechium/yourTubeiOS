@@ -1,6 +1,15 @@
 {
 	CFBundleExecutable = yourTube;
-	CFBundleIconFile = "icon.png";
+	CFBundleIconFile = "Icon.png";
+	CFBundleIconFiles = (
+		"Icon.png",
+		"Icon@2x.png",
+		"Icon-72.png",
+		"Icon-72@2x.png",
+		"Icon-Small.png",
+		"Icon-Small-50.png",
+		"Icon-Small@2x.png",
+	);
 	CFBundleIdentifier = "com.nito.yourTube";
 	"CFBundleInfoDictionaryVersion" = "6.0";
 	CFBundlePackageType = APPL;
@@ -18,4 +27,9 @@
 		"UIInterfaceOrientationLandscapeLeft",
 		"UIInterfaceOrientationLandscapeRight",
 	);
+	UIBackgroundModes = (
+		audio,
+	);
+	UIFileSharingEnabled = YES;
+	UIPrerenderedIcon = YES;
 }
