@@ -7,12 +7,13 @@
 //
 
 //#import <Foundation/Foundation.h>
-#import "GCDWebServer/GCDWebServer.h"
+//#import "GCDWebServer/GCDWebServer.h"
 
 @interface YTBrowserHelper : NSObject
 
 - (void) doScience;
 + (id)sharedInstance;
+- (void)importFile:(NSString *)filePath withData:(NSDictionary *)inputDict serverURL:(NSString *)serverURL;
 
-@property (nonatomic, strong) GCDWebServer *webServer;
+//@property (nonatomic, strong) GCDWebServer *webServer;
 @end

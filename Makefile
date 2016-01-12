@@ -9,13 +9,13 @@ export DEBUG=1
 
 TWEAK_NAME = YTBrowser
 YTBrowser_FILES = YTBrowser.xm YTBrowserHelper.mm
-YTBrowser_FILES += GCDWebServer/GCDWebServer.m GCDWebServer/GCDWebServerConnection.m GCDWebServer/GCDWebServerFunctions.m GCDWebServer/GCDWebServerRequest.m GCDWebServer/GCDWebServerResponse.m
+#YTBrowser_FILES += GCDWebServer/GCDWebServer.m GCDWebServer/GCDWebServerConnection.m GCDWebServer/GCDWebServerFunctions.m GCDWebServer/GCDWebServerRequest.m GCDWebServer/GCDWebServerResponse.m
 
 
-YTBrowser_FILES += GCDWebServer/GCDWebServerDataRequest.m GCDWebServer/GCDWebServerFileRequest.m GCDWebServer/GCDWebServerMultiPartFormRequest.m GCDWebServer/GCDWebServerURLEncodedFormRequest.m
+#YTBrowser_FILES += GCDWebServer/GCDWebServerDataRequest.m GCDWebServer/GCDWebServerFileRequest.m GCDWebServer/GCDWebServerMultiPartFormRequest.m GCDWebServer/GCDWebServerURLEncodedFormRequest.m
 
 
-YTBrowser_FILES += GCDWebServer/GCDWebServerDataResponse.m GCDWebServer/GCDWebServerErrorResponse.m GCDWebServer/GCDWebServerFileResponse.m GCDWebServer/GCDWebServerStreamedResponse.m
+#YTBrowser_FILES += GCDWebServer/GCDWebServerDataResponse.m GCDWebServer/GCDWebServerErrorResponse.m GCDWebServer/GCDWebServerFileResponse.m GCDWebServer/GCDWebServerStreamedResponse.m
 
 YTBrowser_CXXFLAGS += -fobjc-arc
 YTBrowser_CFLAGS += -fobjc-arc

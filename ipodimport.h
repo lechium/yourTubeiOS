@@ -27,11 +27,18 @@
 @property(readonly, assign, nonatomic) float percentComplete;
 @end
 
+@interface SSDownloadAsset : NSObject //not really but its fine
+
+- (id)initWithURLRequest:(id)urlrequest;
+
+@end
+
 @interface SSDownload : NSObject  {
         int padding[128];	// 44 = 0x2c
 }
 @property(retain, nonatomic) SSDownloadStatus *status;
 
+- (BOOL)addAsset:(id)asset forType:(id)type;
 - (void)setDownloadHandler:(id)handler completionBlock:(id)block;
 - (id)initWithDownloadMetadata:(id)downloadMetadata;
 @end
@@ -57,8 +64,16 @@
 @property(retain) NSString *copyright;
 @property(retain) NSString *kind;
 @property(retain) id viewStoreItemURL;
+@property(retain) id durationInMilliseconds;
+@property(retain) NSNumber *releaseYear;
+@property(copy) NSString *shortDescription;
+@property(copy) NSString *longDescription;
+@property(retain) id composerName;
+@property(retain) NSString *transactionIdentifier;
 
 - (id)initWithDictionary:(id)dictionary;
+- (id)initWithKind:(id)kind;
+
 @end
 @interface IPodLibraryItem : NSObject
 @property (copy) SSDownloadMetadata* itemMetadata;
@@ -75,7 +90,7 @@
 }
 @property(readonly, assign) NSArray *activeDownloads;	// G=0x2babb5e5;
 @property(readonly, assign) NSArray *downloads;	// G=0x2babbb19;
-
+- (void)addDownloads:(id)downloads completionBlock:(id)block;
 @end
 
 @interface SSDownloadQueue : NSObject

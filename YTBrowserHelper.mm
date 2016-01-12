@@ -53,23 +53,25 @@
 @interface JOiTunesImportHelper : NSObject
 
 + (_Bool)importAudioFileAtPath:(id)arg1 mediaKind:(id)arg2 withMetadata:(id)arg3 serverURL:(id)arg4;
++ (id)downloadManager;
 
 @end
 
 @implementation YTBrowserHelper
 
-@synthesize webServer;
-
+//@synthesize webServer;
+/*
 - (void)testRunServer
 {
     self.webServer = [[GCDWebServer alloc] init];
     [self.webServer addGETHandlerForBasePath:@"/" directoryPath:@"/var/mobile/Media/Downloads/" indexFilename:nil cacheAge:0 allowRangeRequests:YES];
-    if ([self.webServer start]) {
+    
+    if ([self.webServer startWithPort:57287 bonjourName:@""]) {
     
         NSLog(@"started web server on port: %i", self.webServer.port);
     }
 }
-
+*/
 - (void)startGCDWebServer {}
 
 - (void)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
@@ -190,27 +192,149 @@
 - (void)importFileWithJO:(NSString *)theFile duration:(NSNumber *)duration
 {
     NSLog(@"importFileWithJO: %@", theFile);
+    //[self testRunServer];
     NSData *imageData = [NSData dataWithContentsOfFile:@"/var/mobile/Library/Preferences/imageTest.png"];
     NSDictionary *theDict = @{@"albumName": @"Unknown Album 2", @"artist": @"Unknown Artist", @"duration": duration, @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
     Class joitih = NSClassFromString(@"JOiTunesImportHelper");
     [joitih importAudioFileAtPath:theFile mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];
     
+    //[self importFile:theFile withData:theDict serverURL:@"http://localhost:57287/Media/Downloads"];
 }
 
 - (void)doJO
 {
     NSData *imageData = [NSData dataWithContentsOfFile:@"/var/mobile/Library/Preferences/imageTest.png"];
     NSDictionary *theDict = @{@"albumName": @"Unknown Album 2", @"artist": @"Drake", @"duration": @180141, @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": @"Drake - Underdog", @"year": @2016};
-    Class joitih = NSClassFromString(@"JOiTunesImportHelper");
-    [joitih importAudioFileAtPath:@"/var/mobile/Media/Downloads/Drake - Underdog [0p].m4a" mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];
+   // Class joitih = NSClassFromString(@"JOiTunesImportHelper");
+    //[joitih importAudioFileAtPath:@"/var/mobile/Media/Downloads/Drake - Underdog [0p].m4a" mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];
     
 }
 
-//- (void) doGremlin
-//{
-//    NSString *path = @"/var/mobile/Documents/Lights.m4a";
-//    [Gremlin importFileAtPath:path];
-//}
+/*
+ 
+ r5 = [NSHomeDirectory() retain];
+ var_70 = @selector(stringByAppendingPathComponent:);
+ r6 = [[r5 stringByAppendingPathComponent:@"Media/Downloads"] retain];
+ 
+ SSDownloadMetadata *metad = [[SSDownloadMetadata alloc] initWithKind:@"song"]; //r10
+ NSDictionary *inputDict; //inputargs
+ NSString *downloads = @"/var/mobile/Media/Downloads"; //r6
+ NSString *serverArg = @"http://localhost:port/Media/Downloads"; //var_3C
+ NSNumber *duration = inputDict[@"duration"];//get duration from input data
+ 
+ r4 = [[var_34 stringByReplacingOccurrencesOfString:r6 withString:var_3C] retain];
+
+ r5 = [[r4 stringByAddingPercentEscapesUsingEncoding:0x4] retain];
+
+ var_58 = r5;
+ var_5C = [[NSURL URLWithString:r5] retain];
+ var_50 = @selector(requestWithURL:);
+ var_48 = [[NSURLRequest requestWithURL:r5] retain];
+ 
+ 
+ NSString *fileServerPath = [inputFileName stringByReplacingOccurrencesOfString:downloads withString:serverArg]; //r4
+ NSString *escapedPath = [fileServerPath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; //r5
+ NSURL *urlString = [NSURL URLWithString:escapedPath]; //var_5C
+ NSURLRequest *urlRequest = [NSURLRequest requestWithURL:urlString];
+ 
+ r4 = [[r8 objectForKey:@"duration"] retain];
+ r6 = [r4 doubleValue];
+ 
+ double durationDouble = [duration doubleValue]; //r6
+ 
+ [metad setDurationInMilliseconds:durationDouble];
+ [metad setTitle:inputDict[@"title"]];
+ [metad setArtistName:@"Unknown"];
+ [metad setGenre:@"Unknown"];
+ [metad setReleaseYear:@2016];
+ [metad setPurchaseDate:[NSDate date]];
+ [metad setShortDescription:@"This is a test"];
+ [metad setLongDescription:@"This is a long test"];
+ [metad setBundleIdentifier:@"com.nito.itunesimport"];
+ [metad setComposerName:@"youTube Browser"];
+ 
+ 
+ var_60 = [[NSNumber numberWithUnsignedLongLong:r2] retain];
+ [r10 setDurationInMilliseconds:r2];
+ [r10 setTitle:r4];
+ [r10 setArtistName:r4];
+ [r10 setGenre:r4];
+ [r10 setReleaseYear:r4];
+ r4 = [[NSDate date] retain];
+ [r10 setPurchaseDate:r4];
+ [r10 setShortDescription:0x1f018];
+ [r10 setLongDescription:0x1f028];
+ [r10 setBundleIdentifier:@"com.ouraigua.ios.itunesimporter"];
+ [r10 setComposerName:@"Safari Downloader+"];
+ 
+ 
+ */
+
+- (void)importFile:(NSString *)filePath withData:(NSDictionary *)inputDict serverURL:(NSString *)serverURL
+{
+    NSLog(@"importFile: %@", filePath);
+    SSDownloadMetadata *metad = [[SSDownloadMetadata alloc] initWithKind:@"song"]; //r10
+    NSString *downloads = @"/var/mobile/Media/Downloads"; //r6
+   // NSString *serverArg = @"http://localhost:port/Media/Downloads"; //var_3C
+    NSNumber *duration = inputDict[@"duration"];//get duration from input data
+    
+    
+    NSString *fileServerPath = [filePath stringByReplacingOccurrencesOfString:downloads withString:serverURL]; //r4
+    NSLog(@"fileServerPath: %@", fileServerPath);
+    NSString *escapedPath = [fileServerPath stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; //r5
+      NSLog(@"escapedPath: %@", escapedPath);
+    NSURL *urlString = [NSURL URLWithString:escapedPath]; //var_5C
+      NSLog(@"urlString: %@", urlString);
+    NSURLRequest *fileURLRequest = [NSURLRequest requestWithURL:urlString];
+    double durationDouble = [duration doubleValue]; //r6
+    NSNumber *updatedDuration = [NSNumber numberWithDouble:durationDouble*1000];
+    [metad setDurationInMilliseconds:updatedDuration];
+   
+    [metad setArtistName:@"Unknown"];
+    [metad setGenre:@"Unknown"];
+    [metad setReleaseYear:@2016];
+    [metad setPurchaseDate:[NSDate date]];
+    [metad setShortDescription:@"This is a test"];
+    [metad setLongDescription:@"This is a long test"];
+    [metad setBundleIdentifier:@"com.nito.itunesimport"];
+    [metad setComposerName:@"youTube Browser"];
+    [metad setCopyright:@"© 2016 youTube Browser"];
+    NSString *transID = [filePath lastPathComponent];
+    [metad setTransactionIdentifier:transID];
+    [metad setTitle:transID];
+    NSData *imageData = inputDict[@"imageData"];
+    NSURL *imageURL = nil;
+    NSURLRequest *imageURLRequest = nil;
+    if (imageData != nil){
+        
+        NSString *imageFile = [[filePath stringByDeletingPathExtension] stringByAppendingPathExtension:@"jpeg"];
+        [imageData writeToFile:imageFile atomically:YES];
+        imageURL = [NSURL fileURLWithPath:imageFile];
+        imageURLRequest = [NSURLRequest requestWithURL:imageURL];
+    }
+    
+    
+    
+    SSDownload *fileDownload = [[SSDownload alloc] initWithDownloadMetadata:metad];
+    if (imageURLRequest != nil)
+    {
+        SSDownloadAsset *imageAsset = [[SSDownloadAsset alloc] initWithURLRequest:imageURLRequest];
+        [fileDownload addAsset:imageAsset forType:@"artwork"];
+    }
+    
+    if (fileURLRequest != nil) //it better not be!
+    {
+        SSDownloadAsset *fileAsset = [[SSDownloadAsset alloc] initWithURLRequest:fileURLRequest];
+        [fileDownload addAsset:fileAsset forType:@"media"];
+    }
+   // SSDownloadQueue *dlQueue = [[SSDownloadQueue alloc] initWithDownloadKinds:[SSDownloadQueue mediaDownloadKinds]];
+    //SSDownloadManager *manager = [dlQueue downloadManager];
+    Class joitih = NSClassFromString(@"JOiTunesImportHelper");
+    SSDownloadManager *manager = [joitih downloadManager];
+    NSLog(@"downloadManager: %@", manager);
+    [manager addDownloads:@[fileDownload] completionBlock:nil];
+}
+
 
 - (void) doScience
 {
@@ -223,7 +347,7 @@
     //NSLog(@"path: %@", path);
 //    NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:0] forKey:@"is-in-queue"];
   
-    NSDictionary *dict = @{@"artistName": @"Chiddy Bang", @"composerName": @"Dr science", @"copyright": @"2016 YESSIR Inc.", @"description": @"YTBrowserHelper", @"download-id": @"5th.m4a", @"duration": @200295, @"genre": @"Music", @"kind": @"song", @"longDescription": @"probably some kind of science", @"playlistName": @"Breakfast", @"purchaseDate": [NSDate date], @"softwareVersionBundleId": @"com.ouraigua.ios.itunesimporter", @"title": @"5th quarter", @"trackNumber": @15, @"unmodified-title": @"5th quarter", @"year": @2016};
+   // NSDictionary *dict = @{@"artistName": @"Chiddy Bang", @"composerName": @"Dr science", @"copyright": @"2016 YESSIR Inc.", @"description": @"YTBrowserHelper", @"download-id": @"5th.m4a", @"duration": @200295, @"genre": @"Music", @"kind": @"song", @"longDescription": @"probably some kind of science", @"playlistName": @"Breakfast", @"purchaseDate": [NSDate date], @"softwareVersionBundleId": @"com.ouraigua.ios.itunesimporter", @"title": @"5th quarter", @"trackNumber": @15, @"unmodified-title": @"5th quarter", @"year": @2016};
     /*
      
      artistName = "Chiddy Bang";
@@ -247,8 +371,8 @@
      */
     
     // Pre-initialize metadata with required defaults
-    SSDownloadMetadata *metad = [[SSDownloadMetadata alloc] initWithDictionary:dict];
-    
+    //SSDownloadMetadata *metad = [[SSDownloadMetadata alloc] initWithDictionary:dict];
+    SSDownloadMetadata *metad = [[SSDownloadMetadata alloc] initWithKind:@"song"];
     [metad setPrimaryAssetURL:[NSURL URLWithString:path]];
     
     /*[metad setCopyright:@"This song was added to iPod using libipodimport by H2CO3."];

@@ -1,6 +1,9 @@
 # Xcode
 #
+_/
 build/
+obj/
+com.*
 *.DS_Store
 *.pbxuser
 !default.pbxuser
