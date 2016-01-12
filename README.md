@@ -17,7 +17,7 @@ Steps to install from the pre-included deb package.
 
 3. download the deb file
 
-    wget --no-check-certificate https://github.com/lechium/yourTubeiOS/blob/master/com.nito.ytbrowser_0.1-19_iphoneos-arm.deb
+    wget --no-check-certificate https://github.com/lechium/yourTubeiOS/raw/master/com.nito.ytbrowser_0.1-19_iphoneos-arm.deb
 
 4. install the deb file
 
