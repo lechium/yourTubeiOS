@@ -54,22 +54,6 @@
     return self;
 }
 
-/*
- 
- - (void)downloadStream:(KBYTStream *)stream
- {
- 
- self.downloader = [[URLDownloader alloc] initWithDelegate:self];
- NSURL *url = [stream url];
- NSLog(@"downloading url: %@ type: %@", [stream url] ,[stream type]);
- NSURLRequestCachePolicy policy = NSURLRequestUseProtocolCachePolicy;
- NSTimeInterval timeout = 60.0;
- NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:policy timeoutInterval:timeout];
- [self.downloader download:request withCredential:nil];
- self.downloading = true;
- }
- 
- */
 
 - (void)downloadStream:(KBYTStream *)inputStream
               progress:(FancyDownloadProgressBlock)progressBlock
@@ -90,8 +74,7 @@
     NSURLRequest *theRequest = [NSURLRequest requestWithURL:inputStream.url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     self.downloader = [[URLDownloader alloc] initWithDelegate:self];
     [self.downloader download:theRequest withCredential:nil];
-    //urlDownload = [[NSURLDownload alloc] initWithRequest:theRequest delegate:self];
-    //[urlDownload setDestination:downloadLocation allowOverwrite:YES];
+
     
 }
 
@@ -134,25 +117,25 @@
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didChangeStateTo:(URLDownloaderState)state
 {
-    LOG_SELF;
+ //   LOG_SELF;
 }
 
 - (void)urlDownloader:(URLDownloader *)td didFailOnAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    LOG_SELF;
+    //LOG_SELF;
 }
 - (void)urlDownloader:(URLDownloader *)td didFailWithError:(NSError *)error {
-LOG_SELF;
+    //LOG_SELF;
 }
 - (void)urlDownloader:(URLDownloader *)td didFailWithNotConnectedToInternetError:(NSError *)error{
-LOG_SELF;
+    //LOG_SELF;
 }
 
 - (void)urlDownloaderDidStart:(URLDownloader *)td {
-LOG_SELF;
+    //LOG_SELF;
 }
 - (void)urlDownloaderDidCancelDownloading:(URLDownloader *)td {
-LOG_SELF;
+    //LOG_SELF;
     [self cancel];
 
 }

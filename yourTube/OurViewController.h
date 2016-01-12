@@ -14,7 +14,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
-//#import "KBYTDownloadStream.h"
+
 
 @protocol OurViewControllerDelegate <NSObject>
 
@@ -28,16 +28,12 @@
 }
 @property (nonatomic, weak) id<OurViewControllerDelegate> delegate;
 @property (strong, nonatomic) IBOutlet WKWebView *webView;
-
-//@property (strong, nonatomic) IBOutlet UIWebView *webView;
-@property (retain) URLDownloader *downloader;
 @property (nonatomic, strong) KBYTDownloadStream *downloadFile;
 @property (readwrite, assign) BOOL downloading;
 @property (nonatomic, strong) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerViewController *playerView;
-
 @property (nonatomic, strong) KBYTMedia *currentMedia;
 @property (readwrite, assign) BOOL gettingDetails;
-//@property (nonatomic, assign) IBOutlet AVPlayerView *playerView;
+
 @end
 

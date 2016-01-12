@@ -27,7 +27,6 @@
 
 @interface KBYTDownloadStream : NSObject <URLDownloaderDelegate>  {
 	
-	//NSURLDownload				*urlDownload;
     NSURLResponse				*myResponse;
 	float						bytesReceived;
 	NSString					*downloadLocation;

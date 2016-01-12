@@ -15,7 +15,7 @@
 
 @implementation OurViewController
 
-@synthesize downloader, downloading;
+@synthesize downloading;
 
 - (void)loadView {
     self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -31,17 +31,15 @@
     }];
 }
 
+//currently not used for anything, was added when messing around with trying to prevent autoplaying videos.
 - (void)videoPlayingDidChange:(NSNotification *)notification
 {
-    NSLog(@"userInfo: %@", notification.userInfo);
     BOOL isPlaying = [notification.userInfo[@"IsPlaying"] boolValue];
     if (isPlaying == true) {
-        NSLog(@"is playing!!!");
     } else {
-        NSLog(@"is not playing");
     }
-    // Do stuff with this newfound knowledge
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -51,28 +49,24 @@
     
     // Video playing state handler
     
-    //  self.view = [[WKWebView alloc] init];
     CGRect mainFrame = [[self view] frame];
-   // mainFrame.origin.y = 30;
-    //mainFrame.size.height -= 30;
     self.downloading = false;
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc]
                                       init];
     
     if ([config respondsToSelector:@selector(requiresUserActionForMediaPlayback)])
     {
-    //    config.requiresUserActionForMediaPlayback = true;
+        //    config.requiresUserActionForMediaPlayback = true;
     }
-      config.mediaPlaybackRequiresUserAction = true;
+    config.mediaPlaybackRequiresUserAction = true;
     config.allowsInlineMediaPlayback = false;
     
     self.webView = [[WKWebView alloc] initWithFrame:mainFrame configuration:config];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    // WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
-    //[config setRequiresUserActionForMediaPlayback:TRUE];
-    
-    //[[self webView]configuration];
     [[self view] addSubview:self.webView];
+    
+    //a script to attempt to pause any videos from autoplaying, used in conjunction with a bunch of other hacks
+    //to stop autoplaying from occuring.
     
     NSString *scriptContent = @"var videos = document.querySelectorAll(\"video\"); for (var i = videos.length - 1; i >= 0; i--) { videos[i].pause(); };";
     
@@ -86,102 +80,107 @@
     
     NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:@"https://www.youtube.com"] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
     
+    //these observers are a hacky way to know a good time to check URL to see if we land on a page that has a video URL
+    
     [self.webView addObserver:self forKeyPath:@"loading" options:NSKeyValueObservingOptionNew context:nil];
     [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:nil];
     [self.webView addObserver:self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context:nil];
     
     [[self webView] setNavigationDelegate:self];
-    //[(WKWebView *)[self view].navigationDelegate ]= self;
     [[self webView] loadRequest:request];
     
-    //[[ourWebView mainFrame] loadRequest:request];
-    //[[self webWindow] makeKeyAndOrderFront:self];
-    // Do any additional setup after loading the view, typically from a nib.
 }
 
+//currently unused
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
 {
     LOG_SELF;
     if ([message.name isEqualToString:MessageHandler]) {
         
         id postList = message.body;
-        /*
-        if ([postList respondsToSelector:@selector(objectEnumerator)])
-        {
-            [self.posts removeAllObjects];
-            
-            for (NSDictionary *ps in postList)
-            {
-                Post *post = [[Post alloc]init];
-                post.postTitle = [ps objectForKey:@"postTitle"];
-                post.postURL = [ps objectForKey:@"postURL"];
-                [self.posts addObject:post];
-            }
-            
-            self.recentPostsButton.enabled = YES;
-        }
-         */
+        
     }
 }
 
+/*
+ 
+ This observer is where we determine whether or not we are on an actual video / playlist page
+ 
+ If we are, jump through a whole bunch of hoops to stop the page from loading / autoplaying videos / ads. Then fetch
+ video details for downloading / playback and show an action sheet.
+ 
+ */
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"loading"]) {
-        //  self.backButton.enabled = self.webView.canGoBack;
-        //self.forwardButton.enabled = self.webView.canGoForward;
+
     }
     if ([keyPath isEqualToString:@"estimatedProgress"]) {
         //   NSLog(@"estimated progress: %f", self.webView.estimatedProgress);
-        //self.progressView.hidden = self.webView.estimatedProgress == 1;
-        //[self.progressView setProgress:self.webView.estimatedProgress animated:YES];
     }
     if ([keyPath isEqualToString:@"title"]) {
-         NSLog(@"title changed: %@ url: %@", self.webView.title, self.webView.URL);
         self.title = self.webView.title;
-       
+        
+        //among the initial hacks, since title gets changed a lot during a load cycle we dont want to fetch
+        //the info twice, if we did then the action sheet would appear twice and we are wasting network calls.
         if (self.gettingDetails == true)
         {
             NSLog(@"already getting details, dont try again...");
             return;
         }
         
-        
+        //when we go back a page the video url may show up twice, and the name of page tends to be a generic "youtube"
+        //return in this case.
         if ([self.webView.title isEqualToString:@"YouTube"]) {
             return;
         }
+        
+        //check the parameters of the URL to see if it has an associated video link in "v"
+        
         NSDictionary *paramDict = [self.webView.URL parameterDictionary];
-        NSLog(@"paramDict: %@", paramDict);
-        //NSString *absoluteWV = self.webView.URL.absoluteString;
-       // if ([absoluteWV containsString:@"youtube.com/watch?v="])
-       if ( [[paramDict allKeys] containsObject:@"v"])
+        if ( [[paramDict allKeys] containsObject:@"v"])
         {
-            //NSString *videoID = [[absoluteWV componentsSeparatedByString:@"="] lastObject];
             NSString *videoID = paramDict[@"v"];
             NSLog(@"videoID: %@", videoID);
-            
+            //another hack to prevent us from fetching details for the same video twice in a row.
             if (self.currentMedia != nil)
             {
-                NSLog(@"self current media: %@", self.currentMedia);
                 if ([self.currentMedia.videoId isEqualToString:videoID])
                 {
-                    
                     return;
                 }
             }
-          
+            
+            /**
+             
+             The biggest hack yet, if we just stopLoading and goBack google still finds a way to force 
+             ads down our throat / autoplay after the page has been left. So we get the URL from the last
+             back item, store that, load a completely blank page after stopping and going back, then
+             reload this saved URL from the previous link to go back to a page where we are safe from autoplaying
+             ads and videos.
+             
+             */
+            
             NSURL *backURL = [[[[self webView] backForwardList] backItem] URL];
-            NSLog(@"backURL: %@", backURL);
+            
+            //we have the URL we need stop the loading AND go back
             [[self webView] stopLoading];
             [[self webView] goBack];
             
-            
+            //load a blank page, helps prevent ads / videos from autoplaying.
             [[self webView] loadHTMLString:@"<html/>" baseURL:nil];
+            
+            //now time to reload the previous page requests so we can successfully go "back" without
+            //autoplaying garbage.
+            
             NSURLRequest * request = [[NSURLRequest alloc]initWithURL:backURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
             [[self webView] loadRequest:request];
+            
+            //now we can finally fetch the video details so we can show the action sheet for the user to make
+            //a decision on their next action.
             [self getVideoIDDetails:videoID];
             self.gettingDetails = true;
-            //[self getVideoDetailsDelayed:videoID];
         }
         
         
@@ -193,6 +192,7 @@
     // Dispose of any resources that can be recreated.
 }
 
+//the action sheet result handler
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     KBYTStream *chosenStream = nil;
@@ -218,6 +218,7 @@
     }
 }
 
+//play the import completion sound (standard tri-tone success sound)
 - (void)playCompleteSound
 {
     NSString *thePath = [[NSBundle mainBundle] pathForResource:@"complete" ofType:@"aif"];
@@ -226,53 +227,36 @@
     AudioServicesPlaySystemSound (soundID);
 }
 
+//action sheet that is shown to allow the user to choose whether or not to download video / audio or play the video
+
+
 - (void)showActionSheet
 {
-    
     NSString *actionSheetTitle = [NSString stringWithFormat:@"Choose action for %@", self.currentMedia.title];
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionSheetTitle delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Play video", @"Download Video", @"Download Audio", nil];
     
     [actionSheet showInView:self.view];
 }
 
+//actually get the video details for the selected video.
+
 - (void)getVideoIDDetails:(NSString *)details
 {
-    NSLog(@"getVideoIDDetails: %@", details);
-    LOG_SELF;
     [[KBYourTube sharedInstance] getVideoDetailsForID:details completionBlock:^(KBYTMedia *videoDetails) {
         
-         if (self.currentMedia != nil)
-         {
-         if ([self.currentMedia.videoId isEqualToString:videoDetails.videoId])
-         {
-         NSLog(@"already got this video, dont do anything");
-         return;
-         }
-         }
-         
-       //  NSLog(@"got details successfully: %@", videoDetails);
+        if (self.currentMedia != nil)
+        {
+            if ([self.currentMedia.videoId isEqualToString:videoDetails.videoId])
+            {
+                NSLog(@"already got this video, dont do anything");
+                return;
+            }
+        }
+        
+        //  NSLog(@"got details successfully: %@", videoDetails);
         self.currentMedia = videoDetails;
-         self.gettingDetails = false;
-        //KBYTStream *audioStream = [[videoDetails streams] objectAtIndex:0];
-        //[self playStream:audioStream];
-        [self performSelectorOnMainThread:@selector(showActionSheet) withObject:nil waitUntilDone:false];
-        
-        
-        
-        //[self downloadStream:audioStream];
-        /*
-         self.titleField.stringValue = videoDetails.title;
-         self.userField.stringValue = videoDetails.author;
-         self.lengthField.stringValue = videoDetails.duration;
-         self.viewsField.stringValue = videoDetails.views;
-         self.imageView.image = [[NSImage alloc] initWithContentsOfURL:[NSURL URLWithString:videoDetails.images[@"high"]]];
-         
-         self.currentMedia = videoDetails;
-         self.streamArray = videoDetails.streams;
-         self.streamController.selectsInsertedObjects = true;
-         
-         [[self window] orderFrontRegardless];
-         */
+        self.gettingDetails = false;
+        [self showActionSheet]; //show the action sheet
         
     } failureBlock:^(NSString *error) {
         
@@ -281,64 +265,41 @@
     }];
 }
 
-- (void)getVideoDetailsDelayed:(NSString *)videoDetails
-{
-    [self performSelector:@selector(getVideoIDDetails:) withObject:videoDetails afterDelay:0.5];
-    // [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(getVideoIDDetails:) userInfo:videoDetails repeats:false];
-}
 
+//another place to try and prevent ads and autoplaying from happening, not sure how successful this is.
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 
 {
     NSURL *url = navigationAction.request.URL;
-    //  NSLog(@"webviewURL: %@ title: %@", webView.URL, webView.title);
-    //    NSLog(@"url: %@ type: %i", url, navigationAction.navigationType);
-   // NSString *absoluteWV = webView.URL.absoluteString;
-    //if ([absoluteWV containsString:@"youtube.com/watch?v="])
     NSDictionary *paramDict = [self.webView.URL parameterDictionary];
-    NSLog(@"paramDict: %@", paramDict);
-    //NSString *absoluteWV = self.webView.URL.absoluteString;
-    // if ([absoluteWV containsString:@"youtube.com/watch?v="])
+//    NSLog(@"paramDict: %@", paramDict);
     if ( [[paramDict allKeys] containsObject:@"v"])
     {
-        //     NSString *videoID = [[absoluteWV componentsSeparatedByString:@"="] lastObject];
-        //   NSLog(@"videoID: %@", videoID);
-        // [self getVideoDetailsDelayed:videoID];
-        //[webView goBack];
-         //[webView stopLoading];
         [self pauseVideos];
         decisionHandler(WKNavigationActionPolicyCancel);
-        
-        //[self getVideoIDDetails:videoID];
+
         
         return;
     }
     
     NSString *absolute = [url absoluteString];
-    //if ([absolute containsString:@"googleads.g.doubleclick.net"]  || [absolute containsString:@"about:blank"])
     if([absolute containsString:@"googleads.g.doubleclick.net"])
     {
-        NSLog(@"fuck yo ads beeetch");
-        //[webView goBack];
-         [self pauseVideos];
+  
+        [self pauseVideos];
         [webView stopLoading];
         
         decisionHandler(WKNavigationActionPolicyCancel);
         return;
     }
     
-    
-    if (navigationAction.navigationType == WKNavigationTypeOther) {
-        
-    }
+
     decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
 
 {
-    NSURL *url = navigationResponse.response.URL;
-    NSLog(@"decidePolicyForNavigationResponse url: %@", url);
     decisionHandler(WKNavigationResponsePolicyAllow);
 }
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(null_unspecified WKNavigation *)navigation
@@ -362,15 +323,12 @@
 {
     // LOG_SELF;
 }
-//- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *__nullable credential))completionHandler
-//{
-//    LOG_SELF;
-//}
 
+//play the video stream
 - (IBAction)playStream:(KBYTStream *)stream
 {
     NSURL *playURL = [stream url];
-    NSLog(@"play url: %@", playURL);
+   //NSLog(@"play url: %@", playURL);
     if ([self player] != nil)
     {
         if (self.player.rate != 0)
@@ -381,23 +339,21 @@
     }
     
     self.playerView = [AVPlayerViewController alloc];
-    //Show the controls
     self.playerView.showsPlaybackControls = true;
     self.player = [AVPlayer playerWithURL:playURL];
     self.playerView.player = self.player;
-  //  self.downloading = true;
-  //  [self presentModalViewController:self.playerView animated:true];
-  //  id delegate = [UIApplication sharedA]
     [[self delegate] pushViewController:self.playerView];
     [self.player play];
     
 }
 
+//download the selected stream, currently doesn't have any kind of UI indication.
+
 - (void)downloadStream:(KBYTStream *)stream
 {
+    //currently just one download at a time.
     if (self.downloading == true)
     {
-        NSLog(@"already downloading");
         return;
     }
     
@@ -416,42 +372,6 @@
         [self playCompleteSound];
         self.downloading = false;
     }];
-    
-}
-
-
-
-- (void)stopDownload
-{
-    [self.downloader cancel];
-}
-- (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView
-{
-}
-
-- (void)urlDownloader:(URLDownloader *)urlDownloader didFinishWithData:(NSData *)data
-{
-}
-
-- (void)urlDownloader:(URLDownloader *)urlDownloader didChangeStateTo:(URLDownloaderState)state
-{
-}
-
-- (void)urlDownloader:(URLDownloader *)td didFailOnAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
-}
-- (void)urlDownloader:(URLDownloader *)td didFailWithError:(NSError *)error {
-}
-- (void)urlDownloader:(URLDownloader *)td didFailWithNotConnectedToInternetError:(NSError *)error{
-}
-
-- (void)urlDownloaderDidStart:(URLDownloader *)td {
-}
-- (void)urlDownloaderDidCancelDownloading:(URLDownloader *)td {
-}
-- (void)urlDownloader:(URLDownloader *)td didReceiveData:(NSData *)data {
-    float percent = [td downloadCompleteProcent];
-    NSLog(@"percentComplete: %f", percent);
     
 }
 

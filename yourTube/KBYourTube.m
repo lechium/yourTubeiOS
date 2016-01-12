@@ -30,6 +30,14 @@
  */
 
 
+/*
+ 
+ NSTask is private on iOS and on top of that, it doesn't appear to have waitUntilExit, so I found
+ this code that apple used to use for waitUntilExit in some open source nextstep stuff, seems 
+ to still work fine.
+ 
+ */
+
 @implementation NSTask (convenience)
 
 - (void) waitUntilExit
@@ -343,7 +351,7 @@
 - (NSString *)description
 {
     return [[self dictionaryRepresentation] description];
-   //return [NSString stringWithFormat:@"%@\n\ttitle: %@\n\tauthor: %@\n\tkeywords: %@\n\tvideoID: %@\n\tviews: %@\n\tduration: %@\n\timages: %@\n\tstreams: %@\n",[super description], self.title, self.author, self.keywords, self.videoId, self.views, self.duration, self.images, self.streams];
+
 }
 
 @end
@@ -402,7 +410,7 @@
     return dict;
 }
 
-//currently unused.
+
 - (NSString *)downloadFolder {
     
     NSFileManager *man = [NSFileManager defaultManager];
@@ -514,7 +522,6 @@
         
         @autoreleasepool {
             KBYTMedia *rootInfo = nil;
-            //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
             NSString *errorString = nil;
             
             //if we already have the timestamp and key theres no reason to fetch them again, should make additional calls quicker.
@@ -580,13 +587,6 @@
     NSDictionary *info = @{@"filePath": theFile, @"duration": [NSNumber numberWithInteger:duration]};
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     [center sendMessageName:@"org.nito.importscience.import" userInfo:info];
-    /*
-    NSLog(@"importFileWithJO: %@", theFile);
-    NSData *imageData = [NSData dataWithContentsOfFile:@"/var/mobile/Library/Preferences/imageTest.png"];
-    NSDictionary *theDict = @{@"albumName": @"Unknown Album 2", @"artist": @"Unknown Artist", @"duration": @180141, @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
-    Class joitih = NSClassFromString(@"JOiTunesImportHelper");
-    [joitih importAudioFileAtPath:theFile mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];
-    */
 }
 
 
@@ -625,44 +625,6 @@
             [afcTask launch];
             [afcTask waitUntilExit];
             
-        }
-        
-        completionBlock(outputFile);
-    });
-    
-    
-}
-
-//currently not used, previously would be used to "extract" audio from a media file
-
-- (void)extractAudio:(NSString *)theFile completionBlock:(void(^)(NSString *newFile))completionBlock
-{
-    if ([theFile.pathExtension.lowercaseString isEqualToString:@"m4a"])
-    {
-        completionBlock(theFile);
-        return;
-    }
-    NSString *outputFile = [[theFile stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        @autoreleasepool {
-            /*
-            NSTask *afcTask = [NSTask new];
-            [afcTask setLaunchPath:@"/usr/bin/afconvert"];
-            NSMutableArray *args = [NSMutableArray new];
-            [args addObject:theFile];
-            [args addObject:@"-d"];
-            [args addObject:@"aac "];
-            [args addObject:@"--soundcheck-generate"];
-            [args addObject:@"-b"];
-            [args addObject:@"320000"];
-            
-            [args addObject:outputFile];
-            [afcTask setArguments:args];
-            [afcTask launch];
-            [afcTask waitUntilExit];
-             
-             */
         }
         
         completionBlock(outputFile);
