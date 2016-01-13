@@ -95,13 +95,13 @@
 	self.urlConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
 
     [self.urlConnection start];
-	
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 	NSLog(@"[URLDownloader] Download started");
 }
 
 - (void)cancel
 {
-    //[[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     
 	[urlConnection cancel];
 	
@@ -204,7 +204,7 @@
     
     [self setState:URLDownloaderStateInactive];
     
-   // [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
 	NSLog(@"[URLDownloader] Error: %@, %d", error, [error code]);
 	switch ([error code])
@@ -221,7 +221,7 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
     
-  //  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
     NSLog(@"[URLDownloader] Download finished");
 

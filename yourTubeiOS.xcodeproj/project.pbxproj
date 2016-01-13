@@ -40,10 +40,8 @@
 		89B9D4401C44F49F00740BF1 /* GCDWebServerURLEncodedFormRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDWebServerURLEncodedFormRequest.m; sourceTree = "<group>"; };
 		89B9D4411C44F49F00740BF1 /* InspCWrapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InspCWrapper.m; sourceTree = "<group>"; };
 		89B9D4421C44F49F00740BF1 /* ipodimport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ipodimport.h; sourceTree = "<group>"; };
-		89B9D4431C44F49F00740BF1 /* libinspectivec.example_0.0.1-1_iphoneos-arm.deb */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libinspectivec.example_0.0.1-1_iphoneos-arm.deb"; sourceTree = "<group>"; };
 		89B9D4441C44F49F00740BF1 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		89B9D4451C44F49F00740BF1 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		89B9D4461C44F49F00740BF1 /* MusicSciance.xm.og */ = {isa = PBXFileReference; lastKnownFileType = text; path = MusicSciance.xm.og; sourceTree = "<group>"; };
 		89B9D4471C44F49F00740BF1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		89B9D52B1C44F4BC00740BF1 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
 		89B9D52C1C44F4DC00740BF1 /* yourTube */ = {isa = PBXFileReference; lastKnownFileType = folder; path = yourTube; sourceTree = "<group>"; };
@@ -62,10 +60,8 @@
 				89B9D4241C44F49F00740BF1 /* GCDWebServer */,
 				89B9D4411C44F49F00740BF1 /* InspCWrapper.m */,
 				89B9D4421C44F49F00740BF1 /* ipodimport.h */,
-				89B9D4431C44F49F00740BF1 /* libinspectivec.example_0.0.1-1_iphoneos-arm.deb */,
 				89B9D4441C44F49F00740BF1 /* LICENSE */,
 				89B9D4451C44F49F00740BF1 /* Makefile */,
-				89B9D4461C44F49F00740BF1 /* MusicSciance.xm.og */,
 				89B9D4471C44F49F00740BF1 /* README.md */,
 				89B9D52D1C44F51200740BF1 /* YTBrowser.plist */,
 				89B9D52E1C44F51200740BF1 /* YTBrowser.xm */,
