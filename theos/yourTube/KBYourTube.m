@@ -229,7 +229,7 @@
 
 - (void)matchAudioStreams
 {
-    KBYTStream *audioStream = [[self.streams filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"itag == 140"]]lastObject];
+    KBYTStream *audioStream = [[self.streams filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"id == 140"]]lastObject];
     for (KBYTStream *theStream in self.streams)
     {
         if ([theStream multiplexed] == false && theStream != audioStream)

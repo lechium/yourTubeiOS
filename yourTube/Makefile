@@ -7,6 +7,7 @@ export ARCHS = armv7
 
 APPLICATION_NAME = yourTube
 yourTube_FILES = main.m yourTubeApplication.m OurViewController.mm KBYourTube.m KBYTDownloadStream.m Download/URLCredential.m Download/URLDownloader.m
+yourTube_FILES += APDeviceController.m
 yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox
 yourTube_CXXFLAGS += -fobjc-arc
 yourTube_CFLAGS += -fobjc-arc

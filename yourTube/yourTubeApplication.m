@@ -12,6 +12,9 @@
 @implementation yourTubeApplication
 @synthesize window = _window;
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+    
+    [KBYourTube sharedInstance]; //create it right off the bat to get device discovery going
+    
 	_window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
      _viewController = [[OurViewController alloc] init];
     self.nav = [[UINavigationController alloc] initWithRootViewController:_viewController];

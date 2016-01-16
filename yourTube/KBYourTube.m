@@ -9,6 +9,7 @@
 #import "KBYourTube.h"
 #import "AppSupport/CPDistributedMessagingCenter.h"
 
+
 /**
  
  out of pure laziness I put the implementation KBYTStream and KBYTMedia classes in this file and their interfaces
@@ -66,6 +67,54 @@
     }
     [timer invalidate];
 }
+
+@end
+
+@implementation NSDictionary (strings)
+
+- (NSString *)stringValue
+{
+    NSString *error = nil;
+    NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:kCFPropertyListXMLFormat_v1_0 errorDescription:&error];
+    NSString *s=[[NSString alloc] initWithData:xmlData encoding: NSUTF8StringEncoding];
+    return s;
+}
+
+@end
+
+@implementation NSArray (strings)
+
+- (NSString *)stringFromArray
+{
+    NSString *error = nil;
+    NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:kCFPropertyListXMLFormat_v1_0 errorDescription:&error];
+    NSString *s=[[NSString alloc] initWithData:xmlData encoding: NSUTF8StringEncoding];
+    return s;
+}
+
+@end
+
+
+@implementation NSString (TSSAdditions)
+
+/*
+ 
+ we use this to convert a raw dictionary plist string into a proper NSDictionary
+ 
+ */
+
+- (id)dictionaryValue
+{
+    NSString *error = nil;
+    NSPropertyListFormat format;
+    NSData *theData = [self dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+    id theDict = [NSPropertyListSerialization propertyListFromData:theData
+                                                  mutabilityOption:NSPropertyListImmutable
+                                                            format:&format
+                                                  errorDescription:&error];
+    return theDict;
+}
+
 
 @end
 
@@ -460,7 +509,7 @@
 
 @implementation KBYourTube
 
-@synthesize ytkey, yttimestamp;
+@synthesize ytkey, yttimestamp, deviceController;
 
 #pragma mark convenience methods
 
@@ -471,11 +520,55 @@
     if (!shared){
         dispatch_once(&onceToken, ^{
             shared = [KBYourTube new];
+            shared.deviceController = [[APDeviceController alloc] init];
         });
     }
     
     return shared;
     
+}
+
+- (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP
+{
+    NSLog(@"ac stream: %@ to deviceIP: %@", media, deviceIP);
+    NSURL *deviceURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/playyt=%@", deviceIP, media.videoId]];
+    
+    // Create URL request and set url, method, content-length, content-type, and body
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
+    [request setURL:deviceURL];
+    [request setHTTPMethod:@"GET"];
+    NSURLResponse *theResponse = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
+    NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
+    NSLog(@"aircontrol return details: %@", datString);
+}
+
+- (void)airplayStream:(KBYTStream *)stream ToDeviceIP:(NSString *)deviceIP
+{
+    NSLog(@"airplayStream: %@ to deviceIP: %@", stream, deviceIP);
+    NSURL *deviceURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/play", deviceIP]];
+    NSDictionary* postDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:[[stream url] absoluteString], @"Content-Location",[NSNumber numberWithFloat:0] , @"Start-Position", nil];
+    
+    NSString *post = [postDictionary stringValue];
+    
+    
+    // Encode post string
+    NSData* postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:true];
+    
+    // Calculate length of post data
+    NSString* postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
+    
+    // Create URL request and set url, method, content-length, content-type, and body
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
+    [request setURL:deviceURL];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-apple-binary-plist" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:postData];
+    NSURLResponse *theResponse = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
+    NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
+    NSLog(@"airplay return details: %@", datString);
 }
 
 //take a url and get its raw body, then return in string format

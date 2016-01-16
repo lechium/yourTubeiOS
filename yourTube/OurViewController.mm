@@ -54,6 +54,11 @@
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc]
                                       init];
     
+   // self.progressView = [[UIProgressView alloc] initWithFrame:CGRectMake(0,40,mainFrame.size.width, 20)];
+    
+    //self.progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    //self.progressView.hidden = false;
+    
     if ([config respondsToSelector:@selector(requiresUserActionForMediaPlayback)])
     {
         //    config.requiresUserActionForMediaPlayback = true;
@@ -64,6 +69,8 @@
     self.webView = [[WKWebView alloc] initWithFrame:mainFrame configuration:config];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [[self view] addSubview:self.webView];
+ //   [[self view] addSubview:self.progressView];
+   // [self.view bringSubviewToFront:self.progressView];
     
     //a script to attempt to pause any videos from autoplaying, used in conjunction with a bunch of other hacks
     //to stop autoplaying from occuring.
@@ -117,7 +124,9 @@
 
     }
     if ([keyPath isEqualToString:@"estimatedProgress"]) {
-        //   NSLog(@"estimated progress: %f", self.webView.estimatedProgress);
+     //      NSLog(@"estimated progress: %f", self.webView.estimatedProgress);
+      //  self.progressView.hidden = self.webView.estimatedProgress == 1;
+   //     [self.progressView setProgress:self.webView.estimatedProgress animated:YES];
     }
     if ([keyPath isEqualToString:@"title"]) {
         self.title = self.webView.title;
@@ -196,6 +205,9 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     KBYTStream *chosenStream = nil;
+    NSInteger airplayIndex = 0;
+    NSString *deviceIP = nil;
+    
     switch (buttonIndex) {
         case 0: //Play video
             
@@ -212,8 +224,22 @@
             
             chosenStream = [[self.currentMedia streams] lastObject];
             [self downloadStream:chosenStream];
+        
             
         default:
+            
+            if (buttonIndex == actionSheet.cancelButtonIndex)
+            {
+                return;
+            }
+            
+            chosenStream = [[self.currentMedia streams] objectAtIndex:0];
+            //need to adjust the index to subtract the three objects above us to get the proper device index
+            airplayIndex = buttonIndex - 3;
+            deviceIP = [[[KBYourTube sharedInstance] deviceController] deviceIPAtIndex:airplayIndex];
+           // [[KBYourTube sharedInstance] airplayStream:chosenStream ToDeviceIP:deviceIP ];
+            [[KBYourTube sharedInstance] playMedia:self.currentMedia ToDeviceIP:deviceIP];
+            
             break;
     }
 }
@@ -232,8 +258,26 @@
 
 - (void)showActionSheet
 {
+    
+    NSArray *airplayDevices = [[[KBYourTube sharedInstance] deviceController] airplayServers];
+    
     NSString *actionSheetTitle = [NSString stringWithFormat:@"Choose action for %@", self.currentMedia.title];
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionSheetTitle delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Play video", @"Download Video", @"Download Audio", nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] init];
+    
+    [actionSheet setTitle:actionSheetTitle];
+    [actionSheet setDelegate:self];
+    [actionSheet addButtonWithTitle:@"Play video"];
+    [actionSheet addButtonWithTitle:@"Download Video"];
+    [actionSheet addButtonWithTitle:@"Download Audio"];
+    for (NSNetService *service in airplayDevices)
+    {
+        NSString *playOnATV = [NSString stringWithFormat:@"Play in YouTube on %@", [service name]];
+        [actionSheet addButtonWithTitle:playOnATV];
+    }
+    [actionSheet addButtonWithTitle:@"Cancel"];
+    [actionSheet setCancelButtonIndex:3+[airplayDevices count]];
+    
+    //UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionSheetTitle delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:names, nil];
     
     [actionSheet showInView:self.view];
 }

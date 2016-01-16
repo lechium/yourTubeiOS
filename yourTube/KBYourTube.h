@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 
 // Logging
@@ -21,6 +22,25 @@
 - (void)fileCopyTest:(NSString *)theFile;
 
 @end
+
+@interface NSDictionary (strings)
+
+- (NSString *)stringValue;
+
+@end
+
+@interface NSArray (strings)
+
+- (NSString *)stringFromArray;
+
+@end
+
+@interface NSString (TSSAdditions)
+
+- (id)dictionaryValue;
+
+@end
+
 
 @interface NSURL (QSParameters)
 - (NSArray *)parameterArray;
@@ -82,12 +102,14 @@
 - (NSArray *)splitString;
 
 @end
+#import "APDeviceController.h"
 
 @interface KBYourTube : NSObject
 {
     NSInteger bestTag;
 }
 
+@property (nonatomic, strong) APDeviceController *deviceController;
 @property (nonatomic, strong) NSString *yttimestamp;
 @property (nonatomic, strong) NSString *ytkey;
 
@@ -110,5 +132,6 @@
 - (void)muxFiles:(NSArray *)theFiles completionBlock:(void(^)(NSString *newFile))completionBlock;
 
 + (NSDictionary *)formatFromTag:(NSInteger)tag;
-
+- (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP;
+- (void)airplayStream:(KBYTStream *)stream ToDeviceIP:(NSString *)deviceIP;
 @end

@@ -34,6 +34,7 @@
 @property (nonatomic, strong) AVPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTMedia *currentMedia;
 @property (readwrite, assign) BOOL gettingDetails;
+@property (nonatomic, strong) UIProgressView *progressView;
 
 @end
 
