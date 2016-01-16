@@ -23,6 +23,7 @@
 		89E06BE81C499F3C00B8D1C4 /* KBYourTube.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */; };
 		89E06BEB1C499F7000B8D1C4 /* APDeviceController.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BE91C499F7000B8D1C4 /* APDeviceController.h */; };
 		89E06BEC1C499F7000B8D1C4 /* APDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */; };
+		89E06BEE1C49F59100B8D1C4 /* theos in Resources */ = {isa = PBXBuildFile; fileRef = 89E06BED1C49F59100B8D1C4 /* theos */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,9 +63,8 @@
 		89B9D4441C44F49F00740BF1 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		89B9D4451C44F49F00740BF1 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		89B9D4471C44F49F00740BF1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		89B9D52B1C44F4BC00740BF1 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
 		89B9D52D1C44F51200740BF1 /* YTBrowser.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = YTBrowser.plist; sourceTree = "<group>"; };
-		89B9D52E1C44F51200740BF1 /* YTBrowser.xm */ = {isa = PBXFileReference; lastKnownFileType = text; path = YTBrowser.xm; sourceTree = "<group>"; };
+		89B9D52E1C44F51200740BF1 /* YTBrowser.xm */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = YTBrowser.xm; sourceTree = "<group>"; };
 		89B9D52F1C44F51200740BF1 /* YTBrowserHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YTBrowserHelper.h; sourceTree = "<group>"; };
 		89B9D5301C44F51200740BF1 /* YTBrowserHelper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = YTBrowserHelper.mm; sourceTree = "<group>"; };
 		89E06BC21C499E2300B8D1C4 /* ytiOSBundle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ytiOSBundle.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +85,7 @@
 		89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yourTubeApplication.m; path = yourTube/yourTubeApplication.m; sourceTree = "<group>"; };
 		89E06BE91C499F7000B8D1C4 /* APDeviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = APDeviceController.h; path = yourTube/APDeviceController.h; sourceTree = "<group>"; };
 		89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = APDeviceController.m; path = yourTube/APDeviceController.m; sourceTree = "<group>"; };
+		89E06BED1C49F59100B8D1C4 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,7 +116,6 @@
 				89B9D52F1C44F51200740BF1 /* YTBrowserHelper.h */,
 				89B9D5301C44F51200740BF1 /* YTBrowserHelper.mm */,
 				89E06BCC1C499ED400B8D1C4 /* yourTube */,
-				89B9D52B1C44F4BC00740BF1 /* theos */,
 				89E06BC31C499E2300B8D1C4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -196,6 +196,7 @@
 				89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */,
 				89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */,
 				89E06BCD1C499EF000B8D1C4 /* Download */,
+				89E06BED1C49F59100B8D1C4 /* theos */,
 			);
 			name = yourTube;
 			sourceTree = "<group>";
@@ -285,6 +286,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89E06BEE1C49F59100B8D1C4 /* theos in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,6 +451,7 @@
 				89E06BC91C499E2300B8D1C4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

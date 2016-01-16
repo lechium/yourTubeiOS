@@ -18,4 +18,5 @@
 - (NSDictionary *)stringDictionaryFromService:(NSNetService *)theService;
 - (NSDictionary *)currentServiceDictionary;
 - (NSString *)deviceIPAtIndex:(NSInteger)deviceIndex;
+- (int)deviceTypeAtIndex:(NSInteger)deviceIndex;
 @end

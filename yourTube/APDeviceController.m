@@ -19,7 +19,9 @@
     services = [NSMutableArray array];
     [browser setDelegate:self];
     // Passing in "" for the domain causes us to browse in the default browse domain
-    [browser searchForServicesOfType:@"_aircontrol._tcp." inDomain:@""];
+   
+    //[browser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
+     [browser searchForServicesOfType:@"_aircontrol._tcp." inDomain:@""];
     return self;
 }
 
@@ -28,15 +30,15 @@
 {
     NSMutableString	*fixedNetLabel = [NSMutableString stringWithString:[inputName stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@".#,<>/?\'\\\[]{}+=-~`\";:"]]];
     [fixedNetLabel replaceOccurrencesOfString:@" " withString:@"-" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [fixedNetLabel length])];
-
+    
     return [NSString stringWithString:fixedNetLabel];
 }
 
 - (NSString *)fixedName:(NSString *)inputName
 {
-	NSInteger nameLength = [inputName length];
-	NSString *newName = [inputName substringToIndex:(nameLength-1)];
-	return newName;
+    NSInteger nameLength = [inputName length];
+    NSString *newName = [inputName substringToIndex:(nameLength-1)];
+    return newName;
 }
 
 - (BOOL)serviceHasYoutube:(NSNetService *)netService
@@ -71,18 +73,30 @@
 
 - (NSDictionary *)stringDictionaryFromService:(NSNetService *)theService
 {
-	NSData *txtRecordDict = [theService TXTRecordData];
-	
-	NSDictionary *theDict = [NSNetService dictionaryFromTXTRecordData:txtRecordDict];
-	NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
-	NSArray *keys = [theDict allKeys];
-	for (NSString *theKey in keys)
-	{
-		NSString *currentString = [[NSString alloc] initWithData:[theDict valueForKey:theKey] encoding:NSUTF8StringEncoding];
-		[finalDict setObject:currentString forKey:theKey];
-	}
-	
-	return finalDict;
+    NSData *txtRecordDict = [theService TXTRecordData];
+    
+    NSDictionary *theDict = [NSNetService dictionaryFromTXTRecordData:txtRecordDict];
+    NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
+    NSArray *keys = [theDict allKeys];
+    for (NSString *theKey in keys)
+    {
+        NSString *currentString = [[NSString alloc] initWithData:[theDict valueForKey:theKey] encoding:NSUTF8StringEncoding];
+        [finalDict setObject:currentString forKey:theKey];
+    }
+    
+    return finalDict;
+}
+
+- (int)deviceTypeAtIndex:(NSInteger)deviceIndex // 0 = airplay 1 = aircontrol
+{
+    NSNetService * clickedService = [services objectAtIndex:deviceIndex];
+    if ([[clickedService type] isEqualToString:@"_airplay._tcp."])
+    {
+        return 0;
+    }
+    
+    return 1;
+    
 }
 
 - (NSString *)deviceIPAtIndex:(NSInteger)deviceIndex
@@ -129,45 +143,45 @@
 - (void)netServiceBrowserDidStopSearch:(NSNetServiceBrowser *)browser
 
 {
-	//NSLog(@"%@ %s", self, _cmd);
+    //NSLog(@"%@ %s", self, _cmd);
     searching = NO;
     [self updateUI];
-	
+    
 }
 
 - (void)updateUI
 
 {
-	//NSLog(@"%@ %s", self, _cmd);
+    //NSLog(@"%@ %s", self, _cmd);
     if(searching)
-		
+        
     {
-		
+        
         // Update the user interface to indicate searching
-		
+        
         // Also update any UI that lists available services
-		
+        
     }
-	
+    
     else
-		
+        
     {
-		
-		NSLog(@"services: %@", services);
+        
+        NSLog(@"services: %@", services);
         // Update the user interface to indicate not searching
-		
+        
     }
-	
+    
 }
 
 - (void)netServiceBrowserWillSearch:(NSNetServiceBrowser *)browser
 {
     LOG_SELF;
-	//NSLog(@"%@ %s", self, _cmd);
+    //NSLog(@"%@ %s", self, _cmd);
     searching = YES;
-	
+    
     [self updateUI];
-	
+    
 }
 
 // Error handling code
@@ -175,11 +189,11 @@
 - (void)handleError:(NSNumber *)error
 
 {
-	
+    
     NSLog(@"An error occurred. Error code = %d", [error intValue]);
-	
+    
     // Handle error here
-	
+    
 }
 
 
@@ -190,15 +204,15 @@
 
 // This object is the delegate of its NSNetServiceBrowser object. We're only interested in services-related methods, so that's what we'll call.
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didFindService:(NSNetService *)aNetService moreComing:(BOOL)moreComing {
-	//NSLog(@"didFindService: %@", aNetService);
-
+    //NSLog(@"didFindService: %@", aNetService);
+    
     /*
-    if ([self serviceHasYoutube:aNetService])
-    {
-        [services addObject:aNetService];
-        
-    }
-    */
+     if ([self serviceHasYoutube:aNetService])
+     {
+     [services addObject:aNetService];
+     
+     }
+     */
     [services addObject:aNetService];
     [aNetService setDelegate:self];
     [aNetService resolveWithTimeout:10.0];
@@ -207,6 +221,16 @@
         
         searching = false;
         airplayServers = services;
+        if ([[aNetService type] isEqualToString:@"_aircontrol._tcp."])
+        {
+            /*
+            NSLog(@"firing off airplay search now");
+            browser = [[NSNetServiceBrowser alloc] init];
+            [browser setDelegate:self];
+            [browser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
+             */
+            
+        }
     }
 }
 
@@ -223,8 +247,8 @@
     [services removeObject:aNetService];
     
     if(!moreComing) {
-	
-	}
+        
+    }
 }
 
 
@@ -233,17 +257,17 @@
 
 - (BOOL)addressesComplete:(NSArray *)addresses
 
-		   forServiceType:(NSString *)serviceType
+           forServiceType:(NSString *)serviceType
 
 {
     LOG_SELF;
-	//NSLog(@"%@ %s", self, _cmd);
+    //NSLog(@"%@ %s", self, _cmd);
     // Perform appropriate logic to ensure that [netService addresses]
-	
+    
     // contains the appropriate information to connect to the service
-	
+    
     return YES;
-	
+    
 }
 
 // Sent when addresses are resolved
@@ -252,17 +276,20 @@
 
 {
     LOG_SELF;
-    if (![self serviceHasYoutube:netService])
+    if ([[netService type] isEqualToString:@"_aircontrol._tcp."])
     {
-        [services removeObject:netService];
+        if (![self serviceHasYoutube:netService])
+        {
+            [services removeObject:netService];
+        }
     }
-//    if ([self addressesComplete:[netService addresses]
-//		 
-//				 forServiceType:[netService type]]) {
-//		
-//		
-//    }
-	
+    //    if ([self addressesComplete:[netService addresses]
+    //
+    //				 forServiceType:[netService type]]) {
+    //
+    //
+    //    }
+    
 }
 
 
@@ -271,35 +298,35 @@
 
 - (void)netService:(NSNetService *)netService
 
-	 didNotResolve:(NSDictionary *)errorDict
+     didNotResolve:(NSDictionary *)errorDict
 
 {
     LOG_SELF;
     [self handleError:[errorDict objectForKey:NSNetServicesErrorCode]];
-	
+    
     [services removeObject:netService];
-	
+    
 }
 
 /*
-- (int)numberOfRowsInTableView:(NSTableView *)theTableView {
-    return [services count];
-}
-
-- (NSDictionary *)currentServiceDictionary {
-    NSNetService * clickedService = [services objectAtIndex:[[self theComboBox] indexOfSelectedItem]];
-    
-    NSLog(@"clickedService: %@" ,[self theComboBox]);
-    
-    return [self stringDictionaryFromService:clickedService];
-}
-
-
-- (id)tableView:(NSTableView *)theTableView objectValueForTableColumn:(NSTableColumn *)theColumn row:(int)rowIndex {
-   NSString *fixedName = [[[[services objectAtIndex:rowIndex] name] componentsSeparatedByString:@"@"] lastObject];
+ - (int)numberOfRowsInTableView:(NSTableView *)theTableView {
+ return [services count];
+ }
+ 
+ - (NSDictionary *)currentServiceDictionary {
+ NSNetService * clickedService = [services objectAtIndex:[[self theComboBox] indexOfSelectedItem]];
+ 
+ NSLog(@"clickedService: %@" ,[self theComboBox]);
+ 
+ return [self stringDictionaryFromService:clickedService];
+ }
+ 
+ 
+ - (id)tableView:(NSTableView *)theTableView objectValueForTableColumn:(NSTableColumn *)theColumn row:(int)rowIndex {
+ NSString *fixedName = [[[[services objectAtIndex:rowIndex] name] componentsSeparatedByString:@"@"] lastObject];
 	return fixedName;
 	// return [[services objectAtIndex:rowIndex] name];
-}
-*/
+ }
+ */
 
 @end

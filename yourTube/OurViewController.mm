@@ -9,6 +9,8 @@
 #define MessageHandler @"didGetPosts"
 #import "OurViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import "APDeviceController.h"
+
 @interface OurViewController ()
 
 @end
@@ -207,7 +209,8 @@
     KBYTStream *chosenStream = nil;
     NSInteger airplayIndex = 0;
     NSString *deviceIP = nil;
-    
+    APDeviceController *deviceController = nil;
+    int deviceType;
     switch (buttonIndex) {
         case 0: //Play video
             
@@ -236,11 +239,18 @@
             chosenStream = [[self.currentMedia streams] objectAtIndex:0];
             //need to adjust the index to subtract the three objects above us to get the proper device index
             airplayIndex = buttonIndex - 3;
-            deviceIP = [[[KBYourTube sharedInstance] deviceController] deviceIPAtIndex:airplayIndex];
-           // [[KBYourTube sharedInstance] airplayStream:chosenStream ToDeviceIP:deviceIP ];
-            [[KBYourTube sharedInstance] playMedia:self.currentMedia ToDeviceIP:deviceIP];
+            deviceController = [[KBYourTube sharedInstance] deviceController];
+            deviceIP = [deviceController deviceIPAtIndex:airplayIndex];
+            deviceType = [deviceController deviceTypeAtIndex:airplayIndex];
             
-            break;
+            if (deviceType == 0) //airplay
+            {
+                [[KBYourTube sharedInstance] airplayStream:chosenStream ToDeviceIP:deviceIP ];
+            } else {
+                
+                //aircontrol
+                 [[KBYourTube sharedInstance] playMedia:self.currentMedia ToDeviceIP:deviceIP];
+            }
     }
 }
 

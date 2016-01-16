@@ -20,6 +20,8 @@
 
 @implementation YTBrowserHelper
 
+@synthesize airplaying, airplayTimer, deviceIP;
+
 //@synthesize webServer;
 /*
  - (void)testRunServer
@@ -51,14 +53,50 @@
 
 - (void)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
 {
-    [self startGCDWebServer]; //start the GCDServer before we kick off the import.
-  
-    //right now the userInfo dict only has a filePath and a duration of the input file
-    //remember this is being called from inside SpringBoard and not YTBrowserHelper, so this is how we pass the
-    //information to our JODebox wrapper.
-    [[YTBrowserHelper sharedInstance] importFileWithJO:userInfo[@"filePath"] duration:userInfo[@"duration"]];
+    
+    if ([[name pathExtension] isEqualToString:@"import"])
+    {
+        [self startGCDWebServer]; //start the GCDServer before we kick off the import.
+        
+        //right now the userInfo dict only has a filePath and a duration of the input file
+        //remember this is being called from inside SpringBoard and not YTBrowserHelper, so this is how we pass the
+        //information to our JODebox wrapper.
+        [[YTBrowserHelper sharedInstance] importFileWithJO:userInfo[@"filePath"] duration:userInfo[@"duration"]];
+    } else if ([[name pathExtension] isEqualToString:@"airplaying"])
+    {
+        [[YTBrowserHelper sharedInstance] setDeviceIP:userInfo[@"deviceIP"]];
+        [[YTBrowserHelper sharedInstance] fireAirplayTimer];
+        //self.deviceIP = userInfo[@"deviceIP"];
+        
+      
+    }
+    
+    
 }
 
+- (void)fireAirplayTimer
+{
+    self.airplayTimer = [NSTimer scheduledTimerWithTimeInterval: 1
+                                                         target: self
+                                                       selector: @selector(pingAirplayDevice)
+                                                       userInfo: nil
+                                                        repeats: YES];
+}
+
+- (void)pingAirplayDevice
+{
+    NSLog(@"### pingAirplayDevice");
+    NSURL *deviceURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/playback-info", deviceIP]];
+    
+    // Create URL request and set url, method, content-length, content-type, and body
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
+    [request setURL:deviceURL];
+    [request setHTTPMethod:@"GET"];
+    NSURLResponse *theResponse = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
+    NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
+    NSLog(@"pingAirplayDevice return details: %@", datString);
+}
 
 + (id)sharedInstance {
     

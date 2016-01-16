@@ -44,7 +44,9 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 	CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
 		[center runServerOnCurrentThread];
 		[center registerForMessageName:@"org.nito.importscience.import" target:self selector:@selector(handleMessageName:userInfo:)];
+    [center registerForMessageName:@"org.nito.importscience.airplaying" target:self selector:@selector(handleMessageName:userInfo:)];
 	Method ourMessageHandler = class_getInstanceMethod(sci, @selector(handleMessageName:userInfo:));
+    
 	class_addMethod(SB, @selector(handleMessageName:userInfo:), method_getImplementation(ourMessageHandler), method_getTypeEncoding(ourMessageHandler));
 	
 	return r;

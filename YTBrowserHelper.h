@@ -16,4 +16,10 @@
 - (void)importFile:(NSString *)filePath withData:(NSDictionary *)inputDict serverURL:(NSString *)serverURL;
 
 //@property (nonatomic, strong) GCDWebServer *webServer;
+@property (nonatomic, strong) NSTimer *airplayTimer;
+@property (nonatomic, strong) NSString *deviceIP;
+@property (readwrite, assign) BOOL airplaying;
+
+- (void)fireAirplayTimer;
+
 @end

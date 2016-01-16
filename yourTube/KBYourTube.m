@@ -569,6 +569,10 @@
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
     NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
     NSLog(@"airplay return details: %@", datString);
+    
+    NSDictionary *info = @{@"deviceIP": deviceIP};
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
+    [center sendMessageName:@"org.nito.importscience.airplaying" userInfo:info];
 }
 
 //take a url and get its raw body, then return in string format
