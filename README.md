@@ -31,9 +31,6 @@ Steps to install from the pre-included deb package.
 
     killall -9 SpringBoard
 
-7. reload springboard apps
-    
-    su -c uicache mobile
 
 at this point you should have a red play "yourTube" icon somewhere, you should be good to go!
 
