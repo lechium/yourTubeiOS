@@ -550,7 +550,8 @@
     NSDictionary *info = @{@"deviceIP": deviceIP, @"videoURL": [[stream url] absoluteString]};
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     [center sendMessageName:@"org.nito.importscience.airplaying" userInfo:info];
-    /*
+   
+   /*
     NSURL *deviceURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/play", deviceIP]];
     NSDictionary* postDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:[[stream url] absoluteString], @"Content-Location",[NSNumber numberWithFloat:0] , @"Start-Position", nil];
     

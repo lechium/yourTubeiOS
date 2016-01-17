@@ -90,9 +90,11 @@ kAHHeartBeatTag = 10;
     } else if ([[name pathExtension] isEqualToString:@"airplaying"])
     {
         [[YTBrowserHelper sharedInstance] startAirplayFromDictionary:userInfo];
-       // [[YTBrowserHelper sharedInstance] setDeviceIP:userInfo[@"deviceIP"]];
-        //[[YTBrowserHelper sharedInstance] setSessionID:userInfo[@"sessionID"]];
+        /*
+        [[YTBrowserHelper sharedInstance] setDeviceIP:userInfo[@"deviceIP"]];
+        [[YTBrowserHelper sharedInstance] setSessionID:userInfo[@"sessionID"]];
         [[YTBrowserHelper sharedInstance] fireAirplayTimer];
+         */
         //self.deviceIP = userInfo[@"deviceIP"];
         
       
@@ -103,13 +105,13 @@ kAHHeartBeatTag = 10;
 
 - (void)fireAirplayTimer
 {
-    /*
+    
     self.airplayTimer = [NSTimer scheduledTimerWithTimeInterval: 1
                                                          target: self
                                                        selector: @selector(pingAirplayDevice)
                                                        userInfo: nil
                                                         repeats: YES];
-     */
+     
 }
 
 - (void)pingAirplayDevice
@@ -230,7 +232,7 @@ kAHHeartBeatTag = 10;
                        withTimeout:1.0f
                                tag:kAHRequestTagPlay];
         [self.mainSocket readDataToData:[@"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]
-                            withTimeout:2.0f
+                            withTimeout:15.0f
                                     tag:kAHRequestTagPlay];
     } else {
         NSLog(@"Error connecting socket for /play: %@", error);
@@ -456,6 +458,7 @@ kAHHeartBeatTag = 10;
 
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag
 {
+    NSLog(@"socket:didWriteData:withTag: tag: %lu", tag);
     if (tag == kAHRequestTagReverse) {
         //  /reverse request data written
     } else if (tag == kAHRequestTagPlay) {
@@ -495,6 +498,7 @@ kAHHeartBeatTag = 10;
 
 - (void)writeOK
 {
+    NSLog(@"writeOK");
     NSData *okData = [@"ok" dataUsingEncoding:NSUTF8StringEncoding];
     [self.mainSocket writeData:okData withTimeout:10.0f tag:kAHHeartBeatTag];
  //   [self.reverseSocket writeData:okData withTimeout:10.0f tag:kAHHeartBeatTag];
