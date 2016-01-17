@@ -157,7 +157,7 @@
             //another hack to prevent us from fetching details for the same video twice in a row.
             if (self.currentMedia != nil)
             {
-                if ([self.currentMedia.videoId isEqualToString:videoID])
+                if ([self.previousVideoID isEqualToString:videoID])
                 {
                     return;
                 }
@@ -206,6 +206,7 @@
 //the action sheet result handler
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
+    self.previousVideoID = nil;
     KBYTStream *chosenStream = nil;
     NSInteger airplayIndex = 0;
     NSString *deviceIP = nil;
@@ -321,7 +322,7 @@
         
         if (self.currentMedia != nil)
         {
-            if ([self.currentMedia.videoId isEqualToString:videoDetails.videoId])
+            if ([self.previousVideoID isEqualToString:videoDetails.videoId])
             {
                 NSLog(@"already got this video, dont do anything");
                 return;
@@ -330,6 +331,7 @@
         
         //  NSLog(@"got details successfully: %@", videoDetails);
         self.currentMedia = videoDetails;
+        self.previousVideoID = videoDetails.videoId;
         self.gettingDetails = false;
         [self showActionSheet]; //show the action sheet
         

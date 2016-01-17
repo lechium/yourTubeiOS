@@ -334,7 +334,7 @@ kAHHeartBeatTag = 10;
                                                                    userInfo:userInfo];
                                            
                                            NSLog(@"Error: %@", [error description]);
-                                           //  [self stoppedWithError:error];
+                                             [self stoppedWithError:error];
                                        } else if ([playbackInfo objectForKey:@"position"]) {
                                            self.playbackPosition = [[playbackInfo objectForKey:@"position"] doubleValue];
                                            self.paused = [[playbackInfo objectForKey:@"rate"] doubleValue] < 0.5f ? YES : NO;
@@ -458,7 +458,6 @@ kAHHeartBeatTag = 10;
 
 - (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag
 {
-    NSLog(@"socket:didWriteData:withTag: tag: %lu", tag);
     if (tag == kAHRequestTagReverse) {
         //  /reverse request data written
     } else if (tag == kAHRequestTagPlay) {
@@ -498,7 +497,6 @@ kAHHeartBeatTag = 10;
 
 - (void)writeOK
 {
-    NSLog(@"writeOK");
     NSData *okData = [@"ok" dataUsingEncoding:NSUTF8StringEncoding];
     [self.mainSocket writeData:okData withTimeout:10.0f tag:kAHHeartBeatTag];
  //   [self.reverseSocket writeData:okData withTimeout:10.0f tag:kAHHeartBeatTag];
