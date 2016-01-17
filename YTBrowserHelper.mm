@@ -11,6 +11,31 @@
 #import <Foundation/Foundation.h>
 #import "AppSupport/CPDistributedMessagingCenter.h"
 
+#import <CFNetwork/CFHTTPStream.h>
+
+#import <arpa/inet.h>
+#import <ifaddrs.h>
+
+const BOOL kAHEnableDebugOutput = YES;
+const BOOL kAHAssumeReverseTimesOut = YES;
+const NSUInteger    kAHVideo = 0,
+kAHPhoto = 1,
+kAHVideoFairPlay = 2,
+kAHVideoVolumeControl = 3,
+kAHVideoHTTPLiveStreams = 4,
+kAHSlideshow = 5,
+kAHScreen = 7,
+kAHScreenRotate = 8,
+kAHAudio = 9,
+kAHAudioRedundant = 11,
+kAHFPSAPv2pt5_AES_GCM = 12,
+kAHPhotoCaching = 13;
+const NSUInteger    kAHRequestTagReverse = 1,
+kAHRequestTagPlay = 2;
+const NSUInteger    kAHPropertyRequestPlaybackAccess = 1,
+kAHPropertyRequestPlaybackError = 2,
+kAHHeartBeatTag = 10;
+
 @interface JOiTunesImportHelper : NSObject
 
 + (_Bool)importAudioFileAtPath:(id)arg1 mediaKind:(id)arg2 withMetadata:(id)arg3 serverURL:(id)arg4;
@@ -20,7 +45,7 @@
 
 @implementation YTBrowserHelper
 
-@synthesize airplaying, airplayTimer, deviceIP;
+@synthesize airplaying, airplayTimer, deviceIP, sessionID, airplayDictionary;
 
 //@synthesize webServer;
 /*
@@ -64,7 +89,9 @@
         [[YTBrowserHelper sharedInstance] importFileWithJO:userInfo[@"filePath"] duration:userInfo[@"duration"]];
     } else if ([[name pathExtension] isEqualToString:@"airplaying"])
     {
-        [[YTBrowserHelper sharedInstance] setDeviceIP:userInfo[@"deviceIP"]];
+        [[YTBrowserHelper sharedInstance] startAirplayFromDictionary:userInfo];
+       // [[YTBrowserHelper sharedInstance] setDeviceIP:userInfo[@"deviceIP"]];
+        //[[YTBrowserHelper sharedInstance] setSessionID:userInfo[@"sessionID"]];
         [[YTBrowserHelper sharedInstance] fireAirplayTimer];
         //self.deviceIP = userInfo[@"deviceIP"];
         
@@ -76,11 +103,13 @@
 
 - (void)fireAirplayTimer
 {
+    /*
     self.airplayTimer = [NSTimer scheduledTimerWithTimeInterval: 1
                                                          target: self
                                                        selector: @selector(pingAirplayDevice)
                                                        userInfo: nil
                                                         repeats: YES];
+     */
 }
 
 - (void)pingAirplayDevice
@@ -92,10 +121,126 @@
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
     [request setURL:deviceURL];
     [request setHTTPMethod:@"GET"];
+    [request setValue:@"Keep-Alive" forHTTPHeaderField:@"Connection"];
+    [request addValue:@"MediaControl/1.0" forHTTPHeaderField:@"User-Agent"];
+    [request addValue:sessionID forHTTPHeaderField:@"X-Apple-Session-ID"];
     NSURLResponse *theResponse = nil;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
     NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
-    NSLog(@"pingAirplayDevice return details: %@", datString);
+    NSString *error = nil;
+    NSPropertyListFormat format;
+    NSData *theData = [datString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+    id theDict = [NSPropertyListSerialization propertyListFromData:theData
+                                                  mutabilityOption:NSPropertyListImmutable
+                                                            format:&format
+                                                  errorDescription:&error];
+   
+    NSLog(@"pingAirplayDevice return details: %@", theDict);
+    if ([[theDict allKeys] count] == 0)
+    {
+        NSLog(@"donzo or bailed!");
+        [self.airplayTimer invalidate];
+        self.airplayTimer = nil;
+    }
+}
+
+- (void)startAirplayFromDictionary:(NSDictionary *)airplayDict
+{
+    CFUUIDRef UUID = CFUUIDCreate(kCFAllocatorDefault);
+    CFStringRef UUIDString = CFUUIDCreateString(kCFAllocatorDefault,UUID);
+    self.sessionID = (__bridge NSString *)UUIDString;
+    self.deviceIP = airplayDict[@"deviceIP"];
+    NSString *address = [NSString stringWithFormat:@"http://%@", airplayDict[@"deviceIP"]];
+    self.baseUrl = [NSURL URLWithString:address];
+    [self playRequest:airplayDict[@"videoURL"]];
+}
+
+- (void)playRequest:(NSString *)httpFilePath
+{
+    NSDictionary        *plist = nil;
+    NSString            *errDesc = nil;
+    NSString            *appName = nil;
+    NSError             *error = nil;
+    NSData              *outData = nil;
+    NSString            *dataLength = nil;
+    CFURLRef            myURL;
+    CFStringRef         bodyString;
+    CFStringRef         requestMethod;
+    CFHTTPMessageRef    myRequest;
+    CFDataRef           mySerializedRequest;
+    
+    NSLog(@"/play");
+    
+    appName = @"MediaControl/1.0";
+    
+    plist = @{ @"Content-Location" : httpFilePath,
+               @"Start-Position" : @0.0f };
+    
+    outData = [NSPropertyListSerialization dataFromPropertyList:plist
+                                                         format:NSPropertyListBinaryFormat_v1_0
+                                               errorDescription:&errDesc];
+    
+    if (outData == nil && errDesc != nil) {
+        NSLog(@"Error creating /play info plist: %@", errDesc);
+        return;
+    }
+    
+    dataLength = [NSString stringWithFormat:@"%lu", [outData length]];
+    
+    bodyString = CFSTR("");
+    requestMethod = CFSTR("POST");
+    myURL = (__bridge CFURLRef)[self.baseUrl URLByAppendingPathComponent:@"play"];
+    myRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, requestMethod,
+                                           myURL, kCFHTTPVersion1_1);
+    
+    CFHTTPMessageSetHeaderFieldValue(myRequest, CFSTR("User-Agent"),
+                                     (__bridge CFStringRef)appName);
+    CFHTTPMessageSetHeaderFieldValue(myRequest, CFSTR("Content-Length"),
+                                     (__bridge CFStringRef)dataLength);
+    CFHTTPMessageSetHeaderFieldValue(myRequest, CFSTR("Content-Type"),
+                                     CFSTR("application/x-apple-binary-plist"));
+    CFHTTPMessageSetHeaderFieldValue(myRequest, CFSTR("X-Apple-Session-ID"),
+                                     (__bridge CFStringRef)self.sessionID);
+    mySerializedRequest = CFHTTPMessageCopySerializedMessage(myRequest);
+    self.data = [(__bridge NSData *)mySerializedRequest mutableCopy];
+    [self.data appendData:outData];
+    
+    NSLog(@"my request: %@", myRequest);
+    
+    self.mainSocket = [[GCDAsyncSocket alloc] initWithDelegate:self
+                                                 delegateQueue:dispatch_get_main_queue()];
+  //  [self.mainSocket connectToAddress:deviceIP
+    //                            error:&error];
+    
+    NSArray *ipArray = [deviceIP componentsSeparatedByString:@":"];
+    
+    NSLog(@"ipArray: %@", ipArray);
+    
+    NSError *connectError = nil;
+    
+     [self.mainSocket connectToHost:[ipArray firstObject] onPort:[[ipArray lastObject] integerValue] error:&connectError];
+    
+    if (connectError != nil)
+    {
+        NSLog(@"connection error: %@", [connectError localizedDescription]);
+    }
+    
+    if (self.mainSocket != nil) {
+        [self.mainSocket writeData:self.data
+                       withTimeout:1.0f
+                               tag:kAHRequestTagPlay];
+        [self.mainSocket readDataToData:[@"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]
+                            withTimeout:2.0f
+                                    tag:kAHRequestTagPlay];
+    } else {
+        NSLog(@"Error connecting socket for /play: %@", error);
+    }
+}
+
+- (void)setCommonHeadersForRequest:(NSMutableURLRequest *)request
+{
+    [request addValue:@"MediaControl/1.0" forHTTPHeaderField:@"User-Agent"];
+    [request addValue:self.sessionID forHTTPHeaderField:@"X-Apple-Session-ID"];
 }
 
 + (id)sharedInstance {
@@ -105,11 +250,254 @@
     if (!shared){
         dispatch_once(&onceToken, ^{
             shared = [YTBrowserHelper new];
+            shared.prevInfoRequest = @"/scrub";
+            shared.operationQueue = [NSOperationQueue mainQueue];
+            shared.operationQueue.name = @"Connection Queue";
+            shared.airplaying = NO;
+            shared.paused = YES;
+            shared.playbackPosition = 0;
         });
     }
     
     return shared;
     
+}
+
+//  alternates /scrub and /playback-info
+- (void)infoRequest
+{
+    [self writeOK];
+    NSString                *nextRequest = @"/playback-info";
+    NSMutableURLRequest     *request = nil;
+    
+    if (self.airplaying) {
+        if ([self.prevInfoRequest isEqualToString:@"/playback-info"]) {
+            nextRequest = @"/scrub";
+            self.prevInfoRequest = @"/scrub";
+            
+            request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:nextRequest
+                                                                 relativeToURL:self.baseUrl]];
+            [self setCommonHeadersForRequest:request];
+            [NSURLConnection sendAsynchronousRequest:request
+                                               queue:self.operationQueue
+                                   completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                       //  update our position in the file after /scrub
+                                       NSString    *responseString = [[NSString alloc] initWithData:data  encoding:NSUTF8StringEncoding];
+                                       NSRange     cachedDurationRange = [responseString rangeOfString:@"position: "];
+                                       NSUInteger  cachedDurationEnd;
+                                       
+                                       if (cachedDurationRange.location != NSNotFound) {
+                                           cachedDurationEnd = cachedDurationRange.location + cachedDurationRange.length;
+                                           self.playbackPosition = [[responseString substringFromIndex:cachedDurationEnd] doubleValue];
+                                           //[self.delegate positionUpdated:self.playbackPosition];
+                                       }
+                                   }];
+        } else {
+            nextRequest = @"/playback-info";
+            self.prevInfoRequest = @"/playback-info";
+            
+            request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:nextRequest
+                                                                 relativeToURL:self.baseUrl]];
+            [self setCommonHeadersForRequest:request];
+            [NSURLConnection sendAsynchronousRequest:request
+                                               queue:self.operationQueue
+                                   completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                       //  update our playback status and position after /playback-info
+                                       NSDictionary            *playbackInfo = nil;
+                                       NSString                *errDesc = nil;
+                                       NSNumber                *readyToPlay = nil;
+                                       NSPropertyListFormat    format;
+                                       
+                                       if (!self.airplaying) {
+                                           return;
+                                       }
+                                       
+                                       playbackInfo = [NSPropertyListSerialization propertyListFromData:data
+                                                                                       mutabilityOption:NSPropertyListImmutable
+                                                                                                 format:&format
+                                                                                       errorDescription:&errDesc];
+                                       
+                                       if ((readyToPlay = [playbackInfo objectForKey:@"readyToPlay"])
+                                           && ([readyToPlay boolValue] == NO)) {
+                                           NSDictionary    *userInfo = nil;
+                                           NSString        *bundleIdentifier = nil;
+                                           NSError         *error = nil;
+                                           
+                                           userInfo = @{ NSLocalizedDescriptionKey : @"Target AirPlay server not ready.  "
+                                                         "Check if it is on and idle." };
+                                           
+                                           bundleIdentifier = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
+                                           error = [NSError errorWithDomain:bundleIdentifier
+                                                                       code:100
+                                                                   userInfo:userInfo];
+                                           
+                                           NSLog(@"Error: %@", [error description]);
+                                           //  [self stoppedWithError:error];
+                                       } else if ([playbackInfo objectForKey:@"position"]) {
+                                           self.playbackPosition = [[playbackInfo objectForKey:@"position"] doubleValue];
+                                           self.paused = [[playbackInfo objectForKey:@"rate"] doubleValue] < 0.5f ? YES : NO;
+                                           
+                                           //[self.delegate setPaused:self.paused];
+                                           //[self.delegate positionUpdated:self.playbackPosition];
+                                       } else if (playbackInfo != nil) {
+                                           [self getPropertyRequest:kAHPropertyRequestPlaybackError];
+                                       } else {
+                                           NSLog(@"Error parsing /playback-info response: %@", errDesc);
+                                       }
+                                   }];
+        }
+    }
+}
+
+- (void)getPropertyRequest:(NSUInteger)property
+{
+    NSMutableURLRequest *request = nil;
+    NSString *reqType = nil;
+    NSString *urlString = @"/getProperty?%@";
+    if (property == kAHPropertyRequestPlaybackAccess) {
+        reqType = @"playbackAccessLog";
+    } else {
+        reqType = @"playbackErrorLog";
+    }
+    
+    request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:urlString, reqType]
+                                                         relativeToURL:self.baseUrl]];
+    
+    [self setCommonHeadersForRequest:request];
+    [request setValue:@"application/x-apple-binary-plist" forHTTPHeaderField:@"Content-Type"];
+    
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:self.operationQueue
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               //  get the PLIST from the response and log it
+                               NSDictionary            *propertyPlist = nil;
+                               NSString                *errDesc = nil;
+                               NSPropertyListFormat    format;
+                               
+                               propertyPlist = [NSPropertyListSerialization propertyListFromData:data
+                                                                                mutabilityOption:NSPropertyListImmutable
+                                                                                          format:&format
+                                                                                errorDescription:&errDesc];
+                               
+                               [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                                   NSLog(@"%@: %@", reqType, propertyPlist);
+                               }];
+                           }];
+}
+
+- (void)stopRequest
+{
+    NSMutableURLRequest *request = nil;
+    request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/stop"
+                                                         relativeToURL:self.baseUrl]];
+    
+    [self setCommonHeadersForRequest:request];
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:self.operationQueue
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               [self stoppedWithError:nil];
+                           }];
+}
+
+- (void)stopPlayback
+{
+    if (self.airplaying) {
+        [self stopRequest];
+       // [self.videoManager stop];
+    }
+}
+
+- (void)changePlaybackStatus
+{
+    NSMutableURLRequest *request = nil;
+    NSString            *rateString = @"/rate?value=1.00000";
+    
+    if (self.paused) {
+        rateString = @"/rate?value=0.00000";
+    }
+    
+    request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:rateString
+                                                         relativeToURL:self.baseUrl]];
+    request.HTTPMethod = @"POST";
+    [self setCommonHeadersForRequest:request];
+    
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:self.operationQueue
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               //   Do nothing on completion
+                           }];
+}
+
+- (void)stoppedWithError:(NSError *)error
+{
+    self.paused = NO;
+    self.airplaying = NO;
+    [self.infoTimer invalidate];
+    
+    self.playbackPosition = 0;
+    //[self.delegate positionUpdated:self.playbackPosition];
+   // [self.delegate durationUpdated:0];
+    //[self.delegate airplayStoppedWithError:error];
+}
+
+#pragma mark -
+#pragma mark GCDAsyncSocket methods
+
+- (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port
+{
+    NSLog(@"socket:didConnectToHost:port: called");
+}
+
+- (void)socket:(GCDAsyncSocket *)sock didWritePartialDataOfLength:(NSUInteger)partialLength
+           tag:(long)tag
+{
+    NSLog(@"socket:didWritePartialDataOfLength:tag: called");
+}
+
+- (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag
+{
+    if (tag == kAHRequestTagReverse) {
+        //  /reverse request data written
+    } else if (tag == kAHRequestTagPlay) {
+        //  /play request data written
+        self.airplaying = YES;
+    }
+}
+
+- (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
+{
+    NSString    *replyString = nil;
+    NSRange     range;
+    
+    replyString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"socket:didReadData:withTag: data:\r\n%@", replyString);
+    
+    if (tag == kAHRequestTagPlay) {
+        //  /play request reply received and read
+        range = [replyString rangeOfString:@"HTTP/1.1 200 OK"];
+        
+        if (range.location != NSNotFound) {
+            self.airplaying = YES;
+            self.paused = NO;
+           // [self.delegate setPaused:self.paused];
+           // [self.delegate durationUpdated:self.videoManager.duration];
+            
+            self.infoTimer = [NSTimer scheduledTimerWithTimeInterval:3.0f
+                                                              target:self
+                                                            selector:@selector(infoRequest)
+                                                            userInfo:nil
+                                                             repeats:YES];
+        }
+        
+        NSLog(@"read data for /play reply");
+    }
+}
+
+- (void)writeOK
+{
+    NSData *okData = [@"ok" dataUsingEncoding:NSUTF8StringEncoding];
+    [self.mainSocket writeData:okData withTimeout:10.0f tag:kAHHeartBeatTag];
+ //   [self.reverseSocket writeData:okData withTimeout:10.0f tag:kAHHeartBeatTag];
 }
 
 

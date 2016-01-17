@@ -24,6 +24,7 @@
 		89E06BEB1C499F7000B8D1C4 /* APDeviceController.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BE91C499F7000B8D1C4 /* APDeviceController.h */; };
 		89E06BEC1C499F7000B8D1C4 /* APDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */; };
 		89E06BEE1C49F59100B8D1C4 /* theos in Resources */ = {isa = PBXBuildFile; fileRef = 89E06BED1C49F59100B8D1C4 /* theos */; };
+		89E06C051C4B5B2F00B8D1C4 /* YTBrowserHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 89B9D5301C44F51200740BF1 /* YTBrowserHelper.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -298,6 +299,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				89E06BE11C499EFF00B8D1C4 /* Makefile in Sources */,
+				89E06C051C4B5B2F00B8D1C4 /* YTBrowserHelper.mm in Sources */,
 				89E06BE01C499EFF00B8D1C4 /* main.m in Sources */,
 				89E06BEC1C499F7000B8D1C4 /* APDeviceController.m in Sources */,
 				89E06BE71C499F2100B8D1C4 /* yourTubeApplication.m in Sources */,

@@ -546,6 +546,11 @@
 - (void)airplayStream:(KBYTStream *)stream ToDeviceIP:(NSString *)deviceIP
 {
     NSLog(@"airplayStream: %@ to deviceIP: %@", stream, deviceIP);
+  
+    NSDictionary *info = @{@"deviceIP": deviceIP, @"videoURL": [[stream url] absoluteString]};
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
+    [center sendMessageName:@"org.nito.importscience.airplaying" userInfo:info];
+    /*
     NSURL *deviceURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/play", deviceIP]];
     NSDictionary* postDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:[[stream url] absoluteString], @"Content-Location",[NSNumber numberWithFloat:0] , @"Start-Position", nil];
     
@@ -553,7 +558,7 @@
     
     
     // Encode post string
-    NSData* postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:true];
+    NSData* postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:true];
     
     // Calculate length of post data
     NSString* postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
@@ -564,15 +569,21 @@
     [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/x-apple-binary-plist" forHTTPHeaderField:@"Content-Type"];
+    [request addValue:@"MediaControl/1.0" forHTTPHeaderField:@"User-Agent"];
+    CFUUIDRef UUID = CFUUIDCreate(kCFAllocatorDefault);
+    CFStringRef UUIDString = CFUUIDCreateString(kCFAllocatorDefault,UUID);
+    NSString *sessionID = (__bridge NSString *)UUIDString;
+    [request addValue:sessionID forHTTPHeaderField:@"X-Apple-Session-ID"];
     [request setHTTPBody:postData];
     NSURLResponse *theResponse = nil;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
     NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
     NSLog(@"airplay return details: %@", datString);
     
-    NSDictionary *info = @{@"deviceIP": deviceIP};
+    NSDictionary *info = @{@"deviceIP": deviceIP, @"sessionID": sessionID};
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     [center sendMessageName:@"org.nito.importscience.airplaying" userInfo:info];
+     */
 }
 
 //take a url and get its raw body, then return in string format

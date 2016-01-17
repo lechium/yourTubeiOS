@@ -99,6 +99,38 @@
     
 }
 
+- (NSString *)deviceIPFromName:(NSString *)deviceName andType:(int)deviceType;
+{
+    for (NSNetService *service in services)
+    {
+        NSString *dt = nil;
+        if (deviceType == 0) //airplay
+            dt = @"_airplay._tcp.";
+        else
+            dt = @"_aircontrol._tcp.";
+        
+        if ([[service name] isEqualToString:deviceName] && [[service type] isEqualToString:dt])
+        {
+            NSString *ip;
+            int port;
+            struct sockaddr_in *addr;
+            
+            addr = (struct sockaddr_in *) [[[service addresses] objectAtIndex:0]
+                                           bytes];
+            ip = [NSString stringWithUTF8String:(char *) inet_ntoa(addr->sin_addr)];
+            port = ntohs(((struct sockaddr_in *)addr)->sin_port);
+            //NSLog(@"ipaddress: %@", ip);
+            //NSLog(@"port: %i", port);
+            
+            NSString *fullIP = [NSString stringWithFormat:@"%@:%i", ip, port];
+            NSLog(@"fullIP: %@", fullIP);
+            return fullIP;
+        }
+    }
+    return nil;
+}
+
+
 - (NSString *)deviceIPAtIndex:(NSInteger)deviceIndex
 {
     NSNetService * clickedService = [services objectAtIndex:deviceIndex];
@@ -223,12 +255,12 @@
         airplayServers = services;
         if ([[aNetService type] isEqualToString:@"_aircontrol._tcp."])
         {
-            /*
+            
             NSLog(@"firing off airplay search now");
             browser = [[NSNetServiceBrowser alloc] init];
             [browser setDelegate:self];
             [browser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
-             */
+             
             
         }
     }

@@ -209,6 +209,7 @@
     KBYTStream *chosenStream = nil;
     NSInteger airplayIndex = 0;
     NSString *deviceIP = nil;
+    NSDictionary *deviceDict = nil;
     APDeviceController *deviceController = nil;
     int deviceType;
     switch (buttonIndex) {
@@ -236,15 +237,29 @@
                 return;
             }
             
+            NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+            NSString *isolatedTitle = [[buttonTitle componentsSeparatedByString:@" "] lastObject];
+            if ([buttonTitle containsString:@"AirPlay"])
+            {
+                isolatedTitle = [[buttonTitle componentsSeparatedByString:@"AirPlay to "] lastObject];
+                deviceType = 0;
+            } else {
+                isolatedTitle = [[buttonTitle componentsSeparatedByString:@"Play in YouTube on "] lastObject];
+                deviceType = 1;
+            }
             chosenStream = [[self.currentMedia streams] objectAtIndex:0];
             //need to adjust the index to subtract the three objects above us to get the proper device index
             airplayIndex = buttonIndex - 3;
             deviceController = [[KBYourTube sharedInstance] deviceController];
-            deviceIP = [deviceController deviceIPAtIndex:airplayIndex];
-            deviceType = [deviceController deviceTypeAtIndex:airplayIndex];
+            NSLog(@"isolated title: -%@-", isolatedTitle);
+            deviceIP = [deviceController deviceIPFromName:isolatedTitle andType:deviceType];
+            NSLog(@"deviceIP: %@", deviceIP);
+            //deviceIP = [deviceController deviceIPAtIndex:airplayIndex];
+            //deviceType = [deviceController deviceTypeAtIndex:airplayIndex];
             
             if (deviceType == 0) //airplay
             {
+                
                 [[KBYourTube sharedInstance] airplayStream:chosenStream ToDeviceIP:deviceIP ];
             } else {
                 
@@ -281,8 +296,14 @@
     [actionSheet addButtonWithTitle:@"Download Audio"];
     for (NSNetService *service in airplayDevices)
     {
-        NSString *playOnATV = [NSString stringWithFormat:@"Play in YouTube on %@", [service name]];
-        [actionSheet addButtonWithTitle:playOnATV];
+        NSString *playTitle = nil;
+        if ([[service type] isEqualToString:@"_aircontrol._tcp."])
+        {
+            playTitle = [NSString stringWithFormat:@"Play in YouTube on %@", [service name]];
+        } else {
+            playTitle = [NSString stringWithFormat:@"AirPlay to %@", [service name]];
+        }
+        [actionSheet addButtonWithTitle:playTitle];
     }
     [actionSheet addButtonWithTitle:@"Cancel"];
     [actionSheet setCancelButtonIndex:3+[airplayDevices count]];

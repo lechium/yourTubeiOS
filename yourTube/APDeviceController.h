@@ -19,4 +19,5 @@
 - (NSDictionary *)currentServiceDictionary;
 - (NSString *)deviceIPAtIndex:(NSInteger)deviceIndex;
 - (int)deviceTypeAtIndex:(NSInteger)deviceIndex;
+- (NSString *)deviceIPFromName:(NSString *)deviceName andType:(int)deviceType;
 @end
