@@ -36,6 +36,11 @@ const NSUInteger    kAHPropertyRequestPlaybackAccess = 1,
 kAHPropertyRequestPlaybackError = 2,
 kAHHeartBeatTag = 10;
 
+
+const NSUInteger kAHAirplayStatusOffline = 0,
+kAHAirplayStatusPlaying = 1,
+kAHAirplayStatusPaused= 2;
+
 @interface JOiTunesImportHelper : NSObject
 
 + (_Bool)importAudioFileAtPath:(id)arg1 mediaKind:(id)arg2 withMetadata:(id)arg3 serverURL:(id)arg4;
@@ -76,7 +81,7 @@ kAHHeartBeatTag = 10;
 //this method is never actually called inside YTBrowserHelper, we hook into -(id)init in SpringBoard and add this
 //method in YTBrowser.xm
 
-- (void)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
+- (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
 {
     
     if ([[name pathExtension] isEqualToString:@"import"])
@@ -87,7 +92,8 @@ kAHHeartBeatTag = 10;
         //remember this is being called from inside SpringBoard and not YTBrowserHelper, so this is how we pass the
         //information to our JODebox wrapper.
         [[YTBrowserHelper sharedInstance] importFileWithJO:userInfo[@"filePath"] duration:userInfo[@"duration"]];
-    } else if ([[name pathExtension] isEqualToString:@"airplaying"])
+        return nil;
+    } else if ([[name pathExtension] isEqualToString:@"startAirplay"])
     {
         [[YTBrowserHelper sharedInstance] startAirplayFromDictionary:userInfo];
         /*
@@ -97,9 +103,23 @@ kAHHeartBeatTag = 10;
          */
         //self.deviceIP = userInfo[@"deviceIP"];
         
-      
+       return nil;
+    }else if ([[name pathExtension] isEqualToString:@"pauseAirplay"])
+    {
+        [[YTBrowserHelper sharedInstance] togglePaused];
+         return nil;
+    } else if ([[name pathExtension] isEqualToString:@"stopAirplay"])
+    {
+        [[YTBrowserHelper sharedInstance] stopPlayback];
+         return nil;
+    } else if ([[name pathExtension] isEqualToString:@"airplayState"])
+    {
+        return [[YTBrowserHelper sharedInstance] airplayState];
+   
     }
     
+    
+     return nil;
     
 }
 
@@ -319,6 +339,14 @@ kAHHeartBeatTag = 10;
                                                                                                  format:&format
                                                                                        errorDescription:&errDesc];
                                        
+                                       NSLog(@"playbackInfo: %@", playbackInfo );
+                                       
+                                       if ([[playbackInfo allKeys] count] == 0 || playbackInfo == nil)
+                                       {
+                                           [self stopPlayback];
+                                           
+                                       }
+                                       
                                        if ((readyToPlay = [playbackInfo objectForKey:@"readyToPlay"])
                                            && ([readyToPlay boolValue] == NO)) {
                                            NSDictionary    *userInfo = nil;
@@ -348,6 +376,14 @@ kAHHeartBeatTag = 10;
                                        }
                                    }];
         }
+    }
+}
+
+- (void)togglePaused
+{
+    if (self.airplaying) {
+        self.paused = !self.paused;
+        [self changePlaybackStatus];
     }
 }
 
@@ -398,11 +434,33 @@ kAHHeartBeatTag = 10;
                                        queue:self.operationQueue
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                                [self stoppedWithError:nil];
+                               [self.mainSocket disconnectAfterReadingAndWriting];
                            }];
+}
+
+- (NSDictionary *)airplayState
+{
+    NSLog(@"mainsocket: %@ airplaying: %i paused: %i", self.mainSocket, airplaying, self.paused);
+    if (self.mainSocket == nil || [self.mainSocket isDisconnected] == true) {
+        NSLog(@"OFFLINE!");
+        return @{@"playbackState": [NSNumber numberWithUnsignedInteger:kAHAirplayStatusOffline]};
+    }
+    
+    if (airplaying && self.paused)
+    {
+        NSLog(@"PAUSED!");
+        return @{@"playbackState": [NSNumber numberWithUnsignedInteger:kAHAirplayStatusPaused]};
+    }
+    if (airplaying && !self.paused)
+    {
+        NSLog(@"PLAYING!");
+        return @{@"playbackState": [NSNumber numberWithUnsignedInteger:kAHAirplayStatusPlaying]};
+    }
 }
 
 - (void)stopPlayback
 {
+    NSLog(@"stop playback");
     if (self.airplaying) {
         [self stopRequest];
        // [self.videoManager stop];
@@ -435,7 +493,6 @@ kAHHeartBeatTag = 10;
     self.paused = NO;
     self.airplaying = NO;
     [self.infoTimer invalidate];
-    
     self.playbackPosition = 0;
     //[self.delegate positionUpdated:self.playbackPosition];
    // [self.delegate durationUpdated:0];

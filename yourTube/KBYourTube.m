@@ -543,13 +543,33 @@
     NSLog(@"aircontrol return details: %@", datString);
 }
 
+- (void)pauseAirplay
+{
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
+    [center sendMessageName:@"org.nito.importscience.pauseAirplay" userInfo:nil];
+}
+
+- (void)stopAirplay
+{
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
+    [center sendMessageName:@"org.nito.importscience.stopAirplay" userInfo:nil];
+}
+
+- (NSInteger)airplayStatus
+{
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
+    NSDictionary *response = [center sendMessageAndReceiveReplyName:@"org.nito.importscience.airplayState" userInfo:nil];
+    NSLog(@"response: %@", response);
+    return [[response valueForKey:@"playbackState"] integerValue];
+}
+
 - (void)airplayStream:(KBYTStream *)stream ToDeviceIP:(NSString *)deviceIP
 {
     NSLog(@"airplayStream: %@ to deviceIP: %@", stream, deviceIP);
   
     NSDictionary *info = @{@"deviceIP": deviceIP, @"videoURL": [[stream url] absoluteString]};
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
-    [center sendMessageName:@"org.nito.importscience.airplaying" userInfo:info];
+    [center sendMessageName:@"org.nito.importscience.startAirplay" userInfo:info];
    
    /*
     NSURL *deviceURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/play", deviceIP]];
@@ -583,7 +603,7 @@
     
     NSDictionary *info = @{@"deviceIP": deviceIP, @"sessionID": sessionID};
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
-    [center sendMessageName:@"org.nito.importscience.airplaying" userInfo:info];
+    [center sendMessageName:@"org.nito.importscience.startAirplay" userInfo:info];
      */
 }
 

@@ -28,15 +28,14 @@
 @property (strong, nonatomic) NSMutableData         *responseData;
 @property (strong, nonatomic) NSMutableData         *data;
 @property (strong, nonatomic) NSTimer               *infoTimer;
-@property (strong, nonatomic) NSNetService          *targetService;
 @property (strong, nonatomic) NSDictionary          *serverInfo;
-@property (strong, nonatomic) GCDAsyncSocket        *reverseSocket;
 @property (strong, nonatomic) GCDAsyncSocket        *mainSocket;
 @property (strong, nonatomic) NSOperationQueue      *operationQueue;
 @property (nonatomic) BOOL                          paused;
 @property (nonatomic) double                        playbackPosition;
 @property (nonatomic) uint8_t                       serverCapabilities;
 
+- (void)togglePaused;
 - (void)fireAirplayTimer;
 - (void)setCommonHeadersForRequest:(NSMutableURLRequest *)request;
 - (void)playRequest:(NSString *)httpFilePath;
@@ -46,4 +45,6 @@
 - (void)changePlaybackStatus;
 - (void)stoppedWithError:(NSError *)error;
 - (void)startAirplayFromDictionary:(NSDictionary *)airplayDict;
+- (void)stopPlayback;
+- (NSDictionary *)airplayState;
 @end

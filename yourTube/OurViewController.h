@@ -36,6 +36,7 @@
 @property (nonatomic, strong) NSString *previousVideoID;
 @property (readwrite, assign) BOOL gettingDetails;
 @property (nonatomic, strong) UIProgressView *progressView;
+@property (nonatomic, strong) NSTimer *airplayTimer;
 
 @end
 

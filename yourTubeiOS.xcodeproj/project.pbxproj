@@ -28,7 +28,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		89B9D4201C44F49F00740BF1 /* control */ = {isa = PBXFileReference; lastKnownFileType = text; path = control; sourceTree = "<group>"; };
 		89B9D4221C44F49F00740BF1 /* GCDWebServers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GCDWebServers.framework; sourceTree = "<group>"; };
 		89B9D4231C44F49F00740BF1 /* Gremlin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Gremlin.framework; sourceTree = "<group>"; };
 		89B9D4251C44F49F00740BF1 /* GCDWebServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServer.h; sourceTree = "<group>"; };
@@ -103,7 +102,6 @@
 		89B9D3B11C44F41300740BF1 = {
 			isa = PBXGroup;
 			children = (
-				89B9D4201C44F49F00740BF1 /* control */,
 				89E06BC41C499E2300B8D1C4 /* ytiOSBundle */,
 				89B9D4211C44F49F00740BF1 /* Frameworks */,
 				89B9D4241C44F49F00740BF1 /* GCDWebServer */,

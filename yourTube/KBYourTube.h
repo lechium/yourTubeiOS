@@ -134,4 +134,6 @@
 + (NSDictionary *)formatFromTag:(NSInteger)tag;
 - (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP;
 - (void)airplayStream:(KBYTStream *)stream ToDeviceIP:(NSString *)deviceIP;
+- (void)pauseAirplay;
+- (NSInteger)airplayStatus;
 @end

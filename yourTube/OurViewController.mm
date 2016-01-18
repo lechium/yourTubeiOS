@@ -24,6 +24,12 @@
     self.view.backgroundColor = [UIColor redColor];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self checkAirplay];
+}
+
 - (void)pauseVideos
 {
     NSString *script = @"var videos = document.querySelectorAll(\"video\"); for (var i = videos.length - 1; i >= 0; i--) { videos[i].pause(); };";
@@ -198,6 +204,38 @@
     }
 }
 
+
+- (void)checkAirplay
+{
+    NSInteger status = [[KBYourTube sharedInstance] airplayStatus];
+    if (status == 0) {
+        [self.navigationController setToolbarHidden:YES animated:YES];
+        [self.airplayTimer invalidate];
+    } else {
+        [self.navigationController setToolbarHidden:NO animated:YES];
+        [self populateToolbar:status];
+    }
+    
+}
+
+- (void)fireAirplayTimer
+{
+    self.airplayTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(checkAirplay) userInfo:nil repeats:TRUE];
+}
+
+#define FLEXY                    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil]
+
+- (void)populateToolbar:(NSInteger)status
+{
+    UIBarButtonItem *stopButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:[KBYourTube sharedInstance] action:@selector(stopAirplay)];
+    UIBarButtonItem *playButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay target:[KBYourTube sharedInstance] action:@selector(pauseAirplay)];
+    if (status == 1) //playing
+        playButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPause target:[KBYourTube sharedInstance] action:@selector(pauseAirplay)];
+    UIBarButtonItem *fixSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
+    fixSpace.width = 10.0f;
+    self.toolbarItems = @[FLEXY,stopButton, fixSpace,playButton,FLEXY];
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -262,6 +300,7 @@
             {
                 
                 [[KBYourTube sharedInstance] airplayStream:chosenStream ToDeviceIP:deviceIP ];
+                [self fireAirplayTimer];
             } else {
                 
                 //aircontrol

@@ -1,6 +1,9 @@
 #!/bin/bash
 
-/bin/su -c /usr/bin/uicache mobile
+if [[ $1 == install ]]; then
+ /bin/su -c /usr/bin/uicache mobile
+fi
+
 /bin/launchctl unload /System/Library/LaunchDaemons/com.apple.itunesstored.plist
 /bin/launchctl load /System/Library/LaunchDaemons/com.apple.itunesstored.plist
 /bin/launchctl start com.apple.itunesstored

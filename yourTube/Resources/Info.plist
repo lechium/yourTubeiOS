@@ -1,5 +1,6 @@
 {
 	CFBundleExecutable = yourTube;
+	CFBundleName = tuyu;
 	CFBundleIconFile = "Icon.png";
 	CFBundleIconFiles = (
 		"Icon.png",
