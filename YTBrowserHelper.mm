@@ -17,7 +17,7 @@
 #import <ifaddrs.h>
 
 const BOOL kAHEnableDebugOutput = YES;
-
+const BOOL kAHAssumeReverseTimesOut = YES;
 const NSUInteger    kAHVideo = 0,
 kAHPhoto = 1,
 kAHVideoFairPlay = 2,
@@ -40,6 +40,28 @@ kAHHeartBeatTag = 10;
 const NSUInteger kAHAirplayStatusOffline = 0,
 kAHAirplayStatusPlaying = 1,
 kAHAirplayStatusPaused= 2;
+
+@interface NSString (TSSAdditions)
+- (id)dictionaryValue;
+@end
+
+@implementation NSString (TSSAdditions)
+
+
+- (id)dictionaryValue
+{
+    NSString *error = nil;
+    NSPropertyListFormat format;
+    NSData *theData = [self dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
+    id theDict = [NSPropertyListSerialization propertyListFromData:theData
+                                                  mutabilityOption:NSPropertyListImmutable
+                                                            format:&format
+                                                  errorDescription:&error];
+    return theDict;
+}
+
+
+@end
 
 @interface JOiTunesImportHelper : NSObject
 
@@ -66,6 +88,7 @@ kAHAirplayStatusPaused= 2;
  }
  */
 
+
 + (id)sharedInstance {
     
     static dispatch_once_t onceToken;
@@ -86,7 +109,6 @@ kAHAirplayStatusPaused= 2;
     
 }
 
-
 - (void)startGCDWebServer {} //keep the compiler happy
 
 /* 
@@ -101,8 +123,9 @@ kAHAirplayStatusPaused= 2;
 //this method is never actually called inside YTBrowserHelper, we hook into -(id)init in SpringBoard and add this
 //method in YTBrowser.xm
 
-- (void)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
+- (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
 {
+    
     if ([[name pathExtension] isEqualToString:@"import"])
     {
         [self startGCDWebServer]; //start the GCDServer before we kick off the import.
@@ -111,8 +134,29 @@ kAHAirplayStatusPaused= 2;
         //remember this is being called from inside SpringBoard and not YTBrowserHelper, so this is how we pass the
         //information to our JODebox wrapper.
         [[YTBrowserHelper sharedInstance] importFileWithJO:userInfo[@"filePath"] duration:userInfo[@"duration"]];
-    }
+        return nil;
+    } else if ([[name pathExtension] isEqualToString:@"startAirplay"])
+    {
+        [[YTBrowserHelper sharedInstance] startAirplayFromDictionary:userInfo];
+        
+       return nil;
+    }else if ([[name pathExtension] isEqualToString:@"pauseAirplay"])
+    {
+        [[YTBrowserHelper sharedInstance] togglePaused];
+         return nil;
+    } else if ([[name pathExtension] isEqualToString:@"stopAirplay"])
+    {
+        [[YTBrowserHelper sharedInstance] stopPlayback];
+         return nil;
+    } else if ([[name pathExtension] isEqualToString:@"airplayState"])
+    {
+        return [[YTBrowserHelper sharedInstance] airplayState];
+   
+    } else if ([[name pathExtension] isEqualToString:@"airplayInfo"])
+    
+     return nil;
 }
+
 
 - (void)startAirplayFromDictionary:(NSDictionary *)airplayDict
 {
@@ -176,8 +220,8 @@ kAHAirplayStatusPaused= 2;
     [self.data appendData:outData];
     self.mainSocket = [[GCDAsyncSocket alloc] initWithDelegate:self
                                                  delegateQueue:dispatch_get_main_queue()];
+    
     NSArray *ipArray = [deviceIP componentsSeparatedByString:@":"];
-
     NSError *connectError = nil;
     
      [self.mainSocket connectToHost:[ipArray firstObject] onPort:[[ipArray lastObject] integerValue] error:&connectError];
@@ -203,6 +247,18 @@ kAHAirplayStatusPaused= 2;
 {
     [request addValue:@"MediaControl/1.0" forHTTPHeaderField:@"User-Agent"];
     [request addValue:self.sessionID forHTTPHeaderField:@"X-Apple-Session-ID"];
+}
+
+- (NSDictionary *)synchronousPlaybackInfo
+{
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"/playback-info"
+                                                                              relativeToURL:self.baseUrl]];
+    [request addValue:@"MediaControl/1.0" forHTTPHeaderField:@"User-Agent"];
+    NSURLResponse *theResponse = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
+    NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
+    NSLog(@"return details: %@", datString);
+    return [datString dictionaryValue];
 }
 
 
@@ -261,7 +317,7 @@ kAHAirplayStatusPaused= 2;
                                                                                                  format:&format
                                                                                        errorDescription:&errDesc];
                                        
-                                       //NSLog(@"playbackInfo: %@", playbackInfo );
+                                     //  NSLog(@"playbackInfo: %@", playbackInfo );
                                        
                                        if ([[playbackInfo allKeys] count] == 0 || playbackInfo == nil)
                                        {
@@ -362,20 +418,16 @@ kAHAirplayStatusPaused= 2;
 
 - (NSDictionary *)airplayState
 {
-    NSLog(@"mainsocket: %@ airplaying: %i paused: %i", self.mainSocket, airplaying, self.paused);
     if (self.mainSocket == nil || [self.mainSocket isDisconnected] == true) {
-        NSLog(@"OFFLINE!");
         return @{@"playbackState": [NSNumber numberWithUnsignedInteger:kAHAirplayStatusOffline]};
     }
     
     if (airplaying && self.paused)
     {
-        NSLog(@"PAUSED!");
         return @{@"playbackState": [NSNumber numberWithUnsignedInteger:kAHAirplayStatusPaused]};
     }
     if (airplaying && !self.paused)
     {
-        NSLog(@"PLAYING!");
         return @{@"playbackState": [NSNumber numberWithUnsignedInteger:kAHAirplayStatusPlaying]};
     }
 }
@@ -478,7 +530,6 @@ kAHAirplayStatusPaused= 2;
 {
     NSData *okData = [@"ok" dataUsingEncoding:NSUTF8StringEncoding];
     [self.mainSocket writeData:okData withTimeout:10.0f tag:kAHHeartBeatTag];
- //   [self.reverseSocket writeData:okData withTimeout:10.0f tag:kAHHeartBeatTag];
 }
 
 

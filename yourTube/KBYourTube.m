@@ -559,8 +559,23 @@
 {
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     NSDictionary *response = [center sendMessageAndReceiveReplyName:@"org.nito.importscience.airplayState" userInfo:nil];
-    NSLog(@"response: %@", response);
+   // NSLog(@"response: %@", response);
     return [[response valueForKey:@"playbackState"] integerValue];
+}
+
+- (NSDictionary *)returnFromURLRequest:(NSString *)requestString requestType:(NSString *)type
+{
+    NSURL *deviceURL = [NSURL URLWithString:requestString];
+  
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
+    [request setURL:deviceURL];
+    [request setHTTPMethod:type];
+    [request addValue:@"MediaControl/1.0" forHTTPHeaderField:@"User-Agent"];
+    NSURLResponse *theResponse = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
+    NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
+    NSLog(@"return details: %@", datString);
+    return [datString dictionaryValue];
 }
 
 - (void)airplayStream:(KBYTStream *)stream ToDeviceIP:(NSString *)deviceIP

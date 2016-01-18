@@ -315,11 +315,7 @@
             //need to adjust the index to subtract the three objects above us to get the proper device index
             airplayIndex = buttonIndex - 3;
             deviceController = [[KBYourTube sharedInstance] deviceController];
-            NSLog(@"isolated title: -%@-", isolatedTitle);
             deviceIP = [deviceController deviceIPFromName:isolatedTitle andType:deviceType];
-            NSLog(@"deviceIP: %@", deviceIP);
-            //deviceIP = [deviceController deviceIPAtIndex:airplayIndex];
-            //deviceType = [deviceController deviceTypeAtIndex:airplayIndex];
             
             if (deviceType == 0) //airplay
             {
