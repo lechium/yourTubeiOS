@@ -25,6 +25,8 @@
 		89E06BEC1C499F7000B8D1C4 /* APDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */; };
 		89E06BEE1C49F59100B8D1C4 /* theos in Resources */ = {isa = PBXBuildFile; fileRef = 89E06BED1C49F59100B8D1C4 /* theos */; };
 		89E06C051C4B5B2F00B8D1C4 /* YTBrowserHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 89B9D5301C44F51200740BF1 /* YTBrowserHelper.mm */; };
+		89E06C081C4CA1DC00B8D1C4 /* KBYTPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06C061C4CA1DC00B8D1C4 /* KBYTPreferences.h */; };
+		89E06C091C4CA1DC00B8D1C4 /* KBYTPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -86,6 +88,8 @@
 		89E06BE91C499F7000B8D1C4 /* APDeviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = APDeviceController.h; path = yourTube/APDeviceController.h; sourceTree = "<group>"; };
 		89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = APDeviceController.m; path = yourTube/APDeviceController.m; sourceTree = "<group>"; };
 		89E06BED1C49F59100B8D1C4 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
+		89E06C061C4CA1DC00B8D1C4 /* KBYTPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTPreferences.h; path = yourTube/KBYTPreferences.h; sourceTree = "<group>"; };
+		89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTPreferences.m; path = yourTube/KBYTPreferences.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,6 +187,8 @@
 		89E06BCC1C499ED400B8D1C4 /* yourTube */ = {
 			isa = PBXGroup;
 			children = (
+				89E06C061C4CA1DC00B8D1C4 /* KBYTPreferences.h */,
+				89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */,
 				89E06BD61C499EFF00B8D1C4 /* KBYourTube.h */,
 				89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */,
 				89E06BD81C499EFF00B8D1C4 /* KBYTDownloadStream.h */,
@@ -222,6 +228,7 @@
 				89E06BD41C499EF000B8D1C4 /* URLDownloader.h in Headers */,
 				89E06BC61C499E2300B8D1C4 /* ytiOSBundle.h in Headers */,
 				89E06BDE1C499EFF00B8D1C4 /* KBYTDownloadStream.h in Headers */,
+				89E06C081C4CA1DC00B8D1C4 /* KBYTPreferences.h in Headers */,
 				89E06BDC1C499EFF00B8D1C4 /* KBYourTube.h in Headers */,
 				89E06BEB1C499F7000B8D1C4 /* APDeviceController.h in Headers */,
 				89E06BE41C499F1B00B8D1C4 /* OurViewController.h in Headers */,
@@ -297,6 +304,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				89E06BE11C499EFF00B8D1C4 /* Makefile in Sources */,
+				89E06C091C4CA1DC00B8D1C4 /* KBYTPreferences.m in Sources */,
 				89E06C051C4B5B2F00B8D1C4 /* YTBrowserHelper.mm in Sources */,
 				89E06BE01C499EFF00B8D1C4 /* main.m in Sources */,
 				89E06BEC1C499F7000B8D1C4 /* APDeviceController.m in Sources */,

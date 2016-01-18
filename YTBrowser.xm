@@ -39,15 +39,16 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 	
 	Class sci = NSClassFromString(@"YTBrowserHelper");
 	Class SB = NSClassFromString(@"SpringBoard");
-	id si = [YTBrowserHelper sharedInstance]; //allocate it
+	id ytbh = [YTBrowserHelper sharedInstance]; //allocate it
 	id r = %orig;
 	CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     [center runServerOnCurrentThread];
     [center registerForMessageName:@"org.nito.importscience.import" target:self selector:@selector(handleMessageName:userInfo:)];
-    [center registerForMessageName:@"org.nito.importscience.startAirplay" target:self selector:@selector(handleMessageName:userInfo:)];
-    [center registerForMessageName:@"org.nito.importscience.stopAirplay" target:self selector:@selector(handleMessageName:userInfo:)];
-    [center registerForMessageName:@"org.nito.importscience.pauseAirplay" target:self selector:@selector(handleMessageName:userInfo:)];
-     [center registerForMessageName:@"org.nito.importscience.airplayState" target:si selector:@selector(airplayState)];
+    [center registerForMessageName:@"org.nito.importscience.startAirplay" target:ytbh selector:@selector(startAirplayFromDictionary:)];
+    
+    [center registerForMessageName:@"org.nito.importscience.stopAirplay" target:ytbh selector:@selector(stopAirplay)];
+    [center registerForMessageName:@"org.nito.importscience.pauseAirplay" target:ytbh selector:@selector(togglePaused)];
+    [center registerForMessageName:@"org.nito.importscience.airplayState" target:ytbh selector:@selector(airplayState)];
 	Method ourMessageHandler = class_getInstanceMethod(sci, @selector(handleMessageName:userInfo:));
     
 	class_addMethod(SB, @selector(handleMessageName:userInfo:), method_getImplementation(ourMessageHandler), method_getTypeEncoding(ourMessageHandler));

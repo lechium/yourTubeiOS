@@ -17,7 +17,7 @@
 #import <ifaddrs.h>
 
 const BOOL kAHEnableDebugOutput = YES;
-const BOOL kAHAssumeReverseTimesOut = YES;
+
 const NSUInteger    kAHVideo = 0,
 kAHPhoto = 1,
 kAHVideoFairPlay = 2,
@@ -66,6 +66,26 @@ kAHAirplayStatusPaused= 2;
  }
  */
 
++ (id)sharedInstance {
+    
+    static dispatch_once_t onceToken;
+    static YTBrowserHelper *shared;
+    if (!shared){
+        dispatch_once(&onceToken, ^{
+            shared = [YTBrowserHelper new];
+            shared.prevInfoRequest = @"/scrub";
+            shared.operationQueue = [NSOperationQueue mainQueue];
+            shared.operationQueue.name = @"Connection Queue";
+            shared.airplaying = NO;
+            shared.paused = YES;
+            shared.playbackPosition = 0;
+        });
+    }
+    
+    return shared;
+    
+}
+
 
 - (void)startGCDWebServer {} //keep the compiler happy
 
@@ -81,9 +101,8 @@ kAHAirplayStatusPaused= 2;
 //this method is never actually called inside YTBrowserHelper, we hook into -(id)init in SpringBoard and add this
 //method in YTBrowser.xm
 
-- (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
+- (void)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
 {
-    
     if ([[name pathExtension] isEqualToString:@"import"])
     {
         [self startGCDWebServer]; //start the GCDServer before we kick off the import.
@@ -92,77 +111,6 @@ kAHAirplayStatusPaused= 2;
         //remember this is being called from inside SpringBoard and not YTBrowserHelper, so this is how we pass the
         //information to our JODebox wrapper.
         [[YTBrowserHelper sharedInstance] importFileWithJO:userInfo[@"filePath"] duration:userInfo[@"duration"]];
-        return nil;
-    } else if ([[name pathExtension] isEqualToString:@"startAirplay"])
-    {
-        [[YTBrowserHelper sharedInstance] startAirplayFromDictionary:userInfo];
-        /*
-        [[YTBrowserHelper sharedInstance] setDeviceIP:userInfo[@"deviceIP"]];
-        [[YTBrowserHelper sharedInstance] setSessionID:userInfo[@"sessionID"]];
-        [[YTBrowserHelper sharedInstance] fireAirplayTimer];
-         */
-        //self.deviceIP = userInfo[@"deviceIP"];
-        
-       return nil;
-    }else if ([[name pathExtension] isEqualToString:@"pauseAirplay"])
-    {
-        [[YTBrowserHelper sharedInstance] togglePaused];
-         return nil;
-    } else if ([[name pathExtension] isEqualToString:@"stopAirplay"])
-    {
-        [[YTBrowserHelper sharedInstance] stopPlayback];
-         return nil;
-    } else if ([[name pathExtension] isEqualToString:@"airplayState"])
-    {
-        return [[YTBrowserHelper sharedInstance] airplayState];
-   
-    }
-    
-    
-     return nil;
-    
-}
-
-- (void)fireAirplayTimer
-{
-    
-    self.airplayTimer = [NSTimer scheduledTimerWithTimeInterval: 1
-                                                         target: self
-                                                       selector: @selector(pingAirplayDevice)
-                                                       userInfo: nil
-                                                        repeats: YES];
-     
-}
-
-- (void)pingAirplayDevice
-{
-    NSLog(@"### pingAirplayDevice");
-    NSURL *deviceURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/playback-info", deviceIP]];
-    
-    // Create URL request and set url, method, content-length, content-type, and body
-    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
-    [request setURL:deviceURL];
-    [request setHTTPMethod:@"GET"];
-    [request setValue:@"Keep-Alive" forHTTPHeaderField:@"Connection"];
-    [request addValue:@"MediaControl/1.0" forHTTPHeaderField:@"User-Agent"];
-    [request addValue:sessionID forHTTPHeaderField:@"X-Apple-Session-ID"];
-    NSURLResponse *theResponse = nil;
-    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
-    NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
-    NSString *error = nil;
-    NSPropertyListFormat format;
-    NSData *theData = [datString dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-    id theDict = [NSPropertyListSerialization propertyListFromData:theData
-                                                  mutabilityOption:NSPropertyListImmutable
-                                                            format:&format
-                                                  errorDescription:&error];
-   
-    NSLog(@"pingAirplayDevice return details: %@", theDict);
-    if ([[theDict allKeys] count] == 0)
-    {
-        NSLog(@"donzo or bailed!");
-        [self.airplayTimer invalidate];
-        self.airplayTimer = nil;
     }
 }
 
@@ -226,18 +174,10 @@ kAHAirplayStatusPaused= 2;
     mySerializedRequest = CFHTTPMessageCopySerializedMessage(myRequest);
     self.data = [(__bridge NSData *)mySerializedRequest mutableCopy];
     [self.data appendData:outData];
-    
-    NSLog(@"my request: %@", myRequest);
-    
     self.mainSocket = [[GCDAsyncSocket alloc] initWithDelegate:self
                                                  delegateQueue:dispatch_get_main_queue()];
-  //  [self.mainSocket connectToAddress:deviceIP
-    //                            error:&error];
-    
     NSArray *ipArray = [deviceIP componentsSeparatedByString:@":"];
-    
-    NSLog(@"ipArray: %@", ipArray);
-    
+
     NSError *connectError = nil;
     
      [self.mainSocket connectToHost:[ipArray firstObject] onPort:[[ipArray lastObject] integerValue] error:&connectError];
@@ -265,25 +205,7 @@ kAHAirplayStatusPaused= 2;
     [request addValue:self.sessionID forHTTPHeaderField:@"X-Apple-Session-ID"];
 }
 
-+ (id)sharedInstance {
-    
-    static dispatch_once_t onceToken;
-    static YTBrowserHelper *shared;
-    if (!shared){
-        dispatch_once(&onceToken, ^{
-            shared = [YTBrowserHelper new];
-            shared.prevInfoRequest = @"/scrub";
-            shared.operationQueue = [NSOperationQueue mainQueue];
-            shared.operationQueue.name = @"Connection Queue";
-            shared.airplaying = NO;
-            shared.paused = YES;
-            shared.playbackPosition = 0;
-        });
-    }
-    
-    return shared;
-    
-}
+
 
 //  alternates /scrub and /playback-info
 - (void)infoRequest
@@ -339,7 +261,7 @@ kAHAirplayStatusPaused= 2;
                                                                                                  format:&format
                                                                                        errorDescription:&errDesc];
                                        
-                                       NSLog(@"playbackInfo: %@", playbackInfo );
+                                       //NSLog(@"playbackInfo: %@", playbackInfo );
                                        
                                        if ([[playbackInfo allKeys] count] == 0 || playbackInfo == nil)
                                        {

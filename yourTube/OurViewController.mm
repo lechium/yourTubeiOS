@@ -28,6 +28,8 @@
 {
     [super viewDidAppear:animated];
     [self checkAirplay];
+   
+    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"<" style:UIBarButtonItemStylePlain target:[self webView] action:@selector(goBack)];
 }
 
 - (void)pauseVideos
@@ -93,7 +95,16 @@
         [config.userContentController addScriptMessageHandler:self name:MessageHandler];
     }
     
-    NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:@"https://www.youtube.com"] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
+    NSString *lastVisited = [[KBYTPreferences preferences] valueForKey:@"lastVisitedURL"];
+    
+    NSLog(@"last visited url: %@", lastVisited);
+    
+    if (lastVisited == nil)
+    {
+       lastVisited = @"https://www.youtube.com";
+    }
+    
+    NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:lastVisited] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
     
     //these observers are a hacky way to know a good time to check URL to see if we land on a page that has a video URL
     
@@ -117,6 +128,16 @@
     }
 }
 
+- (void)updateBackButtonState
+{
+    if ([[self webView] canGoBack])
+    {
+     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"grey_arrow_left.png"] style:UIBarButtonItemStylePlain target:[self webView] action:@selector(goBack)];
+    }
+    else {
+        self.navigationItem.leftBarButtonItem = nil;
+    }
+}
 /*
  
  This observer is where we determine whether or not we are on an actual video / playlist page
@@ -129,7 +150,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"loading"]) {
-
+        [self updateBackButtonState];
     }
     if ([keyPath isEqualToString:@"estimatedProgress"]) {
      //      NSLog(@"estimated progress: %f", self.webView.estimatedProgress);
@@ -138,7 +159,7 @@
     }
     if ([keyPath isEqualToString:@"title"]) {
         self.title = self.webView.title;
-        
+        [self updateBackButtonState];
         //among the initial hacks, since title gets changed a lot during a load cycle we dont want to fetch
         //the info twice, if we did then the action sheet would appear twice and we are wasting network calls.
         if (self.gettingDetails == true)
@@ -181,6 +202,7 @@
             
             NSURL *backURL = [[[[self webView] backForwardList] backItem] URL];
             
+            [[KBYTPreferences preferences] setObject:[backURL absoluteString] forKey:@"lastVisitedURL"];
             //we have the URL we need stop the loading AND go back
             [[self webView] stopLoading];
             [[self webView] goBack];
@@ -198,6 +220,9 @@
             //a decision on their next action.
             [self getVideoIDDetails:videoID];
             self.gettingDetails = true;
+        } else {
+            
+            [[KBYTPreferences preferences] setObject:[self.webView.URL absoluteString] forKey:@"lastVisitedURL"];
         }
         
         
