@@ -17,7 +17,7 @@
 
 @implementation OurViewController
 
-@synthesize downloading;
+@synthesize downloading, airplayIP;
 
 - (void)loadView {
     self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -79,6 +79,8 @@
     self.webView = [[WKWebView alloc] initWithFrame:mainFrame configuration:config];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [[self view] addSubview:self.webView];
+    
+
  //   [[self view] addSubview:self.progressView];
    // [self.view bringSubviewToFront:self.progressView];
     
@@ -233,6 +235,7 @@
 - (void)checkAirplay
 {
     NSInteger status = [[KBYourTube sharedInstance] airplayStatus];
+    
     if (status == 0) {
         [self.navigationController setToolbarHidden:YES animated:YES];
         [self.airplayTimer invalidate];
@@ -240,6 +243,23 @@
         [self.navigationController setToolbarHidden:NO animated:YES];
         [self populateToolbar:status];
     }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        @autoreleasepool {
+            
+            NSDictionary *playbackInfo = [self getAirplayDetails];
+            CGFloat duration = [[playbackInfo valueForKey:@"duration"] floatValue];
+            CGFloat position = [[playbackInfo valueForKey:@"position"] floatValue];
+            CGFloat percent = position / duration;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.airplayProgressPercent = percent;
+                self.airplaySlider.value = percent;
+                self.airplayDuration = duration;
+            });
+        }
+    });
+    
     
 }
 
@@ -250,20 +270,67 @@
 
 #define FLEXY                    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil]
 
+- (void)sliderMoved:(UISlider *)slider
+{
+    CGFloat translatedSpot = self.airplayDuration * slider.value;
+    [self scrubToPosition:translatedSpot];
+}
+
 - (void)populateToolbar:(NSInteger)status
 {
+    self.sliderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 220, 40)];
+    self.airplaySlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, 220, 40)];
+    self.airplaySlider.value = self.airplayProgressPercent;
+    [self.airplaySlider addTarget:self action:@selector(sliderMoved:) forControlEvents:UIControlEventValueChanged];
+    [self.sliderView addSubview:self.airplaySlider];
+
+    UIBarButtonItem *sliderItem = [[UIBarButtonItem alloc] initWithCustomView:self.sliderView];
+    
     UIBarButtonItem *stopButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:[KBYourTube sharedInstance] action:@selector(stopAirplay)];
     UIBarButtonItem *playButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay target:[KBYourTube sharedInstance] action:@selector(pauseAirplay)];
     if (status == 1) //playing
         playButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPause target:[KBYourTube sharedInstance] action:@selector(pauseAirplay)];
     UIBarButtonItem *fixSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixSpace.width = 10.0f;
-    self.toolbarItems = @[FLEXY,stopButton, fixSpace,playButton,FLEXY];
+    self.toolbarItems = @[FLEXY,stopButton, fixSpace,playButton, fixSpace, sliderItem, FLEXY];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (NSDictionary *)returnFromURLRequest:(NSString *)requestString requestType:(NSString *)type
+{
+    NSURL *deviceURL = [NSURL URLWithString:requestString];
+    
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
+    [request setURL:deviceURL];
+    [request setHTTPMethod:type];
+    [request addValue:@"MediaControl/1.0" forHTTPHeaderField:@"User-Agent"];
+    NSURLResponse *theResponse = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
+    NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
+    NSLog(@"return details: %@", datString);
+    return [datString dictionaryValue];
+}
+
+- (NSDictionary *)scrubToPosition:(CGFloat)position
+{
+    NSString *requestString = [NSString stringWithFormat:@"http://%@/scrub?position=%f", [self airplayIP], position];
+    NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"POST"];
+    NSLog(@"returnDict: %@", returnDict);
+    return returnDict;
+    
+ //   /scrub?position=20.097000
+}
+
+- (NSDictionary *)getAirplayDetails
+{
+    NSString *requestString = [NSString stringWithFormat:@"http://%@/playback-info", [self airplayIP]];
+    NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"GET"];
+    NSLog(@"returnDict: %@", returnDict);
+    return returnDict;
 }
 
 //the action sheet result handler
@@ -315,17 +382,17 @@
             //need to adjust the index to subtract the three objects above us to get the proper device index
             airplayIndex = buttonIndex - 3;
             deviceController = [[KBYourTube sharedInstance] deviceController];
-            deviceIP = [deviceController deviceIPFromName:isolatedTitle andType:deviceType];
+            self.airplayIP = [deviceController deviceIPFromName:isolatedTitle andType:deviceType];
             
             if (deviceType == 0) //airplay
             {
                 
-                [[KBYourTube sharedInstance] airplayStream:chosenStream ToDeviceIP:deviceIP ];
+                [[KBYourTube sharedInstance] airplayStream:chosenStream ToDeviceIP:self.airplayIP ];
                 [self fireAirplayTimer];
             } else {
                 
                 //aircontrol
-                 [[KBYourTube sharedInstance] playMedia:self.currentMedia ToDeviceIP:deviceIP];
+                 [[KBYourTube sharedInstance] playMedia:self.currentMedia ToDeviceIP:self.airplayIP];
             }
     }
 }

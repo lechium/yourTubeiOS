@@ -555,6 +555,8 @@
     [center sendMessageName:@"org.nito.importscience.stopAirplay" userInfo:nil];
 }
 
+
+
 - (NSInteger)airplayStatus
 {
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];

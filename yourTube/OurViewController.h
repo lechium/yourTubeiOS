@@ -37,6 +37,11 @@
 @property (readwrite, assign) BOOL gettingDetails;
 @property (nonatomic, strong) UIProgressView *progressView;
 @property (nonatomic, strong) NSTimer *airplayTimer;
+@property (nonatomic, strong) NSString *airplayIP;
+@property (nonatomic, strong) UISlider *airplaySlider;
+@property (nonatomic, strong) UIView *sliderView;
+@property (readwrite, assign) CGFloat airplayProgressPercent;
+@property (readwrite, assign) CGFloat airplayDuration;
 
 @end
 
