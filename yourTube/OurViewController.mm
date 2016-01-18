@@ -46,7 +46,10 @@
 {
     BOOL isPlaying = [notification.userInfo[@"IsPlaying"] boolValue];
     if (isPlaying == true) {
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"grey_arrow_right.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showPlayerview)];
+                                                  
     } else {
+        self.navigationItem.rightBarButtonItem = nil;
     }
 }
 
@@ -528,20 +531,41 @@
     // LOG_SELF;
 }
 
+- (BOOL)isPlaying
+{
+    if ([self player] != nil)
+    {
+        if (self.player.rate != 0)
+        {
+            return true;
+        }
+    }
+    return false;
+    
+}
+
+- (void)showPlayerview
+{
+    if ([self player] != nil)
+    {
+        if (self.player.rate != 0)
+        {
+             [[self delegate] pushViewController:self.playerView];
+            return;
+        }
+    }
+    
+  
+}
+
 //play the video stream
 - (IBAction)playStream:(KBYTStream *)stream
 {
     NSURL *playURL = [stream url];
    //NSLog(@"play url: %@", playURL);
-    if ([self player] != nil)
-    {
-        if (self.player.rate != 0)
-        {
-            NSLog(@"already playing");
-            return;
-        }
+    if ([self isPlaying] == true  ){
+        return;
     }
-    
     self.playerView = [AVPlayerViewController alloc];
     self.playerView.showsPlaybackControls = true;
     self.player = [AVPlayer playerWithURL:playURL];
