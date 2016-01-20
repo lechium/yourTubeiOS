@@ -17,11 +17,11 @@ Steps to install from the pre-included deb package.
 
 3. download the deb file
 
-    wget --no-check-certificate https://github.com/lechium/yourTubeiOS/raw/master/com.nito.ytbrowser_1.0-25_iphoneos-arm.deb
+    wget --no-check-certificate https://github.com/lechium/yourTubeiOS/raw/master/com.nito.ytbrowser_1.0-55_iphoneos-arm.deb
 
 4. install the deb file
 
-    dpkg -i com.nito.ytbrowser_1.0-25_iphoneos-arm.deb
+    dpkg -i com.nito.ytbrowser_1.0-55_iphoneos-arm.deb
 
 5. the previous install will likely fail due to missing depenendencies
 
@@ -30,7 +30,6 @@ Steps to install from the pre-included deb package.
 6. kill SpringBoard
 
     killall -9 SpringBoard
-
 
 at this point you should have a red play "tuYu" icon somewhere, you should be good to go!
 
