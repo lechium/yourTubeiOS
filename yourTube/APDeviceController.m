@@ -244,7 +244,7 @@
         if([[aNetService type] isEqualToString:@"_airplay._tcp."])
         {
             
-            NSLog(@"firing off airplay search now");
+            NSLog(@"firing off aircontrol search now");
             browser = [[NSNetServiceBrowser alloc] init];
             [browser setDelegate:self];
             //[browser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
@@ -267,7 +267,7 @@
     [services removeObject:aNetService];
     
     if(!moreComing) {
-        
+         airplayServers = services;
     }
 }
 

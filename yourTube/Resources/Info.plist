@@ -33,4 +33,7 @@
 	);
 	UIFileSharingEnabled = YES;
 	UIPrerenderedIcon = YES;
+	"NSAppTransportSecurity" = {
+		"NSAllowsArbitraryLoads" = YES;
+	};
 }

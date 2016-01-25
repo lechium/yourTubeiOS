@@ -16,8 +16,6 @@
 #import <arpa/inet.h>
 #import <ifaddrs.h>
 
-const BOOL kAHEnableDebugOutput = YES;
-const BOOL kAHAssumeReverseTimesOut = YES;
 const NSUInteger    kAHVideo = 0,
 kAHPhoto = 1,
 kAHVideoFairPlay = 2,

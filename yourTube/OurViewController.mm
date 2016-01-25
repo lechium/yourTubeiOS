@@ -63,13 +63,19 @@
     // Video playing state handler
     
     CGRect mainFrame = [[self view] frame];
+    CGFloat height = 63; //self.navigationController.navigationBar.frame.size.height;
+    mainFrame.origin.y = height;
+    mainFrame.size.height-= height;
     self.downloading = false;
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc]
                                       init];
     
-   // self.progressView = [[UIProgressView alloc] initWithFrame:CGRectMake(0,40,mainFrame.size.width, 20)];
-    
-    //self.progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.progressView = [[UIProgressView alloc] initWithFrame:CGRectMake(0,height,mainFrame.size.width, 20)];
+    [self.progressView.layer setZPosition:2];
+    [self.webView.layer setZPosition:1];
+    [self.view addSubview:self.progressView];
+    self.webView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.progressView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     //self.progressView.hidden = false;
     
     if ([config respondsToSelector:@selector(requiresUserActionForMediaPlayback)])
@@ -104,7 +110,7 @@
     
     NSLog(@"last visited url: %@", lastVisited);
     
-    if (lastVisited == nil)
+    if (lastVisited == nil || lastVisited.length == 0)
     {
        lastVisited = @"https://www.youtube.com";
     }
@@ -121,6 +127,36 @@
     [[self webView] loadRequest:request];
     
 }
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  //  LOG_SELF;
+    NSLog(@"size: %@", NSStringFromCGSize(size));
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    if (size.height > size.width) //portrait
+    {
+        CGRect mainFrame = [[self view] frame];
+        CGFloat height = 63; //self.navigationController.navigationBar.frame.size.height;
+        mainFrame.origin.y = height;
+        mainFrame.size.height-= height;
+        self.webView.frame = mainFrame;
+        CGRect progressFrame = self.progressView.frame;
+        progressFrame.origin.y = height;
+        self.progressView.frame = progressFrame;
+    } else { //landscape
+        
+        CGRect mainFrame = [[self view] frame];
+        CGFloat height = 32; //self.navigationController.navigationBar.frame.size.height;
+        mainFrame.origin.y = height;
+        mainFrame.size.height-= height;
+        self.webView.frame = mainFrame;
+        CGRect progressFrame = self.progressView.frame;
+        progressFrame.origin.y = height;
+        self.progressView.frame = progressFrame;
+    }
+
+}
+
 
 //currently unused
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
@@ -159,8 +195,8 @@
     }
     if ([keyPath isEqualToString:@"estimatedProgress"]) {
      //      NSLog(@"estimated progress: %f", self.webView.estimatedProgress);
-      //  self.progressView.hidden = self.webView.estimatedProgress == 1;
-   //     [self.progressView setProgress:self.webView.estimatedProgress animated:YES];
+        self.progressView.hidden = self.webView.estimatedProgress == 1;
+        [self.progressView setProgress:self.webView.estimatedProgress animated:YES];
     }
     if ([keyPath isEqualToString:@"title"]) {
         self.title = self.webView.title;
