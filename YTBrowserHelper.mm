@@ -10,11 +10,156 @@
 #import "ipodimport.h"
 #import <Foundation/Foundation.h>
 #import "AppSupport/CPDistributedMessagingCenter.h"
-
+#import <AudioToolbox/AudioToolbox.h>
 #import <CFNetwork/CFHTTPStream.h>
 
 #import <arpa/inet.h>
 #import <ifaddrs.h>
+
+@implementation YTDownloadOperation
+
+@synthesize downloadInfo, downloader, downloadLocation, trackDuration, CompletedBlock;
+
+- (NSString *)downloadFolder
+{
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu/Downloads";
+    if (![man fileExistsAtPath:outputFolder])
+    {
+        [man createDirectoryAtPath:outputFolder withIntermediateDirectories:true attributes:nil error:nil];
+    }
+    return outputFolder;
+}
+
+//- (BOOL)isAsynchronous
+//{
+//    return true;
+//}
+
+- (id)initWithInfo:(NSDictionary *)downloadDictionary completed:(DownloadCompletedBlock)theBlock
+{
+    self = [super init];
+    downloadInfo = downloadDictionary;
+    self.name = downloadInfo[@"title"];
+    self.downloadLocation = [[self downloadFolder] stringByAppendingPathComponent:downloadDictionary[@"outputFilename"]];
+    NSInteger durationSeconds = [downloadDictionary[@"duration"] integerValue];
+    trackDuration = durationSeconds*1000;
+    CompletedBlock = theBlock;
+ 
+    return self;
+}
+
+- (void)main
+{
+    NSURL *url = [NSURL URLWithString:downloadInfo[@"url"]];
+    NSURLRequest *theRequest = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
+    self.downloader = [[URLDownloader alloc] initWithDelegate:self];
+    [self.downloader download:theRequest withCredential:nil];
+   // [self waitUntilFinished];
+}
+
+- (void)urlDownloader:(URLDownloader *)urlDownloader didChangeStateTo:(URLDownloaderState)state
+{
+    
+    NSLog(@"Download state: %u", state);
+}
+
+- (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithError:(NSError *)error
+{
+    
+}
+
+- (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithNotConnectedToInternetError:(NSError *)error
+{
+    
+}
+
+- (void)urlDownloader:(URLDownloader *)urlDownloader didFinishWithData:(NSData *)data
+{
+    NSLog(@"downloadLocation: %@", self.downloadLocation);
+    [data writeToFile:[self downloadLocation] atomically:TRUE];
+    if ([downloadLocation.pathExtension isEqualToString:@"aac"])
+    {
+       // self.FancyProgressBlock(0, @"Fixing audio...");
+        NSInteger volumeInt = 256;
+        
+        
+        [[YTBrowserHelper sharedInstance] fixAudio:downloadLocation volume:volumeInt completionBlock:^(NSString *newFile) {
+            if (self.CompletedBlock != nil)
+            {
+                
+                [[YTBrowserHelper sharedInstance] importFileWithJO:newFile duration:[NSNumber numberWithInteger:self.trackDuration]];
+                self.CompletedBlock(newFile);
+            }
+        }];
+        return;
+    }
+    
+    //non adaptive files that are already multiplexed will be generically processed if we get this far
+   
+    if (self.CompletedBlock != nil)
+    {
+        self.CompletedBlock(downloadLocation);
+    }
+    
+    
+    
+}
+
+- (void)urlDownloader:(URLDownloader *)urlDownloader didReceiveData:(NSData *)data
+{
+    //
+    float percentComplete = [urlDownloader downloadCompleteProcent];
+   // NSLog(@"percentComplete: %f", percentComplete);
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
+    [center sendMessageName:@"org.nito.dllistener.currentProgress" userInfo:@{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] }];
+}
+
+- (void)urlDownloaderDidStart:(URLDownloader *)urlDownloader
+{
+    
+}
+
+- (void)urlDownloader:(URLDownloader *)urlDownloader didFailOnAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    
+}
+
+
+
+@end
+
+@implementation NSTask (convenience)
+
+- (void) waitUntilExit
+{
+    NSTimer	*timer = nil;
+    
+    while ([self isRunning])
+    {
+        NSDate	*limit;
+        
+        /*
+         *	Poll at 0.1 second intervals.
+         */
+        limit = [[NSDate alloc] initWithTimeIntervalSinceNow: 0.1];
+        if (timer == nil)
+        {
+            timer = [NSTimer scheduledTimerWithTimeInterval: 0.1
+                                                     target: nil
+                                                   selector: @selector(class)
+                                                   userInfo: nil
+                                                    repeats: YES];
+        }
+        [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode
+                                 beforeDate: limit];
+        //RELEASE(limit);
+    }
+    [timer invalidate];
+}
+
+@end
+
 
 const NSUInteger    kAHVideo = 0,
 kAHPhoto = 1,
@@ -96,7 +241,9 @@ kAHAirplayStatusPaused= 2;
             shared = [YTBrowserHelper new];
             shared.prevInfoRequest = @"/scrub";
             shared.operationQueue = [NSOperationQueue mainQueue];
+            shared.downloadQueue = [NSOperationQueue currentQueue];
             shared.operationQueue.name = @"Connection Queue";
+            shared.downloadQueue.name = @"Download Queue";
             shared.airplaying = NO;
             shared.paused = YES;
             shared.playbackPosition = 0;
@@ -104,6 +251,47 @@ kAHAirplayStatusPaused= 2;
     }
     
     return shared;
+    
+}
+
+- (void)fixAudio:(NSString *)theFile volume:(NSInteger)volume completionBlock:(void(^)(NSString *newFile))completionBlock
+{
+    //NSLog(@"fix audio: %@", theFile);
+    NSString *outputFile = [NSString stringWithFormat:@"/var/mobile/Media/Downloads/%@", [[[theFile lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"]];
+    // NSString *outputFile = [[theFile stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        @autoreleasepool {
+            
+            NSTask *afcTask = [NSTask new];
+            NSString *ffmpeg = @"/usr/bin/ffmpeg";
+            NSLog(@"ffmpeg: %@", ffmpeg);
+            [afcTask setLaunchPath:ffmpeg];
+            //iOS change to /usr/bin/ffmpeg and make sure to depend upon com.nin9tyfour.ffmpeg
+            [afcTask setStandardError:[NSFileHandle fileHandleWithNullDevice]];
+            [afcTask setStandardOutput:[NSFileHandle fileHandleWithNullDevice]];
+            NSMutableArray *args = [NSMutableArray new];
+            [args addObject:@"-i"];
+            [args addObject:theFile];
+            
+            if (volume == 0){
+                [args addObjectsFromArray:[@"-acodec copy -y" componentsSeparatedByString:@" "]];
+            } else {
+                [args addObject:@"-vol"];
+                [args addObject:[NSString stringWithFormat:@"%ld", (long)volume]];
+                [args addObjectsFromArray:[@"-acodec aac -ac 2 -ar 44100 -ab 320K -strict -2 -y" componentsSeparatedByString:@" "]];
+            }
+            [args addObject:outputFile];
+            [afcTask setArguments:args];
+            //NSLog(@"mux %@", [args componentsJoinedByString:@" "]);
+            [afcTask launch];
+            [afcTask waitUntilExit];
+            
+        }
+        
+        completionBlock(outputFile);
+    });
+    
     
 }
 
@@ -150,9 +338,52 @@ kAHAirplayStatusPaused= 2;
     {
         return [[YTBrowserHelper sharedInstance] airplayState];
    
-    } else if ([[name pathExtension] isEqualToString:@"airplayInfo"])
+    } else if ([[name pathExtension] isEqualToString:@"airplayInfo"]){
     
      return nil;
+    
+    } else if ([[name pathExtension] isEqualToString:@"addDownload"]) {
+        
+        [[YTBrowserHelper sharedInstance] addDownloadToQueue:userInfo];
+        return nil;
+        
+    }
+    
+    
+return nil;
+}
+
+
+- (void)addDownloadToQueue:(NSDictionary *)downloadInfo
+{
+    NSLog(@"add download: %@", downloadInfo);
+    
+    NSArray *operations = [self.downloadQueue operations];
+    for (YTDownloadOperation *operation in operations)
+    {
+        if ([[operation name] isEqualToString:downloadInfo[@"title"]])
+        {
+            NSLog(@"operation already exists, dont add it again!");
+            return;
+        }
+    }
+    
+    YTDownloadOperation *downloadOp = [[YTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
+        
+        NSLog(@"download completed!");
+        [self playCompleteSound];
+        
+    }];
+    [self.downloadQueue addOperation:downloadOp];
+}
+
+- (void)playCompleteSound
+{
+    NSString *thePath = @"/Applications/yourTube.app/complete.aif";
+    //NSString *thePath = [[NSBundle mainBundle] pathForResource:@"complete" ofType:@"aif"];
+    SystemSoundID soundID;
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath: thePath], &soundID);
+    AudioServicesPlaySystemSound (soundID);
 }
 
 

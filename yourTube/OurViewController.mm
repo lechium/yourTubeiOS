@@ -351,7 +351,7 @@
     NSURLResponse *theResponse = nil;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
     NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
-    NSLog(@"return details: %@", datString);
+    //NSLog(@"return details: %@", datString);
     return [datString dictionaryValue];
 }
 
@@ -359,7 +359,7 @@
 {
     NSString *requestString = [NSString stringWithFormat:@"http://%@/scrub?position=%f", [self airplayIP], position];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"POST"];
-    NSLog(@"returnDict: %@", returnDict);
+  //  NSLog(@"returnDict: %@", returnDict);
     return returnDict;
     
  //   /scrub?position=20.097000
@@ -369,7 +369,7 @@
 {
     NSString *requestString = [NSString stringWithFormat:@"http://%@/playback-info", [self airplayIP]];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"GET"];
-    NSLog(@"returnDict: %@", returnDict);
+//    NSLog(@"returnDict: %@", returnDict);
     return returnDict;
 }
 
@@ -394,12 +394,13 @@
             
             chosenStream = [[self.currentMedia streams] objectAtIndex:0];
             [self downloadStream:chosenStream];
+            break;
             
         case 2: //download audio
             
             chosenStream = [[self.currentMedia streams] lastObject];
             [self downloadStream:chosenStream];
-        
+            break;
             
         default:
             
@@ -438,7 +439,7 @@
 }
 
 //play the import completion sound (standard tri-tone success sound)
-- (void)playCompleteSound
++ (void)playCompleteSound
 {
     NSString *thePath = [[NSBundle mainBundle] pathForResource:@"complete" ofType:@"aif"];
     SystemSoundID soundID;
@@ -555,8 +556,24 @@
 }
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(null_unspecified WKNavigation *)navigation withError:(NSError *)error
 {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Timed out" message:@"Failed to load youtube.com, please try hitting refresh or try again later" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
-    [alertView show];
+    NSLog(@"error: %@", error);
+    if (error.code == -1001) { // TIMED OUT:
+        
+        // CODE to handle TIMEOUT
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Timed out" message:@"Failed to load youtube.com, please try hitting refresh or try again later" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+        [alertView show];
+        
+    } else if (error.code == -1003) { // SERVER CANNOT BE FOUND
+        
+        // CODE to handle SERVER not found
+        
+    } else if (error.code == -1100) { // URL NOT FOUND ON SERVER
+        
+        // CODE to handle URL not found
+        
+    }
+   // NSLog(@"error code: %lu", error.code);
+   
 }
 - (void)webView:(WKWebView *)webView didCommitNavigation:(null_unspecified WKNavigation *)navigation
 {
@@ -614,9 +631,21 @@
     
 }
 
+- (void)downloadStream:(KBYTStream *)stream
+{
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    NSMutableDictionary *streamDict = [[stream dictionaryValue] mutableCopy];
+    streamDict[@"duration"] = self.currentMedia.duration;
+    NSString *stringURL = [[stream url] absoluteString];
+    streamDict[@"url"] = stringURL;
+    
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
+    [center sendMessageName:@"org.nito.importscience.addDownload" userInfo:streamDict];
+}
+
 //download the selected stream, currently doesn't have any kind of UI indication.
 
-- (void)downloadStream:(KBYTStream *)stream
+- (void)olddownloadStream:(KBYTStream *)stream
 {
     //currently just one download at a time.
     if (self.downloading == true)
@@ -636,7 +665,7 @@
     } completed:^(NSString *downloadedFile) {
         
         NSLog(@"file download complete: %@", downloadedFile);
-        [self playCompleteSound];
+        [OurViewController playCompleteSound];
         self.downloading = false;
     }];
     

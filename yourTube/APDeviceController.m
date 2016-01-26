@@ -9,18 +9,20 @@
 
 @implementation APDeviceController
 
-@synthesize deviceDictionary, airplayServers, browser, services;
+@synthesize deviceDictionary, airplayServers, acbrowser, apbrowser, services;
 
 - (id)init {
     
     self = [super init];
-    browser = [[NSNetServiceBrowser alloc] init];
+    acbrowser = [[NSNetServiceBrowser alloc] init];
+    apbrowser = [[NSNetServiceBrowser alloc] init];
     services = [NSMutableArray array];
-    [browser setDelegate:self];
+    [acbrowser setDelegate:self];
+    [apbrowser setDelegate:self];
     // Passing in "" for the domain causes us to browse in the default browse domain
    
-    [browser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
-    // [browser searchForServicesOfType:@"_aircontrol._tcp." inDomain:@""];
+    [acbrowser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
+    [apbrowser searchForServicesOfType:@"_aircontrol._tcp." inDomain:@""];
     return self;
 }
 
@@ -241,16 +243,16 @@
         airplayServers = services;
        
         // if ([[aNetService type] isEqualToString:@"_aircontrol._tcp."])
-        if([[aNetService type] isEqualToString:@"_airplay._tcp."])
-        {
-            
-            NSLog(@"firing off aircontrol search now");
-            browser = [[NSNetServiceBrowser alloc] init];
-            [browser setDelegate:self];
-            //[browser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
-            [browser searchForServicesOfType:@"_aircontrol._tcp." inDomain:@""];
-            
-        }
+//        if([[aNetService type] isEqualToString:@"_airplay._tcp."])
+//        {
+//            
+//            NSLog(@"firing off aircontrol search now");
+//            browser = [[NSNetServiceBrowser alloc] init];
+//            [browser setDelegate:self];
+//            //[browser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
+//            [browser searchForServicesOfType:@"_aircontrol._tcp." inDomain:@""];
+//            
+//        }
     }
 }
 

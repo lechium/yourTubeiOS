@@ -35,6 +35,8 @@ YTBrowser_FILES += CocoaHTTPServer/Vendor/CocoaLumberjack/DDTTYLogger.m
 YTBrowser_FILES += CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/ContextFilterLogFormatter.m
 YTBrowser_FILES += CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/DispatchQueueLogFormatter.m
 
+YTBrowser_FILES += yourTube/Download/URLCredential.m yourTube/Download/URLDownloader.m
+
 #YTBrowser_FILES += GCDWebServer/GCDWebServer.m GCDWebServer/GCDWebServerConnection.m GCDWebServer/GCDWebServerFunctions.m GCDWebServer/GCDWebServerRequest.m GCDWebServer/GCDWebServerResponse.m
 
 
@@ -46,7 +48,7 @@ YTBrowser_FILES += CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/DispatchQue
 YTBrowser_CXXFLAGS += -fobjc-arc
 YTBrowser_CFLAGS += -fobjc-arc
 
-YTBrowser_LDFLAGS = -undefined dynamic_lookup -framework Foundation -framework StoreServices -framework AppSupport -FFrameworks -F/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/PrivateFrameworks -framework MusicLibrary -IFrameworks -I/Frameworks/GCDWebServers.framework/Headers -IGCDWebServer/Core -IGCDWebServer/Requests -IGCDWebServer/Responses -framework CFNetwork
+YTBrowser_LDFLAGS = -undefined dynamic_lookup -framework Foundation -framework StoreServices -framework AppSupport -FFrameworks -F/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/PrivateFrameworks -framework MusicLibrary -IFrameworks -I/Frameworks/GCDWebServers.framework/Headers -IGCDWebServer/Core -IGCDWebServer/Requests -IGCDWebServer/Responses -framework CFNetwork -framework AudioToolbox
  
 include $(FW_MAKEDIR)/tweak.mk
 

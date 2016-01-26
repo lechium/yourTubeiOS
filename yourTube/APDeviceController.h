@@ -9,7 +9,8 @@
 	NSArray *receivedFiles;
 }
 
-@property (nonatomic, strong) NSNetServiceBrowser *browser;
+@property (nonatomic, strong) NSNetServiceBrowser *acbrowser;
+@property (nonatomic, strong) NSNetServiceBrowser *apbrowser;
 @property (nonatomic, strong) NSDictionary *deviceDictionary;
 @property (nonatomic, strong) NSArray *airplayServers;
 @property (nonatomic, strong) NSMutableArray *services;

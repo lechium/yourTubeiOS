@@ -11,6 +11,20 @@
 
 @implementation yourTubeApplication
 @synthesize window = _window;
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
+    [center stopServer];
+    //[super applicationWi]
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
+    [center runServerOnCurrentThread];
+}
+
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
     
     [KBYourTube sharedInstance]; //create it right off the bat to get device discovery going
@@ -29,6 +43,27 @@
         [audioSession setActive:YES error:&error];
     }
     
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
+    [center runServerOnCurrentThread];
+    [center registerForMessageName:@"org.nito.dllistener.currentProgress" target:self selector:@selector(handleMessageName:userInfo:)];
+    
+}
+
+- (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
+{
+
+    NSLog(@"messageName: %@ userINfo: %@", name, userInfo);
+    if ([name.pathExtension isEqualToString:@"currentProgress"])
+    {
+        CGFloat progress = [userInfo[@"completionPercent"] floatValue];
+        if (progress == 1.0)
+        {
+            NSLog(@"we got a finisher");
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        }
+        
+    }
+    return nil;
 }
 
 - (void)pushViewController:(id)controller

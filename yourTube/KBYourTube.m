@@ -7,7 +7,7 @@
 //
 
 #import "KBYourTube.h"
-#import "AppSupport/CPDistributedMessagingCenter.h"
+
 
 
 /**
@@ -250,7 +250,7 @@
 
 - (NSDictionary *)dictionaryValue
 {
-    return @{@"title": self.title, @"type": self.type, @"format": self.format, @"height": self.height, @"itag": [NSNumber numberWithInteger:self.itag], @"extension": self.extension, @"url": self.url};
+    return @{@"title": self.title, @"type": self.type, @"format": self.format, @"height": self.height, @"itag": [NSNumber numberWithInteger:self.itag], @"extension": self.extension, @"url": self.url, @"outputFilename": self.outputFilename};
 }
 
 - (NSString *)description

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "AppSupport/CPDistributedMessagingCenter.h"
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 
@@ -84,6 +84,7 @@
 @property (nonatomic, assign) KBYTStream *audioStream; //will be empty if its multiplexed
 
 - (id)initWithDictionary:(NSDictionary *)streamDict;
+- (NSDictionary *)dictionaryValue;
 
 @end
 
