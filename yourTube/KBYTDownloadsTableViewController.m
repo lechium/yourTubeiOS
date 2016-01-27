@@ -12,32 +12,52 @@
 
 @implementation KBYTDownloadCell
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    LOG_SELF;
+}
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    
+    return self;
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
   
-    NSLog(@"imageViewFrame: %@",  NSStringFromCGRect(self.imageView.frame));
     self.imageView.frame = CGRectMake(0,0,133,100);
     self.imageView.backgroundColor = [UIColor blackColor];
     float limgW =  self.imageView.image.size.width;
+    self.contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   
     if(limgW > 0) {
-        self.textLabel.frame = CGRectMake(148 ,self.textLabel.frame.origin.y,self.textLabel.frame.size.width,self.textLabel.frame.size.height);
+        
+        CGFloat textFieldWidth = self.frame.size.width - 148 - 10;
+        if ([self marqueeTextLabel] != nil)
+        {
+            [[self marqueeTextLabel] removeFromSuperview];
+        }
+        if ([self marqueeDetailTextLabel] != nil)
+        {
+            [[self marqueeDetailTextLabel] removeFromSuperview];
+        }
+        self.textLabel.frame = CGRectMake(148 ,self.textLabel.frame.origin.y,textFieldWidth,self.textLabel.frame.size.height);
         self.marqueeTextLabel = [[MarqueeLabel alloc] initWithFrame:self.textLabel.frame];
         self.marqueeTextLabel.font = self.textLabel.font;
         self.marqueeTextLabel.textColor = self.textLabel.textColor;
         self.marqueeTextLabel.text = self.textLabel.text;
-        self.textLabel.text = @"";
+        self.textLabel.hidden = true;
+         self.detailTextLabel.frame = CGRectMake(148,self.detailTextLabel.frame.origin.y,textFieldWidth,self.detailTextLabel.frame.size.height);
         self.marqueeDetailTextLabel = [[MarqueeLabel alloc] initWithFrame:self.detailTextLabel.frame];
         self.marqueeDetailTextLabel.font = self.detailTextLabel.font;
         self.marqueeDetailTextLabel.textColor = [UIColor lightGrayColor];//self.detailTextLabel.textColor;
         self.marqueeDetailTextLabel.text = self.detailTextLabel.text;
-        
-        self.detailTextLabel.frame = CGRectMake(148,self.detailTextLabel.frame.origin.y,self.detailTextLabel.frame.size.width,self.detailTextLabel.frame.size.height);
-        
         [[self contentView] addSubview:self.marqueeDetailTextLabel];
         [[self contentView] addSubview:self.marqueeTextLabel];
         self.marqueeDetailTextLabel.frame =  self.detailTextLabel.frame;
-        self.detailTextLabel.text = @"";
+        self.detailTextLabel.hidden = true;
     }
    
 }
@@ -60,7 +80,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-   
+   self.navigationItem.title = @"Downloads";
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
