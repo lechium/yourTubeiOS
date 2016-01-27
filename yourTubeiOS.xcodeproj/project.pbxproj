@@ -222,6 +222,57 @@
 			path = yourTube/SDWebImage;
 			sourceTree = "<group>";
 		};
+		897B4A121C5974EE00F50BC2 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				897B4A091C58AAB000F50BC2 /* UIColor+Additions.h */,
+				897B4A0A1C58AAB000F50BC2 /* UIColor+Additions.m */,
+				897B4A0E1C58B03000F50BC2 /* UIImage+Scale.h */,
+				897B4A0F1C58B03000F50BC2 /* UIImage+Scale.m */,
+			);
+			name = Categories;
+			sourceTree = "<group>";
+		};
+		897B4A131C5974F600F50BC2 /* Bonjour */ = {
+			isa = PBXGroup;
+			children = (
+				89E06BE91C499F7000B8D1C4 /* APDeviceController.h */,
+				89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */,
+			);
+			name = Bonjour;
+			sourceTree = "<group>";
+		};
+		897B4A141C59750D00F50BC2 /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				89E06C061C4CA1DC00B8D1C4 /* KBYTPreferences.h */,
+				89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */,
+			);
+			name = Preferences;
+			sourceTree = "<group>";
+		};
+		897B4A151C59751500F50BC2 /* YouTube */ = {
+			isa = PBXGroup;
+			children = (
+				89E06BD61C499EFF00B8D1C4 /* KBYourTube.h */,
+				89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */,
+				89E06BD81C499EFF00B8D1C4 /* KBYTDownloadStream.h */,
+				89E06BD91C499EFF00B8D1C4 /* KBYTDownloadStream.m */,
+			);
+			name = YouTube;
+			sourceTree = "<group>";
+		};
+		897B4A161C59751D00F50BC2 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				89E06BE21C499F1B00B8D1C4 /* OurViewController.h */,
+				89E06BE31C499F1B00B8D1C4 /* OurViewController.mm */,
+				897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */,
+				897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
 		89B9D3B11C44F41300740BF1 = {
 			isa = PBXGroup;
 			children = (
@@ -306,26 +357,15 @@
 		89E06BCC1C499ED400B8D1C4 /* yourTube */ = {
 			isa = PBXGroup;
 			children = (
+				89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */,
 				897B49C61C58A7B500F50BC2 /* SDWebImage */,
-				89E06C061C4CA1DC00B8D1C4 /* KBYTPreferences.h */,
-				89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */,
-				89E06BD61C499EFF00B8D1C4 /* KBYourTube.h */,
-				89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */,
-				89E06BD81C499EFF00B8D1C4 /* KBYTDownloadStream.h */,
-				89E06BD91C499EFF00B8D1C4 /* KBYTDownloadStream.m */,
+				897B4A141C59750D00F50BC2 /* Preferences */,
+				897B4A151C59751500F50BC2 /* YouTube */,
 				89E06BDA1C499EFF00B8D1C4 /* main.m */,
 				89E06BDB1C499EFF00B8D1C4 /* Makefile */,
-				89E06BE21C499F1B00B8D1C4 /* OurViewController.h */,
-				89E06BE31C499F1B00B8D1C4 /* OurViewController.mm */,
-				89E06BE91C499F7000B8D1C4 /* APDeviceController.h */,
-				89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */,
-				89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */,
-				897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */,
-				897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */,
-				897B4A091C58AAB000F50BC2 /* UIColor+Additions.h */,
-				897B4A0A1C58AAB000F50BC2 /* UIColor+Additions.m */,
-				897B4A0E1C58B03000F50BC2 /* UIImage+Scale.h */,
-				897B4A0F1C58B03000F50BC2 /* UIImage+Scale.m */,
+				897B4A161C59751D00F50BC2 /* View Controllers */,
+				897B4A131C5974F600F50BC2 /* Bonjour */,
+				897B4A121C5974EE00F50BC2 /* Categories */,
 				89E06BCD1C499EF000B8D1C4 /* Download */,
 				89E06BED1C49F59100B8D1C4 /* theos */,
 			);
