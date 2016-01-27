@@ -106,13 +106,46 @@
     
 }
 
+- (void)updateDownloadsProgress:(NSDictionary *)streamDictionary
+{
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSString *dlplist = @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
+    NSMutableArray *currentArray = nil;
+    if ([man fileExistsAtPath:dlplist])
+    {
+        currentArray = [[NSMutableArray alloc] initWithContentsOfFile:dlplist];
+        NSMutableDictionary *updateObject = [[currentArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.outputFilename == %@", streamDictionary[@"file"]]]lastObject];
+        NSInteger objectIndex = [currentArray indexOfObject:updateObject];
+        if (objectIndex != NSNotFound)
+        {
+            [updateObject setValue:[NSNumber numberWithBool:false] forKey:@"inProgress"];
+            
+            [currentArray replaceObjectAtIndex:objectIndex withObject:updateObject];
+        }
+        
+    } else {
+        currentArray = [NSMutableArray new];
+    }
+    //[currentArray addObject:streamDictionary];
+    [currentArray writeToFile:dlplist atomically:true];
+}
+
 - (void)urlDownloader:(URLDownloader *)urlDownloader didReceiveData:(NSData *)data
 {
     //
     float percentComplete = [urlDownloader downloadCompleteProcent];
    // NSLog(@"percentComplete: %f", percentComplete);
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
-    [center sendMessageName:@"org.nito.dllistener.currentProgress" userInfo:@{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] }];
+    NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
+    
+    if (percentComplete == 1)
+    {
+        NSLog(@"download complete");
+        [self updateDownloadsProgress:info];
+    }
+    
+    [center sendMessageName:@"org.nito.dllistener.currentProgress" userInfo:info];
+    
 }
 
 - (void)urlDownloaderDidStart:(URLDownloader *)urlDownloader

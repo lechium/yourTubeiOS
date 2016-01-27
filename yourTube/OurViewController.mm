@@ -631,14 +631,33 @@
     
 }
 
+- (void)updateDownloadsDictionary:(NSDictionary *)streamDictionary
+{
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSString *dlplist = @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
+    NSMutableArray *currentArray = nil;
+    if ([man fileExistsAtPath:dlplist])
+    {
+        currentArray = [[NSMutableArray alloc] initWithContentsOfFile:dlplist];
+    } else {
+        currentArray = [NSMutableArray new];
+    }
+    [currentArray addObject:streamDictionary];
+    [currentArray writeToFile:dlplist atomically:true];
+}
+
 - (void)downloadStream:(KBYTStream *)stream
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     NSMutableDictionary *streamDict = [[stream dictionaryValue] mutableCopy];
     streamDict[@"duration"] = self.currentMedia.duration;
+    streamDict[@"author"] = self.currentMedia.author;
+    streamDict[@"images"] = self.currentMedia.images;
+    streamDict[@"inProgress"] = [NSNumber numberWithBool:true];
+    streamDict[@"videoId"] = self.currentMedia.videoId;
     NSString *stringURL = [[stream url] absoluteString];
     streamDict[@"url"] = stringURL;
-    
+    [self updateDownloadsDictionary:streamDict];
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     [center sendMessageName:@"org.nito.importscience.addDownload" userInfo:streamDict];
 }

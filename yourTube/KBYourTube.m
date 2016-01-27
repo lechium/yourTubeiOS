@@ -238,8 +238,13 @@
         }
         
         self.type = [[[[inputSource valueForKey:@"type"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@" "] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-        self.title = [inputSource[@"title"] stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-        self.outputFilename = [NSString stringWithFormat:@"%@ [%@p].%@", self.title, self.height,self.extension];
+        self.title = [[[inputSource valueForKey:@"title"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+        if (self.height == 0)
+        {
+            self.outputFilename = [NSString stringWithFormat:@"%@.%@", self.title,self.extension];
+        } else {
+            self.outputFilename = [NSString stringWithFormat:@"%@ [%@p].%@", self.title, self.height,self.extension];
+        }
         return true;
         // }
     }
@@ -250,7 +255,7 @@
 
 - (NSDictionary *)dictionaryValue
 {
-    return @{@"title": self.title, @"type": self.type, @"format": self.format, @"height": self.height, @"itag": [NSNumber numberWithInteger:self.itag], @"extension": self.extension, @"url": self.url, @"outputFilename": self.outputFilename};
+    return @{@"title": self.title, @"type": self.type, @"format": self.format, @"height": self.height, @"itag": [NSNumber numberWithInteger:self.itag], @"extension": self.extension, @"url": self.url, @"outputFilename": self.outputFilename, @"signature": self.s};
 }
 
 - (NSString *)description
