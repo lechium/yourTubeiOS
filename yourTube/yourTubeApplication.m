@@ -49,33 +49,8 @@
     
 }
 
-- (void)updateDownloadsProgress:(NSDictionary *)streamDictionary
-{
-    NSFileManager *man = [NSFileManager defaultManager];
-    NSString *dlplist = @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
-    NSMutableArray *currentArray = nil;
-    if ([man fileExistsAtPath:dlplist])
-    {
-        currentArray = [[NSMutableArray alloc] initWithContentsOfFile:dlplist];
-        NSMutableDictionary *updateObject = [[currentArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.outputFilename == %@", streamDictionary[@"file"]]]lastObject];
-        NSInteger objectIndex = [currentArray indexOfObject:updateObject];
-        if (objectIndex != NSNotFound)
-        {
-            [updateObject setValue:[NSNumber numberWithBool:false] forKey:@"inProgress"];
-            
-            [currentArray replaceObjectAtIndex:objectIndex withObject:updateObject];
-        }
-        
-    } else {
-        currentArray = [NSMutableArray new];
-    }
-    //[currentArray addObject:streamDictionary];
-    [currentArray writeToFile:dlplist atomically:true];
-}
-
 - (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
 {
-
     /*
      messageName: org.nito.dllistener.currentProgress userINfo: {
 	    completionPercent = "0.1337406";
@@ -89,9 +64,6 @@
         CGFloat progress = [userInfo[@"completionPercent"] floatValue];
         if (progress == 1.0)
         {
-            
-            NSLog(@"we got a finisher");
-          //  [self updateDownloadsProgress:userInfo];
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         }
         

@@ -16,6 +16,10 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import "KBYTPreferences.h"
 
+@interface YTPlayerViewController : AVPlayerViewController
+
+@end
+
 @protocol OurViewControllerDelegate <NSObject>
 
 - (void)pushViewController:(id)controller;
@@ -31,7 +35,7 @@
 @property (nonatomic, strong) KBYTDownloadStream *downloadFile;
 @property (readwrite, assign) BOOL downloading;
 @property (nonatomic, strong) AVPlayer *player;
-@property (nonatomic, strong) AVPlayerViewController *playerView;
+@property (nonatomic, strong) YTPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTMedia *currentMedia;
 @property (nonatomic, strong) NSString *previousVideoID;
 @property (readwrite, assign) BOOL gettingDetails;
@@ -42,6 +46,8 @@
 @property (nonatomic, strong) UIView *sliderView;
 @property (readwrite, assign) CGFloat airplayProgressPercent;
 @property (readwrite, assign) CGFloat airplayDuration;
+
+- (void)playFile:(NSDictionary *)file;
 
 @end
 

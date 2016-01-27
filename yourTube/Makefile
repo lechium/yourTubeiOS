@@ -6,9 +6,25 @@ export SDKVERSION=8.4
 export ARCHS = armv7
 
 APPLICATION_NAME = yourTube
-yourTube_FILES = main.m yourTubeApplication.m OurViewController.mm KBYourTube.m KBYTDownloadStream.m Download/URLCredential.m Download/URLDownloader.m
-yourTube_FILES += APDeviceController.m KBYTPreferences.m
-yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox
+yourTube_FILES = main.m yourTubeApplication.m OurViewController.mm KBYourTube.m KBYTDownloadStream.m Download/URLCredential.m Download/URLDownloader.m KBYTDownloadsTableViewController.m
+yourTube_FILES += APDeviceController.m KBYTPreferences.m UIColor+Additions.m UIImage+Scale.m MarqueeLabel/MarqueeLabel.m
+yourTube_FILES += SDWebImage/MKAnnotationView+WebCache.m
+yourTube_FILES += SDWebImage/NSData+ImageContentType.m
+yourTube_FILES += SDWebImage/SDImageCache.m
+yourTube_FILES += SDWebImage/SDWebImageCompat.m
+yourTube_FILES += SDWebImage/SDWebImageDecoder.m
+yourTube_FILES += SDWebImage/SDWebImageDownloader.m
+yourTube_FILES += SDWebImage/SDWebImageDownloaderOperation.m
+yourTube_FILES += SDWebImage/SDWebImageManager.m
+yourTube_FILES += SDWebImage/SDWebImagePrefetcher.m
+yourTube_FILES += SDWebImage/UIButton+WebCache.m
+yourTube_FILES += SDWebImage/UIImage+GIF.m
+yourTube_FILES += SDWebImage/UIImage+MultiFormat.m
+yourTube_FILES += SDWebImage/UIImage+WebP.m
+yourTube_FILES += SDWebImage/UIImageView+HighlightedWebCache.m
+yourTube_FILES += SDWebImage/UIImageView+WebCache.m
+yourTube_FILES += SDWebImage/UIView+WebCacheOperation.m
+yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit
 yourTube_CXXFLAGS += -fobjc-arc
 yourTube_CFLAGS += -fobjc-arc
 yourTube_LDFLAGS = -ObjC -undefined dynamic_lookup -F/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/System/Library/PrivateFrameworks
@@ -18,3 +34,5 @@ include $(THEOS_MAKE_PATH)/application.mk
 after-install::
 	install.exec "su -c uicache mobile"
 	install.exec "apt-get install -f -y --force-yes"
+
+

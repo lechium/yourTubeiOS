@@ -10,6 +10,16 @@
 #import "OurViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import "APDeviceController.h"
+#import "KBYTDownloadsTableViewController.h"
+
+@implementation YTPlayerViewController
+
+- (BOOL)shouldAutorotate
+{
+    return TRUE;
+}
+
+@end
 
 @interface OurViewController ()
 
@@ -24,15 +34,30 @@
     self.view.backgroundColor = [UIColor redColor];
 }
 
+- (void)updateRightButtons
+{
+   
+    UIBarButtonItem *downloadsButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(showDownloadsTableView)];
+    UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:[self webView] action:@selector(reload)];
+    self.navigationItem.rightBarButtonItems = @[refreshButton, downloadsButton ];
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [self checkAirplay];
+    
+
    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:[self webView] action:@selector(reload)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(showDownloadsTableView)];
     //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"<" style:UIBarButtonItemStylePlain target:[self webView] action:@selector(goBack)];
 }
 
+- (void)showDownloadsTableView
+{
+    KBYTDownloadsTableViewController *tvc = [[KBYTDownloadsTableViewController alloc] initWithStyle:UITableViewStylePlain];
+    [self.navigationController pushViewController:tvc animated:true];
+}
 - (void)pauseVideos
 {
     NSString *script = @"var videos = document.querySelectorAll(\"video\"); for (var i = videos.length - 1; i >= 0; i--) { videos[i].pause(); };";
@@ -45,17 +70,21 @@
 //currently not used for anything, was added when messing around with trying to prevent autoplaying videos.
 - (void)videoPlayingDidChange:(NSNotification *)notification
 {
+    /*
     BOOL isPlaying = [notification.userInfo[@"IsPlaying"] boolValue];
     if (isPlaying == true) {
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"grey_arrow_right.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showPlayerview)];
                                                   
     } else {
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:[self webView] action:@selector(reload)];
-    }
+     */
+        [self updateRightButtons];
+    //}
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self updateRightButtons];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(videoPlayingDidChange:)
                                                  name:@"SomeClientPlayingDidChange"
@@ -614,6 +643,27 @@
   
 }
 
+- (void)playFile:(NSDictionary *)file
+{
+    NSString *outputFile = [NSString stringWithFormat:@"/var/mobile/Library/Application Support/tuyu/Downloads/%@", file[@"outputFilename"]];
+    NSURL *playURL = [NSURL fileURLWithPath:outputFile];
+    //NSLog(@"play url: %@", playURL);
+    if ([self isPlaying] == true  ){
+        return;
+    }
+    self.playerView = [YTPlayerViewController alloc];
+    self.playerView.showsPlaybackControls = true;
+    self.player = [AVPlayer playerWithURL:playURL];
+    self.playerView.player = self.player;
+    
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    self.playerView.view.frame = self.view.frame;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
+    
+    [self.player play];
+    
+}
+
 //play the video stream
 - (IBAction)playStream:(KBYTStream *)stream
 {
@@ -622,13 +672,23 @@
     if ([self isPlaying] == true  ){
         return;
     }
-    self.playerView = [AVPlayerViewController alloc];
+    self.playerView = [YTPlayerViewController alloc];
     self.playerView.showsPlaybackControls = true;
     self.player = [AVPlayer playerWithURL:playURL];
     self.playerView.player = self.player;
-    [[self delegate] pushViewController:self.playerView];
-    [self.player play];
+
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    self.playerView.view.frame = self.view.frame;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
     
+    [self.player play];
+   
+}
+
+-(void)itemDidFinishPlaying:(NSNotification *) notification {
+    // Will be called when AVPlayer finishes playing playerItem
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
 }
 
 - (void)updateDownloadsDictionary:(NSDictionary *)streamDictionary
