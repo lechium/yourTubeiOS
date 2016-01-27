@@ -89,6 +89,7 @@
             {
                 
                 [[YTBrowserHelper sharedInstance] importFileWithJO:newFile duration:[NSNumber numberWithInteger:self.trackDuration]];
+        
                 self.CompletedBlock(newFile);
             }
         }];
@@ -327,7 +328,9 @@ kAHAirplayStatusPaused= 2;
     
     
 }
-
+- (id)sharedApplication {
+    return nil;
+}
 - (void)startGCDWebServer {} //keep the compiler happy
 
 /* 
@@ -811,6 +814,10 @@ return nil;
 
 - (void)importFileWithJO:(NSString *)theFile duration:(NSNumber *)duration
 {
+   //since this isnt being called through messages anymore we need to make sure we start the GCD server ourselves.
+    id sbInstance = [NSClassFromString(@"SpringBoard") sharedApplication];
+    [sbInstance startGCDWebServer];
+    
    // NSLog(@"importFileWithJO: %@", theFile);
     //[self testRunServer];
     //NSData *imageData = [NSData dataWithContentsOfFile:@"/var/mobile/Library/Preferences/imageTest.png"];
