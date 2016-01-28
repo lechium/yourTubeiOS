@@ -139,12 +139,13 @@
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
     
+    /*
     if (percentComplete == 1)
     {
         NSLog(@"download complete");
         [self updateDownloadsProgress:info];
     }
-    
+    */
     [center sendMessageName:@"org.nito.dllistener.currentProgress" userInfo:info];
     
 }
@@ -291,17 +292,14 @@ kAHAirplayStatusPaused= 2;
 - (void)fixAudio:(NSString *)theFile volume:(NSInteger)volume completionBlock:(void(^)(NSString *newFile))completionBlock
 {
     //NSLog(@"fix audio: %@", theFile);
-    NSString *outputFile = [NSString stringWithFormat:@"/var/mobile/Media/Downloads/%@", [[[theFile lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"]];
-    // NSString *outputFile = [[theFile stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"];
+    NSString *importOutputFile = [NSString stringWithFormat:@"/var/mobile/Media/Downloads/%@", [[[theFile lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"]];
+     NSString *outputFile = [[theFile stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         @autoreleasepool {
             
             NSTask *afcTask = [NSTask new];
-            NSString *ffmpeg = @"/usr/bin/ffmpeg";
-            NSLog(@"ffmpeg: %@", ffmpeg);
-            [afcTask setLaunchPath:ffmpeg];
-            //iOS change to /usr/bin/ffmpeg and make sure to depend upon com.nin9tyfour.ffmpeg
+            [afcTask setLaunchPath:@"/usr/bin/ffmpeg"];
             [afcTask setStandardError:[NSFileHandle fileHandleWithNullDevice]];
             [afcTask setStandardOutput:[NSFileHandle fileHandleWithNullDevice]];
             NSMutableArray *args = [NSMutableArray new];
@@ -323,7 +321,9 @@ kAHAirplayStatusPaused= 2;
             
         }
         
-        completionBlock(outputFile);
+        [[NSFileManager defaultManager] copyItemAtPath:outputFile toPath:importOutputFile error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:theFile error:nil];
+        completionBlock(importOutputFile);
     });
     
     
@@ -406,11 +406,53 @@ return nil;
     
     YTDownloadOperation *downloadOp = [[YTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
         
+        if (![[downloadedFile pathExtension] isEqualToString:[downloadInfo[@"outputFilename"] pathExtension]])
+        {
+            NSMutableDictionary *mutableCopy = [downloadInfo mutableCopy];
+            [mutableCopy setValue:[downloadedFile lastPathComponent] forKey:@"outputFilename"];
+            [mutableCopy setValue:[NSNumber numberWithBool:false] forKey:@"inProgress"];
+            [self updateDownloadsProgress:mutableCopy];
+        } else {
+            [self updateDownloadsProgress:downloadInfo];
+        }
+        
+        
         NSLog(@"download completed!");
         [self playCompleteSound];
         
     }];
     [self.downloadQueue addOperation:downloadOp];
+}
+
+- (void)updateDownloadsProgress:(NSDictionary *)streamDictionary
+{
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSString *dlplist = @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
+    NSMutableArray *currentArray = nil;
+    if ([man fileExistsAtPath:dlplist])
+    {
+        currentArray = [[NSMutableArray alloc] initWithContentsOfFile:dlplist];
+        NSMutableDictionary *updateObject = [[currentArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.title == %@", streamDictionary[@"title"]]]lastObject];
+        NSInteger objectIndex = [currentArray indexOfObject:updateObject];
+        if (objectIndex != NSNotFound)
+        {
+            if ([[streamDictionary[@"outputFilename"]pathExtension] isEqualToString:@"m4a"])
+            {
+                [currentArray replaceObjectAtIndex:objectIndex withObject:streamDictionary];
+               // [currentArray removeObject:updateObject];
+                
+            } else {
+                [updateObject setValue:[NSNumber numberWithBool:false] forKey:@"inProgress"];
+                [currentArray replaceObjectAtIndex:objectIndex withObject:updateObject];
+                
+            }
+        }
+        
+    } else {
+        currentArray = [NSMutableArray new];
+    }
+    //[currentArray addObject:streamDictionary];
+    [currentArray writeToFile:dlplist atomically:true];
 }
 
 - (void)playCompleteSound
@@ -822,7 +864,7 @@ return nil;
     //[self testRunServer];
     //NSData *imageData = [NSData dataWithContentsOfFile:@"/var/mobile/Library/Preferences/imageTest.png"];
     NSData *imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
-    NSDictionary *theDict = @{@"albumName": @"Unknown Album 2", @"artist": @"Unknown Artist", @"duration": duration, @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
+    NSDictionary *theDict = @{@"albumName": @"tuyu downloads", @"artist": @"Unknown Artist", @"duration": duration, @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
     Class joitih = NSClassFromString(@"JOiTunesImportHelper");
     [joitih importAudioFileAtPath:theFile mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];
     

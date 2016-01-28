@@ -70,10 +70,20 @@
 
 @implementation KBYTDownloadsTableViewController
 
+- (NSString *)downloadFile
+{
+    return @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
+}
+
+- (NSString *)downloadPath
+{
+    return @"/var/mobile/Library/Application Support/tuyu/Downloads";
+}
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
-     self.downloadArray= [NSArray arrayWithContentsOfFile:@"/var/mobile/Library/Application Support/tuyu/Downloads.plist"];
+     self.downloadArray= [NSArray arrayWithContentsOfFile:[self downloadFile]];
     return self;
 }
 
@@ -149,17 +159,33 @@
 }
 */
 
-/*
+- (void)deleteMedia:(NSDictionary *)dictionaryMedia
+{
+    NSString *filePath = [[self downloadPath] stringByAppendingPathComponent:dictionaryMedia[@"outputFilename"]];
+    [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+    NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
+    [mutableArray removeObject:dictionaryMedia];
+    [mutableArray writeToFile:[self downloadFile] atomically:true];
+    self.downloadArray = mutableArray;
+}
+
+
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
+  
+        NSDictionary *mediaToDelete = [self.downloadArray objectAtIndex:indexPath.row];
+        [tableView beginUpdates];
+        [self deleteMedia:mediaToDelete];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableView endUpdates];
+        
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
-*/
+
 
 /*
 // Override to support rearranging the table view.

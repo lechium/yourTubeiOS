@@ -64,6 +64,13 @@
         CGFloat progress = [userInfo[@"completionPercent"] floatValue];
         if (progress == 1.0)
         {
+            NSString *file = userInfo[@"file"];
+            if ([[file pathExtension] isEqualToString:@"aac"])
+            {
+                NSString *messageString = [NSString stringWithFormat:@"The file %@ has been successfully imported into your iTunes library under the album name tuyu downloads.", file];
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Audio import complete" message:messageString delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+                [alertView show];
+            }
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
         }
         
