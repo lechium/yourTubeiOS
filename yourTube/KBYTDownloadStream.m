@@ -9,6 +9,9 @@
 /*
  
  class adapted from hawkeye's KBYTDownloadStream class for downloading youtube files, largely pruned to remove irrelevant sections + updated to cancel the xfer + remodified/updated to use blocks instead of antiquated delegate methods.
+
+ 
+ NOTE: This class is now obsolete and is no longer used and will be pruned completely out from future updates.
  
  */
 

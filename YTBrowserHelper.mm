@@ -6,6 +6,19 @@
 //  Copyright © 2015 nito. All rights reserved.
 //
 
+/**
+ 
+ There is entirely too much packed into this "helper" class, I know that, but it works so I don't care ;-P
+ 
+ This helper class and all the other classes contained herein handle file downloads, airplaying, and importing files
+ into the iTunes music library. It is definitely a good candidate for MASSIVE refactoring, but since this is a 
+ free open source project I do for fun, I probably won't spend the time to do said massive refactoring without
+ a good reason to do so.
+ 
+ 
+ */
+
+
 #import "YTBrowserHelper.h"
 #import "ipodimport.h"
 #import <Foundation/Foundation.h>
@@ -15,6 +28,8 @@
 
 #import <arpa/inet.h>
 #import <ifaddrs.h>
+
+//download operation class, handles file downloads.
 
 @implementation YTDownloadOperation
 
@@ -55,7 +70,6 @@
     NSURLRequest *theRequest = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     self.downloader = [[URLDownloader alloc] initWithDelegate:self];
     [self.downloader download:theRequest withCredential:nil];
-   // [self waitUntilFinished];
 }
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didChangeStateTo:(URLDownloaderState)state
@@ -76,18 +90,21 @@
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didFinishWithData:(NSData *)data
 {
-    NSLog(@"downloadLocation: %@", self.downloadLocation);
     [data writeToFile:[self downloadLocation] atomically:TRUE];
+    
+    //if we are dealing with an audio file we need to re-encode it in ffmpeg to get a playable file. (and to bump volume)
     if ([downloadLocation.pathExtension isEqualToString:@"aac"])
     {
-       // self.FancyProgressBlock(0, @"Fixing audio...");
+     
+        //for now the audio is bumped to a static 256 increase, this may change later to be customizable.
         NSInteger volumeInt = 256;
         
-        
+        //do said re-encoding in ffmpeg
         [[YTBrowserHelper sharedInstance] fixAudio:downloadLocation volume:volumeInt completionBlock:^(NSString *newFile) {
+            
             if (self.CompletedBlock != nil)
             {
-                
+                //import the file to the music library using JODebox
                 [[YTBrowserHelper sharedInstance] importFileWithJO:newFile duration:[NSNumber numberWithInteger:self.trackDuration]];
         
                 self.CompletedBlock(newFile);
@@ -96,8 +113,7 @@
         return;
     }
     
-    //non adaptive files that are already multiplexed will be generically processed if we get this far
-   
+    //all other media goes through here, no conversion and imports necessary.
     if (self.CompletedBlock != nil)
     {
         self.CompletedBlock(downloadLocation);
@@ -107,29 +123,7 @@
     
 }
 
-- (void)updateDownloadsProgress:(NSDictionary *)streamDictionary
-{
-    NSFileManager *man = [NSFileManager defaultManager];
-    NSString *dlplist = @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
-    NSMutableArray *currentArray = nil;
-    if ([man fileExistsAtPath:dlplist])
-    {
-        currentArray = [[NSMutableArray alloc] initWithContentsOfFile:dlplist];
-        NSMutableDictionary *updateObject = [[currentArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.outputFilename == %@", streamDictionary[@"file"]]]lastObject];
-        NSInteger objectIndex = [currentArray indexOfObject:updateObject];
-        if (objectIndex != NSNotFound)
-        {
-            [updateObject setValue:[NSNumber numberWithBool:false] forKey:@"inProgress"];
-            
-            [currentArray replaceObjectAtIndex:objectIndex withObject:updateObject];
-        }
-        
-    } else {
-        currentArray = [NSMutableArray new];
-    }
-    //[currentArray addObject:streamDictionary];
-    [currentArray writeToFile:dlplist atomically:true];
-}
+//use CPDistributedMessagingCenter to relay progress details back to the yourTube/tuyu application.
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didReceiveData:(NSData *)data
 {
@@ -138,14 +132,7 @@
    // NSLog(@"percentComplete: %f", percentComplete);
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
-    
-    /*
-    if (percentComplete == 1)
-    {
-        NSLog(@"download complete");
-        [self updateDownloadsProgress:info];
-    }
-    */
+
     [center sendMessageName:@"org.nito.dllistener.currentProgress" userInfo:info];
     
 }
@@ -163,6 +150,14 @@
 
 
 @end
+
+
+/*
+ 
+ NSTask on iOS doesn't appear to have waitUntilExit, this is taken from open source example code for NSTask 
+ from NeXTStep project
+ 
+ */
 
 @implementation NSTask (convenience)
 
@@ -194,6 +189,13 @@
 }
 
 @end
+
+/*
+ 
+ the bulk of the airplay code is taken from EtherPlayer on github, some/most of these
+ variables are frivolous and should be pruned.
+ 
+ */
 
 
 const NSUInteger    kAHVideo = 0,
@@ -240,6 +242,8 @@ kAHAirplayStatusPaused= 2;
 
 
 @end
+
+//make things compile and keep it from complaining about undefined methods
 
 @interface JOiTunesImportHelper : NSObject
 
@@ -328,7 +332,7 @@ kAHAirplayStatusPaused= 2;
     
     
 }
-- (id)sharedApplication {
+- (id)sharedApplication { //keep the compiler happy
     return nil;
 }
 - (void)startGCDWebServer {} //keep the compiler happy
@@ -347,7 +351,7 @@ kAHAirplayStatusPaused= 2;
 
 - (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
 {
-    
+    //import no longer goes through here, should prune this out.
     if ([[name pathExtension] isEqualToString:@"import"])
     {
         [self startGCDWebServer]; //start the GCDServer before we kick off the import.
@@ -389,11 +393,13 @@ kAHAirplayStatusPaused= 2;
 return nil;
 }
 
+//add a download to our NSOperationQueue
 
 - (void)addDownloadToQueue:(NSDictionary *)downloadInfo
 {
-    NSLog(@"add download: %@", downloadInfo);
+    //NSLog(@"add download: %@", downloadInfo);
     
+    /*
     NSArray *operations = [self.downloadQueue operations];
     for (YTDownloadOperation *operation in operations)
     {
@@ -403,6 +409,7 @@ return nil;
             return;
         }
     }
+    */
     
     YTDownloadOperation *downloadOp = [[YTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
         
@@ -423,6 +430,9 @@ return nil;
     }];
     [self.downloadQueue addOperation:downloadOp];
 }
+
+//update download progress of whether or not a file is inProgress or not, used to separate downloads in
+//UI of tuyu downloads section.
 
 - (void)updateDownloadsProgress:(NSDictionary *)streamDictionary
 {
@@ -454,6 +464,8 @@ return nil;
     //[currentArray addObject:streamDictionary];
     [currentArray writeToFile:dlplist atomically:true];
 }
+
+//standard tri-tone completion sound
 
 - (void)playCompleteSound
 {

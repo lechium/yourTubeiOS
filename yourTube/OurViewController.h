@@ -26,7 +26,7 @@
 
 @end
 
-@interface OurViewController : UIViewController <WKNavigationDelegate, URLDownloaderDelegate, UIActionSheetDelegate, WKScriptMessageHandler>
+@interface OurViewController : UIViewController <WKNavigationDelegate, UIActionSheetDelegate, WKScriptMessageHandler>
 {
     id <OurViewControllerDelegate> __weak delegate;
 }

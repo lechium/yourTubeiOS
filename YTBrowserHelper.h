@@ -21,7 +21,7 @@
 
 @interface YTBrowserHelper : NSObject
 
-- (void) doScience;
+
 + (id)sharedInstance;
 - (void)importFile:(NSString *)filePath withData:(NSDictionary *)inputDict serverURL:(NSString *)serverURL;
 
@@ -46,7 +46,6 @@
 @property (nonatomic) uint8_t                       serverCapabilities;
 
 - (void)togglePaused;
-- (void)fireAirplayTimer;
 - (void)setCommonHeadersForRequest:(NSMutableURLRequest *)request;
 - (void)playRequest:(NSString *)httpFilePath;
 - (void)infoRequest;

@@ -27,7 +27,7 @@
 
 @implementation OurViewController
 
-@synthesize downloading, airplayIP;
+@synthesize downloading, airplayIP, delegate;
 
 - (void)loadView {
     self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -36,7 +36,7 @@
 
 - (void)updateRightButtons
 {
-   
+    
     UIBarButtonItem *downloadsButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(showDownloadsTableView)];
     UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:[self webView] action:@selector(reload)];
     self.navigationItem.rightBarButtonItems = @[refreshButton, downloadsButton ];
@@ -47,10 +47,6 @@
     [super viewDidAppear:animated];
     [self checkAirplay];
     
-
-   
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(showDownloadsTableView)];
-    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"<" style:UIBarButtonItemStylePlain target:[self webView] action:@selector(goBack)];
 }
 
 - (void)showDownloadsTableView
@@ -70,15 +66,8 @@
 //currently not used for anything, was added when messing around with trying to prevent autoplaying videos.
 - (void)videoPlayingDidChange:(NSNotification *)notification
 {
-    /*
-    BOOL isPlaying = [notification.userInfo[@"IsPlaying"] boolValue];
-    if (isPlaying == true) {
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"grey_arrow_right.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showPlayerview)];
-                                                  
-    } else {
-     */
-        [self updateRightButtons];
-    //}
+    
+    [self updateRightButtons];
 }
 
 - (void)viewDidLoad {
@@ -119,10 +108,6 @@
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [[self view] addSubview:self.webView];
     
-
- //   [[self view] addSubview:self.progressView];
-   // [self.view bringSubviewToFront:self.progressView];
-    
     //a script to attempt to pause any videos from autoplaying, used in conjunction with a bunch of other hacks
     //to stop autoplaying from occuring.
     
@@ -142,7 +127,7 @@
     
     if (lastVisited == nil || lastVisited.length == 0)
     {
-       lastVisited = @"https://www.youtube.com";
+        lastVisited = @"https://www.youtube.com";
     }
     
     NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:lastVisited] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
@@ -160,8 +145,8 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-  //  LOG_SELF;
-    NSLog(@"size: %@", NSStringFromCGSize(size));
+    //  LOG_SELF;
+ //   NSLog(@"size: %@", NSStringFromCGSize(size));
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     if (size.height > size.width) //portrait
     {
@@ -184,7 +169,7 @@
         progressFrame.origin.y = height;
         self.progressView.frame = progressFrame;
     }
-
+    
 }
 
 
@@ -203,7 +188,7 @@
 {
     if ([[self webView] canGoBack])
     {
-     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"grey_arrow_left.png"] style:UIBarButtonItemStylePlain target:[self webView] action:@selector(goBack)];
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"grey_arrow_left.png"] style:UIBarButtonItemStylePlain target:[self webView] action:@selector(goBack)];
     }
     else {
         self.navigationItem.leftBarButtonItem = nil;
@@ -224,7 +209,7 @@
         [self updateBackButtonState];
     }
     if ([keyPath isEqualToString:@"estimatedProgress"]) {
-     //      NSLog(@"estimated progress: %f", self.webView.estimatedProgress);
+        //      NSLog(@"estimated progress: %f", self.webView.estimatedProgress);
         self.progressView.hidden = self.webView.estimatedProgress == 1;
         [self.progressView setProgress:self.webView.estimatedProgress animated:YES];
     }
@@ -263,7 +248,7 @@
             
             /**
              
-             The biggest hack yet, if we just stopLoading and goBack google still finds a way to force 
+             The biggest hack yet, if we just stopLoading and goBack google still finds a way to force
              ads down our throat / autoplay after the page has been left. So we get the URL from the last
              back item, store that, load a completely blank page after stopping and going back, then
              reload this saved URL from the previous link to go back to a page where we are safe from autoplaying
@@ -352,7 +337,7 @@
     self.airplaySlider.value = self.airplayProgressPercent;
     [self.airplaySlider addTarget:self action:@selector(sliderMoved:) forControlEvents:UIControlEventValueChanged];
     [self.sliderView addSubview:self.airplaySlider];
-
+    
     UIBarButtonItem *sliderItem = [[UIBarButtonItem alloc] initWithCustomView:self.sliderView];
     
     UIBarButtonItem *stopButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:[KBYourTube sharedInstance] action:@selector(stopAirplay)];
@@ -388,17 +373,17 @@
 {
     NSString *requestString = [NSString stringWithFormat:@"http://%@/scrub?position=%f", [self airplayIP], position];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"POST"];
-  //  NSLog(@"returnDict: %@", returnDict);
+    //  NSLog(@"returnDict: %@", returnDict);
     return returnDict;
     
- //   /scrub?position=20.097000
+    //   /scrub?position=20.097000
 }
 
 - (NSDictionary *)getAirplayDetails
 {
     NSString *requestString = [NSString stringWithFormat:@"http://%@/playback-info", [self airplayIP]];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"GET"];
-//    NSLog(@"returnDict: %@", returnDict);
+    //    NSLog(@"returnDict: %@", returnDict);
     return returnDict;
 }
 
@@ -408,8 +393,6 @@
     self.previousVideoID = nil;
     KBYTStream *chosenStream = nil;
     NSInteger airplayIndex = 0;
-    NSString *deviceIP = nil;
-    NSDictionary *deviceDict = nil;
     APDeviceController *deviceController = nil;
     int deviceType;
     switch (buttonIndex) {
@@ -462,7 +445,7 @@
             } else {
                 
                 //aircontrol
-                 [[KBYourTube sharedInstance] playMedia:self.currentMedia ToDeviceIP:self.airplayIP];
+                [[KBYourTube sharedInstance] playMedia:self.currentMedia ToDeviceIP:self.airplayIP];
             }
     }
 }
@@ -546,12 +529,12 @@
 {
     NSURL *url = navigationAction.request.URL;
     NSDictionary *paramDict = [self.webView.URL parameterDictionary];
-//    NSLog(@"paramDict: %@", paramDict);
+    //    NSLog(@"paramDict: %@", paramDict);
     if ( [[paramDict allKeys] containsObject:@"v"])
     {
         [self pauseVideos];
         decisionHandler(WKNavigationActionPolicyCancel);
-
+        
         
         return;
     }
@@ -559,7 +542,7 @@
     NSString *absolute = [url absoluteString];
     if([absolute containsString:@"googleads.g.doubleclick.net"])
     {
-  
+        
         [self pauseVideos];
         [webView stopLoading];
         
@@ -567,7 +550,7 @@
         return;
     }
     
-
+    
     decisionHandler(WKNavigationActionPolicyAllow);
 }
 
@@ -601,8 +584,8 @@
         // CODE to handle URL not found
         
     }
-   // NSLog(@"error code: %lu", error.code);
-   
+    // NSLog(@"error code: %lu", error.code);
+    
 }
 - (void)webView:(WKWebView *)webView didCommitNavigation:(null_unspecified WKNavigation *)navigation
 {
@@ -635,12 +618,12 @@
     {
         if (self.player.rate != 0)
         {
-             [[self delegate] pushViewController:self.playerView];
+            [[self delegate] pushViewController:self.playerView];
             return;
         }
     }
     
-  
+    
 }
 
 - (void)playFile:(NSDictionary *)file
@@ -668,7 +651,7 @@
 - (IBAction)playStream:(KBYTStream *)stream
 {
     NSURL *playURL = [stream url];
-   //NSLog(@"play url: %@", playURL);
+    //NSLog(@"play url: %@", playURL);
     if ([self isPlaying] == true  ){
         return;
     }
@@ -676,13 +659,13 @@
     self.playerView.showsPlaybackControls = true;
     self.player = [AVPlayer playerWithURL:playURL];
     self.playerView.player = self.player;
-
+    
     [self presentViewController:self.playerView animated:YES completion:nil];
     self.playerView.view.frame = self.view.frame;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
     
     [self.player play];
-   
+    
 }
 
 -(void)itemDidFinishPlaying:(NSNotification *) notification {
@@ -706,6 +689,8 @@
     [currentArray writeToFile:dlplist atomically:true];
 }
 
+//offload the downloading into the mobile substrate tweak so it can run in the background without timing out.
+
 - (void)downloadStream:(KBYTStream *)stream
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
@@ -722,33 +707,6 @@
     [center sendMessageName:@"org.nito.importscience.addDownload" userInfo:streamDict];
 }
 
-//download the selected stream, currently doesn't have any kind of UI indication.
-
-- (void)olddownloadStream:(KBYTStream *)stream
-{
-    //currently just one download at a time.
-    if (self.downloading == true)
-    {
-        return;
-    }
-    
-    self.downloadFile = [KBYTDownloadStream new];
-    NSInteger durationSeconds = [self.currentMedia.duration integerValue];
-    [self.downloadFile setTrackDuration:durationSeconds*1000];
-    self.downloading = true;
-    [self.downloadFile downloadStream:stream progress:^(double percentComplete, NSString *downloadedFile) {
-        
-        NSLog(@"downloadProgress: %f", percentComplete);
-        
-        
-    } completed:^(NSString *downloadedFile) {
-        
-        NSLog(@"file download complete: %@", downloadedFile);
-        [OurViewController playCompleteSound];
-        self.downloading = false;
-    }];
-    
-}
 
 @end
 
