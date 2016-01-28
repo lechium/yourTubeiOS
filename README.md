@@ -17,11 +17,11 @@ Steps to install from the pre-included deb package.
 
 3. download the deb file
 
-    wget --no-check-certificate https://github.com/lechium/yourTubeiOS/raw/master/com.nito.ytbrowser_1.0-101_iphoneos-arm.deb
+    wget --no-check-certificate https://github.com/lechium/yourTubeiOS/raw/master/com.nito.ytbrowser_1.1-1_iphoneos-arm.deb
 
 4. install the deb file
 
-    dpkg -i com.nito.ytbrowser_1.0-101_iphoneos-arm.deb
+    dpkg -i com.nito.ytbrowser_1.1-1_iphoneos-arm.deb
 
 5. the previous install will likely fail due to missing depenendencies
 
@@ -33,4 +33,17 @@ Steps to install from the pre-included deb package.
 
 at this point you should have a red play "tuYu" icon somewhere, you should be good to go!
 
-    
+==========================================================================================
+
+Some basic notes on this:
+
+The Xcode Project will NOT build anything, it is solely there for convenient code editing and auto completion. 
+
+To build you need to edit the main Makefile with your device ip address (THEOS_DEVICE_IP), fire up the terminal, cd into yourTubeiOS and 
+
+make package install
+
+---
+
+This cannot and will not EVER work on a stock (non jailbroken) iOS device via sideloading, the downloading and AirPlay code is offloaded into the mobile substrate tweak to prevent any background timeouts and to keep things working without the application running. In conjunction with that, it is literally 100% impossible to import music into the music library without a jailbreak from a 3rd party app or tweak.
+
