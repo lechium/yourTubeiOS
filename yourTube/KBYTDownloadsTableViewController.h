@@ -18,7 +18,9 @@
 
 @interface KBYTDownloadsTableViewController : UITableViewController
 
-
 @property (nonatomic, strong) NSArray *downloadArray;
+@property (nonatomic, strong) NSArray *activeDownloads;
 
+- (void)reloadData;
+- (void)delayedReloadData;
 @end

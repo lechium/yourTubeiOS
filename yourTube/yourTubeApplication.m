@@ -1,5 +1,6 @@
 #import "OurViewController.h"
 #import <AVFoundation/AVFoundation.h>
+#import "KBYTDownloadsTableViewController.h"
 
 @interface yourTubeApplication: UIApplication <UIApplicationDelegate, OurViewControllerDelegate> {
 	UIWindow *_window;
@@ -72,6 +73,14 @@
                 [alertView show];
             }
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            
+            NSLog(@"[[self nav] visibleViewController]: %@", [[self nav] visibleViewController]);
+            
+            if ([[[self nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
+            {
+                [(KBYTDownloadsTableViewController*)[[self nav] visibleViewController] delayedReloadData];
+            }
+            
         }
         
     }
