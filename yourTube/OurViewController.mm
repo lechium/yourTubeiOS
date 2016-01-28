@@ -93,7 +93,7 @@
     // Video playing state handler
     
     CGRect mainFrame = [[self view] frame];
-    CGFloat height = 63; //self.navigationController.navigationBar.frame.size.height;
+    CGFloat height = 64; //self.navigationController.navigationBar.frame.size.height;
     mainFrame.origin.y = height;
     mainFrame.size.height-= height;
     self.downloading = false;
@@ -166,7 +166,7 @@
     if (size.height > size.width) //portrait
     {
         CGRect mainFrame = [[self view] frame];
-        CGFloat height = 63; //self.navigationController.navigationBar.frame.size.height;
+        CGFloat height = 64; //self.navigationController.navigationBar.frame.size.height;
         mainFrame.origin.y = height;
         mainFrame.size.height-= height;
         self.webView.frame = mainFrame;
