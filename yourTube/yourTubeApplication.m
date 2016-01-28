@@ -74,11 +74,15 @@
             }
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
             
-            NSLog(@"[[self nav] visibleViewController]: %@", [[self nav] visibleViewController]);
-            
             if ([[[self nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
             {
                 [(KBYTDownloadsTableViewController*)[[self nav] visibleViewController] delayedReloadData];
+            }
+            
+        } else {
+            if ([[[self nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
+            {
+                [(KBYTDownloadsTableViewController*)[[self nav] visibleViewController] updateDownloadProgress:userInfo];
             }
             
         }

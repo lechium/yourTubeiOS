@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) MarqueeLabel *marqueeTextLabel;
 @property (nonatomic, strong) MarqueeLabel *marqueeDetailTextLabel;
+@property (nonatomic, strong) UIProgressView *progressView;
+@property (readwrite, assign) BOOL downloading;
 
 @end
 
@@ -23,4 +25,5 @@
 
 - (void)reloadData;
 - (void)delayedReloadData;
+- (void)updateDownloadProgress:(NSDictionary *)theDict;
 @end

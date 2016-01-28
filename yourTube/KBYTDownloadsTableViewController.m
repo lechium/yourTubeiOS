@@ -12,6 +12,8 @@
 
 @implementation KBYTDownloadCell
 
+@synthesize downloading, progressView;
+
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     LOG_SELF;
@@ -58,7 +60,20 @@
         [[self contentView] addSubview:self.marqueeTextLabel];
         self.marqueeDetailTextLabel.frame =  self.detailTextLabel.frame;
         self.detailTextLabel.hidden = true;
+        
+        if ([self progressView] != nil)
+        {
+            [[self progressView] removeFromSuperview];
+        }
+        
+        if (self.downloading == true)
+        {
+            self.progressView = [[UIProgressView alloc] initWithFrame:CGRectMake(148, self.detailTextLabel.frame.origin.y + self.textLabel.frame.size.height + 5, textFieldWidth, 2)];
+            [[self contentView] addSubview:self.progressView];
+        }
     }
+    
+    
     
 }
 
@@ -106,6 +121,22 @@
         [[self tableView] reloadData];
     });
     
+}
+
+- (void)updateDownloadProgress:(NSDictionary *)theDict
+{
+    NSString *title = [theDict[@"file"] lastPathComponent];
+    NSDictionary *theObject = [[self.activeDownloads filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.outputFilename == %@", title]]lastObject];
+    if (theObject != nil)
+    {
+        NSInteger index = [self.activeDownloads indexOfObject:theObject];
+        if (index != NSNotFound)
+        {
+            NSIndexPath *path = [NSIndexPath indexPathForRow:index inSection:0];
+            KBYTDownloadCell *cell = [[self tableView] cellForRowAtIndexPath:path];
+            [cell.progressView setProgress:[theDict[@"completionPercent"] floatValue]];
+        }
+    }
 }
 
 - (void)viewDidLoad {
@@ -180,10 +211,11 @@
     }
     
     NSDictionary *currentItem = nil;
-    
+    BOOL downloading = false;
     switch (indexPath.section) {
         case 0:
             currentItem = [self.activeDownloads objectAtIndex:indexPath.row];
+            downloading = true;
             break;
             
         case 1:
@@ -194,6 +226,7 @@
     // UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseIdentifier" forIndexPath:indexPath];
     cell.detailTextLabel.text = currentItem[@"author"];
     cell.textLabel.text = currentItem[@"title"];
+    cell.downloading = downloading;
     NSURL *imageURL = [NSURL URLWithString:currentItem[@"images"][@"medium"]];
     UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GenericArtwork" ofType:@"png"]];
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
