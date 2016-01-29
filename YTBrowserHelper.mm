@@ -11,14 +11,14 @@
  There is entirely too much packed into this "helper" class, I know that, but it works so I don't care ;-P
  
  This helper class and all the other classes contained herein handle file downloads, airplaying, and importing files
- into the iTunes music library. It is definitely a good candidate for MASSIVE refactoring, but since this is a 
+ into the iTunes music library. It is definitely a good candidate for MASSIVE refactoring, but since this is a
  free open source project I do for fun, I probably won't spend the time to do said massive refactoring without
  a good reason to do so.
  
  
  */
 
-
+#import "NSTask.h"
 #import "YTBrowserHelper.h"
 #import "ipodimport.h"
 #import <Foundation/Foundation.h>
@@ -60,7 +60,7 @@
     NSInteger durationSeconds = [downloadDictionary[@"duration"] integerValue];
     trackDuration = durationSeconds*1000;
     CompletedBlock = theBlock;
- 
+    
     return self;
 }
 
@@ -95,7 +95,7 @@
     //if we are dealing with an audio file we need to re-encode it in ffmpeg to get a playable file. (and to bump volume)
     if ([downloadLocation.pathExtension isEqualToString:@"aac"])
     {
-     
+        
         //for now the audio is bumped to a static 256 increase, this may change later to be customizable.
         NSInteger volumeInt = 256;
         
@@ -106,7 +106,7 @@
             {
                 //import the file to the music library using JODebox
                 [[YTBrowserHelper sharedInstance] importFileWithJO:newFile duration:[NSNumber numberWithInteger:self.trackDuration]];
-        
+                
                 self.CompletedBlock(newFile);
             }
         }];
@@ -129,10 +129,10 @@
 {
     //
     float percentComplete = [urlDownloader downloadCompleteProcent];
-   // NSLog(@"percentComplete: %f", percentComplete);
+    // NSLog(@"percentComplete: %f", percentComplete);
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
-
+    
     [center sendMessageName:@"org.nito.dllistener.currentProgress" userInfo:info];
     
 }
@@ -154,7 +154,7 @@
 
 /*
  
- NSTask on iOS doesn't appear to have waitUntilExit, this is taken from open source example code for NSTask 
+ NSTask on iOS doesn't appear to have waitUntilExit, this is taken from open source example code for NSTask
  from NeXTStep project
  
  */
@@ -297,7 +297,7 @@ kAHAirplayStatusPaused= 2;
 {
     //NSLog(@"fix audio: %@", theFile);
     NSString *importOutputFile = [NSString stringWithFormat:@"/var/mobile/Media/Downloads/%@", [[[theFile lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"]];
-     NSString *outputFile = [[theFile stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"];
+    NSString *outputFile = [[theFile stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         @autoreleasepool {
@@ -337,13 +337,13 @@ kAHAirplayStatusPaused= 2;
 }
 - (void)startGCDWebServer {} //keep the compiler happy
 
-/* 
+/*
  
  the music import process is needlessly convoluted to "protect" us, SSDownloads can't be triggered via local files
  JODebox runs a server the open source project GCDWebServer, im pretty sure all it does is just host files from
  /var/mobile/Media/Downloads after preparing them to be compatible to keep SSDownloadManager queues happy in thinking
  the file is coming from a remote source.
-
+ 
  */
 
 //this method is never actually called inside YTBrowserHelper, we hook into -(id)init in SpringBoard and add this
@@ -365,23 +365,23 @@ kAHAirplayStatusPaused= 2;
     {
         [[YTBrowserHelper sharedInstance] startAirplayFromDictionary:userInfo];
         
-       return nil;
+        return nil;
     }else if ([[name pathExtension] isEqualToString:@"pauseAirplay"])
     {
         [[YTBrowserHelper sharedInstance] togglePaused];
-         return nil;
+        return nil;
     } else if ([[name pathExtension] isEqualToString:@"stopAirplay"])
     {
         [[YTBrowserHelper sharedInstance] stopPlayback];
-         return nil;
+        return nil;
     } else if ([[name pathExtension] isEqualToString:@"airplayState"])
     {
         return [[YTBrowserHelper sharedInstance] airplayState];
-   
+        
     } else if ([[name pathExtension] isEqualToString:@"airplayInfo"]){
-    
-     return nil;
-    
+        
+        return nil;
+        
     } else if ([[name pathExtension] isEqualToString:@"addDownload"]) {
         
         [[YTBrowserHelper sharedInstance] addDownloadToQueue:userInfo];
@@ -390,7 +390,7 @@ kAHAirplayStatusPaused= 2;
     }
     
     
-return nil;
+    return nil;
 }
 
 //add a download to our NSOperationQueue
@@ -400,16 +400,16 @@ return nil;
     //NSLog(@"add download: %@", downloadInfo);
     
     /*
-    NSArray *operations = [self.downloadQueue operations];
-    for (YTDownloadOperation *operation in operations)
-    {
-        if ([[operation name] isEqualToString:downloadInfo[@"title"]])
-        {
-            NSLog(@"operation already exists, dont add it again!");
-            return;
-        }
-    }
-    */
+     NSArray *operations = [self.downloadQueue operations];
+     for (YTDownloadOperation *operation in operations)
+     {
+     if ([[operation name] isEqualToString:downloadInfo[@"title"]])
+     {
+     NSLog(@"operation already exists, dont add it again!");
+     return;
+     }
+     }
+     */
     
     YTDownloadOperation *downloadOp = [[YTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
         
@@ -449,7 +449,7 @@ return nil;
             if ([[streamDictionary[@"outputFilename"]pathExtension] isEqualToString:@"m4a"])
             {
                 [currentArray replaceObjectAtIndex:objectIndex withObject:streamDictionary];
-               // [currentArray removeObject:updateObject];
+                // [currentArray removeObject:updateObject];
                 
             } else {
                 [updateObject setValue:[NSNumber numberWithBool:false] forKey:@"inProgress"];
@@ -543,7 +543,7 @@ return nil;
     NSArray *ipArray = [deviceIP componentsSeparatedByString:@":"];
     NSError *connectError = nil;
     
-     [self.mainSocket connectToHost:[ipArray firstObject] onPort:[[ipArray lastObject] integerValue] error:&connectError];
+    [self.mainSocket connectToHost:[ipArray firstObject] onPort:[[ipArray lastObject] integerValue] error:&connectError];
     
     if (connectError != nil)
     {
@@ -636,7 +636,7 @@ return nil;
                                                                                                  format:&format
                                                                                        errorDescription:&errDesc];
                                        
-                                     //  NSLog(@"playbackInfo: %@", playbackInfo );
+                                       //  NSLog(@"playbackInfo: %@", playbackInfo );
                                        
                                        if ([[playbackInfo allKeys] count] == 0 || playbackInfo == nil)
                                        {
@@ -659,7 +659,7 @@ return nil;
                                                                    userInfo:userInfo];
                                            
                                            NSLog(@"Error: %@", [error description]);
-                                             [self stoppedWithError:error];
+                                           [self stoppedWithError:error];
                                        } else if ([playbackInfo objectForKey:@"position"]) {
                                            self.playbackPosition = [[playbackInfo objectForKey:@"position"] doubleValue];
                                            self.paused = [[playbackInfo objectForKey:@"rate"] doubleValue] < 0.5f ? YES : NO;
@@ -756,7 +756,7 @@ return nil;
     NSLog(@"stop playback");
     if (self.airplaying) {
         [self stopRequest];
-       // [self.videoManager stop];
+        // [self.videoManager stop];
     }
 }
 
@@ -788,7 +788,7 @@ return nil;
     [self.infoTimer invalidate];
     self.playbackPosition = 0;
     //[self.delegate positionUpdated:self.playbackPosition];
-   // [self.delegate durationUpdated:0];
+    // [self.delegate durationUpdated:0];
     //[self.delegate airplayStoppedWithError:error];
 }
 
@@ -831,8 +831,8 @@ return nil;
         if (range.location != NSNotFound) {
             self.airplaying = YES;
             self.paused = NO;
-           // [self.delegate setPaused:self.paused];
-           // [self.delegate durationUpdated:self.videoManager.duration];
+            // [self.delegate setPaused:self.paused];
+            // [self.delegate durationUpdated:self.videoManager.duration];
             
             self.infoTimer = [NSTimer scheduledTimerWithTimeInterval:3.0f
                                                               target:self
@@ -868,11 +868,11 @@ return nil;
 
 - (void)importFileWithJO:(NSString *)theFile duration:(NSNumber *)duration
 {
-   //since this isnt being called through messages anymore we need to make sure we start the GCD server ourselves.
+    //since this isnt being called through messages anymore we need to make sure we start the GCD server ourselves.
     id sbInstance = [NSClassFromString(@"SpringBoard") sharedApplication];
     [sbInstance startGCDWebServer];
     
-   // NSLog(@"importFileWithJO: %@", theFile);
+    // NSLog(@"importFileWithJO: %@", theFile);
     //[self testRunServer];
     //NSData *imageData = [NSData dataWithContentsOfFile:@"/var/mobile/Library/Preferences/imageTest.png"];
     NSData *imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
