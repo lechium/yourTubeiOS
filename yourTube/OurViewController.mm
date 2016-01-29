@@ -36,7 +36,6 @@
 
 - (void)updateRightButtons
 {
-    
     UIBarButtonItem *downloadsButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(showDownloadsTableView)];
     UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:[self webView] action:@selector(reload)];
     self.navigationItem.rightBarButtonItems = @[refreshButton, downloadsButton ];
@@ -63,10 +62,8 @@
     }];
 }
 
-//currently not used for anything, was added when messing around with trying to prevent autoplaying videos.
 - (void)videoPlayingDidChange:(NSNotification *)notification
 {
-    
     [self updateRightButtons];
 }
 
@@ -674,10 +671,21 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
 }
 
+- (NSString *)appSupportFolder
+{
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu";
+    if (![man fileExistsAtPath:outputFolder])
+    {
+        [man createDirectoryAtPath:outputFolder withIntermediateDirectories:true attributes:nil error:nil];
+    }
+    return outputFolder;
+}
+
 - (void)updateDownloadsDictionary:(NSDictionary *)streamDictionary
 {
     NSFileManager *man = [NSFileManager defaultManager];
-    NSString *dlplist = @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
+    NSString *dlplist = [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads.plist"];
     NSMutableArray *currentArray = nil;
     if ([man fileExistsAtPath:dlplist])
     {
