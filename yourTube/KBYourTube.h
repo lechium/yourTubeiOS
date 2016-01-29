@@ -47,12 +47,6 @@
 - (NSDictionary *)parameterDictionary;
 @end
 
-@interface NSTask (convenience)
-
-- (void)waitUntilExit;
-
-@end
-
 @interface KBYTMedia : NSObject
 
 @property (nonatomic, strong) NSString *title;
@@ -122,15 +116,9 @@
                 failureBlock:(void(^)(NSString* error))failureBlock;
 
 
-- (void)fixAudio:(NSString *)theFile
-          volume:(NSInteger)volume
- completionBlock:(void(^)(NSString *newFile))completionBlock;
-
 - (void)extractAudio:(NSString *)theFile
      completionBlock:(void(^)(NSString *newFile))completionBlock;
 - (NSString *)decodeSignature:(NSString *)theSig;
-
-- (void)muxFiles:(NSArray *)theFiles completionBlock:(void(^)(NSString *newFile))completionBlock;
 
 + (NSDictionary *)formatFromTag:(NSInteger)tag;
 - (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP;

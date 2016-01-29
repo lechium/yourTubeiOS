@@ -154,8 +154,9 @@
 
 /*
  
- NSTask on iOS doesn't appear to have waitUntilExit, this is taken from open source example code for NSTask
- from NeXTStep project
+ NSTask is private on iOS and on top of that, it doesn't appear to have waitUntilExit, so I found
+ this code that apple used to use for waitUntilExit in some open source nextstep stuff, seems
+ to still work fine.
  
  */
 
@@ -292,6 +293,8 @@ kAHAirplayStatusPaused= 2;
     return shared;
     
 }
+
+//DASH audio is a weird format, take that aac file and pump out a useable m4a file, with volume adjustment if necessary
 
 - (void)fixAudio:(NSString *)theFile volume:(NSInteger)volume completionBlock:(void(^)(NSString *newFile))completionBlock
 {
@@ -749,6 +752,8 @@ kAHAirplayStatusPaused= 2;
     {
         return @{@"playbackState": [NSNumber numberWithUnsignedInteger:kAHAirplayStatusPlaying]};
     }
+    
+    return @{@"playbackState": [NSNumber numberWithUnsignedInteger:kAHAirplayStatusOffline]};
 }
 
 - (void)stopPlayback

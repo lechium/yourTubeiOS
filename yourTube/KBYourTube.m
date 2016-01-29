@@ -31,45 +31,6 @@
  */
 
 
-/*
- 
- NSTask is private on iOS and on top of that, it doesn't appear to have waitUntilExit, so I found
- this code that apple used to use for waitUntilExit in some open source nextstep stuff, seems 
- to still work fine.
- 
- */
-
-@implementation NSTask (convenience)
-
-- (void) waitUntilExit
-{
-    NSTimer	*timer = nil;
-    
-    while ([self isRunning])
-    {
-        NSDate	*limit;
-        
-        /*
-         *	Poll at 0.1 second intervals.
-         */
-        limit = [[NSDate alloc] initWithTimeIntervalSinceNow: 0.1];
-        if (timer == nil)
-        {
-            timer = [NSTimer scheduledTimerWithTimeInterval: 0.1
-                                                     target: nil
-                                                   selector: @selector(class)
-                                                   userInfo: nil
-                                                    repeats: YES];
-        }
-        [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode
-                                 beforeDate: limit];
-        //RELEASE(limit);
-    }
-    [timer invalidate];
-}
-
-@end
-
 @implementation NSDictionary (strings)
 
 - (NSString *)stringValue
@@ -741,48 +702,6 @@
 }
 
 
-//DASH audio is a weird format, take that aac file and pump out a useable m4a file, with volume adjustment if necessary
-
-- (void)fixAudio:(NSString *)theFile volume:(NSInteger)volume completionBlock:(void(^)(NSString *newFile))completionBlock
-{
-    //NSLog(@"fix audio: %@", theFile);
-   NSString *outputFile = [NSString stringWithFormat:@"/var/mobile/Media/Downloads/%@", [[[theFile lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"]];
-    // NSString *outputFile = [[theFile stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        @autoreleasepool {
-            
-            NSTask *afcTask = [NSTask new];
-            NSString *ffmpeg = @"/usr/bin/ffmpeg";
-            NSLog(@"ffmpeg: %@", ffmpeg);
-            [afcTask setLaunchPath:ffmpeg];
-            //iOS change to /usr/bin/ffmpeg and make sure to depend upon com.nin9tyfour.ffmpeg
-            [afcTask setStandardError:[NSFileHandle fileHandleWithNullDevice]];
-            [afcTask setStandardOutput:[NSFileHandle fileHandleWithNullDevice]];
-            NSMutableArray *args = [NSMutableArray new];
-            [args addObject:@"-i"];
-            [args addObject:theFile];
-            
-            if (volume == 0){
-                [args addObjectsFromArray:[@"-acodec copy -y" componentsSeparatedByString:@" "]];
-            } else {
-                [args addObject:@"-vol"];
-                [args addObject:[NSString stringWithFormat:@"%ld", (long)volume]];
-                [args addObjectsFromArray:[@"-acodec aac -ac 2 -ar 44100 -ab 320K -strict -2 -y" componentsSeparatedByString:@" "]];
-            }
-            [args addObject:outputFile];
-            [afcTask setArguments:args];
-            //NSLog(@"mux %@", [args componentsJoinedByString:@" "]);
-            [afcTask launch];
-            [afcTask waitUntilExit];
-            
-        }
-        
-        completionBlock(outputFile);
-    });
-    
-    
-}
 
 //useful display details based on the itag
 + (NSDictionary *)formatFromTag:(NSInteger)tag
@@ -878,42 +797,6 @@
     return dict;
 }
 
-//takes audio and video files and multiplexes them, would like to use mp4box instead if i can figure out how..
-
-- (void)muxFiles:(NSArray *)theFiles completionBlock:(void(^)(NSString *newFile))completionBlock
-{
-    NSString *videoFile = [theFiles firstObject];
-    NSString *audioFile = [theFiles lastObject];
-    NSString *outputFile = [[videoFile stringByDeletingPathExtension] stringByAppendingPathExtension:@"mp4"];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        @autoreleasepool {
-            /*
-            NSTask *afcTask = [NSTask new];
-            [afcTask setLaunchPath:[[NSBundle mainBundle] pathForResource:@"mux" ofType:@""]];
-            [afcTask setStandardError:[NSFileHandle fileHandleWithNullDevice]];
-            [afcTask setStandardOutput:[NSFileHandle fileHandleWithNullDevice]];
-            NSMutableArray *args = [NSMutableArray new];
-            [args addObject:@"-i"];
-            [args addObject:videoFile];
-            [args addObject:@"-i"];
-            [args addObject:audioFile];
-            //
-            [args addObjectsFromArray:[@"-vcodec copy -acodec copy -map 0:v:0 -map 1:a:0 -shortest -y" componentsSeparatedByString:@" "]];
-            
-            [args addObject:outputFile];
-            [afcTask setArguments:args];
-            // NSLog(@"mux %@", [args componentsJoinedByString:@" "]);
-            [afcTask launch];
-            [afcTask waitUntilExit];
-             */
-        }
-        
-        completionBlock(outputFile);
-    });
-    
-    
-}
 
 #pragma mark Signature deciphering
 
