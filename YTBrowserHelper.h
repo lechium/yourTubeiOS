@@ -10,6 +10,7 @@
 //#import "GCDWebServer/GCDWebServer.h"
 #import "GCDAsyncSocket.h"
 #import "yourTube/Download/URLDownloader.h"
+#import "NSTask.h"
 
 #define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
 

@@ -7,3 +7,5 @@ fi
 /bin/launchctl unload /System/Library/LaunchDaemons/com.apple.itunesstored.plist
 /bin/launchctl load /System/Library/LaunchDaemons/com.apple.itunesstored.plist
 /bin/launchctl start com.apple.itunesstored
+/usr/bin/ldid -S /Library/MobileSubstrate/DynamicLibraries/YTBrowser.dylib
+/usr/bin/ldid -S /Library/MobileSubstrate/DynamicLibraries/JODebox.dylib

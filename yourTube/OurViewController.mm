@@ -12,6 +12,33 @@
 #import "APDeviceController.h"
 #import "KBYTDownloadsTableViewController.h"
 
+static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
+
+@interface  TestAction : UIActivity
+
+@end
+
+@implementation TestAction
+
++ (UIActivityCategory)activityCategory {
+    return UIActivityCategoryAction;
+}
+
+- (NSString *)activityType {
+    return YTTestActivityType;
+}
+
+- (NSString *)activityTitle {
+    return NSLocalizedString(@"Test Action", nil);
+}
+
+- (UIImage *)activityImage {
+     return [UIImage imageNamed:@"activityAudio"];
+}
+
+
+@end
+
 @implementation YTPlayerViewController
 
 - (BOOL)shouldAutorotate

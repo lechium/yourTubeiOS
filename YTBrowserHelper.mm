@@ -46,10 +46,10 @@
     return outputFolder;
 }
 
-//- (BOOL)isAsynchronous
-//{
-//    return true;
-//}
+- (BOOL)isAsynchronous
+{
+    return true;
+}
 
 - (id)initWithInfo:(NSDictionary *)downloadDictionary completed:(DownloadCompletedBlock)theBlock
 {
@@ -66,6 +66,7 @@
 
 - (void)main
 {
+    LOG_SELF;
     NSURL *url = [NSURL URLWithString:downloadInfo[@"url"]];
     NSURLRequest *theRequest = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
     self.downloader = [[URLDownloader alloc] initWithDelegate:self];
@@ -74,22 +75,23 @@
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didChangeStateTo:(URLDownloaderState)state
 {
-    
+    LOG_SELF;
     NSLog(@"Download state: %u", state);
 }
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithError:(NSError *)error
 {
-    
+    LOG_SELF;
 }
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithNotConnectedToInternetError:(NSError *)error
 {
-    
+    LOG_SELF;
 }
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didFinishWithData:(NSData *)data
 {
+    LOG_SELF;
     [data writeToFile:[self downloadLocation] atomically:TRUE];
     
     //if we are dealing with an audio file we need to re-encode it in ffmpeg to get a playable file. (and to bump volume)
@@ -129,7 +131,7 @@
 {
     //
     float percentComplete = [urlDownloader downloadCompleteProcent];
-    // NSLog(@"percentComplete: %f", percentComplete);
+     NSLog(@"percentComplete: %f", percentComplete);
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
     

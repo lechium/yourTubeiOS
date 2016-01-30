@@ -27,7 +27,7 @@ yourTube_FILES += SDWebImage/UIView+WebCacheOperation.m
 yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit
 yourTube_CXXFLAGS += -fobjc-arc
 yourTube_CFLAGS += -fobjc-arc
-yourTube_LDFLAGS = -ObjC -undefined dynamic_lookup -F/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/System/Library/PrivateFrameworks
+yourTube_LDFLAGS = -ObjC -undefined dynamic_lookup -F/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/System/Library/PrivateFrameworks -Wl,-segalign,4000
 
 include $(THEOS_MAKE_PATH)/application.mk
 

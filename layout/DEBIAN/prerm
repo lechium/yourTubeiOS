@@ -1,0 +1,5 @@
+#!/bin/sh
+
+/bin/rm -rf /var/mobile/Library/Application Support/tuyu/
+
+exit 0
