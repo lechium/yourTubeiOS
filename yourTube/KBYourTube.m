@@ -76,6 +76,20 @@
     return theDict;
 }
 
+@end
+
+@implementation NSDate (convenience)
+
+- (NSString *)timeStringFromCurrentDate
+{
+    NSDate *currentDate = [NSDate date];
+    NSTimeInterval timeInt = [currentDate timeIntervalSinceDate:self];
+    // NSLog(@"timeInt: %f", timeInt);
+    NSInteger minutes = floor(timeInt/60);
+    NSInteger seconds = round(timeInt - minutes * 60);
+    return [NSString stringWithFormat:@"%ld:%02ld", (long)minutes, (long)seconds];
+    
+}
 
 @end
 
@@ -609,6 +623,143 @@
 
 
 
+- (NSInteger)resultNumber:(NSString *)html
+{
+    NSScanner *theScanner;
+    NSString *text = nil;
+    
+    theScanner = [NSScanner scannerWithString:html];
+    while ([theScanner isAtEnd] == NO) {
+        
+        // find start of tag
+        [theScanner scanUpToString:@"first-focus\">About " intoString:NULL] ;
+        
+        // find end of tag
+        [theScanner scanUpToString:@"results" intoString:&text] ;
+    }
+    
+    NSMutableCharacterSet *characterSet = [NSMutableCharacterSet whitespaceAndNewlineCharacterSet];
+    [characterSet addCharactersInString:@","];
+    
+    return [[[[[text componentsSeparatedByString:@"About"] lastObject] stringByTrimmingCharactersInSet:characterSet] stringByReplacingOccurrencesOfString:@"," withString:@""] integerValue];
+}
+
+- (NSArray *)ytSearchBasics:(NSString *)html {
+    
+    NSScanner *theScanner;
+    NSString *text = nil;
+    
+    theScanner = [NSScanner scannerWithString:html];
+    NSMutableArray *theArray = [NSMutableArray new];
+    while ([theScanner isAtEnd] == NO) {
+        
+        // find start of tag
+        [theScanner scanUpToString:@"/watch?v=" intoString:NULL] ;
+        
+        // find end of tag
+        [theScanner scanUpToString:@"\"" intoString:&text] ;
+        
+        NSString *newString = [[text componentsSeparatedByString:@"="] lastObject];
+        
+        if (![theArray containsObject:newString])
+        {
+            [theArray addObject:newString];
+        }
+        // replace the found tag with a space
+        //(you can filter multi-spaces out later if you wish)
+        //html = [html stringByReplacingOccurrencesOfString:[ NSString stringWithFormat:@"%@>", text] withString:@" "];
+        
+    } // while //
+    
+    return theArray;
+    
+}
+
+- (void)getSearchResults:(NSString *)searchQuery
+         completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
+            failureBlock:(void(^)(NSString* error))failureBlock
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        @autoreleasepool {
+            
+            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?q=%@&sm=1", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+            
+            NSString *request = [self stringFromRequest:requestString];
+            NSInteger results = [self resultNumber:request];
+            NSArray *videoIDs = [self ytSearchBasics:request];
+            NSInteger pageCount = results/[videoIDs count];
+            NSMutableDictionary *outputDict = [NSMutableDictionary new];
+            [outputDict setValue:[NSNumber numberWithInteger:results] forKey:@"resultCount"];
+            [outputDict setValue:[NSNumber numberWithInteger:pageCount] forKey:@"pageCount"];
+            NSMutableArray *finalArray = [NSMutableArray new];
+            //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
+            NSString *errorString = nil;
+            
+            //if we already have the timestamp and key theres no reason to fetch them again, should make additional calls quicker.
+            if (self.yttimestamp.length == 0 && self.ytkey.length == 0)
+            {
+                //get the time stamp and cipher key in case we need to decode the signature.
+                [self getTimeStampAndKey:[videoIDs firstObject]];
+            }
+            
+            //a fallback just in case the jsbody is changed and we cant automatically grab current signatures
+            //old ciphers generally continue to work at least temporarily.
+            
+            if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
+            {
+                errorString = @"Failed to decode signature cipher javascript.";
+                self.yttimestamp = @"16806";
+                self.ytkey = @"-1,0,65,-3,0";
+                
+            }
+            
+            //the url we use to call get_video_info
+            
+            
+            
+            for (NSString *videoID in videoIDs) {
+                
+                NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", videoID, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
+                
+                //get the post body from the url above, gets the initial raw info we work with
+                NSString *body = [self stringFromRequest:url];
+                
+                //turn all of these variables into an nsdictionary by separating elements by =
+                NSDictionary *vars = [self parseFlashVars:body];
+                
+                //  NSLog(@"vars: %@", vars);
+                
+                if ([[vars allKeys] containsObject:@"status"])
+                {
+                    if ([[vars objectForKey:@"status"] isEqualToString:@"ok"])
+                    {
+                        //the call was successful, create our root object.
+                        KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithDictionary:vars];
+                        [finalArray addObject:currentMedia];
+                    }
+                } else {
+                    
+                    errorString = @"get_video_info failed.";
+                    
+                }
+                
+            }
+            [outputDict setValue:finalArray forKey:@"results"];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if([finalArray count] > 0)
+                {
+                    completionBlock(outputDict);
+                } else {
+                    failureBlock(errorString);
+                }
+            });
+        }
+    });
+    
+}
 
 #pragma mark video details
 

@@ -41,6 +41,12 @@
 
 @end
 
+@interface NSDate (convenience)
+
+- (NSString *)timeStringFromCurrentDate;
+
+@end
+
 
 @interface NSURL (QSParameters)
 - (NSArray *)parameterArray;
@@ -110,6 +116,10 @@
 
 
 + (id)sharedInstance;
+
+- (void)getSearchResults:(NSString *)searchQuery
+         completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
+            failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)getVideoDetailsForID:(NSString*)videoID
              completionBlock:(void(^)(KBYTMedia* videoDetails))completionBlock

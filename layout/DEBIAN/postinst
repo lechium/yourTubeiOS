@@ -9,3 +9,4 @@ fi
 /bin/launchctl start com.apple.itunesstored
 /usr/bin/ldid -S /Library/MobileSubstrate/DynamicLibraries/YTBrowser.dylib
 /usr/bin/ldid -S /Library/MobileSubstrate/DynamicLibraries/JODebox.dylib
+/usr/bin/ldid -S /usr/bin/ffmpeg

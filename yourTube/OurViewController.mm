@@ -61,10 +61,16 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     self.view.backgroundColor = [UIColor redColor];
 }
 
+- (void)reloadStock
+{
+    NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:@"http://m.youtube.com"] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
+    [[self webView] loadRequest:request];
+}
+
 - (void)updateRightButtons
 {
     UIBarButtonItem *downloadsButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(showDownloadsTableView)];
-    UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:[self webView] action:@selector(reload)];
+    UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadStock)];
     self.navigationItem.rightBarButtonItems = @[refreshButton, downloadsButton ];
 }
 
@@ -151,7 +157,7 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     
     if (lastVisited == nil || lastVisited.length == 0)
     {
-        lastVisited = @"https://www.youtube.com";
+        lastVisited = @"http://m.youtube.com";
     }
     
     NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:lastVisited] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
