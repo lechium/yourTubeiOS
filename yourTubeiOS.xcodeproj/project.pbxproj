@@ -46,6 +46,13 @@
 		897B4A0C1C58AAB000F50BC2 /* UIColor+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A0A1C58AAB000F50BC2 /* UIColor+Additions.m */; };
 		897B4A101C58B03000F50BC2 /* UIImage+Scale.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A0E1C58B03000F50BC2 /* UIImage+Scale.h */; };
 		897B4A111C58B03000F50BC2 /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A0F1C58B03000F50BC2 /* UIImage+Scale.m */; };
+		897B4A2A1C5E8B3D00F50BC2 /* APAttribute.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A231C5E8B3D00F50BC2 /* APAttribute.h */; };
+		897B4A2B1C5E8B3D00F50BC2 /* APAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A241C5E8B3D00F50BC2 /* APAttribute.m */; };
+		897B4A2C1C5E8B3D00F50BC2 /* APDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A251C5E8B3D00F50BC2 /* APDocument.h */; };
+		897B4A2D1C5E8B3D00F50BC2 /* APDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A261C5E8B3D00F50BC2 /* APDocument.m */; };
+		897B4A2E1C5E8B3D00F50BC2 /* APElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A271C5E8B3D00F50BC2 /* APElement.h */; };
+		897B4A2F1C5E8B3D00F50BC2 /* APElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A281C5E8B3D00F50BC2 /* APElement.m */; };
+		897B4A301C5E8B3D00F50BC2 /* APXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A291C5E8B3D00F50BC2 /* APXML.h */; };
 		89E06BC61C499E2300B8D1C4 /* ytiOSBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BC51C499E2300B8D1C4 /* ytiOSBundle.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		89E06BD21C499EF000B8D1C4 /* URLCredential.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BCE1C499EF000B8D1C4 /* URLCredential.h */; };
 		89E06BD31C499EF000B8D1C4 /* URLCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BCF1C499EF000B8D1C4 /* URLCredential.m */; };
@@ -108,6 +115,13 @@
 		897B4A0A1C58AAB000F50BC2 /* UIColor+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+Additions.m"; path = "yourTube/UIColor+Additions.m"; sourceTree = "<group>"; };
 		897B4A0E1C58B03000F50BC2 /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+Scale.h"; path = "yourTube/UIImage+Scale.h"; sourceTree = "<group>"; };
 		897B4A0F1C58B03000F50BC2 /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Scale.m"; path = "yourTube/UIImage+Scale.m"; sourceTree = "<group>"; };
+		897B4A231C5E8B3D00F50BC2 /* APAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APAttribute.h; sourceTree = "<group>"; };
+		897B4A241C5E8B3D00F50BC2 /* APAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APAttribute.m; sourceTree = "<group>"; };
+		897B4A251C5E8B3D00F50BC2 /* APDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APDocument.h; sourceTree = "<group>"; };
+		897B4A261C5E8B3D00F50BC2 /* APDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APDocument.m; sourceTree = "<group>"; };
+		897B4A271C5E8B3D00F50BC2 /* APElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APElement.h; sourceTree = "<group>"; };
+		897B4A281C5E8B3D00F50BC2 /* APElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APElement.m; sourceTree = "<group>"; };
+		897B4A291C5E8B3D00F50BC2 /* APXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APXML.h; sourceTree = "<group>"; };
 		89B9D4221C44F49F00740BF1 /* GCDWebServers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GCDWebServers.framework; sourceTree = "<group>"; };
 		89B9D4231C44F49F00740BF1 /* Gremlin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Gremlin.framework; sourceTree = "<group>"; };
 		89B9D4251C44F49F00740BF1 /* GCDWebServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServer.h; sourceTree = "<group>"; };
@@ -254,6 +268,7 @@
 		897B4A151C59751500F50BC2 /* YouTube */ = {
 			isa = PBXGroup;
 			children = (
+				897B4A221C5E8B3D00F50BC2 /* APDocument */,
 				89E06BD61C499EFF00B8D1C4 /* KBYourTube.h */,
 				89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */,
 				89E06BD81C499EFF00B8D1C4 /* KBYTDownloadStream.h */,
@@ -271,6 +286,21 @@
 				897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */,
 			);
 			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		897B4A221C5E8B3D00F50BC2 /* APDocument */ = {
+			isa = PBXGroup;
+			children = (
+				897B4A231C5E8B3D00F50BC2 /* APAttribute.h */,
+				897B4A241C5E8B3D00F50BC2 /* APAttribute.m */,
+				897B4A251C5E8B3D00F50BC2 /* APDocument.h */,
+				897B4A261C5E8B3D00F50BC2 /* APDocument.m */,
+				897B4A271C5E8B3D00F50BC2 /* APElement.h */,
+				897B4A281C5E8B3D00F50BC2 /* APElement.m */,
+				897B4A291C5E8B3D00F50BC2 /* APXML.h */,
+			);
+			name = APDocument;
+			path = yourTube/APDocument;
 			sourceTree = "<group>";
 		};
 		89B9D3B11C44F41300740BF1 = {
@@ -395,6 +425,7 @@
 				897B4A101C58B03000F50BC2 /* UIImage+Scale.h in Headers */,
 				89E06BC61C499E2300B8D1C4 /* ytiOSBundle.h in Headers */,
 				897B49F81C58A7B500F50BC2 /* SDWebImageOperation.h in Headers */,
+				897B4A2C1C5E8B3D00F50BC2 /* APDocument.h in Headers */,
 				897B4A031C58A7B500F50BC2 /* UIImageView+HighlightedWebCache.h in Headers */,
 				89E06BDE1C499EFF00B8D1C4 /* KBYTDownloadStream.h in Headers */,
 				89E06C081C4CA1DC00B8D1C4 /* KBYTPreferences.h in Headers */,
@@ -402,6 +433,7 @@
 				897B4A051C58A7B500F50BC2 /* UIImageView+WebCache.h in Headers */,
 				89E06BDC1C499EFF00B8D1C4 /* KBYourTube.h in Headers */,
 				89E06BEB1C499F7000B8D1C4 /* APDeviceController.h in Headers */,
+				897B4A2A1C5E8B3D00F50BC2 /* APAttribute.h in Headers */,
 				897B49EC1C58A7B500F50BC2 /* SDImageCache.h in Headers */,
 				89E06BE41C499F1B00B8D1C4 /* OurViewController.h in Headers */,
 				897B49F61C58A7B500F50BC2 /* SDWebImageManager.h in Headers */,
@@ -411,6 +443,7 @@
 				897B49FB1C58A7B500F50BC2 /* UIButton+WebCache.h in Headers */,
 				89E06BD21C499EF000B8D1C4 /* URLCredential.h in Headers */,
 				897B49F91C58A7B500F50BC2 /* SDWebImagePrefetcher.h in Headers */,
+				897B4A2E1C5E8B3D00F50BC2 /* APElement.h in Headers */,
 				897B49E81C58A7B500F50BC2 /* MKAnnotationView+WebCache.h in Headers */,
 				897B49C41C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h in Headers */,
 				897B49FF1C58A7B500F50BC2 /* UIImage+MultiFormat.h in Headers */,
@@ -419,6 +452,7 @@
 				897B49FD1C58A7B500F50BC2 /* UIImage+GIF.h in Headers */,
 				897B49EA1C58A7B500F50BC2 /* NSData+ImageContentType.h in Headers */,
 				897B49F01C58A7B500F50BC2 /* SDWebImageDecoder.h in Headers */,
+				897B4A301C5E8B3D00F50BC2 /* APXML.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -497,6 +531,7 @@
 				897B49FC1C58A7B500F50BC2 /* UIButton+WebCache.m in Sources */,
 				897B49F51C58A7B500F50BC2 /* SDWebImageDownloaderOperation.m in Sources */,
 				89E06BE01C499EFF00B8D1C4 /* main.m in Sources */,
+				897B4A2B1C5E8B3D00F50BC2 /* APAttribute.m in Sources */,
 				897B49ED1C58A7B500F50BC2 /* SDImageCache.m in Sources */,
 				897B49EB1C58A7B500F50BC2 /* NSData+ImageContentType.m in Sources */,
 				89E06BEC1C499F7000B8D1C4 /* APDeviceController.m in Sources */,
@@ -511,6 +546,7 @@
 				897B4A0C1C58AAB000F50BC2 /* UIColor+Additions.m in Sources */,
 				897B4A001C58A7B500F50BC2 /* UIImage+MultiFormat.m in Sources */,
 				89E06BDF1C499EFF00B8D1C4 /* KBYTDownloadStream.m in Sources */,
+				897B4A2D1C5E8B3D00F50BC2 /* APDocument.m in Sources */,
 				897B49FA1C58A7B500F50BC2 /* SDWebImagePrefetcher.m in Sources */,
 				897B49C51C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m in Sources */,
 				897B49E91C58A7B500F50BC2 /* MKAnnotationView+WebCache.m in Sources */,
@@ -518,6 +554,7 @@
 				897B4A081C58A7B500F50BC2 /* UIView+WebCacheOperation.m in Sources */,
 				897B49F71C58A7B500F50BC2 /* SDWebImageManager.m in Sources */,
 				89E06BD51C499EF000B8D1C4 /* URLDownloader.m in Sources */,
+				897B4A2F1C5E8B3D00F50BC2 /* APElement.m in Sources */,
 				89E06BD31C499EF000B8D1C4 /* URLCredential.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

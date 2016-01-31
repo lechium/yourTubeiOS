@@ -1,9 +1,9 @@
 include theos/makefiles/common.mk
-
+ARCHS = armv7 armv7s arm64
 TARGET = iphone:8.4
 export GO_EASY_ON_ME=1
 export SDKVERSION=8.4
-export ARCHS = armv7
+export ARCHS = armv7 armv7s arm64
 
 APPLICATION_NAME = yourTube
 yourTube_FILES = main.m yourTubeApplication.m OurViewController.mm KBYourTube.m KBYTDownloadStream.m Download/URLCredential.m Download/URLDownloader.m KBYTDownloadsTableViewController.m
@@ -24,6 +24,7 @@ yourTube_FILES += SDWebImage/UIImage+WebP.m
 yourTube_FILES += SDWebImage/UIImageView+HighlightedWebCache.m
 yourTube_FILES += SDWebImage/UIImageView+WebCache.m
 yourTube_FILES += SDWebImage/UIView+WebCacheOperation.m
+yourTube_FILES += APDocument/APAttribute.m APDocument/APDocument.m APDocument/APElement.m
 yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit
 yourTube_CXXFLAGS += -fobjc-arc
 yourTube_CFLAGS += -fobjc-arc

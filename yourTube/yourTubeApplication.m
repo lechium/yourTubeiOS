@@ -49,7 +49,18 @@
     [center registerForMessageName:@"org.nito.dllistener.currentProgress" target:self selector:@selector(handleMessageName:userInfo:)];
     
     /*
+    
     NSDate *myStart = [NSDate date];
+    
+    [[KBYourTube sharedInstance] youTubeSearch:@"Drake rick ross" completionBlock:^(NSArray *searchDetails) {
+        
+        NSLog(@"time taken: %@ searchDetails: %@", [myStart timeStringFromCurrentDate], searchDetails);
+        
+    } failureBlock:^(NSString *error) {
+        
+        
+    }];
+    
   
     [[KBYourTube sharedInstance]getSearchResults:@"Drake rick ross" completionBlock:^(NSDictionary *searchDetails) {
       
@@ -61,8 +72,8 @@
         
         //
     }];
-    */
     
+    */
 }
 
 - (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
