@@ -688,6 +688,16 @@
     return text;
 }
 
+/*
+ 
+ This is definitely not me cleanest or prettiest code, and if google changes the youtube layout on their website
+ this will definitely break, use this search code with MASSIVE caution. it will be VERY fragile.
+ 
+ that being said, it will be a LOT quicker then the one below it, which gets ALLL the datas.
+ 
+ however, the one below should be MUCH less fragile because its just looking for video ids and nothing else.
+ 
+ */
 
 - (void)youTubeSearch:(NSString *)searchQuery
            pageNumber:(NSInteger)page
@@ -743,9 +753,9 @@
                     rootElement = [rootElement firstChildElementNamed:@"li"];
                 }
                 
-                //divs everywhere, the initial element doesnt have anythign we need in it
+                //divs everywhere, the initial element doesnt have anything we need in it
                 APElement *firstDiv = [rootElement firstChildElementNamed:@"div"];
-                //therea are multiple places to get the videoID, this is the first
+                //there are multiple places to get the videoID, this is the first
                 NSString *videoID = [firstDiv valueForAttributeNamed:@"data-context-item-id"];
                 if (videoID != nil)
                 {
@@ -833,6 +843,15 @@
     });
     
 }
+
+/**
+ 
+ This will get ALL the info about EVERY search result. it initially just compiles a list of video ID's scraping
+ youtubes search, this scrape should be MUCH less fragile. However, since it runs through get_video_info
+ with EVERY video id its a LOT slower then the basic search above. so it would be better to use as a 
+ fallback if the one above fails.
+ 
+ */
 
 - (void)getSearchResults:(NSString *)searchQuery
               pageNumber:(NSInteger)page

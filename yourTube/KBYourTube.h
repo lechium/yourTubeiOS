@@ -117,6 +117,14 @@
 
 + (id)sharedInstance;
 
+/**
+ 
+ searchQuery is just a basic unescaped search string, this will return a dictionary with 
+ results, pageCount, resultCount. Beware this is super fragile, if youtube website changes
+ this will almost definitely break. that being said its MUCH quicker then getSearchResults
+ 
+ */
+
 - (void)youTubeSearch:(NSString *)searchQuery
            pageNumber:(NSInteger)page
       completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
