@@ -48,11 +48,11 @@
     [center runServerOnCurrentThread];
     [center registerForMessageName:@"org.nito.dllistener.currentProgress" target:self selector:@selector(handleMessageName:userInfo:)];
     
-    /*
+    
     
     NSDate *myStart = [NSDate date];
     
-    [[KBYourTube sharedInstance] youTubeSearch:@"Drake rick ross" completionBlock:^(NSArray *searchDetails) {
+    [[KBYourTube sharedInstance] youTubeSearch:@"Drake rick ross" pageNumber:1 completionBlock:^(NSDictionary *searchDetails) {
         
         NSLog(@"time taken: %@ searchDetails: %@", [myStart timeStringFromCurrentDate], searchDetails);
         
@@ -61,7 +61,7 @@
         
     }];
     
-  
+  /*
     [[KBYourTube sharedInstance]getSearchResults:@"Drake rick ross" completionBlock:^(NSDictionary *searchDetails) {
       
         

@@ -690,16 +690,28 @@
 
 
 - (void)youTubeSearch:(NSString *)searchQuery
-      completionBlock:(void(^)(NSArray* searchDetails))completionBlock
+           pageNumber:(NSInteger)page
+      completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
          failureBlock:(void(^)(NSString* error))failureBlock
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         @autoreleasepool {
             
+            NSString *pageorsm = nil;
+            if (page == 1)
+            {
+                pageorsm = @"sm=1";
+            } else {
+                pageorsm = [NSString stringWithFormat:@"page=%lu", page];
+            }
             
-            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?q=%@&sm=1", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?q=%@&%@", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
             NSString *request = [self stringFromRequest:requestString];
+            
+            //get the result number
+            
+            NSInteger results = [self resultNumber:request];
             
             //get the raw value we work with
             
@@ -710,7 +722,8 @@
             NSArray *objectArray = [rawSearchValue componentsSeparatedByString:@"</div></div></div></div></div></li>"];
             
             //create the array that will store the final results
-            
+            NSMutableDictionary *outputDict = [NSMutableDictionary new];
+            outputDict[@"resultCount"] = [NSNumber numberWithInteger:results];
             NSMutableArray *finalArray = [NSMutableArray new];
             for (NSString *object in objectArray)
             {
@@ -758,7 +771,7 @@
                 }
                 if (imagePath != nil)
                 {
-                    itemDict[@"imagePath"] = imagePath;
+                    itemDict[@"imagePath"] = [@"https:" stringByAppendingString:imagePath];
                 }
                 
                 //the last node in finalImageRoot elements actual value (rather than an attribute) is our length
@@ -801,11 +814,17 @@
                 }
             }
             //doneski!
+            if ([finalArray count] > 0)
+            {
+                outputDict[@"results"] = finalArray;
+                NSInteger pageCount = results/[finalArray count];
+                outputDict[@"pageCount"] = [NSNumber numberWithInteger:pageCount];
+            }
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if([finalArray count] > 0)
                 {
-                    completionBlock(finalArray);
+                    completionBlock(outputDict);
                 } else {
                     failureBlock(@"fail");
                 }
