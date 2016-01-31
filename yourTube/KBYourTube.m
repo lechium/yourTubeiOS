@@ -835,6 +835,7 @@
 }
 
 - (void)getSearchResults:(NSString *)searchQuery
+              pageNumber:(NSInteger)page
          completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
             failureBlock:(void(^)(NSString* error))failureBlock
 {
@@ -842,7 +843,14 @@
         
         @autoreleasepool {
             
-            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?q=%@&sm=1", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+            NSString *pageorsm = nil;
+            if (page == 1)
+            {
+                pageorsm = @"sm=1";
+            } else {
+                pageorsm = [NSString stringWithFormat:@"page=%lu", page];
+            }
+            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?q=%@&%@", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
             
             NSString *request = [self stringFromRequest:requestString];
             NSInteger results = [self resultNumber:request];

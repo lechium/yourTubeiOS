@@ -124,6 +124,7 @@
 
 
 - (void)getSearchResults:(NSString *)searchQuery
+              pageNumber:(NSInteger)page
          completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
             failureBlock:(void(^)(NSString* error))failureBlock;
 

@@ -62,7 +62,7 @@
     }];
     
   
-    [[KBYourTube sharedInstance]getSearchResults:@"Drake rick ross" completionBlock:^(NSDictionary *searchDetails) {
+    [[KBYourTube sharedInstance]getSearchResults:@"Drake rick ross" pageNumber:1 completionBlock:^(NSDictionary *searchDetails) {
       
         
         NSLog(@"time taken: %@ searchDetails: %@", [myStart timeStringFromCurrentDate], searchDetails);
