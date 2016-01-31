@@ -805,7 +805,7 @@
                     itemDict[@"title"] = title;
                 }
                 NSString *userName = @"";
-                if ([otherMetaElement childCount] >= 2) //safety first ;-P
+                if ([otherMetaElement childCount] >= 3) //safety first ;-P
                 {
                     //the second child node of otherMetaElement has the username inside its first child node. also
                     //stored as the value and not an attribute.
@@ -815,6 +815,16 @@
                         itemDict[@"userName"] = userName;
                     }
                     //   NSLog(@"userName: %@", userName);
+                    APElement *desc = (APElement *)[[otherMetaElement childElements] objectAtIndex:3];
+                    NSString *class = [desc valueForAttributeNamed:@"class"];
+                    if ([class containsString:@"description"])
+                    {
+                        NSString *vdesc = [[desc value] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                        if (vdesc != nil)
+                        {
+                            itemDict[@"description"] = [vdesc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                        }
+                    }
                 }
                 
                 //if we got keys we got a result, add it to the array
