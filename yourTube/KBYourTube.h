@@ -53,6 +53,22 @@
 - (NSDictionary *)parameterDictionary;
 @end
 
+@interface KBYTSearchResult: NSObject
+
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *author;
+@property (nonatomic, strong) NSString *videoId;
+@property (nonatomic, strong) NSString *duration;
+@property (nonatomic, strong) NSString *imagePath;
+@property (nonatomic, strong) NSString *age;
+@property (nonatomic, strong) NSString *views;
+@property (nonatomic, strong) NSString *details;
+
+
+- (id)initWithDictionary:(NSDictionary *)resultDict;
+
+@end
+
 @interface KBYTMedia : NSObject
 
 @property (nonatomic, strong) NSString *title;

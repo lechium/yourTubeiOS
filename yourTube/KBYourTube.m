@@ -132,6 +132,40 @@
 
 @end
 
+@implementation KBYTSearchResult
+
+@synthesize title, author, details, imagePath, videoId, duration, age, views;
+
+- (id)initWithDictionary:(NSDictionary *)resultDict
+{
+    self = [super init];
+    title = resultDict[@"title"];
+    author = resultDict[@"author"];
+    details = resultDict[@"description"];
+    imagePath = resultDict[@"imagePath"];
+    videoId = resultDict[@"videoId"];
+    duration = resultDict[@"duration"];
+    views = resultDict[@"views"];
+    age = resultDict[@"age"];
+    return self;
+}
+
+- (NSDictionary *)dictionaryValue
+{
+    if (self.details == nil)self.details = @"Unavailable";
+    if (self.views == nil)self.views = @"Unavailable";
+    if (self.age == nil)self.age = @"Unavailable";
+    return @{@"title": self.title, @"author": self.author, @"details": self.details, @"imagePath": self.imagePath, @"videoId": self.videoId, @"duration": self.duration, @"age": self.age, @"views": self.views};
+}
+
+- (NSString *)description
+{
+    return [[self dictionaryValue] description];
+}
+
+
+@end
+
 @implementation KBYTStream
 
 - (id)initWithDictionary:(NSDictionary *)streamDict
@@ -738,7 +772,7 @@
             for (NSString *object in objectArray)
             {
                 //create a dictionary for each result
-                NSMutableDictionary *itemDict = [NSMutableDictionary new];
+                KBYTSearchResult *result = [KBYTSearchResult new];
                 //add the delimiter back in so APXML can parse things "properly"
                 NSString *objectCopy = [object stringByAppendingString:@"</div></div></div></div></div></li>"];
                 
@@ -759,7 +793,7 @@
                 NSString *videoID = [firstDiv valueForAttributeNamed:@"data-context-item-id"];
                 if (videoID != nil)
                 {
-                    itemDict[@"videoID"] = videoID;
+                    result.videoId = videoID;
                 }
                 
                 //most of the other pertinent information is on the next node down
@@ -778,10 +812,11 @@
                 if (imagePath == nil)
                 {
                     imagePath = [actualImageRoot valueForAttributeNamed:@"src"];
+                    
                 }
                 if (imagePath != nil)
                 {
-                    itemDict[@"imagePath"] = [@"https:" stringByAppendingString:imagePath];
+                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
                 }
                 
                 //the last node in finalImageRoot elements actual value (rather than an attribute) is our length
@@ -789,10 +824,10 @@
                 NSString *length = [(APElement *)[[finalImageRoot childElements]lastObject] value];
                 if (length != nil)
                 {
-                    itemDict[@"length"] = length;
+                    result.duration = length;
                 }
                 
-                //the last node in the mainRoot has the title and username
+                //the last node in the mainRoot has the title and author
                 
                 APElement *otherMetaElement = [[mainRoot childElements] lastObject];
                 
@@ -802,7 +837,7 @@
                 NSString *title = [titleElement value];
                 if (title != nil)
                 {
-                    itemDict[@"title"] = title;
+                    result.title = [title stringByReplacingOccurrencesOfString:@"\"" withString:@""];
                 }
                 NSString *userName = @"";
                 if ([otherMetaElement childCount] >= 3) //safety first ;-P
@@ -812,8 +847,37 @@
                     userName = [[(APElement *)[[otherMetaElement childElements] objectAtIndex:1] firstChildElement] value];
                     if (userName != nil)
                     {
-                        itemDict[@"userName"] = userName;
+                        result.author = userName;
                     }
+                    
+                    APElement *meta = [[otherMetaElement childElements] objectAtIndex:2];
+                    NSString *metaClass = [meta valueForAttributeNamed:@"class"];
+                    if ([metaClass containsString:@"meta"])
+                    {
+                        /*
+                         <ul class="yt-lockup-meta-info">
+                         <li>5 days ago</li>
+                         <li>24,668 views</li>
+                         </ul>
+                         */
+                        NSString *age = nil;
+                        NSString *views = nil;
+                        APElement *nextDown = [meta firstChildElement]; //<ul class="yt-lockup-meta-info">
+                        for (APElement *currentElement in [nextDown childElements])
+                        {
+                            NSString *currentValue = [currentElement value];
+                            if ([currentValue containsString:@"ago"]) //age
+                            {
+                                age = currentValue;
+                                result.age = currentValue;
+                            } else if ([currentValue containsString:@"views"])
+                            {
+                                views = [[currentValue componentsSeparatedByString:@" "] firstObject];
+                                result.views = [[currentValue componentsSeparatedByString:@" "] firstObject];
+                            }
+                        }
+                    }
+                    
                     //   NSLog(@"userName: %@", userName);
                     APElement *desc = (APElement *)[[otherMetaElement childElements] objectAtIndex:3];
                     NSString *class = [desc valueForAttributeNamed:@"class"];
@@ -822,15 +886,24 @@
                         NSString *vdesc = [[desc value] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
                         if (vdesc != nil)
                         {
-                            itemDict[@"description"] = [vdesc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                            result.details = [vdesc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
                         }
                     }
+                } else if ([otherMetaElement childCount] == 2){
+                    
+                    userName = [[(APElement *)[[otherMetaElement childElements] objectAtIndex:1] firstChildElement] value];
+                    if (userName != nil)
+                    {
+                        result.author = userName;
+                    };
                 }
                 
                 //if we got keys we got a result, add it to the array
-                if ([[itemDict allKeys] count] > 0)
+                if (result.title.length > 0)
                 {
-                    [finalArray addObject:itemDict];
+                    [finalArray addObject:result];
+                } else {
+                    result = nil;
                 }
             }
             //doneski!
