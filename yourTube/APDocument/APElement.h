@@ -18,7 +18,7 @@
  along with APXML.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+#import <Foundation/Foundation.h>
 @class APAttribute;
 
 
@@ -34,6 +34,8 @@
 @property (readonly) NSString *name;
 @property (nonatomic, assign) APElement *parent;
 
+- (NSString *)recursiveAttributeNamed:(NSString *)attributeName;
+- (APElement *)elementContainingClassString:(NSString *)string;
 + (id)elementWithName:(NSString*)aName;
 + (id)elementWithName:(NSString*)aName attributes:(NSDictionary*)someAttributes;
 - (id)initWithName:(NSString*)aName;
@@ -43,6 +45,7 @@
 - (void)addChild:(APElement*)anElement;
 - (void)appendValue:(NSString*)aValue;
 - (NSUInteger)attributeCount;
+- (NSArray *)attributeKeys;
 - (NSUInteger)childCount;
 - (NSArray*)childElements;
 - (NSMutableArray*)childElements:(NSString*)aName;

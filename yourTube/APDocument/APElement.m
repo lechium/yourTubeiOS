@@ -125,6 +125,116 @@
 }
 
 /*
+ 
+ added for recursive searching of attributes
+ 
+ */
+
+- (NSArray *)attributeKeys
+{
+    return [attributes allKeys];
+}
+
+/*
+
+ These methods below are all new additions to make parsing things much less painful with 
+ googles convoluted page layout and class method names in the youtube search results.
+ 
+ they are all adapted and modified from the XMLElement versions found at
+ 
+ http://stackoverflow.com/questions/20210933/recursion-and-objective-c
+ 
+
+ */
+
+ ///recursively search through all child elements till the attribute is found
+
+- (NSString *)recursiveAttributeNamed:(NSString *)attributeName
+{
+    NSString *retValue = nil;
+    
+    if ([self attributeMatch:self in:attributeName]) {
+        retValue = [self valueForAttributeNamed:attributeName];
+    } else {
+        for (APElement *anElement in self.childElements) {
+            if ((retValue = [anElement recursiveAttributeNamed:attributeName]))
+                break;
+        }
+    }
+    return retValue;
+}
+
+///used in the recursive method above to see if we found a match for the specified attribute
+
+- (int)attributeMatch:(APElement*)element in:(NSString*)tag
+{
+    int found = 0;
+    
+    //NSLog(@"element: %@ keys: %@",element.name, element.attributeKeys);
+    
+    if([[element attributeKeys] containsObject:tag]) {
+        //NSLog (@"Found tag %@, value = %@", tag, element.value);
+        found = 1;
+    }
+    return found;
+}
+
+//recursively search for class attribute that contains a specified string
+
+- (APElement *)elementContainingClassString:(NSString *)string
+{
+    APElement *retValue = nil;
+    
+    if ([self classAttributeMatch:self in:string]) {
+        retValue = self;
+    } else {
+        for (APElement *anElement in self.childElements) {
+            if ((retValue = [anElement elementContainingClassString:string]))
+                break;
+        }
+    }
+    return retValue;
+}
+
+///used in the method above to see if we find an class attribute that contains the specified string
+
+- (int)classAttributeMatch:(APElement *)element in:(NSString *)tag
+{
+    int found = 0;
+    
+    if([[element valueForAttributeNamed:@"class"] containsString:tag]) {
+       // NSLog (@"Found tag %@, value = %@", tag, element.value);
+        found = 1;
+    }
+    return found;
+}
+
+- (NSString *)valueOf:(APElement*)element in:(NSString*)tag
+{
+    NSString *retValue = nil;
+    
+    if ([self tagMatch:element in:tag]) {
+        retValue = element.value;
+    } else {
+        for (APElement *anElement in element.childElements) {
+            if ((retValue = [self valueOf:anElement in:tag]))
+                break;
+        }
+    }
+    return retValue;
+}
+
+- (int)tagMatch:(APElement*)element in:(NSString *)tag
+{
+    int found = 0;
+    if([element.name isEqualToString:tag]) {
+      //  NSLog (@"Found tag %@, value = %@", tag, element.value);
+        found = 1;
+    }
+    return found;
+}
+
+/*
  Returns an array of APElements that are direct descendants of this element
  and have the specified tag name.
  Returns an empty array if the element has no children.

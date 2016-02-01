@@ -724,12 +724,9 @@
 
 /*
  
- This is definitely not me cleanest or prettiest code, and if google changes the youtube layout on their website
- this will definitely break, use this search code with MASSIVE caution. it will be VERY fragile.
- 
- that being said, it will be a LOT quicker then the one below it, which gets ALLL the datas.
- 
- however, the one below should be MUCH less fragile because its just looking for video ids and nothing else.
+ This method is much tidier now with some recursive magic added to APElement, it is still potentially
+ pretty fragile if google goes and changes class names on us, but it should be /less/ fragile then
+ its short lived predecessor.
  
  */
 
@@ -742,6 +739,8 @@
         
         @autoreleasepool {
             
+            //handle pagination
+            
             NSString *pageorsm = nil;
             if (page == 1)
             {
@@ -751,152 +750,94 @@
             }
             
             NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?q=%@&%@", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
-            NSString *request = [self stringFromRequest:requestString];
+            NSString *rawRequestResult = [self stringFromRequest:requestString];
             
-            //get the result number
+            //get the result number (i hate that two full scans are done to find this..)
             
-            NSInteger results = [self resultNumber:request];
+            NSInteger results = [self resultNumber:rawRequestResult];
             
             //get the raw value we work with
             
-            NSString *rawSearchValue = [self rawYTFromHTML:request];
+            NSString *rawSearchValue = [self rawYTFromHTML:rawRequestResult];
+            
+            //NSLog(@"rawSearchValue: %@", rawSearchValue);
             
             //hard to find a delimiter that sticks out between results, </div></div></div></div></div></li> will have to do
             
-            NSArray *objectArray = [rawSearchValue componentsSeparatedByString:@"</div></div></div></div></div></li>"];
+            NSArray *videoArray = [rawSearchValue componentsSeparatedByString:@"</div></div></div></div></div></li>"];
             
             //create the array that will store the final results
             NSMutableDictionary *outputDict = [NSMutableDictionary new];
             outputDict[@"resultCount"] = [NSNumber numberWithInteger:results];
             NSMutableArray *finalArray = [NSMutableArray new];
-            for (NSString *object in objectArray)
+            for (NSString *rawVideoInfo in videoArray)
             {
-                //create a dictionary for each result
+                //create a KBYTSearchResult for each result
                 KBYTSearchResult *result = [KBYTSearchResult new];
-                //add the delimiter back in so APXML can parse things "properly"
-                NSString *objectCopy = [object stringByAppendingString:@"</div></div></div></div></div></li>"];
+                
+                //add the delimiter back in so APXML can parse things properly
+                NSString *fullRawVideoInfo = [rawVideoInfo stringByAppendingString:@"</div></div></div></div></div></li>"];
                 
                 //this makes parsing the info a little less painful, treat it like XML with APDocument
+                APDocument *videoDetailXMLRepresentation = [[APDocument alloc] initWithString:fullRawVideoInfo];
                 
-                APDocument *theDoc = [[APDocument alloc] initWithString:objectCopy];
-                APElement *rootElement = [theDoc rootElement];
-                //the very first search element includes the initial "ol" line we scanned to, we dont need it so
-                //ignore it on the first result and make the root the next node down.
-                if ([[rootElement name] isEqualToString:@"ol"])
-                {
-                    rootElement = [rootElement firstChildElementNamed:@"li"];
-                }
+                //get all the necessary elements we will need to get our data
                 
-                //divs everywhere, the initial element doesnt have anything we need in it
-                APElement *firstDiv = [rootElement firstChildElementNamed:@"div"];
-                //there are multiple places to get the videoID, this is the first
-                NSString *videoID = [firstDiv valueForAttributeNamed:@"data-context-item-id"];
-                if (videoID != nil)
-                {
-                    result.videoId = videoID;
-                }
+                APElement *rootElement = [videoDetailXMLRepresentation rootElement];
+                APElement *thumbnailElement = [[rootElement elementContainingClassString:@"yt-thumb-simple"] firstChildElement];
+                APElement *lengthElement = [rootElement elementContainingClassString:@"video-time"];
+                APElement *titleElement = [rootElement elementContainingClassString:@"yt-uix-tile-link"];
+                APElement *ageAndViewsElement = [rootElement elementContainingClassString:@"yt-lockup-meta-info"];
+                APElement *authorElement = [[rootElement elementContainingClassString:@"yt-lockup-byline"] firstChildElement];
+                APElement *descriptionElement = [rootElement elementContainingClassString:@"yt-lockup-description"];
                 
-                //most of the other pertinent information is on the next node down
-                APElement *mainRoot = [firstDiv firstChildElement];
+                result.videoId  = [rootElement recursiveAttributeNamed:@"data-context-item-id"];
                 
-                //2 levels down from mainRoot has the image info and length info
+                //we have all of our elements now start grabbing the necessary data
                 
-                APElement *finalImageRoot = [[mainRoot firstChildElement] firstChildElement];
-                
-                //the actual image info is buried 3 levels deeper
-                
-                APElement *actualImageRoot = [[[finalImageRoot firstChildElement] firstChildElement] firstChildElement];
-                
-                //sometimes its data-thumb, sometimes its src
-                NSString *imagePath = [actualImageRoot valueForAttributeNamed:@"data-thumb"];
+                //for the thumbnail image sometimes its data-thumb, sometimes its src
+                NSString *imagePath = [thumbnailElement valueForAttributeNamed:@"data-thumb"];
                 if (imagePath == nil)
                 {
-                    imagePath = [actualImageRoot valueForAttributeNamed:@"src"];
-                    
+                    imagePath = [thumbnailElement valueForAttributeNamed:@"src"];
                 }
                 if (imagePath != nil)
                 {
                     result.imagePath = [@"https:" stringByAppendingString:imagePath];
                 }
                 
-                //the last node in finalImageRoot elements actual value (rather than an attribute) is our length
+                //set the title and duration
+                result.duration = lengthElement.value;
+                result.title = [[titleElement value] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
                 
-                NSString *length = [(APElement *)[[finalImageRoot childElements]lastObject] value];
-                if (length != nil)
+                /**
+                 
+                 both age and views are child nodes of ageAndViewsElement
+                 <li>5 days ago</li>
+                 <li>24,668 views</li>
+                 
+                 **/
+                for (APElement *currentElement in [ageAndViewsElement childElements])
                 {
-                    result.duration = length;
+                    NSString *currentValue = [currentElement value];
+                    if ([currentValue containsString:@"ago"]) //age
+                    {
+                        result.age = currentValue;
+                    } else if ([currentValue containsString:@"views"])
+                    {
+                        result.views = [[currentValue componentsSeparatedByString:@" "] firstObject];
+                    }
                 }
                 
-                //the last node in the mainRoot has the title and author
+                result.author = [authorElement value];
                 
-                APElement *otherMetaElement = [[mainRoot childElements] lastObject];
+                NSString *vdesc = [[descriptionElement value] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                if (vdesc != nil)
+                {
+                    result.details = [vdesc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                }
                 
-                //the title element is buried 2 nodes deeper then otherMetaElement
-                APElement *titleElement = [[otherMetaElement firstChildElement] firstChildElement];
-                //just like length, the title is stored as the value and not an attribute
-                NSString *title = [titleElement value];
-                if (title != nil)
-                {
-                    result.title = [title stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-                }
-                NSString *userName = @"";
-                if ([otherMetaElement childCount] >= 3) //safety first ;-P
-                {
-                    //the second child node of otherMetaElement has the username inside its first child node. also
-                    //stored as the value and not an attribute.
-                    userName = [[(APElement *)[[otherMetaElement childElements] objectAtIndex:1] firstChildElement] value];
-                    if (userName != nil)
-                    {
-                        result.author = userName;
-                    }
-                    
-                    APElement *meta = [[otherMetaElement childElements] objectAtIndex:2];
-                    NSString *metaClass = [meta valueForAttributeNamed:@"class"];
-                    if ([metaClass containsString:@"meta"])
-                    {
-                        /*
-                         <ul class="yt-lockup-meta-info">
-                         <li>5 days ago</li>
-                         <li>24,668 views</li>
-                         </ul>
-                         */
-                        NSString *age = nil;
-                        NSString *views = nil;
-                        APElement *nextDown = [meta firstChildElement]; //<ul class="yt-lockup-meta-info">
-                        for (APElement *currentElement in [nextDown childElements])
-                        {
-                            NSString *currentValue = [currentElement value];
-                            if ([currentValue containsString:@"ago"]) //age
-                            {
-                                age = currentValue;
-                                result.age = currentValue;
-                            } else if ([currentValue containsString:@"views"])
-                            {
-                                views = [[currentValue componentsSeparatedByString:@" "] firstObject];
-                                result.views = [[currentValue componentsSeparatedByString:@" "] firstObject];
-                            }
-                        }
-                    }
-                    
-                    //   NSLog(@"userName: %@", userName);
-                    APElement *desc = (APElement *)[[otherMetaElement childElements] objectAtIndex:3];
-                    NSString *class = [desc valueForAttributeNamed:@"class"];
-                    if ([class containsString:@"description"])
-                    {
-                        NSString *vdesc = [[desc value] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-                        if (vdesc != nil)
-                        {
-                            result.details = [vdesc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-                        }
-                    }
-                } else if ([otherMetaElement childCount] == 2){
-                    
-                    userName = [[(APElement *)[[otherMetaElement childElements] objectAtIndex:1] firstChildElement] value];
-                    if (userName != nil)
-                    {
-                        result.author = userName;
-                    };
-                }
+                //done setting data, hopefully everything is good to go!
                 
                 //if we got keys we got a result, add it to the array
                 if (result.title.length > 0)
