@@ -719,7 +719,7 @@
     theScanner = [NSScanner scannerWithString:html];
     [theScanner scanUpToString:@"<ol id=\"item-section" intoString:NULL];
     [theScanner scanUpToString:@"</ol>" intoString:&text] ;
-    return text;
+    return [text stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@""];
 }
 
 /*
