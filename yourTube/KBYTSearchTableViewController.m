@@ -89,6 +89,21 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
 }
 
+- (void)willPresentSearchController:(UISearchController *)searchController
+{
+    LOG_SELF;
+}
+- (void)didPresentSearchController:(UISearchController *)searchController
+{
+    LOG_SELF;
+}
+- (void)willDismissSearchController:(UISearchController *)searchController {
+    LOG_SELF;
+}
+- (void)didDismissSearchController:(UISearchController *)searchController
+{
+    LOG_SELF;
+}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -143,19 +158,54 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 @synthesize delegate;
 
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [self resetSearchResults];
+}
+
+- (void)resetSearchResults
+{
+    self.currentPage = 1;
+    self.totalResults = 0;
+    self.pageCount = 0;
+    [self.searchResults removeAllObjects];
+    UINavigationController *navController = (UINavigationController *)self.searchController.searchResultsController;
+    
+    KBYTActualSearchResultsTableViewController *vc = (KBYTActualSearchResultsTableViewController *)navController.topViewController;
+    vc.currentPage = 1;
+    vc.totalResults = 0;
+    vc.pageCount = 0;
+    [vc.searchResults removeAllObjects];
+    [vc.tableView reloadData];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    [self resetSearchResults];
+}
+
+- (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar
+{
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.viewController = [[KBYTActualSearchResultsTableViewController alloc] init];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     UINavigationController *searchResultsController = [[UINavigationController alloc] initWithRootViewController:self.viewController];
-
+    
     
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:searchResultsController];
     
     self.searchController.searchResultsUpdater = self;
-   // self.searchController.hidesNavigationBarDuringPresentation = false;
+    // self.searchController.hidesNavigationBarDuringPresentation = false;
     self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y + 64, self.searchController.searchBar.frame.size.width, 44.0);
+    self.searchController.searchBar.delegate = self;
     self.searchController.definesPresentationContext = true;
     //self.searchController.dimsBackgroundDuringPresentation = false;
     self.tableView.tableHeaderView = self.searchController.searchBar;
@@ -197,22 +247,22 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     LOG_SELF;
     NSString *searchString = [self.searchController.searchBar text];
     [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage completionBlock:^(NSDictionary *searchDetails) {
-     /*
-        self.searchResults = searchDetails[@"results"];
-        //vc.currentPage = self.currentPage;
-        //[vc updateSearchResults:self.searchResults];
-        //vc.searchResults = self.searchResults;
-        self.totalResults = [searchDetails[@"resultCount"] integerValue];
-        self.pageCount = [searchDetails[@"pageCount"] integerValue];
-        [self.tableView reloadData];
-        */
-       // NSLog(@"searchDetails: %@", searchDetails);
+        /*
+         self.searchResults = searchDetails[@"results"];
+         //vc.currentPage = self.currentPage;
+         //[vc updateSearchResults:self.searchResults];
+         //vc.searchResults = self.searchResults;
+         self.totalResults = [searchDetails[@"resultCount"] integerValue];
+         self.pageCount = [searchDetails[@"pageCount"] integerValue];
+         [self.tableView reloadData];
+         */
+        // NSLog(@"searchDetails: %@", searchDetails);
         if (self.searchController.searchResultsController) {
             UINavigationController *navController = (UINavigationController *)self.searchController.searchResultsController;
             
             KBYTActualSearchResultsTableViewController *vc = (KBYTActualSearchResultsTableViewController *)navController.topViewController;
             
-         
+            
             self.totalResults = [searchDetails[@"resultCount"] integerValue];
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
             self.searchResults = searchDetails[@"results"];
@@ -222,7 +272,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             vc.pageCount = self.pageCount;
             [vc updateSearchResults:self.searchResults];
             [vc.tableView reloadData];
-           
+            
         }
         
         
@@ -230,7 +280,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         //
         
     }];
- 
+    
     
 }
 
@@ -244,12 +294,12 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
+    
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
+    
     return 0;
 }
 
@@ -282,22 +332,22 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 //    return 100;
 //}
 /*
-- (void)tableView:(UITableView *)tableView
-  willDisplayCell:(UITableViewCell *)cell
-forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (cell.tag == kLoadingCellTag) {
-        _currentPage++;
-        [self getNextPage];
-    }
-}
-*/
+ - (void)tableView:(UITableView *)tableView
+ willDisplayCell:(UITableViewCell *)cell
+ forRowAtIndexPath:(NSIndexPath *)indexPath {
+ if (cell.tag == kLoadingCellTag) {
+ _currentPage++;
+ [self getNextPage];
+ }
+ }
+ */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
-   /*
-    if (indexPath.row > self.searchResults.count){
-        return [self loadingCell];
-    }
-    */
+    /*
+     if (indexPath.row > self.searchResults.count){
+     return [self loadingCell];
+     }
+     */
     KBYTDownloadCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[KBYTDownloadCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
@@ -319,48 +369,48 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 
 /*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
+ // Override to support conditional editing of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+ // Return NO if you do not want the specified item to be editable.
+ return YES;
+ }
+ */
 
 /*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+ // Override to support editing the table view.
+ - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+ if (editingStyle == UITableViewCellEditingStyleDelete) {
+ // Delete the row from the data source
+ [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+ } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+ // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+ }
+ }
+ */
 
 /*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+ }
+ */
 
 /*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 //transplants from ourviewcontroller
 
@@ -573,7 +623,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 {
     [[KBYourTube sharedInstance] getVideoDetailsForID:details completionBlock:^(KBYTMedia *videoDetails) {
         
-          NSLog(@"got details successfully: %@", videoDetails);
+        NSLog(@"got details successfully: %@", videoDetails);
         self.currentMedia = videoDetails;
         self.previousVideoID = videoDetails.videoId;
         self.gettingDetails = false;

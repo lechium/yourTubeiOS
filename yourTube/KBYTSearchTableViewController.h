@@ -25,7 +25,7 @@
 
 @end
 
-@interface KBYTSearchTableViewController : UITableViewController
+@interface KBYTSearchTableViewController : UITableViewController <UISearchBarDelegate, UIActionSheetDelegate>
 {
     id <KBYTSearchTableViewControllerDelegate> __weak delegate;
 }
