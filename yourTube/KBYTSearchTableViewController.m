@@ -65,7 +65,8 @@
     cell.textLabel.text = currentItem.title;
     cell.downloading = false;
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
-    UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GenericArtwork" ofType:@"png"]];
+    UIImage *theImage = [UIImage imageNamed:@"YTPlaceHolderImage"];
+    // UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"YTPlaceHolderImage" ofType:@"png"]];
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
     cell.imageView.autoresizingMask = ( UIViewAutoresizingNone );
     [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
