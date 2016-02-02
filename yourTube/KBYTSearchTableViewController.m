@@ -240,7 +240,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self checkAirplay];
-    self.extendedLayoutIncludesOpaqueBars = YES;
+    self.extendedLayoutIncludesOpaqueBars = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.viewController = [[KBYTActualSearchResultsTableViewController alloc] init];
     self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -251,7 +251,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     
     self.searchController.searchResultsUpdater = self;
-    self.searchController.hidesNavigationBarDuringPresentation = true;
+    self.searchController.hidesNavigationBarDuringPresentation = false;
     self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
     self.searchController.searchBar.delegate = self;
     self.searchController.definesPresentationContext = true;
