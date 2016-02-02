@@ -343,8 +343,6 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
             });
         }
     });
-    
-    
 }
 
 - (void)fireAirplayTimer

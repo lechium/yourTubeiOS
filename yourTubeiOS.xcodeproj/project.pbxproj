@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */; };
+		895F67041C60125600AE33FA /* KBYTSearchTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */; };
 		897B49C41C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */; };
 		897B49C51C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */; };
 		897B49E81C58A7B500F50BC2 /* MKAnnotationView+WebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B49C71C58A7B500F50BC2 /* MKAnnotationView+WebCache.h */; };
@@ -76,6 +78,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTSearchTableViewController.h; path = yourTube/KBYTSearchTableViewController.h; sourceTree = "<group>"; };
+		895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTSearchTableViewController.m; path = yourTube/KBYTSearchTableViewController.m; sourceTree = "<group>"; };
 		897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadsTableViewController.h; path = yourTube/KBYTDownloadsTableViewController.h; sourceTree = "<group>"; };
 		897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadsTableViewController.m; path = yourTube/KBYTDownloadsTableViewController.m; sourceTree = "<group>"; };
 		897B49C71C58A7B500F50BC2 /* MKAnnotationView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKAnnotationView+WebCache.h"; sourceTree = "<group>"; };
@@ -284,6 +288,8 @@
 				89E06BE31C499F1B00B8D1C4 /* OurViewController.mm */,
 				897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */,
 				897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */,
+				895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */,
+				895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -435,6 +441,7 @@
 				89E06BEB1C499F7000B8D1C4 /* APDeviceController.h in Headers */,
 				897B4A2A1C5E8B3D00F50BC2 /* APAttribute.h in Headers */,
 				897B49EC1C58A7B500F50BC2 /* SDImageCache.h in Headers */,
+				895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */,
 				89E06BE41C499F1B00B8D1C4 /* OurViewController.h in Headers */,
 				897B49F61C58A7B500F50BC2 /* SDWebImageManager.h in Headers */,
 				897B49F21C58A7B500F50BC2 /* SDWebImageDownloader.h in Headers */,
@@ -552,6 +559,7 @@
 				897B49E91C58A7B500F50BC2 /* MKAnnotationView+WebCache.m in Sources */,
 				897B4A061C58A7B500F50BC2 /* UIImageView+WebCache.m in Sources */,
 				897B4A081C58A7B500F50BC2 /* UIView+WebCacheOperation.m in Sources */,
+				895F67041C60125600AE33FA /* KBYTSearchTableViewController.m in Sources */,
 				897B49F71C58A7B500F50BC2 /* SDWebImageManager.m in Sources */,
 				89E06BD51C499EF000B8D1C4 /* URLDownloader.m in Sources */,
 				897B4A2F1C5E8B3D00F50BC2 /* APElement.m in Sources */,

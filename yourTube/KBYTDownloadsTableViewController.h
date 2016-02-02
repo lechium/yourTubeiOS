@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "MarqueeLabel/MarqueeLabel.h"
+#import "SDWebImage/UIImageView+WebCache.h"
 
 @interface KBYTDownloadCell: UITableViewCell
 

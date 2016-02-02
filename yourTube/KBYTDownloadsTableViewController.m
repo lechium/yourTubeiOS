@@ -7,8 +7,8 @@
 //
 
 #import "KBYTDownloadsTableViewController.h"
-#import "SDWebImage/UIImageView+WebCache.h"
 #import "OurViewController.h"
+#import "KBYTSearchTableViewController.h"
 
 @implementation KBYTDownloadCell
 
@@ -25,6 +25,7 @@
     
     return self;
 }
+
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -112,7 +113,6 @@
 }
 
 - (void)reloadData {
-    
      LOG_SELF;
     dispatch_async(dispatch_get_main_queue(), ^{
         NSArray *fullArray = [NSArray arrayWithContentsOfFile:[self downloadFile]];
@@ -129,6 +129,8 @@
     NSDictionary *theObject = [[self.activeDownloads filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.outputFilename == %@", title]]lastObject];
     if (theObject != nil)
     {
+      
+        
         NSInteger index = [self.activeDownloads indexOfObject:theObject];
         if (index != NSNotFound)
         {
@@ -137,6 +139,19 @@
             [cell.progressView setProgress:[theDict[@"completionPercent"] floatValue]];
         }
     }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.navigationItem.title = @"";
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.navigationItem.title = @"Downloads";
+    [super viewWillAppear:animated];
+    [self reloadData];
 }
 
 - (void)viewDidLoad {
@@ -148,7 +163,17 @@
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearchView:)];
+}
+
+- (void)showSearchView:(id)sender
+{
+    KBYTSearchTableViewController *searchView = [[KBYTSearchTableViewController alloc] init];
+    [self.navigationController pushViewController:searchView animated:true];
+    //[self presentViewController:searchView animated:true completion:^{
+        
+        //
+   // }];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section

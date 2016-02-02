@@ -840,7 +840,7 @@
                 //done setting data, hopefully everything is good to go!
                 
                 //if we got keys we got a result, add it to the array
-                if (result.title.length > 0)
+                if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"])
                 {
                     [finalArray addObject:result];
                 } else {

@@ -1,10 +1,12 @@
 #import "OurViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import "KBYTDownloadsTableViewController.h"
+#import "KBYTSearchTableViewController.h"
 
-@interface yourTubeApplication: UIApplication <UIApplicationDelegate, OurViewControllerDelegate> {
+@interface yourTubeApplication: UIApplication <UIApplicationDelegate, OurViewControllerDelegate, KBYTSearchTableViewControllerDelegate> {
 	UIWindow *_window;
 	OurViewController *_viewController;
+    KBYTDownloadsTableViewController *_searchViewController;
 }
 @property (nonatomic, retain) UIWindow *window;
 @property (strong, nonatomic) UINavigationController *nav;
@@ -31,11 +33,24 @@
     [KBYourTube sharedInstance]; //create it right off the bat to get device discovery going
     
 	_window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-     _viewController = [[OurViewController alloc] init];
+    
+    _searchViewController = [[KBYTDownloadsTableViewController alloc] init];
+    self.nav = [[UINavigationController alloc] initWithRootViewController:_searchViewController];
+    //_searchViewController.delegate = self;
+    
+    /*
+    
+    _viewController = [[OurViewController alloc] init];
     self.nav = [[UINavigationController alloc] initWithRootViewController:_viewController];
     [_viewController setDelegate:self];
+     
+     */
+    
     [_window setRootViewController:  self.nav];
 	[_window makeKeyAndVisible];
+  
+    
+    
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     
     NSError *error = nil;
@@ -84,8 +99,6 @@
 	    file = "Lil Wayne - Hollyweezy (Official Music Video) [720p].mp4";
      
      */
-    
-   // NSLog(@"messageName: %@ userINfo: %@", name, userInfo);
     if ([name.pathExtension isEqualToString:@"currentProgress"])
     {
         CGFloat progress = [userInfo[@"completionPercent"] floatValue];
@@ -99,6 +112,8 @@
                 [alertView show];
             }
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            
+            
             
             if ([[[self nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
             {
