@@ -203,7 +203,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:searchResultsController];
     
     self.searchController.searchResultsUpdater = self;
-    // self.searchController.hidesNavigationBarDuringPresentation = false;
+    self.searchController.hidesNavigationBarDuringPresentation = false;
     self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y + 64, self.searchController.searchBar.frame.size.width, 44.0);
     self.searchController.searchBar.delegate = self;
     self.searchController.definesPresentationContext = true;
