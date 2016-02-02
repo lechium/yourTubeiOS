@@ -7,8 +7,9 @@
 //
 
 #import "KBYTSearchTableViewController.h"
-
 #import "OurViewController.h"
+
+#define kLoadingCellTag 500
 
 @implementation YTKBPlayerViewController
 
@@ -19,14 +20,58 @@
 
 @end
 
-@interface KBYTActualSearchResultsTableViewContorller : UITableViewController
+@interface KBYTActualSearchResultsTableViewController : UITableViewController
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;
 @property (readwrite, assign) NSInteger currentPage;
+@property (readwrite, assign) NSInteger lastStartingIndex;
+
+- (void)updateSearchResults:(NSArray *)newResults;
+
 @end
 
-@implementation KBYTActualSearchResultsTableViewContorller
+@implementation KBYTActualSearchResultsTableViewController
+
+- (UITableViewCell *)loadingCell {
+    UITableViewCell *cell = [[UITableViewCell alloc]
+                             initWithStyle:UITableViewCellStyleDefault
+                             reuseIdentifier:nil];
+    
+    UIActivityIndicatorView *activityIndicator =
+    [[UIActivityIndicatorView alloc]
+     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    activityIndicator.center = cell.center;
+    [cell addSubview:activityIndicator];
+    
+    [activityIndicator startAnimating];
+    
+    cell.tag = kLoadingCellTag;
+    
+    return cell;
+}
+
+- (void)updateSearchResults:(NSArray *)newResults
+{
+    if (self.currentPage > 1)
+    {
+        [[self searchResults] addObjectsFromArray:newResults];
+    } else {
+        self.searchResults = [newResults mutableCopy];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView
+  willDisplayCell:(UITableViewCell *)cell
+forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (cell.tag == kLoadingCellTag) {
+        //_currentPage++;
+        KBYTSearchTableViewController *pvc = (KBYTSearchTableViewController *)[self presentingViewController];
+        [pvc getNextPage];
+    }
+}
+
+
 
 - (void)viewDidLoad
 {
@@ -36,9 +81,14 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
+    if (self.currentPage < self.pageCount)
+    {
+        return self.searchResults.count + 1;
+    }
     return self.searchResults.count;
     
 }
+
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -54,11 +104,14 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
+    
+    if (indexPath.row >= self.searchResults.count) {
+        return [self loadingCell];
+    }
     KBYTDownloadCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[KBYTDownloadCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
-    
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
     cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     cell.detailTextLabel.text = currentItem.author;
@@ -81,8 +134,9 @@
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;
-@property (readwrite, assign) NSInteger currentPage;
-@property (nonatomic, strong) KBYTActualSearchResultsTableViewContorller *viewController;
+@property (readwrite, assign) NSInteger lastStartingIndex;
+
+@property (nonatomic, strong) KBYTActualSearchResultsTableViewController *viewController;
 @end
 
 @implementation KBYTSearchTableViewController
@@ -92,12 +146,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
      self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.viewController = [[KBYTActualSearchResultsTableViewContorller alloc] init];
+    self.viewController = [[KBYTActualSearchResultsTableViewController alloc] init];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     UINavigationController *searchResultsController = [[UINavigationController alloc] initWithRootViewController:self.viewController];
-    
-    NSLog(@"searchResultsController: %@", searchResultsController);
-    
+
     
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:searchResultsController];
     
@@ -105,6 +157,7 @@
    // self.searchController.hidesNavigationBarDuringPresentation = false;
     self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y + 64, self.searchController.searchBar.frame.size.width, 44.0);
     self.searchController.definesPresentationContext = true;
+    //self.searchController.dimsBackgroundDuringPresentation = false;
     self.tableView.tableHeaderView = self.searchController.searchBar;
     
     self.definesPresentationContext = YES;
@@ -127,20 +180,49 @@
     }
 }
 
+- (void)getNextPage
+{
+    LOG_SELF;
+    NSInteger nextPage = self.currentPage + 1;
+    if (self.pageCount > nextPage)
+    {
+        self.currentPage = nextPage;
+        [self updateSearchResultsForSearchController:self.searchController];
+    }
+    
+}
+
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     
+    LOG_SELF;
     NSString *searchString = [self.searchController.searchBar text];
     [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage completionBlock:^(NSDictionary *searchDetails) {
-        
+     /*
+        self.searchResults = searchDetails[@"results"];
+        //vc.currentPage = self.currentPage;
+        //[vc updateSearchResults:self.searchResults];
+        //vc.searchResults = self.searchResults;
+        self.totalResults = [searchDetails[@"resultCount"] integerValue];
+        self.pageCount = [searchDetails[@"pageCount"] integerValue];
+        [self.tableView reloadData];
+        */
+       // NSLog(@"searchDetails: %@", searchDetails);
         if (self.searchController.searchResultsController) {
             UINavigationController *navController = (UINavigationController *)self.searchController.searchResultsController;
             
-            KBYTActualSearchResultsTableViewContorller *vc = (KBYTActualSearchResultsTableViewContorller *)navController.topViewController;
-            vc.searchResults = self.searchResults;
+            KBYTActualSearchResultsTableViewController *vc = (KBYTActualSearchResultsTableViewController *)navController.topViewController;
+            
+         
             self.totalResults = [searchDetails[@"resultCount"] integerValue];
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
             self.searchResults = searchDetails[@"results"];
+            //vc.searchResults = self.searchResults;
+            vc.totalResults = self.totalResults;
+            vc.currentPage = self.currentPage;
+            vc.pageCount = self.pageCount;
+            [vc updateSearchResults:self.searchResults];
             [vc.tableView reloadData];
+           
         }
         
         
@@ -159,6 +241,8 @@
 
 #pragma mark - Table view data source
 
+
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 
     return 1;
@@ -174,21 +258,59 @@
     tableView.backgroundColor = [UIColor whiteColor];
 }
 
+- (UITableViewCell *)loadingCell {
+    UITableViewCell *cell = [[UITableViewCell alloc]
+                             initWithStyle:UITableViewCellStyleDefault
+                             reuseIdentifier:nil];
+    
+    UIActivityIndicatorView *activityIndicator =
+    [[UIActivityIndicatorView alloc]
+     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    activityIndicator.center = cell.center;
+    [cell addSubview:activityIndicator];
+    
+    [activityIndicator startAnimating];
+    
+    cell.tag = kLoadingCellTag;
+    
+    return cell;
+}
 
+
+//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    return 100;
+//}
+/*
+- (void)tableView:(UITableView *)tableView
+  willDisplayCell:(UITableViewCell *)cell
+forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (cell.tag == kLoadingCellTag) {
+        _currentPage++;
+        [self getNextPage];
+    }
+}
+*/
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
+   /*
+    if (indexPath.row > self.searchResults.count){
+        return [self loadingCell];
+    }
+    */
     KBYTDownloadCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[KBYTDownloadCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
-   
+    cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     cell.detailTextLabel.text = currentItem.author;
     cell.textLabel.text = currentItem.title;
     cell.downloading = false;
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
-    UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GenericArtwork" ofType:@"png"]];
+    UIImage *theImage = [UIImage imageNamed:@"YTPlaceHolderImage"];
+    // UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"YTPlaceHolderImage" ofType:@"png"]];
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
     cell.imageView.autoresizingMask = ( UIViewAutoresizingNone );
     [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];

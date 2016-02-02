@@ -42,7 +42,9 @@
 @property (nonatomic, strong) UIView *sliderView;
 @property (readwrite, assign) CGFloat airplayProgressPercent;
 @property (readwrite, assign) CGFloat airplayDuration;
+@property (readwrite, assign) NSInteger currentPage;
 
 - (void)playFile:(NSDictionary *)file;
 - (void)getVideoIDDetails:(NSString *)details;
+- (void)getNextPage;
 @end

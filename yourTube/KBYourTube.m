@@ -155,6 +155,10 @@
     if (self.details == nil)self.details = @"Unavailable";
     if (self.views == nil)self.views = @"Unavailable";
     if (self.age == nil)self.age = @"Unavailable";
+    if (self.author == nil)self.author = @"Unavailable";
+    if (self.imagePath == nil)self.imagePath = @"Unavailable";
+    if (self.duration == nil)self.duration = @"Unavailable";
+    if (self.videoId == nil)self.videoId = @"Unavailable";
     return @{@"title": self.title, @"author": self.author, @"details": self.details, @"imagePath": self.imagePath, @"videoId": self.videoId, @"duration": self.duration, @"age": self.age, @"views": self.views};
 }
 
@@ -841,6 +845,7 @@
                 
                 //if we got keys we got a result, add it to the array
                 if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"])
+                //if (result.title.length > 0)
                 {
                     [finalArray addObject:result];
                 } else {
