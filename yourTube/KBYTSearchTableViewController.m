@@ -228,13 +228,19 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+
     [self resetSearchResults];
 }
 
 - (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar
 {
     
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self.searchController dismissViewControllerAnimated:false completion:nil];
+    [super viewWillDisappear:animated];
 }
 
 - (void)viewDidLoad {
@@ -258,7 +264,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     self.searchController.dimsBackgroundDuringPresentation = false;
     self.tableView.tableHeaderView = self.searchController.searchBar;
     
-    self.definesPresentationContext = YES;
+    //self.definesPresentationContext = YES;
     self.currentPage = 1;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -267,15 +273,15 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
-- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller {
-    LOG_SELF;
-    self.navigationController.navigationBar.translucent = YES;
-}
-
-- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller {
-    self.navigationController.navigationBar.translucent = NO;
-    LOG_SELF;
-}
+//- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller {
+//    LOG_SELF;
+//    self.navigationController.navigationBar.translucent = YES;
+//}
+//
+//- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller {
+//    self.navigationController.navigationBar.translucent = NO;
+//    LOG_SELF;
+//}
 
 /*
 - (void) viewDidLayoutSubviews
@@ -438,6 +444,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    KBYTSearchResult *currentResult = [self.searchResults objectAtIndex:indexPath.row];
+    [self getVideoIDDetails:currentResult.videoId];
+}
 
 /*
  // Override to support conditional editing of the table view.
@@ -761,6 +772,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 //play the video stream
 - (IBAction)playStream:(KBYTStream *)stream
 {
+    LOG_SELF;
     NSURL *playURL = [stream url];
     //NSLog(@"play url: %@", playURL);
     if ([self isPlaying] == true  ){
