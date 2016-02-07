@@ -9,10 +9,18 @@
 #import <Foundation/Foundation.h>
 #import "AppSupport/CPDistributedMessagingCenter.h"
 
+#import <AVFoundation/AVFoundation.h>
+#import <AVKit/AVKit.h>
+#import <MediaPlayer/MediaPlayer.h>
+
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 
 // Logging
 #define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
+
+@interface YTKBPlayerViewController : AVPlayerViewController
+
+@end
 
 @interface YTBrowserHelper : NSObject
 
@@ -53,22 +61,6 @@
 - (NSDictionary *)parameterDictionary;
 @end
 
-@interface KBYTSearchResult: NSObject
-
-@property (nonatomic, strong) NSString *title;
-@property (nonatomic, strong) NSString *author;
-@property (nonatomic, strong) NSString *videoId;
-@property (nonatomic, strong) NSString *duration;
-@property (nonatomic, strong) NSString *imagePath;
-@property (nonatomic, strong) NSString *age;
-@property (nonatomic, strong) NSString *views;
-@property (nonatomic, strong) NSString *details;
-
-
-- (id)initWithDictionary:(NSDictionary *)resultDict;
-
-@end
-
 @interface KBYTMedia : NSObject
 
 @property (nonatomic, strong) NSString *title;
@@ -79,9 +71,28 @@
 @property (nonatomic, strong) NSString *duration;
 @property (nonatomic, strong) NSDictionary *images;
 @property (nonatomic, strong) NSArray *streams;
-
+@property (nonatomic, strong) NSString *details; //description
 
 @end
+
+@interface KBYTSearchResult: NSObject
+
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *author;
+@property (nonatomic, strong) NSString *videoId;
+@property (nonatomic, strong) NSString *duration;
+@property (nonatomic, strong) NSString *imagePath;
+@property (nonatomic, strong) NSString *age;
+@property (nonatomic, strong) NSString *views;
+@property (nonatomic, strong) NSString *details;
+@property (nonatomic, strong) KBYTMedia *media;
+
+
+- (id)initWithDictionary:(NSDictionary *)resultDict;
+
+@end
+
+
 
 @interface KBYTStream : NSObject
 
@@ -129,9 +140,12 @@
 @property (nonatomic, strong) APDeviceController *deviceController;
 @property (nonatomic, strong) NSString *yttimestamp;
 @property (nonatomic, strong) NSString *ytkey;
+@property (nonatomic, strong) NSString *airplayIP;
 
 
 + (id)sharedInstance;
+
+- (NSString *)videoDescription:(NSString *)videoID;
 
 /**
  

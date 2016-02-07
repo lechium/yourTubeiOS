@@ -8,17 +8,11 @@
 
 #import "KBYTSearchTableViewController.h"
 #import "OurViewController.h"
-
+#import "SVProgressHUD/SVProgressHUD.h"
+#import "KBYTSearchItemViewController.h"
 #define kLoadingCellTag 500
 
-@implementation YTKBPlayerViewController
 
-- (BOOL)shouldAutorotate
-{
-    return TRUE;
-}
-
-@end
 
 @interface KBYTActualSearchResultsTableViewController : UITableViewController
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
@@ -160,7 +154,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    [self resetSearchResults];
+   // [self resetSearchResults];
 }
 
 - (void)resetSearchResults
@@ -190,7 +184,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"search string: %@", searchString);
     [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage completionBlock:^(NSDictionary *searchDetails) {
         
-        //NSLog(@"search details: %@", searchDetails);
+        NSLog(@"search details: %@", searchDetails);
         
         self.totalResults = [searchDetails[@"resultCount"] integerValue];
         self.pageCount = [searchDetails[@"pageCount"] integerValue];
@@ -228,7 +222,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-
     [self resetSearchResults];
 }
 
@@ -243,9 +236,15 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     [super viewWillDisappear:animated];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self checkAirplay];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self checkAirplay];
+  
     self.extendedLayoutIncludesOpaqueBars = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.viewController = [[KBYTActualSearchResultsTableViewController alloc] init];
@@ -447,7 +446,20 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     KBYTSearchResult *currentResult = [self.searchResults objectAtIndex:indexPath.row];
-    [self getVideoIDDetails:currentResult.videoId];
+    //[SVProgressHUD showInfoWithStatus:@"Fetching details"];
+    [SVProgressHUD show];
+    [[KBYourTube sharedInstance] getVideoDetailsForID:currentResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
+        
+        //
+        [SVProgressHUD dismiss];
+        KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:videoDetails];
+        [[self navigationController] pushViewController:searchItem animated:true];
+        
+    } failureBlock:^(NSString *error) {
+        //
+    }];
+    
+    //[self getVideoIDDetails:currentResult.videoId];
 }
 
 /*
@@ -507,12 +519,17 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     } else {
         [self.navigationController setToolbarHidden:NO animated:YES];
         [self populateToolbar:status];
+        if (self.airplayTimer == nil)
+        {
+            [self fireAirplayTimer];
+        }
     }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         @autoreleasepool {
             
             NSDictionary *playbackInfo = [self getAirplayDetails];
+            NSLog(@"playbackINfo: %@", playbackInfo);
             CGFloat duration = [[playbackInfo valueForKey:@"duration"] floatValue];
             CGFloat position = [[playbackInfo valueForKey:@"position"] floatValue];
             CGFloat percent = position / duration;
@@ -535,6 +552,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)sliderMoved:(UISlider *)slider
 {
+    LOG_SELF;
     CGFloat translatedSpot = self.airplayDuration * slider.value;
     [self scrubToPosition:translatedSpot];
 }
@@ -576,7 +594,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (NSDictionary *)scrubToPosition:(CGFloat)position
 {
-    NSString *requestString = [NSString stringWithFormat:@"http://%@/scrub?position=%f", [self airplayIP], position];
+    NSString *requestString = [NSString stringWithFormat:@"http://%@/scrub?position=%f", [[KBYourTube sharedInstance] airplayIP], position];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"POST"];
     //  NSLog(@"returnDict: %@", returnDict);
     return returnDict;
@@ -586,7 +604,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (NSDictionary *)getAirplayDetails
 {
-    NSString *requestString = [NSString stringWithFormat:@"http://%@/playback-info", [self airplayIP]];
+    NSString *requestString = [NSString stringWithFormat:@"http://%@/playback-info", [[KBYourTube sharedInstance] airplayIP]];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"GET"];
     //    NSLog(@"returnDict: %@", returnDict);
     return returnDict;

@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "MarqueeLabel/MarqueeLabel.h"
 #import "SDWebImage/UIImageView+WebCache.h"
+#import <AVFoundation/AVFoundation.h>
+#import <AVKit/AVKit.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 @interface KBYTDownloadCell: UITableViewCell
 
@@ -20,7 +23,8 @@
 @end
 
 @interface KBYTDownloadsTableViewController : UITableViewController
-
+@property (nonatomic, strong) AVPlayer *player;
+@property (nonatomic, strong) AVPlayerViewController *playerView;
 @property (nonatomic, strong) NSArray *downloadArray;
 @property (nonatomic, strong) NSArray *activeDownloads;
 

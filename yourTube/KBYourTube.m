@@ -30,6 +30,14 @@
  
  */
 
+@implementation YTKBPlayerViewController
+
+- (BOOL)shouldAutorotate
+{
+    return TRUE;
+}
+
+@end
 
 @implementation NSDictionary (strings)
 
@@ -152,6 +160,7 @@
 
 - (NSDictionary *)dictionaryValue
 {
+    if (self.title == nil)self.title = @"Unavailable";
     if (self.details == nil)self.details = @"Unavailable";
     if (self.views == nil)self.views = @"Unavailable";
     if (self.age == nil)self.age = @"Unavailable";
@@ -343,6 +352,12 @@
     NSString *videoID = vars[@"video_id"];
     NSString *view_count = vars[@"view_count"];
     
+    NSString *desc = [[KBYourTube sharedInstance] videoDescription:videoID];
+    if (desc != nil)
+    {
+        self.details = desc;
+    }
+    
     self.title = [title stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     self.author = author;
     NSMutableDictionary *images = [NSMutableDictionary new];
@@ -412,7 +427,8 @@
 
 - (NSDictionary *)dictionaryRepresentation
 {
-    return @{@"title": self.title, @"author": self.author, @"keywords": self.keywords, @"videoID": self.videoId, @"views": self.views, @"duration": self.duration, @"images": self.images, @"streams": self.streams};
+     if (self.details == nil)self.details = @"Unavailable";
+    return @{@"title": self.title, @"author": self.author, @"keywords": self.keywords, @"videoID": self.videoId, @"views": self.views, @"duration": self.duration, @"images": self.images, @"streams": self.streams, @"details": self.details};
 }
 
 - (NSString *)description
@@ -527,7 +543,7 @@
 
 @implementation KBYourTube
 
-@synthesize ytkey, yttimestamp, deviceController;
+@synthesize ytkey, yttimestamp, deviceController, airplayIP;
 
 #pragma mark convenience methods
 
@@ -709,6 +725,70 @@
     return theArray;
     
 }
+
+- (NSString *)videoInfoPage:(NSString *)html {
+    
+    NSScanner *theScanner;
+    NSString *text = nil;
+    
+    theScanner = [NSScanner scannerWithString:html];
+    while ([theScanner isAtEnd] == NO) {
+        
+        //[theScanner scanUpToString:@"<link itemprop=\"url\"" intoString:NULL];
+        
+        //[theScanner scanUpToString:@"<div id=\"watch7-speedyg-area\">" intoString:&text];
+        
+        [theScanner scanUpToString:@"<meta name=\"title\"" intoString:NULL] ;
+        
+        [theScanner scanUpToString:@"<link rel=\"alternate\"" intoString:&text] ;
+        
+        
+    } // while //
+    
+    return [NSString stringWithFormat:@"<div>%@</div>", text];
+    
+}
+
+- (NSString *)videoDescription:(NSString *)videoID
+{
+    NSString *requestString = [NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", videoID];
+    NSString *request = [self stringFromRequest:requestString];
+    NSString *trimmed = [self videoInfoPage:request];
+    APDocument *rawDoc = [[APDocument alloc] initWithString:trimmed];
+    APElement *descElement = [[rawDoc rootElement] elementContainingNameString:@"description"];
+    return [descElement valueForAttributeNamed:@"content"];
+}
+
+- (void)getVideoDescription:(NSString *)videoID
+            completionBlock:(void(^)(NSString* description))completionBlock
+               failureBlock:(void(^)(NSString* error))failureBlock
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        @autoreleasepool {
+            
+            
+            NSString *requestString = [NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", videoID];
+            NSString *request = [self stringFromRequest:requestString];
+            NSString *trimmed = [self videoInfoPage:request];
+            APDocument *rawDoc = [[APDocument alloc] initWithString:trimmed];
+            APElement *descElement = [[rawDoc rootElement] elementContainingNameString:@"description"];
+            NSString *desc = [descElement valueForAttributeNamed:@"content"];
+            //doneski!
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if([desc length] > 0)
+                {
+                    completionBlock(desc);
+                } else {
+                    failureBlock(@"fail");
+                }
+            });
+        }
+    });
+    
+}
+
 /*
  
  everything before <ol id="item-section" is mostly useless, and everything after the end </ol> is also
@@ -768,8 +848,15 @@
             
             //hard to find a delimiter that sticks out between results, </div></div></div></div></div></li> will have to do
             
-            NSArray *videoArray = [rawSearchValue componentsSeparatedByString:@"</div></div></div></div></div></li>"];
+            NSArray *videoArray = [rawSearchValue componentsSeparatedByString:@"<li><div class=\"yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix\""];
             
+            /*
+             NSArray *videoArray = [rawSearchValue componentsSeparatedByString:@"</div></div></div></div></div></li>"];
+             if (([videoArray count] == 1 || [videoArray count] == 0) && results > 1)
+             {
+             videoArray = [rawSearchValue componentsSeparatedByString:@"</div></div></div></div></li>"];
+             }
+             */
             //create the array that will store the final results
             NSMutableDictionary *outputDict = [NSMutableDictionary new];
             outputDict[@"resultCount"] = [NSNumber numberWithInteger:results];
@@ -780,7 +867,8 @@
                 KBYTSearchResult *result = [KBYTSearchResult new];
                 
                 //add the delimiter back in so APXML can parse things properly
-                NSString *fullRawVideoInfo = [rawVideoInfo stringByAppendingString:@"</div></div></div></div></div></li>"];
+                // NSString *fullRawVideoInfo = [rawVideoInfo stringByAppendingString:@"</div></div></div></div></div></li>"];
+                NSString *fullRawVideoInfo = [@"<li><div class=\"yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix\"" stringByAppendingString:rawVideoInfo];
                 
                 //this makes parsing the info a little less painful, treat it like XML with APDocument
                 APDocument *videoDetailXMLRepresentation = [[APDocument alloc] initWithString:fullRawVideoInfo];
@@ -842,6 +930,8 @@
                 }
                 
                 //done setting data, hopefully everything is good to go!
+                
+               // NSLog(@"result: %@", result);
                 
                 //if we got keys we got a result, add it to the array
                 if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"])
@@ -1095,7 +1185,7 @@
         case 36: dict = @{@"format": @"320p 3GP", @"height": @320, @"extension": @"3gp"}; break;
         case 17: dict = @{@"format": @"176p 3GP", @"height": @176, @"extension": @"3gp"}; break;
             
-             */
+             
         case 137: dict = @{@"format": @"1080p M4V", @"height": @1080, @"extension": @"m4v", @"quality": @"adaptive"}; break;
         case 138: dict = @{@"format": @"4K M4V", @"height": @2160, @"extension": @"m4v", @"quality": @"adaptive"}; break;
         case 264: dict = @{@"format": @"1440p M4v", @"height": @1440, @"extension": @"m4v", @"quality": @"adaptive"}; break;
@@ -1103,6 +1193,7 @@
         case 266: dict = @{@"format": @"4K M4V", @"height": @2160, @"extension": @"m4v", @"quality": @"adaptive"}; break;
             
         case 299: dict = @{@"format": @"1080p HFR M4V", @"height": @1080, @"extension": @"m4v", @"quality": @"adaptive"}; break;
+             */
         case 140: dict = @{@"format": @"128K AAC M4A", @"height": @0, @"extension": @"aac", @"quality": @"adaptive"}; break;
         case 141: dict = @{@"format": @"256K AAC M4A", @"height": @0, @"extension": @"aac", @"quality": @"adaptive"}; break;
             /*

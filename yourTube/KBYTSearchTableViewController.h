@@ -15,9 +15,7 @@
 #import "KBYTPreferences.h"
 #import "KBYourTube.h"
 
-@interface YTKBPlayerViewController : AVPlayerViewController
 
-@end
 
 @protocol KBYTSearchTableViewControllerDelegate <NSObject>
 
@@ -31,7 +29,7 @@
 }
 @property (nonatomic, weak) id<KBYTSearchTableViewControllerDelegate> delegate;
 @property (nonatomic, strong) AVPlayer *player;
-@property (nonatomic, strong) YTKBPlayerViewController *playerView;
+@property (nonatomic, strong) AVPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTMedia *currentMedia;
 @property (nonatomic, strong) NSString *previousVideoID;
 @property (readwrite, assign) BOOL gettingDetails;

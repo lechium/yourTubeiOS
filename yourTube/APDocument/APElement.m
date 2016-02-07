@@ -179,6 +179,35 @@
     return found;
 }
 
+- (APElement *)elementContainingNameString:(NSString *)string
+{
+    APElement *retValue = nil;
+    
+    if ([self nameAttributeMatch:self in:string]) {
+        retValue = self;
+    } else {
+        for (APElement *anElement in self.childElements) {
+            if ((retValue = [anElement elementContainingNameString:string]))
+                break;
+        }
+    }
+    return retValue;
+}
+
+///used in the method above to see if we find an name attribute that contains the specified string
+
+- (int)nameAttributeMatch:(APElement *)element in:(NSString *)tag
+{
+    int found = 0;
+    
+    if([[element valueForAttributeNamed:@"name"] containsString:tag]) {
+        // NSLog (@"Found tag %@, value = %@", tag, element.value);
+        found = 1;
+    }
+    return found;
+}
+
+
 //recursively search for class attribute that contains a specified string
 
 - (APElement *)elementContainingClassString:(NSString *)string

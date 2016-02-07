@@ -7,7 +7,7 @@ export ARCHS = armv7 armv7s arm64
 
 APPLICATION_NAME = yourTube
 yourTube_FILES = main.m yourTubeApplication.m OurViewController.mm KBYourTube.m KBYTDownloadStream.m Download/URLCredential.m Download/URLDownloader.m KBYTDownloadsTableViewController.m
-yourTube_FILES += APDeviceController.m KBYTPreferences.m UIColor+Additions.m UIImage+Scale.m MarqueeLabel/MarqueeLabel.m KBYTSearchTableViewController.m
+yourTube_FILES += APDeviceController.m KBYTPreferences.m UIColor+Additions.m UIImage+Scale.m MarqueeLabel/MarqueeLabel.m KBYTSearchTableViewController.m KBYTSearchItemViewController.m
 yourTube_FILES += SDWebImage/MKAnnotationView+WebCache.m
 yourTube_FILES += SDWebImage/NSData+ImageContentType.m
 yourTube_FILES += SDWebImage/SDImageCache.m
@@ -25,6 +25,7 @@ yourTube_FILES += SDWebImage/UIImageView+HighlightedWebCache.m
 yourTube_FILES += SDWebImage/UIImageView+WebCache.m
 yourTube_FILES += SDWebImage/UIView+WebCacheOperation.m
 yourTube_FILES += APDocument/APAttribute.m APDocument/APDocument.m APDocument/APElement.m
+yourTube_FILES += SVProgressHUD/SVIndefiniteAnimatedView.m SVProgressHUD/SVProgressHUD.m SVProgressHUD/SVRadialGradientLayer.m
 yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit
 yourTube_CXXFLAGS += -fobjc-arc
 yourTube_CFLAGS += -fobjc-arc

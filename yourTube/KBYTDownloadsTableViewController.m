@@ -315,6 +315,62 @@
     }
 }
 
+- (BOOL)isPlaying
+{
+    if ([self player] != nil)
+    {
+        if (self.player.rate != 0)
+        {
+            return true;
+        }
+    }
+    return false;
+    
+}
+
+-(void)itemDidFinishPlaying:(NSNotification *) notification {
+    // Will be called when AVPlayer finishes playing playerItem
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
+}
+
+- (NSString *)appSupportFolder
+{
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu";
+    if (![man fileExistsAtPath:outputFolder])
+    {
+        [man createDirectoryAtPath:outputFolder withIntermediateDirectories:true attributes:nil error:nil];
+    }
+    return outputFolder;
+}
+
+- (NSString *)downloadFolder
+{
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads"];
+}
+
+
+- (void)playFile:(NSDictionary *)file
+{
+    NSString *outputFile = [[self downloadFolder] stringByAppendingPathComponent:file[@"outputFilename"]];
+    NSURL *playURL = [NSURL fileURLWithPath:outputFile];
+    NSLog(@"play url: %@", playURL);
+    if ([self isPlaying] == true  ){
+        return;
+    }
+    self.playerView = [YTKBPlayerViewController alloc];
+    self.playerView.showsPlaybackControls = true;
+    self.player = [AVPlayer playerWithURL:playURL];
+    self.playerView.player = self.player;
+    
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    self.playerView.view.frame = self.view.frame;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
+    
+    [self.player play];
+    
+}
 
 /*
  // Override to support rearranging the table view.
@@ -335,8 +391,9 @@
     if (indexPath.section == 1)
     {
         NSDictionary *theFile = [self.downloadArray objectAtIndex:indexPath.row];
-        OurViewController *vc = self.navigationController.viewControllers.firstObject;
-        [vc playFile:theFile];
+        NSLog(@"theFile: %@", theFile);
+       // OurViewController *vc = self.navigationController.viewControllers.firstObject;
+        [self playFile:theFile];
     }
 }
 

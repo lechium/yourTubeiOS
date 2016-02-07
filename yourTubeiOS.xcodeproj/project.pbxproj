@@ -9,6 +9,14 @@
 /* Begin PBXBuildFile section */
 		895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */; };
 		895F67041C60125600AE33FA /* KBYTSearchTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */; };
+		895F67861C62B9BD00AE33FA /* KBYTSearchItemViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F67841C62B9BD00AE33FA /* KBYTSearchItemViewController.h */; };
+		895F67871C62B9BD00AE33FA /* KBYTSearchItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67851C62B9BD00AE33FA /* KBYTSearchItemViewController.m */; };
+		895F678F1C6520D500AE33FA /* SVIndefiniteAnimatedView.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F67891C6520D500AE33FA /* SVIndefiniteAnimatedView.h */; };
+		895F67901C6520D500AE33FA /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F678A1C6520D500AE33FA /* SVIndefiniteAnimatedView.m */; };
+		895F67911C6520D500AE33FA /* SVProgressHUD.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F678B1C6520D500AE33FA /* SVProgressHUD.h */; };
+		895F67921C6520D500AE33FA /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F678C1C6520D500AE33FA /* SVProgressHUD.m */; };
+		895F67931C6520D500AE33FA /* SVRadialGradientLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F678D1C6520D500AE33FA /* SVRadialGradientLayer.h */; };
+		895F67941C6520D500AE33FA /* SVRadialGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F678E1C6520D500AE33FA /* SVRadialGradientLayer.m */; };
 		897B49C41C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */; };
 		897B49C51C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */; };
 		897B49E81C58A7B500F50BC2 /* MKAnnotationView+WebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B49C71C58A7B500F50BC2 /* MKAnnotationView+WebCache.h */; };
@@ -80,6 +88,14 @@
 /* Begin PBXFileReference section */
 		895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTSearchTableViewController.h; path = yourTube/KBYTSearchTableViewController.h; sourceTree = "<group>"; };
 		895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTSearchTableViewController.m; path = yourTube/KBYTSearchTableViewController.m; sourceTree = "<group>"; };
+		895F67841C62B9BD00AE33FA /* KBYTSearchItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTSearchItemViewController.h; path = yourTube/KBYTSearchItemViewController.h; sourceTree = "<group>"; };
+		895F67851C62B9BD00AE33FA /* KBYTSearchItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTSearchItemViewController.m; path = yourTube/KBYTSearchItemViewController.m; sourceTree = "<group>"; };
+		895F67891C6520D500AE33FA /* SVIndefiniteAnimatedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVIndefiniteAnimatedView.h; sourceTree = "<group>"; };
+		895F678A1C6520D500AE33FA /* SVIndefiniteAnimatedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVIndefiniteAnimatedView.m; sourceTree = "<group>"; };
+		895F678B1C6520D500AE33FA /* SVProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressHUD.h; sourceTree = "<group>"; };
+		895F678C1C6520D500AE33FA /* SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressHUD.m; sourceTree = "<group>"; };
+		895F678D1C6520D500AE33FA /* SVRadialGradientLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVRadialGradientLayer.h; sourceTree = "<group>"; };
+		895F678E1C6520D500AE33FA /* SVRadialGradientLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVRadialGradientLayer.m; sourceTree = "<group>"; };
 		897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadsTableViewController.h; path = yourTube/KBYTDownloadsTableViewController.h; sourceTree = "<group>"; };
 		897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadsTableViewController.m; path = yourTube/KBYTDownloadsTableViewController.m; sourceTree = "<group>"; };
 		897B49C71C58A7B500F50BC2 /* MKAnnotationView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKAnnotationView+WebCache.h"; sourceTree = "<group>"; };
@@ -199,6 +215,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		895F67881C6520D500AE33FA /* SVProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				895F67891C6520D500AE33FA /* SVIndefiniteAnimatedView.h */,
+				895F678A1C6520D500AE33FA /* SVIndefiniteAnimatedView.m */,
+				895F678B1C6520D500AE33FA /* SVProgressHUD.h */,
+				895F678C1C6520D500AE33FA /* SVProgressHUD.m */,
+				895F678D1C6520D500AE33FA /* SVRadialGradientLayer.h */,
+				895F678E1C6520D500AE33FA /* SVRadialGradientLayer.m */,
+			);
+			name = SVProgressHUD;
+			path = yourTube/SVProgressHUD;
+			sourceTree = "<group>";
+		};
 		897B49C61C58A7B500F50BC2 /* SDWebImage */ = {
 			isa = PBXGroup;
 			children = (
@@ -290,6 +320,8 @@
 				897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */,
 				895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */,
 				895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */,
+				895F67841C62B9BD00AE33FA /* KBYTSearchItemViewController.h */,
+				895F67851C62B9BD00AE33FA /* KBYTSearchItemViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -394,6 +426,7 @@
 			isa = PBXGroup;
 			children = (
 				89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */,
+				895F67881C6520D500AE33FA /* SVProgressHUD */,
 				897B49C61C58A7B500F50BC2 /* SDWebImage */,
 				897B4A141C59750D00F50BC2 /* Preferences */,
 				897B4A151C59751500F50BC2 /* YouTube */,
@@ -442,13 +475,16 @@
 				897B4A2A1C5E8B3D00F50BC2 /* APAttribute.h in Headers */,
 				897B49EC1C58A7B500F50BC2 /* SDImageCache.h in Headers */,
 				895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */,
+				895F678F1C6520D500AE33FA /* SVIndefiniteAnimatedView.h in Headers */,
 				89E06BE41C499F1B00B8D1C4 /* OurViewController.h in Headers */,
 				897B49F61C58A7B500F50BC2 /* SDWebImageManager.h in Headers */,
+				895F67931C6520D500AE33FA /* SVRadialGradientLayer.h in Headers */,
 				897B49F21C58A7B500F50BC2 /* SDWebImageDownloader.h in Headers */,
 				897B4A011C58A7B500F50BC2 /* UIImage+WebP.h in Headers */,
 				897B4A071C58A7B500F50BC2 /* UIView+WebCacheOperation.h in Headers */,
 				897B49FB1C58A7B500F50BC2 /* UIButton+WebCache.h in Headers */,
 				89E06BD21C499EF000B8D1C4 /* URLCredential.h in Headers */,
+				895F67861C62B9BD00AE33FA /* KBYTSearchItemViewController.h in Headers */,
 				897B49F91C58A7B500F50BC2 /* SDWebImagePrefetcher.h in Headers */,
 				897B4A2E1C5E8B3D00F50BC2 /* APElement.h in Headers */,
 				897B49E81C58A7B500F50BC2 /* MKAnnotationView+WebCache.h in Headers */,
@@ -457,6 +493,7 @@
 				897B49F41C58A7B500F50BC2 /* SDWebImageDownloaderOperation.h in Headers */,
 				897B4A0B1C58AAB000F50BC2 /* UIColor+Additions.h in Headers */,
 				897B49FD1C58A7B500F50BC2 /* UIImage+GIF.h in Headers */,
+				895F67911C6520D500AE33FA /* SVProgressHUD.h in Headers */,
 				897B49EA1C58A7B500F50BC2 /* NSData+ImageContentType.h in Headers */,
 				897B49F01C58A7B500F50BC2 /* SDWebImageDecoder.h in Headers */,
 				897B4A301C5E8B3D00F50BC2 /* APXML.h in Headers */,
@@ -541,6 +578,8 @@
 				897B4A2B1C5E8B3D00F50BC2 /* APAttribute.m in Sources */,
 				897B49ED1C58A7B500F50BC2 /* SDImageCache.m in Sources */,
 				897B49EB1C58A7B500F50BC2 /* NSData+ImageContentType.m in Sources */,
+				895F67941C6520D500AE33FA /* SVRadialGradientLayer.m in Sources */,
+				895F67901C6520D500AE33FA /* SVIndefiniteAnimatedView.m in Sources */,
 				89E06BEC1C499F7000B8D1C4 /* APDeviceController.m in Sources */,
 				897B49F11C58A7B500F50BC2 /* SDWebImageDecoder.m in Sources */,
 				89E06BE71C499F2100B8D1C4 /* yourTubeApplication.m in Sources */,
@@ -555,6 +594,7 @@
 				89E06BDF1C499EFF00B8D1C4 /* KBYTDownloadStream.m in Sources */,
 				897B4A2D1C5E8B3D00F50BC2 /* APDocument.m in Sources */,
 				897B49FA1C58A7B500F50BC2 /* SDWebImagePrefetcher.m in Sources */,
+				895F67921C6520D500AE33FA /* SVProgressHUD.m in Sources */,
 				897B49C51C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m in Sources */,
 				897B49E91C58A7B500F50BC2 /* MKAnnotationView+WebCache.m in Sources */,
 				897B4A061C58A7B500F50BC2 /* UIImageView+WebCache.m in Sources */,
@@ -564,6 +604,7 @@
 				89E06BD51C499EF000B8D1C4 /* URLDownloader.m in Sources */,
 				897B4A2F1C5E8B3D00F50BC2 /* APElement.m in Sources */,
 				89E06BD31C499EF000B8D1C4 /* URLCredential.m in Sources */,
+				895F67871C62B9BD00AE33FA /* KBYTSearchItemViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
