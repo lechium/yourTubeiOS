@@ -1,9 +1,9 @@
 Architecture: iphoneos-arm
 Name: tuyu
 Package: com.nito.ytbrowser
-Version: 1.1
+Version: 1.2
 Maintainer: Kevin Bradley
 Author: Kevin Bradley
-Description: Custom youTube web browser & AirPlay client for downloading videos and audio directly into the music library.
+Description: Custom youTube search engine & AirPlay client for downloading videos and audio directly into the music library.
 Section: Utilities
 Depends: mobilesubstrate, com.nin9tyfour.ffmpeg, com.ouraigua.jodebox, ldid
