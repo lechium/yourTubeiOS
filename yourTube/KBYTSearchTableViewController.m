@@ -519,7 +519,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     } else {
         [self.navigationController setToolbarHidden:NO animated:YES];
         [self populateToolbar:status];
-        if (self.airplayTimer == nil)
+        if (![self.airplayTimer isValid])
         {
             [self fireAirplayTimer];
         }
