@@ -123,7 +123,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
 		case 0:
-			return 4;
+			return 5;
 		case 1:
 			return ([ytMedia.streams count] > 0) ? [ytMedia.streams count] : 1;
 		case 2:
@@ -160,16 +160,14 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 			switch (indexPath.row) {
 				case 0:
 					return calcLabelHeight(ytMedia.title, [UIFont fontWithName:@"Helvetica-Bold" size:13.0f], width);
-					break;
 				case 1:
 					return calcLabelHeight(ytMedia.details, [UIFont fontWithName:@"Helvetica" size:13.0f], width);
-					break;
-				case 2:
-					return calcLabelHeight([@"Views: " stringByAppendingString:ytMedia.views], [UIFont fontWithName:@"Helvetica" size:13.0f], width);
-					break;
+			    case 2:
+                    return calcLabelHeight([@"Duration: " stringByAppendingString:ytMedia.duration], [UIFont fontWithName:@"Helvetica" size:13.0f], width);
 				case 3:
+					return calcLabelHeight([@"Views: " stringByAppendingString:ytMedia.views], [UIFont fontWithName:@"Helvetica" size:13.0f], width);
+				case 4:
 					return calcLabelHeight([@"Tags: " stringByAppendingString:ytMedia.keywords], [UIFont fontWithName:@"Helvetica" size:13.0f], width);
-					break;
 			}
 			break;
 	}
@@ -192,7 +190,6 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 					cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
 					cell.selectionStyle = UITableViewCellSelectionStyleNone;
 					return cell;
-					break;
 				case 1:
 					cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
 					if ([ytMedia.details isEqualToString:@""])
@@ -204,8 +201,15 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 					cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
 					cell.selectionStyle = UITableViewCellSelectionStyleNone;
 					return cell;
-					break;
-				case 2:
+                case 2:
+                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+                    cell.textLabel.text = [@"Duration: " stringByAppendingString:[NSString stringFromTimeInterval:[ytMedia.duration integerValue]]];
+                    cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:13.0f];
+                    cell.textLabel.numberOfLines = 0;
+                    cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    return cell;
+				case 3:
 					cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
 					cell.textLabel.text = [@"Views: " stringByAppendingString:ytMedia.views];
 					cell.textLabel.font = [UIFont fontWithName:@"Helvetica" size:13.0f];
@@ -213,9 +217,8 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 					cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
 					cell.selectionStyle = UITableViewCellSelectionStyleNone;
 					return cell;
-					break;
 
-				case 3:
+				case 4:
 					cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
 				
                     cell.textLabel.text = [@"Tags: " stringByAppendingString:ytMedia.keywords];
@@ -224,7 +227,6 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 					cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
 					cell.selectionStyle = UITableViewCellSelectionStyleNone;
 					return cell;
-					break;
 			}
 			break;
 		case 1:

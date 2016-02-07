@@ -529,7 +529,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         @autoreleasepool {
             
             NSDictionary *playbackInfo = [self getAirplayDetails];
-            NSLog(@"playbackINfo: %@", playbackInfo);
             CGFloat duration = [[playbackInfo valueForKey:@"duration"] floatValue];
             CGFloat position = [[playbackInfo valueForKey:@"position"] floatValue];
             CGFloat percent = position / duration;
@@ -723,7 +722,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 {
     [[KBYourTube sharedInstance] getVideoDetailsForID:details completionBlock:^(KBYTMedia *videoDetails) {
         
-        NSLog(@"got details successfully: %@", videoDetails);
+      //  NSLog(@"got details successfully: %@", videoDetails);
         self.currentMedia = videoDetails;
         self.previousVideoID = videoDetails.videoId;
         self.gettingDetails = false;

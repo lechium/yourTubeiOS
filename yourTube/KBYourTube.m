@@ -66,6 +66,16 @@
 
 @implementation NSString (TSSAdditions)
 
++ (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval
+{
+    NSInteger interval = timeInterval;
+    long seconds = interval % 60;
+    long minutes = (interval / 60) % 60;
+    long hours = (interval / 3600);
+    
+    return [NSString stringWithFormat:@"%0.2ld:%0.2ld:%0.2ld", hours, minutes, seconds];
+}
+
 /*
  
  we use this to convert a raw dictionary plist string into a proper NSDictionary
@@ -347,10 +357,13 @@
     NSString *iurlhq = [vars[@"iurlhq"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *iurlmq = [vars[@"iurlmq"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *iurlsd = [vars[@"iurlsd"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    NSString *keywords = [vars[@"keywords"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *keywords = [[vars[@"keywords"] stringByReplacingOccurrencesOfString:@"+" withString:@" "]stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding ];
     NSString *duration = vars[@"length_seconds"];
     NSString *videoID = vars[@"video_id"];
-    NSString *view_count = vars[@"view_count"];
+    NSNumberFormatter *numFormatter = [NSNumberFormatter new];
+    numFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+    
+    NSNumber *view_count = [numFormatter numberFromString:vars[@"view_count"]];
     
     NSString *desc = [[KBYourTube sharedInstance] videoDescription:videoID];
     if (desc != nil)
@@ -371,7 +384,7 @@
     self.keywords = keywords;
     self.duration = duration;
     self.videoId = videoID;
-    self.views = view_count;
+    self.views = [numFormatter stringFromNumber:view_count];
     
     //separate the streams into their initial array
     
@@ -449,7 +462,19 @@
 
 @implementation NSObject (convenience)
 
++ (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval
+{
+    NSInteger interval = timeInterval;
+    NSInteger ms = (fmod(timeInterval, 1) * 1000);
+    long seconds = interval % 60;
+    long minutes = (interval / 60) % 60;
+    long hours = (interval / 3600);
+    
+    return [NSString stringWithFormat:@"%0.2ld:%0.2ld:%0.2ld,%0.3ld", hours, minutes, seconds, (long)ms];
+}
+
 #pragma mark Parsing & Regex magic
+
 
 //change a wall of "body" text into a dictionary like &key=value
 

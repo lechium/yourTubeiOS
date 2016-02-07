@@ -45,6 +45,7 @@
 
 @interface NSString (TSSAdditions)
 
++ (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval;
 - (id)dictionaryValue;
 
 @end
