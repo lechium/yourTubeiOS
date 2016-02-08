@@ -858,7 +858,7 @@
                 pageorsm = [NSString stringWithFormat:@"page=%lu", page];
             }
             
-            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?q=%@&%@", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
+            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?%@&q=%@&%@", @"sp=EgIQAQ%253D%253D", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
             NSString *rawRequestResult = [self stringFromRequest:requestString];
             
             //get the result number (i hate that two full scans are done to find this..)
