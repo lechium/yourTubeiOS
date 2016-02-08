@@ -857,7 +857,7 @@
             } else {
                 pageorsm = [NSString stringWithFormat:@"page=%lu", page];
             }
-            
+            //@"sp=EgIQAQ%253D%253D" is added to limit searches to just videos, channels and playlists arent parsed...yet?
             NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?%@&q=%@&%@", @"sp=EgIQAQ%253D%253D", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
             NSString *rawRequestResult = [self stringFromRequest:requestString];
             

@@ -64,6 +64,12 @@
     return self;
 }
 
+- (void)cancel
+{
+    [super cancel];
+    [self.downloader cancel];
+}
+
 - (void)main
 {
     NSURL *url = [NSURL URLWithString:downloadInfo[@"url"]];
@@ -79,6 +85,8 @@
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithError:(NSError *)error
 {
+    LOG_SELF;
+    self.CompletedBlock(nil);
 }
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithNotConnectedToInternetError:(NSError *)error
@@ -87,6 +95,7 @@
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didFinishWithData:(NSData *)data
 {
+    LOG_SELF;
     [data writeToFile:[self downloadLocation] atomically:TRUE];
     
     //if we are dealing with an audio file we need to re-encode it in ffmpeg to get a playable file. (and to bump volume)
@@ -284,6 +293,7 @@ kAHAirplayStatusPaused= 2;
             shared.airplaying = NO;
             shared.paused = YES;
             shared.playbackPosition = 0;
+            shared.operations = [NSMutableArray new];
         });
     }
     
@@ -387,10 +397,31 @@ kAHAirplayStatusPaused= 2;
         [[YTBrowserHelper sharedInstance] addDownloadToQueue:userInfo];
         return nil;
         
+    } else if ([[name pathExtension] isEqualToString:@"stopDownload"]) {
+        
+        [[YTBrowserHelper sharedInstance] removeDownloadFromQueue:userInfo];
     }
     
     
     return nil;
+}
+
+- (void)removeDownloadFromQueue:(NSDictionary *)downloadInfo
+{
+    LOG_SELF;
+    NSLog(@"remove download: %@", downloadInfo[@"title"]);
+    NSArray *operations = [self operations];
+    NSLog(@"operations: %@", operations);
+    for (YTDownloadOperation *operation in operations)
+    {
+        NSLog(@"operation name: %@", [operation name]);
+        if ([[operation name] isEqualToString:downloadInfo[@"title"]])
+        {
+            NSLog(@"found operation, cancel it!");
+            [operation cancel];
+        }
+    }
+    [self clearDownload:downloadInfo];
 }
 
 //add a download to our NSOperationQueue
@@ -413,6 +444,11 @@ kAHAirplayStatusPaused= 2;
     
     YTDownloadOperation *downloadOp = [[YTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
         
+        if (downloadedFile == nil)
+        {
+            NSLog(@"no downloaded file, either cancelled or failed!");
+            return;
+        }
         if (![[downloadedFile pathExtension] isEqualToString:[downloadInfo[@"outputFilename"] pathExtension]])
         {
             NSMutableDictionary *mutableCopy = [downloadInfo mutableCopy];
@@ -425,10 +461,34 @@ kAHAirplayStatusPaused= 2;
         
         
         NSLog(@"download completed!");
+        [[self operations] removeObject:downloadOp];
         [self playCompleteSound];
         
     }];
+    [[self operations] addObject:downloadOp];
     [self.downloadQueue addOperation:downloadOp];
+}
+
+- (void)clearDownload:(NSDictionary *)streamDictionary
+{
+    NSFileManager *man = [NSFileManager defaultManager];
+    NSString *dlplist = @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
+    NSMutableArray *currentArray = nil;
+    if ([man fileExistsAtPath:dlplist])
+    {
+        currentArray = [[NSMutableArray alloc] initWithContentsOfFile:dlplist];
+        NSMutableDictionary *updateObject = [[currentArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.title == %@", streamDictionary[@"title"]]]lastObject];
+        NSInteger objectIndex = [currentArray indexOfObject:updateObject];
+        if (objectIndex != NSNotFound)
+        {
+            [currentArray removeObject:updateObject];
+        }
+        
+    } else {
+        currentArray = [NSMutableArray new];
+    }
+    //[currentArray addObject:streamDictionary];
+    [currentArray writeToFile:dlplist atomically:true];
 }
 
 //update download progress of whether or not a file is inProgress or not, used to separate downloads in

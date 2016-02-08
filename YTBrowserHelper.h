@@ -45,6 +45,7 @@
 @property (nonatomic) BOOL                          paused;
 @property (nonatomic) double                        playbackPosition;
 @property (nonatomic) uint8_t                       serverCapabilities;
+@property (nonatomic, strong) NSMutableArray *operations;
 
 - (void)togglePaused;
 - (void)setCommonHeadersForRequest:(NSMutableURLRequest *)request;
@@ -64,6 +65,7 @@
 @interface YTDownloadOperation: NSOperation <URLDownloaderDelegate>
 
 typedef void(^DownloadCompletedBlock)(NSString *downloadedFile);
+
 
 @property (nonatomic, strong) NSDictionary *downloadInfo;
 @property (nonatomic, strong) URLDownloader *downloader;

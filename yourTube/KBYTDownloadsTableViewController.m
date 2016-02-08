@@ -113,7 +113,7 @@
 }
 
 - (void)reloadData {
-     LOG_SELF;
+    LOG_SELF;
     dispatch_async(dispatch_get_main_queue(), ^{
         NSArray *fullArray = [NSArray arrayWithContentsOfFile:[self downloadFile]];
         self.activeDownloads = [fullArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == YES"]];
@@ -129,7 +129,7 @@
     NSDictionary *theObject = [[self.activeDownloads filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.outputFilename == %@", title]]lastObject];
     if (theObject != nil)
     {
-      
+        
         
         NSInteger index = [self.activeDownloads indexOfObject:theObject];
         if (index != NSNotFound)
@@ -171,9 +171,9 @@
     KBYTSearchTableViewController *searchView = [[KBYTSearchTableViewController alloc] init];
     [self.navigationController pushViewController:searchView animated:true];
     //[self presentViewController:searchView animated:true completion:^{
-        
-        //
-   // }];
+    
+    //
+    // }];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -202,12 +202,12 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Incomplete implementation, return the number of sections
+    
     return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of rows
+    
     switch (section) {
         case 0:
             
@@ -278,24 +278,41 @@
  }
  */
 
-- (void)deleteMedia:(NSDictionary *)dictionaryMedia
+- (void)deleteMedia:(NSDictionary *)dictionaryMedia fromSection:(NSInteger)section
 {
-    NSString *filePath = [[self downloadPath] stringByAppendingPathComponent:dictionaryMedia[@"outputFilename"]];
-    [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-    NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
-    [mutableArray removeObject:dictionaryMedia];
-    [mutableArray writeToFile:[self downloadFile] atomically:true];
-    self.downloadArray = mutableArray;
+    if (section == 0) //active download, no file to delete
+    {
+        CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
+        [center sendMessageName:@"org.nito.importscience.stopDownload" userInfo:dictionaryMedia];
+        NSMutableArray *mutableArray = [[self activeDownloads] mutableCopy];
+        [mutableArray removeObject:dictionaryMedia];
+        self.activeDownloads = mutableArray;
+        //NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
+        
+        
+    } else {
+        
+        NSString *filePath = [[self downloadPath] stringByAppendingPathComponent:dictionaryMedia[@"outputFilename"]];
+        [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+        NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
+        [mutableArray removeObject:dictionaryMedia];
+        if ([self.activeDownloads count] > 0)
+        {
+            [mutableArray addObjectsFromArray:self.activeDownloads];
+        }
+        [mutableArray writeToFile:[self downloadFile] atomically:true];
+        self.downloadArray = mutableArray;
+    }
 }
 
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0)
-    {
-        return NO;
-    }
-    
+//    if (indexPath.section == 0)
+//    {
+//        return NO;
+//    }
+//    
     return YES;
 }
 
@@ -304,9 +321,24 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         
-        NSDictionary *mediaToDelete = [self.downloadArray objectAtIndex:indexPath.row];
+        NSDictionary *mediaToDelete = nil;
+        
+        switch (indexPath.section) {
+                
+            case 0://active dl
+                
+                mediaToDelete = [self.activeDownloads objectAtIndex:indexPath.row];
+                break;
+                
+            case 1: //finished dl
+                mediaToDelete = [self.downloadArray objectAtIndex:indexPath.row];
+                break;
+                
+        }
+        
+        
         [tableView beginUpdates];
-        [self deleteMedia:mediaToDelete];
+        [self deleteMedia:mediaToDelete fromSection:indexPath.section];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];
         
@@ -392,7 +424,7 @@
     {
         NSDictionary *theFile = [self.downloadArray objectAtIndex:indexPath.row];
         NSLog(@"theFile: %@", theFile);
-       // OurViewController *vc = self.navigationController.viewControllers.firstObject;
+        // OurViewController *vc = self.navigationController.viewControllers.firstObject;
         [self playFile:theFile];
     }
 }

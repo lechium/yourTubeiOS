@@ -7,7 +7,7 @@
 //
 
 #import "URLDownloader.h"
-
+#import <UIKit/UIKit.h>
 
 #pragma mark -
 

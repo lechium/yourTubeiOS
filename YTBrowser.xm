@@ -50,6 +50,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
     [center registerForMessageName:@"org.nito.importscience.pauseAirplay" target:ytbh selector:@selector(togglePaused)];
     [center registerForMessageName:@"org.nito.importscience.airplayState" target:ytbh selector:@selector(airplayState)];
     [center registerForMessageName:@"org.nito.importscience.addDownload" target:self selector:@selector(handleMessageName:userInfo:)];
+    [center registerForMessageName:@"org.nito.importscience.stopDownload" target:self selector:@selector(handleMessageName:userInfo:)];
 	Method ourMessageHandler = class_getInstanceMethod(sci, @selector(handleMessageName:userInfo:));
     
 	class_addMethod(SB, @selector(handleMessageName:userInfo:), method_getImplementation(ourMessageHandler), method_getTypeEncoding(ourMessageHandler));

@@ -181,10 +181,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     LOG_SELF;
     
     NSString *searchString = [self.searchController.searchBar text];
-    NSLog(@"search string: %@", searchString);
+    //NSLog(@"search string: %@", searchString);
     [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage completionBlock:^(NSDictionary *searchDetails) {
         
-        NSLog(@"search details: %@", searchDetails);
+      //  NSLog(@"search details: %@", searchDetails);
         
         self.totalResults = [searchDetails[@"resultCount"] integerValue];
         self.pageCount = [searchDetails[@"pageCount"] integerValue];
