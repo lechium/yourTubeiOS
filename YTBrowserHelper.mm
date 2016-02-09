@@ -29,137 +29,6 @@
 #import <arpa/inet.h>
 #import <ifaddrs.h>
 
-//download operation class, handles file downloads.
-
-@implementation YTDownloadOperation
-
-@synthesize downloadInfo, downloader, downloadLocation, trackDuration, CompletedBlock;
-
-- (NSString *)downloadFolder
-{
-    NSFileManager *man = [NSFileManager defaultManager];
-    NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu/Downloads";
-    if (![man fileExistsAtPath:outputFolder])
-    {
-        [man createDirectoryAtPath:outputFolder withIntermediateDirectories:true attributes:nil error:nil];
-    }
-    return outputFolder;
-}
-
-- (BOOL)isAsynchronous
-{
-    return true;
-}
-
-- (id)initWithInfo:(NSDictionary *)downloadDictionary completed:(DownloadCompletedBlock)theBlock
-{
-    self = [super init];
-    downloadInfo = downloadDictionary;
-    self.name = downloadInfo[@"title"];
-    self.downloadLocation = [[self downloadFolder] stringByAppendingPathComponent:downloadDictionary[@"outputFilename"]];
-    NSString *imageURL = downloadInfo[@"images"][@"standard"];
-    NSData *downloadData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]];
-    NSString *outputJPEG = [[[self downloadLocation] stringByDeletingPathExtension] stringByAppendingPathExtension:@"jpg"];
-    [downloadData writeToFile:outputJPEG atomically:true];
-    NSInteger durationSeconds = [downloadDictionary[@"duration"] integerValue];
-    trackDuration = durationSeconds*1000;
-    CompletedBlock = theBlock;
-    
-    return self;
-}
-
-- (void)cancel
-{
-    [super cancel];
-    [self.downloader cancel];
-}
-
-- (void)main
-{
-    NSURL *url = [NSURL URLWithString:downloadInfo[@"url"]];
-    NSURLRequest *theRequest = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
-    self.downloader = [[URLDownloader alloc] initWithDelegate:self];
-    [self.downloader download:theRequest withCredential:nil];
-}
-
-- (void)urlDownloader:(URLDownloader *)urlDownloader didChangeStateTo:(URLDownloaderState)state
-{
-    NSLog(@"Download state: %u", state);
-}
-
-- (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithError:(NSError *)error
-{
-    LOG_SELF;
-    self.CompletedBlock(nil);
-}
-
-- (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithNotConnectedToInternetError:(NSError *)error
-{
-}
-
-- (void)urlDownloader:(URLDownloader *)urlDownloader didFinishWithData:(NSData *)data
-{
-    LOG_SELF;
-    [data writeToFile:[self downloadLocation] atomically:TRUE];
-    
-    //if we are dealing with an audio file we need to re-encode it in ffmpeg to get a playable file. (and to bump volume)
-    if ([downloadLocation.pathExtension isEqualToString:@"aac"])
-    {
-        
-        //for now the audio is bumped to a static 256 increase, this may change later to be customizable.
-        NSInteger volumeInt = 256;
-        
-        //do said re-encoding in ffmpeg
-        [[YTBrowserHelper sharedInstance] fixAudio:downloadLocation volume:volumeInt completionBlock:^(NSString *newFile) {
-            
-            if (self.CompletedBlock != nil)
-            {
-                //import the file to the music library using JODebox
-                [[YTBrowserHelper sharedInstance] importFileWithJO:newFile duration:[NSNumber numberWithInteger:self.trackDuration]];
-                
-                self.CompletedBlock(newFile);
-            }
-        }];
-        return;
-    }
-    
-    //all other media goes through here, no conversion and imports necessary.
-    if (self.CompletedBlock != nil)
-    {
-        self.CompletedBlock(downloadLocation);
-    }
-    
-    
-    
-}
-
-//use CPDistributedMessagingCenter to relay progress details back to the yourTube/tuyu application.
-
-- (void)urlDownloader:(URLDownloader *)urlDownloader didReceiveData:(NSData *)data
-{
-    //
-    float percentComplete = [urlDownloader downloadCompleteProcent];
-    // NSLog(@"percentComplete: %f", percentComplete);
-    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
-    NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
-    
-    [center sendMessageName:@"org.nito.dllistener.currentProgress" userInfo:info];
-    
-}
-
-- (void)urlDownloaderDidStart:(URLDownloader *)urlDownloader
-{
-    
-}
-
-- (void)urlDownloader:(URLDownloader *)urlDownloader didFailOnAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
-    
-}
-
-
-
-@end
 
 
 /*
@@ -265,7 +134,7 @@ kAHAirplayStatusPaused= 2;
 
 @implementation YTBrowserHelper
 
-@synthesize airplaying, airplayTimer, deviceIP, sessionID, airplayDictionary;
+@synthesize airplaying, airplayTimer, deviceIP, sessionID, airplayDictionary, operations;
 
 //@synthesize webServer;
 /*
@@ -365,41 +234,14 @@ kAHAirplayStatusPaused= 2;
 
 - (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
 {
-    //import no longer goes through here, should prune this out.
-    if ([[name pathExtension] isEqualToString:@"import"])
-    {
-        [self startGCDWebServer]; //start the GCDServer before we kick off the import.
-        
-        //right now the userInfo dict only has a filePath and a duration of the input file
-        //remember this is being called from inside SpringBoard and not YTBrowserHelper, so this is how we pass the
-        //information to our JODebox wrapper.
-        [[YTBrowserHelper sharedInstance] importFileWithJO:userInfo[@"filePath"] duration:userInfo[@"duration"]];
-        return nil;
-    } else if ([[name pathExtension] isEqualToString:@"startAirplay"])
+    if ([[name pathExtension] isEqualToString:@"startAirplay"])
     {
         [[YTBrowserHelper sharedInstance] startAirplayFromDictionary:userInfo];
-        
-        return nil;
-    }else if ([[name pathExtension] isEqualToString:@"pauseAirplay"])
-    {
-        [[YTBrowserHelper sharedInstance] togglePaused];
-        return nil;
-    } else if ([[name pathExtension] isEqualToString:@"stopAirplay"])
-    {
-        [[YTBrowserHelper sharedInstance] stopPlayback];
-        return nil;
-    } else if ([[name pathExtension] isEqualToString:@"airplayState"])
-    {
-        return [[YTBrowserHelper sharedInstance] airplayState];
-        
-    } else if ([[name pathExtension] isEqualToString:@"airplayInfo"]){
-        
-        return nil;
         
     } else if ([[name pathExtension] isEqualToString:@"addDownload"]) {
         
         [[YTBrowserHelper sharedInstance] addDownloadToQueue:userInfo];
-        return nil;
+
         
     } else if ([[name pathExtension] isEqualToString:@"stopDownload"]) {
         
@@ -460,7 +302,6 @@ kAHAirplayStatusPaused= 2;
             [self updateDownloadsProgress:downloadInfo];
         }
         
-        
         NSLog(@"download completed!");
         [[self operations] removeObject:downloadOp];
         [self playCompleteSound];
@@ -473,7 +314,7 @@ kAHAirplayStatusPaused= 2;
 - (void)clearDownload:(NSDictionary *)streamDictionary
 {
     NSFileManager *man = [NSFileManager defaultManager];
-    NSString *dlplist = @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
+    NSString *dlplist = [self downloadFile];
     NSMutableArray *currentArray = nil;
     if ([man fileExistsAtPath:dlplist])
     {
@@ -498,7 +339,7 @@ kAHAirplayStatusPaused= 2;
 - (void)updateDownloadsProgress:(NSDictionary *)streamDictionary
 {
     NSFileManager *man = [NSFileManager defaultManager];
-    NSString *dlplist = @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
+    NSString *dlplist = [self downloadFile];
     NSMutableArray *currentArray = nil;
     if ([man fileExistsAtPath:dlplist])
     {
@@ -929,7 +770,7 @@ kAHAirplayStatusPaused= 2;
  
  */
 
-- (void)importFileWithJO:(NSString *)theFile duration:(NSNumber *)duration
+- (void)importFileWithJO:(NSString *)theFile duration:(NSInteger)duration
 {
     //since this isnt being called through messages anymore we need to make sure we start the GCD server ourselves.
     id sbInstance = [NSClassFromString(@"SpringBoard") sharedApplication];
@@ -949,7 +790,7 @@ kAHAirplayStatusPaused= 2;
         imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
     }
     //NSData *imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
-    NSDictionary *theDict = @{@"albumName": @"tuyu downloads", @"artist": @"Unknown Artist", @"duration": duration, @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
+    NSDictionary *theDict = @{@"albumName": @"tuyu downloads", @"artist": @"Unknown Artist", @"duration": [NSNumber numberWithInteger:duration], @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
     Class joitih = NSClassFromString(@"JOiTunesImportHelper");
     [joitih importAudioFileAtPath:theFile mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];
     

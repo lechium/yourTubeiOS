@@ -8,15 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import "AppSupport/CPDistributedMessagingCenter.h"
-
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
-
-#define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
+#import "KBYourTube+Categories.h"
+#import "APDeviceController.h"
 
 // Logging
-#define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
+
 
 @interface YTKBPlayerViewController : AVPlayerViewController
 
@@ -31,36 +30,6 @@
 
 @end
 
-@interface NSDictionary (strings)
-
-- (NSString *)stringValue;
-
-@end
-
-@interface NSArray (strings)
-
-- (NSString *)stringFromArray;
-
-@end
-
-@interface NSString (TSSAdditions)
-
-+ (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval;
-- (id)dictionaryValue;
-
-@end
-
-@interface NSDate (convenience)
-
-- (NSString *)timeStringFromCurrentDate;
-
-@end
-
-
-@interface NSURL (QSParameters)
-- (NSArray *)parameterArray;
-- (NSDictionary *)parameterDictionary;
-@end
 
 @interface KBYTMedia : NSObject
 
@@ -93,8 +62,6 @@
 
 @end
 
-
-
 @interface KBYTStream : NSObject
 
 @property (readwrite, assign) BOOL multiplexed;
@@ -116,22 +83,6 @@
 
 @end
 
-@interface NSObject  (convenience)
-
-- (NSString *)applicationSupportFolder;
-- (NSString *)downloadFolder;
-- (NSMutableDictionary *)parseFlashVars:(NSString *)vars;
-- (NSArray *)matchesForString:(NSString *)string withRegex:(NSString *)pattern;
-- (NSMutableDictionary *)dictionaryFromString:(NSString *)string withRegex:(NSString *)pattern;
-
-@end
-
-@interface NSString  (SplitString)
-
-- (NSArray *)splitString;
-
-@end
-#import "APDeviceController.h"
 
 @interface KBYourTube : NSObject
 {

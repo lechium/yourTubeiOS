@@ -8,7 +8,7 @@ export DEBUG=1
 #export THEOS_DEVICE_IP=kbphone.local
 
 TWEAK_NAME = YTBrowser
-YTBrowser_FILES = YTBrowser.xm YTBrowserHelper.mm
+YTBrowser_FILES = YTBrowser.xm YTBrowserHelper.mm YTDownloadOperation.m
 YTBrowser_FILES += CocoaHTTPServer/Core/Categories/DDData.m
 YTBrowser_FILES += CocoaHTTPServer/Core/Categories/DDNumber.m
 YTBrowser_FILES += CocoaHTTPServer/Core/Categories/DDRange.m
@@ -36,6 +36,7 @@ YTBrowser_FILES += CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/ContextFilt
 YTBrowser_FILES += CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/DispatchQueueLogFormatter.m
 
 YTBrowser_FILES += yourTube/Download/URLCredential.m yourTube/Download/URLDownloader.m
+YTBrowser_FILES += yourTube/KBYourTube+Categories.m
 
 #YTBrowser_FILES += GCDWebServer/GCDWebServer.m GCDWebServer/GCDWebServerConnection.m GCDWebServer/GCDWebServerFunctions.m GCDWebServer/GCDWebServerRequest.m GCDWebServer/GCDWebServerResponse.m
 
@@ -54,7 +55,7 @@ include $(FW_MAKEDIR)/tweak.mk
 
 
 after-install::
-	install.exec "killall -9 yourTube"
+	install.exec "killall -9 SpringBoard"
 
 SUBPROJECTS += yourTube
 include $(THEOS_MAKE_PATH)/aggregate.mk

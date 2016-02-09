@@ -11,8 +11,9 @@
 #import "GCDAsyncSocket.h"
 #import "yourTube/Download/URLDownloader.h"
 #import "NSTask.h"
+#import "YTDownloadOperation.h"
 
-#define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
+//#define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
 
 @interface NSTask (convenience)
 
@@ -45,7 +46,7 @@
 @property (nonatomic) BOOL                          paused;
 @property (nonatomic) double                        playbackPosition;
 @property (nonatomic) uint8_t                       serverCapabilities;
-@property (nonatomic, strong) NSMutableArray *operations;
+@property (nonatomic, strong)                       NSMutableArray *operations;
 
 - (void)togglePaused;
 - (void)setCommonHeadersForRequest:(NSMutableURLRequest *)request;
@@ -59,23 +60,6 @@
 - (void)stopPlayback;
 - (NSDictionary *)airplayState;
 - (void)fixAudio:(NSString *)theFile volume:(NSInteger)volume completionBlock:(void(^)(NSString *newFile))completionBlock;
-- (void)importFileWithJO:(NSString *)theFile duration:(NSNumber *)duration;
+- (void)importFileWithJO:(NSString *)theFile duration:(NSInteger)duration;
 @end
 
-@interface YTDownloadOperation: NSOperation <URLDownloaderDelegate>
-
-typedef void(^DownloadCompletedBlock)(NSString *downloadedFile);
-
-
-@property (nonatomic, strong) NSDictionary *downloadInfo;
-@property (nonatomic, strong) URLDownloader *downloader;
-@property (nonatomic, strong) NSString *downloadLocation;
-@property (strong, atomic) void (^ProgressBlock)(double percentComplete);
-@property (strong, atomic) void (^FancyProgressBlock)(double percentComplete, NSString *status);
-@property (strong, atomic) void (^CompletedBlock)(NSString *downloadedFile);
-@property (readwrite, assign) NSInteger trackDuration;
-
-- (id)initWithInfo:(NSDictionary *)downloadDictionary
-         completed:(DownloadCompletedBlock)theBlock;
-
-@end

@@ -90,16 +90,6 @@
 
 @synthesize downloadArray, activeDownloads;
 
-- (NSString *)downloadFile
-{
-    return @"/var/mobile/Library/Application Support/tuyu/Downloads.plist";
-}
-
-- (NSString *)downloadPath
-{
-    return @"/var/mobile/Library/Application Support/tuyu/Downloads";
-}
-
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -314,7 +304,7 @@
     } else {
         
         
-        NSString *filePath = [[self downloadPath] stringByAppendingPathComponent:dictionaryMedia[@"outputFilename"]];
+        NSString *filePath = [[self downloadFolder] stringByAppendingPathComponent:dictionaryMedia[@"outputFilename"]];
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
         [mutableArray removeObject:dictionaryMedia];
@@ -404,22 +394,6 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
     [self dismissViewControllerAnimated:true completion:nil];
-}
-
-- (NSString *)appSupportFolder
-{
-    NSFileManager *man = [NSFileManager defaultManager];
-    NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu";
-    if (![man fileExistsAtPath:outputFolder])
-    {
-        [man createDirectoryAtPath:outputFolder withIntermediateDirectories:true attributes:nil error:nil];
-    }
-    return outputFolder;
-}
-
-- (NSString *)downloadFolder
-{
-    return [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads"];
 }
 
 

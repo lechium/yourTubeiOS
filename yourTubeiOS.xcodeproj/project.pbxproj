@@ -27,6 +27,7 @@
 		895F67A81C690C8100AE33FA /* ShuffleAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F679E1C690C8100AE33FA /* ShuffleAnimation.m */; };
 		895F67A91C690C8100AE33FA /* SlideAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F679F1C690C8100AE33FA /* SlideAnimation.h */; };
 		895F67AA1C690C8100AE33FA /* SlideAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67A01C690C8100AE33FA /* SlideAnimation.m */; };
+		895F67AE1C6A424F00AE33FA /* KBYourTube+Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */; };
 		897B49C41C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */; };
 		897B49C51C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */; };
 		897B49E81C58A7B500F50BC2 /* MKAnnotationView+WebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B49C71C58A7B500F50BC2 /* MKAnnotationView+WebCache.h */; };
@@ -73,6 +74,8 @@
 		897B4A2E1C5E8B3D00F50BC2 /* APElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A271C5E8B3D00F50BC2 /* APElement.h */; };
 		897B4A2F1C5E8B3D00F50BC2 /* APElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A281C5E8B3D00F50BC2 /* APElement.m */; };
 		897B4A301C5E8B3D00F50BC2 /* APXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A291C5E8B3D00F50BC2 /* APXML.h */; };
+		898244DB1C6A4A1600131343 /* YTDownloadOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 898244D91C6A4A1600131343 /* YTDownloadOperation.h */; };
+		898244DC1C6A4A1600131343 /* YTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 898244DA1C6A4A1600131343 /* YTDownloadOperation.m */; };
 		89E06BC61C499E2300B8D1C4 /* ytiOSBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BC51C499E2300B8D1C4 /* ytiOSBundle.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		89E06BD21C499EF000B8D1C4 /* URLCredential.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BCE1C499EF000B8D1C4 /* URLCredential.h */; };
 		89E06BD31C499EF000B8D1C4 /* URLCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BCF1C499EF000B8D1C4 /* URLCredential.m */; };
@@ -116,6 +119,9 @@
 		895F679E1C690C8100AE33FA /* ShuffleAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShuffleAnimation.m; sourceTree = "<group>"; };
 		895F679F1C690C8100AE33FA /* SlideAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideAnimation.h; sourceTree = "<group>"; };
 		895F67A01C690C8100AE33FA /* SlideAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlideAnimation.m; sourceTree = "<group>"; };
+		895F67AC1C6A3FA700AE33FA /* Defines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
+		895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "KBYourTube+Categories.m"; path = "yourTube/KBYourTube+Categories.m"; sourceTree = "<group>"; };
+		895F67AF1C6A427500AE33FA /* KBYourTube+Categories.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "KBYourTube+Categories.h"; path = "yourTube/KBYourTube+Categories.h"; sourceTree = "<group>"; };
 		897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadsTableViewController.h; path = yourTube/KBYTDownloadsTableViewController.h; sourceTree = "<group>"; };
 		897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadsTableViewController.m; path = yourTube/KBYTDownloadsTableViewController.m; sourceTree = "<group>"; };
 		897B49C71C58A7B500F50BC2 /* MKAnnotationView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKAnnotationView+WebCache.h"; sourceTree = "<group>"; };
@@ -162,6 +168,8 @@
 		897B4A271C5E8B3D00F50BC2 /* APElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APElement.h; sourceTree = "<group>"; };
 		897B4A281C5E8B3D00F50BC2 /* APElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APElement.m; sourceTree = "<group>"; };
 		897B4A291C5E8B3D00F50BC2 /* APXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APXML.h; sourceTree = "<group>"; };
+		898244D91C6A4A1600131343 /* YTDownloadOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTDownloadOperation.h; sourceTree = "<group>"; };
+		898244DA1C6A4A1600131343 /* YTDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTDownloadOperation.m; sourceTree = "<group>"; };
 		89B9D4221C44F49F00740BF1 /* GCDWebServers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GCDWebServers.framework; sourceTree = "<group>"; };
 		89B9D4231C44F49F00740BF1 /* Gremlin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Gremlin.framework; sourceTree = "<group>"; };
 		89B9D4251C44F49F00740BF1 /* GCDWebServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServer.h; sourceTree = "<group>"; };
@@ -345,6 +353,8 @@
 				89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */,
 				89E06BD81C499EFF00B8D1C4 /* KBYTDownloadStream.h */,
 				89E06BD91C499EFF00B8D1C4 /* KBYTDownloadStream.m */,
+				895F67AF1C6A427500AE33FA /* KBYourTube+Categories.h */,
+				895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */,
 			);
 			name = YouTube;
 			sourceTree = "<group>";
@@ -392,6 +402,9 @@
 				89B9D4471C44F49F00740BF1 /* README.md */,
 				89B9D52D1C44F51200740BF1 /* YTBrowser.plist */,
 				89B9D52E1C44F51200740BF1 /* YTBrowser.xm */,
+				895F67AC1C6A3FA700AE33FA /* Defines.h */,
+				898244D91C6A4A1600131343 /* YTDownloadOperation.h */,
+				898244DA1C6A4A1600131343 /* YTDownloadOperation.m */,
 				89B9D52F1C44F51200740BF1 /* YTBrowserHelper.h */,
 				89B9D5301C44F51200740BF1 /* YTBrowserHelper.mm */,
 				89E06BCC1C499ED400B8D1C4 /* yourTube */,
@@ -501,6 +514,7 @@
 			files = (
 				89E06BD41C499EF000B8D1C4 /* URLDownloader.h in Headers */,
 				897B4A101C58B03000F50BC2 /* UIImage+Scale.h in Headers */,
+				898244DB1C6A4A1600131343 /* YTDownloadOperation.h in Headers */,
 				89E06BC61C499E2300B8D1C4 /* ytiOSBundle.h in Headers */,
 				895F67A91C690C8100AE33FA /* SlideAnimation.h in Headers */,
 				897B49F81C58A7B500F50BC2 /* SDWebImageOperation.h in Headers */,
@@ -635,6 +649,7 @@
 				897B49F31C58A7B500F50BC2 /* SDWebImageDownloader.m in Sources */,
 				897B49EF1C58A7B500F50BC2 /* SDWebImageCompat.m in Sources */,
 				89E06BE51C499F1B00B8D1C4 /* OurViewController.mm in Sources */,
+				898244DC1C6A4A1600131343 /* YTDownloadOperation.m in Sources */,
 				897B49FE1C58A7B500F50BC2 /* UIImage+GIF.m in Sources */,
 				897B4A0C1C58AAB000F50BC2 /* UIColor+Additions.m in Sources */,
 				895F67A41C690C8100AE33FA /* ModalAnimation.m in Sources */,
@@ -650,6 +665,7 @@
 				895F67041C60125600AE33FA /* KBYTSearchTableViewController.m in Sources */,
 				897B49F71C58A7B500F50BC2 /* SDWebImageManager.m in Sources */,
 				89E06BD51C499EF000B8D1C4 /* URLDownloader.m in Sources */,
+				895F67AE1C6A424F00AE33FA /* KBYourTube+Categories.m in Sources */,
 				895F67A61C690C8100AE33FA /* ScaleAnimation.m in Sources */,
 				897B4A2F1C5E8B3D00F50BC2 /* APElement.m in Sources */,
 				89E06BD31C499EF000B8D1C4 /* URLCredential.m in Sources */,
@@ -703,6 +719,8 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = $SRCROOT/theos/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -716,6 +734,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$SRCROOT/**";
 				INFOPLIST_FILE = ytiOSBundle/Info.plist;
+				INFOPLIST_PREFIX_HEADER = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -760,6 +779,8 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = $SRCROOT/theos/Prefix.pch;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -769,6 +790,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$SRCROOT/**";
 				INFOPLIST_FILE = ytiOSBundle/Info.plist;
+				INFOPLIST_PREFIX_HEADER = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

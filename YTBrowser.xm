@@ -43,7 +43,7 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 	id r = %orig;
 	CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     [center runServerOnCurrentThread];
-    [center registerForMessageName:@"org.nito.importscience.import" target:self selector:@selector(handleMessageName:userInfo:)];
+   // [center registerForMessageName:@"org.nito.importscience.import" target:self selector:@selector(handleMessageName:userInfo:)];
     [center registerForMessageName:@"org.nito.importscience.startAirplay" target:self selector:@selector(handleMessageName:userInfo:)];
     
     [center registerForMessageName:@"org.nito.importscience.stopAirplay" target:ytbh selector:@selector(stopPlayback)];
