@@ -12,34 +12,6 @@ you can now add the latest beta versions by adding my beta cydia repo to your Cy
 Cydia - > Sources - > Edit - > Add - > http://nitosoft.com/beta2/
 
 
-Steps to install from the pre-included deb package.
-
-1. ssh into your iOS device
-
-    ssh root@yourdevice.local
-
-2. install wget and shell-cmds (optional, you may already have them)
-
-    apt-get install wget shell-cmds -y --force-yes
-
-3. download the deb file
-
-    wget --no-check-certificate https://github.com/lechium/yourTubeiOS/raw/master/com.nito.ytbrowser_1.1-18_iphoneos-arm.deb
-
-4. install the deb file
-
-    dpkg -i com.nito.ytbrowser_1.1-18_iphoneos-arm.deb
-
-5. the previous install will likely fail due to missing depenendencies
-
-    apt-get install -f -y --force-yes
-
-6. kill SpringBoard
-
-    killall -9 SpringBoard
-
-at this point you should have a red play "tuYu" icon somewhere, you should be good to go!
-
 ==========================================================================================
 
 Some basic notes on this:
