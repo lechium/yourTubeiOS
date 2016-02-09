@@ -178,14 +178,17 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    LOG_SELF;
-    
+
     NSString *searchString = [self.searchController.searchBar text];
     //NSLog(@"search string: %@", searchString);
+    if (self.currentPage == 1)
+        [SVProgressHUD show];
     [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage completionBlock:^(NSDictionary *searchDetails) {
         
       //  NSLog(@"search details: %@", searchDetails);
-        
+        if (self.currentPage == 1)
+            [SVProgressHUD dismiss];
+      
         self.totalResults = [searchDetails[@"resultCount"] integerValue];
         self.pageCount = [searchDetails[@"pageCount"] integerValue];
         //self.searchResults = searchDetails[@"results"];
@@ -418,8 +421,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
-    LOG_SELF;
-    
      if (indexPath.row >= self.searchResults.count){
      return [self loadingCell];
      }
@@ -445,6 +446,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+      [[self tableView] deselectRowAtIndexPath:indexPath animated:false];
+    if (indexPath.row >= self.searchResults.count)
+    {
+        return; //selected the spinner item, jerks.
+    }
     KBYTSearchResult *currentResult = [self.searchResults objectAtIndex:indexPath.row];
     //[SVProgressHUD showInfoWithStatus:@"Fetching details"];
     [SVProgressHUD show];

@@ -6,4 +6,4 @@ Maintainer: Kevin Bradley
 Author: Kevin Bradley
 Description: Custom youTube search engine & AirPlay client for downloading videos and audio directly into the music library.
 Section: Utilities
-Depends: mobilesubstrate, com.nin9tyfour.ffmpeg, com.ouraigua.jodebox, ldid
+Depends: firmware (>= 8.0), mobilesubstrate, com.nin9tyfour.ffmpeg, com.ouraigua.jodebox, ldid

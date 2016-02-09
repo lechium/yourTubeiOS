@@ -9,6 +9,7 @@
 #import "KBYTDownloadsTableViewController.h"
 #import "OurViewController.h"
 #import "KBYTSearchTableViewController.h"
+#import "Animations/ScaleAnimation.h"
 
 @implementation KBYTDownloadCell
 
@@ -22,7 +23,6 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    
     return self;
 }
 
@@ -81,7 +81,9 @@
 @end
 
 @interface KBYTDownloadsTableViewController ()
-
+{
+    ScaleAnimation *_scaleAnimationController;
+}
 @end
 
 @implementation KBYTDownloadsTableViewController
@@ -104,6 +106,8 @@
     NSArray *fullArray = [NSArray arrayWithContentsOfFile:[self downloadFile]];
     self.activeDownloads = [fullArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == YES"]];
     self.downloadArray = [fullArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == NO"]];
+    self.navigationController.view.backgroundColor = [UIColor redColor];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     return self;
 }
 
@@ -164,11 +168,14 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearchView:)];
+     _scaleAnimationController = [[ScaleAnimation alloc] initWithNavigationController:self.navigationController];
 }
 
 - (void)showSearchView:(id)sender
 {
     KBYTSearchTableViewController *searchView = [[KBYTSearchTableViewController alloc] init];
+    _scaleAnimationController.viewForInteraction = searchView.view;
+    
     [self.navigationController pushViewController:searchView animated:true];
     //[self presentViewController:searchView animated:true completion:^{
     
@@ -179,6 +186,7 @@
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     NSString *name = nil;
+    
     switch (section) {
         case 0: //
             
@@ -190,6 +198,11 @@
             name = @"Downloads";
             break;
             
+    }
+    
+    if (self.activeDownloads.count == 0)
+    {
+        name = @"Downloads";
     }
     return name;
 }
@@ -203,11 +216,20 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
-    return 2;
+    if ([[self activeDownloads] count] > 0)
+    {
+        return 2;
+
+    }
+    return 1; //no active downloads
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
+    if ([[self activeDownloads] count] == 0)
+    {
+        return [[self downloadArray] count];
+    }
     switch (section) {
         case 0:
             
@@ -237,18 +259,25 @@
     
     NSDictionary *currentItem = nil;
     BOOL downloading = false;
-    switch (indexPath.section) {
-        case 0:
-            currentItem = [self.activeDownloads objectAtIndex:indexPath.row];
-            downloading = true;
-            break;
-            
-        case 1:
-            currentItem = [self.downloadArray objectAtIndex:indexPath.row];
-            break;
-            
+    
+    if ([[self activeDownloads] count] == 0)
+    {
+        currentItem = [self.downloadArray objectAtIndex:indexPath.row];
+        downloading = false;
+    } else {
+        
+        switch (indexPath.section) {
+            case 0:
+                currentItem = [self.activeDownloads objectAtIndex:indexPath.row];
+                downloading = true;
+                break;
+                
+            case 1:
+                currentItem = [self.downloadArray objectAtIndex:indexPath.row];
+                break;
+        }
     }
-    // UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseIdentifier" forIndexPath:indexPath];
+
     cell.detailTextLabel.text = currentItem[@"author"];
     cell.textLabel.text = currentItem[@"title"];
     cell.downloading = downloading;
@@ -258,15 +287,7 @@
     cell.imageView.autoresizingMask = ( UIViewAutoresizingNone );
     [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
     
-    /*
-     [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates | SDWebImageAvoidAutoSetImage completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-     
-     cell.imageView.image = [image scaledImagedToSize:CGSizeMake(133, 100)];
-     
-     }];
-     */
-    // Configure the cell...
-    //cell.imageView = [UIImage imageWith]
+ 
     return cell;
 }
 
@@ -292,16 +313,19 @@
         
     } else {
         
+        NSLog(@"deleting media: %@ from section: %li", dictionaryMedia, (long)section);
+        
         NSString *filePath = [[self downloadPath] stringByAppendingPathComponent:dictionaryMedia[@"outputFilename"]];
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
         [mutableArray removeObject:dictionaryMedia];
+        self.downloadArray = [mutableArray copy];
+        
         if ([self.activeDownloads count] > 0)
         {
             [mutableArray addObjectsFromArray:self.activeDownloads];
         }
         [mutableArray writeToFile:[self downloadFile] atomically:true];
-        self.downloadArray = mutableArray;
     }
 }
 
@@ -322,24 +346,42 @@
         // Delete the row from the data source
         
         NSDictionary *mediaToDelete = nil;
+        NSInteger section = indexPath.section;
+      
+        BOOL shouldRemoveActiveSection = false;
         
-        switch (indexPath.section) {
-                
-            case 0://active dl
-                
-                mediaToDelete = [self.activeDownloads objectAtIndex:indexPath.row];
-                break;
-                
-            case 1: //finished dl
-                mediaToDelete = [self.downloadArray objectAtIndex:indexPath.row];
-                break;
-                
+        if (self.activeDownloads.count == 0)
+        {
+            mediaToDelete = [self.downloadArray objectAtIndex:indexPath.row];
+            section = 1;
+        } else //if (self.activeDownloads.count == 1)
+        {
+          //  shouldRemoveActiveSection = true;
+            switch (indexPath.section) {
+                    
+                case 0://active dl
+                    
+                    mediaToDelete = [self.activeDownloads objectAtIndex:indexPath.row];
+                    break;
+                    
+                case 1: //finished dl
+                    mediaToDelete = [self.downloadArray objectAtIndex:indexPath.row];
+                    break;
+                    
+            }
         }
         
         
+        NSLog(@"mediaToDelete: %@ from section: %li indexPath: %@", mediaToDelete, (long)section, indexPath);
+        
+        
         [tableView beginUpdates];
-        [self deleteMedia:mediaToDelete fromSection:indexPath.section];
+        [self deleteMedia:mediaToDelete fromSection:section];
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:0];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        if (shouldRemoveActiveSection == true){
+            [tableView deleteSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+        }
         [tableView endUpdates];
         
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
@@ -364,6 +406,7 @@
     // Will be called when AVPlayer finishes playing playerItem
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
+    [self dismissViewControllerAnimated:true completion:nil];
 }
 
 - (NSString *)appSupportFolder
@@ -420,13 +463,21 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 1)
-    {
+      [[self tableView] deselectRowAtIndexPath:indexPath animated:false];
+    if (self.activeDownloads.count == 0) { //first section is removed, this is still a bit of a hack but will work.
+        
         NSDictionary *theFile = [self.downloadArray objectAtIndex:indexPath.row];
-        NSLog(@"theFile: %@", theFile);
-        // OurViewController *vc = self.navigationController.viewControllers.firstObject;
         [self playFile:theFile];
+    
+    } else { //we have active downloads so we need to make sure its section 1
+        
+        if (indexPath.section == 1)
+        {
+            NSDictionary *theFile = [self.downloadArray objectAtIndex:indexPath.row];
+            [self playFile:theFile];
+        }
     }
+  
 }
 
 /*

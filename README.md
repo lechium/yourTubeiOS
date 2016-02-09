@@ -4,6 +4,9 @@ yourTube for iOS
 
 This is a basic attempt to port over https://github.com/lechium/yourTube to iOS. For the initial basic versions, if you can't build this yourself you will need to have some apt-7 strict and openssh installed on your iOS device to get this installed.
 
+This code is a bit of a messy playground for me, and code has been moved around / duplicated alot. This will
+be refactored as I find time to do so.
+
 you can now add the latest beta versions by adding my beta cydia repo to your Cydia sources.
 
 Cydia - > Sources - > Edit - > Add - > http://nitosoft.com/beta2/

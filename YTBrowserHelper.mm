@@ -57,6 +57,10 @@
     downloadInfo = downloadDictionary;
     self.name = downloadInfo[@"title"];
     self.downloadLocation = [[self downloadFolder] stringByAppendingPathComponent:downloadDictionary[@"outputFilename"]];
+    NSString *imageURL = downloadInfo[@"images"][@"standard"];
+    NSData *downloadData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]];
+    NSString *outputJPEG = [[[self downloadLocation] stringByDeletingPathExtension] stringByAppendingPathExtension:@"jpg"];
+    [downloadData writeToFile:outputJPEG atomically:true];
     NSInteger durationSeconds = [downloadDictionary[@"duration"] integerValue];
     trackDuration = durationSeconds*1000;
     CompletedBlock = theBlock;
@@ -408,13 +412,9 @@ kAHAirplayStatusPaused= 2;
 
 - (void)removeDownloadFromQueue:(NSDictionary *)downloadInfo
 {
-    LOG_SELF;
-    NSLog(@"remove download: %@", downloadInfo[@"title"]);
     NSArray *operations = [self operations];
-    NSLog(@"operations: %@", operations);
     for (YTDownloadOperation *operation in operations)
     {
-        NSLog(@"operation name: %@", [operation name]);
         if ([[operation name] isEqualToString:downloadInfo[@"title"]])
         {
             NSLog(@"found operation, cancel it!");
@@ -441,6 +441,7 @@ kAHAirplayStatusPaused= 2;
      }
      }
      */
+    
     
     YTDownloadOperation *downloadOp = [[YTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
         
@@ -937,7 +938,17 @@ kAHAirplayStatusPaused= 2;
     // NSLog(@"importFileWithJO: %@", theFile);
     //[self testRunServer];
     //NSData *imageData = [NSData dataWithContentsOfFile:@"/var/mobile/Library/Preferences/imageTest.png"];
-    NSData *imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
+    NSString *dlPath = @"/var/mobile/Library/Application Support/tuyu/Downloads";
+    NSString *jpegFile = [dlPath stringByAppendingPathComponent:[[[theFile lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"jpg"] ];
+    NSData *imageData = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:jpegFile])
+    {
+        NSLog(@"file exists: %@", jpegFile);
+        imageData = [NSData dataWithContentsOfFile:jpegFile];
+    } else {
+        imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
+    }
+    //NSData *imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
     NSDictionary *theDict = @{@"albumName": @"tuyu downloads", @"artist": @"Unknown Artist", @"duration": duration, @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
     Class joitih = NSClassFromString(@"JOiTunesImportHelper");
     [joitih importAudioFileAtPath:theFile mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];

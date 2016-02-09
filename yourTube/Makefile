@@ -26,6 +26,7 @@ yourTube_FILES += SDWebImage/UIImageView+WebCache.m
 yourTube_FILES += SDWebImage/UIView+WebCacheOperation.m
 yourTube_FILES += APDocument/APAttribute.m APDocument/APDocument.m APDocument/APElement.m
 yourTube_FILES += SVProgressHUD/SVIndefiniteAnimatedView.m SVProgressHUD/SVProgressHUD.m SVProgressHUD/SVRadialGradientLayer.m
+yourTube_FILES += Animations/BaseAnimation.m Animations/ModalAnimation.m Animations/ScaleAnimation.m Animations/ShuffleAnimation.m Animations/SlideAnimation.m
 yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit
 yourTube_CXXFLAGS += -fobjc-arc
 yourTube_CFLAGS += -fobjc-arc

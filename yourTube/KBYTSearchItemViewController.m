@@ -368,6 +368,13 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     // Will be called when AVPlayer finishes playing playerItem
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
+     [self dismissViewControllerAnimated:true completion:nil];
+}
+
+- (void)showDownloadStartedAlert
+{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Download started" message:@"Your download has started and should be available shortly" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+    [alertView show];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -387,6 +394,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             [self downloadStream:currentStream];
             [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
 			[tableView deselectRowAtIndexPath:indexPath animated:YES];
+            [self showDownloadStartedAlert];
 			break;
             
         case 3:

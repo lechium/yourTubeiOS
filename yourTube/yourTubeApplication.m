@@ -31,9 +31,8 @@
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
     
     [KBYourTube sharedInstance]; //create it right off the bat to get device discovery going
-    
 	_window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
+    _window.backgroundColor = [UIColor whiteColor];
     _searchViewController = [[KBYTDownloadsTableViewController alloc] init];
     self.nav = [[UINavigationController alloc] initWithRootViewController:_searchViewController];
     //_searchViewController.delegate = self;
