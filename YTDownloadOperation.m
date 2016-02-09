@@ -97,7 +97,7 @@
             {
                 //import the file to the music library using JODebox
                 [[YTBrowserHelper sharedInstance] importFileWithJO:newFile duration:self.trackDuration];
-                
+                [self sendAudioCompleteMessage];
                 self.CompletedBlock(newFile);
             }
         }];
@@ -114,13 +114,21 @@
     
 }
 
+- (void)sendAudioCompleteMessage
+{
+    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
+    NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent};
+    
+    [center sendMessageName:@"org.nito.dllistener.audioImported" userInfo:info];
+}
+
 //use CPDistributedMessagingCenter to relay progress details back to the yourTube/tuyu application.
 
 - (void)urlDownloader:(URLDownloader *)urlDownloader didReceiveData:(NSData *)data
 {
     //
     float percentComplete = [urlDownloader downloadCompleteProcent];
-    // NSLog(@"percentComplete: %f", percentComplete);
+     NSLog(@"percentComplete: %f", percentComplete);
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
     

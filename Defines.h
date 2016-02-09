@@ -14,3 +14,14 @@
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 #define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
+
+static NSString *const KBYTMessageIdentifier   =  @"org.nito.importscience";
+
+static NSString *const KBYTPauseAirplayMessage =  @"pauseAirplay";
+static NSString *const KBYTStopAirplayMessage  =  @"stopAirplay";
+static NSString *const KBYTStartAirplayMessage =  @"startAirplay";
+static NSString *const KBYTAirplayStateMessage =  @"airplayState";
+
+
+static NSString *const KBYTAddDownloadMessage  =  @"addDownload";
+static NSString *const KBYTStopDownloadMessage =  @"stopDownload";

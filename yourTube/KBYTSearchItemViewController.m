@@ -402,7 +402,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             airdeviceName = airplayServers[indexPath.row];
            self.airplayIP = [[[KBYourTube sharedInstance] deviceController] deviceIPFromName:airdeviceName andType:0];
             [[KBYourTube sharedInstance] setAirplayIP:self.airplayIP];
-            [[KBYourTube sharedInstance] airplayStream:currentStream ToDeviceIP:self.airplayIP ];
+            [[KBYourTube sharedInstance] airplayStream:[[currentStream url] absoluteString] ToDeviceIP:self.airplayIP ];
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             break;
             

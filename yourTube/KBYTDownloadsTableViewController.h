@@ -12,12 +12,13 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import "JGProgressView/JGProgressView.h"
 
 @interface KBYTDownloadCell: UITableViewCell
 
 @property (nonatomic, strong) MarqueeLabel *marqueeTextLabel;
 @property (nonatomic, strong) MarqueeLabel *marqueeDetailTextLabel;
-@property (nonatomic, strong) UIProgressView *progressView;
+@property (nonatomic, strong) JGProgressView *progressView;
 @property (readwrite, assign) BOOL downloading;
 
 @end

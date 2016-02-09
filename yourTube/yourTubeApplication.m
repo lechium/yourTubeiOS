@@ -1,31 +1,25 @@
-#import "OurViewController.h"
-#import <AVFoundation/AVFoundation.h>
-#import "KBYTDownloadsTableViewController.h"
-#import "KBYTSearchTableViewController.h"
 
-@interface yourTubeApplication: UIApplication <UIApplicationDelegate, OurViewControllerDelegate, KBYTSearchTableViewControllerDelegate> {
-	UIWindow *_window;
-	OurViewController *_viewController;
-    KBYTDownloadsTableViewController *_searchViewController;
-}
-@property (nonatomic, retain) UIWindow *window;
-@property (strong, nonatomic) UINavigationController *nav;
-@end
+
+#import "yourTubeApplication.h"
 
 @implementation yourTubeApplication
 @synthesize window = _window;
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
-    [center stopServer];
-    //[super applicationWi]
+    [[KBYTMessagingCenter sharedInstance] stopDownloadListener];
+    
+//    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
+//    [center stopServer];
+
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
-    [center runServerOnCurrentThread];
+    [[KBYTMessagingCenter sharedInstance] startDownloadListener];
+//    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
+//    [center runServerOnCurrentThread];
+
 }
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
@@ -58,11 +52,15 @@
         [audioSession setActive:YES error:&error];
     }
     
+    [[KBYTMessagingCenter sharedInstance] startDownloadListener];
+    [[KBYTMessagingCenter sharedInstance] registerDownloadListener];
+    
+    /*
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     [center runServerOnCurrentThread];
     [center registerForMessageName:@"org.nito.dllistener.currentProgress" target:self selector:@selector(handleMessageName:userInfo:)];
     
-    /*
+    
     
     NSDate *myStart = [NSDate date];
     

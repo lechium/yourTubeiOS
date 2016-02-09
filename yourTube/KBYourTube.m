@@ -343,13 +343,6 @@
 
 @end
 
-/**
- 
- Is it bad form to add categories to NSObject for frequently used convenience methods? probably. does it make
- calling these methods from anywhere incredibly easy? yes. so... DONT CARE :-P
- 
- */
-
 
 
 /**
@@ -381,6 +374,8 @@
     
 }
 
+///aircontrol code, this is used to play media straight into firecore's youtube appliance on ATV 2
+
 - (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP
 {
     NSLog(@"ac stream: %@ to deviceIP: %@", media, deviceIP);
@@ -407,8 +402,6 @@
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     [center sendMessageName:@"org.nito.importscience.stopAirplay" userInfo:nil];
 }
-
-
 
 - (NSInteger)airplayStatus
 {
@@ -440,41 +433,6 @@
     NSDictionary *info = @{@"deviceIP": deviceIP, @"videoURL": [[stream url] absoluteString]};
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     [center sendMessageName:@"org.nito.importscience.startAirplay" userInfo:info];
-   
-   /*
-    NSURL *deviceURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/play", deviceIP]];
-    NSDictionary* postDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:[[stream url] absoluteString], @"Content-Location",[NSNumber numberWithFloat:0] , @"Start-Position", nil];
-    
-    NSString *post = [postDictionary stringValue];
-    
-    
-    // Encode post string
-    NSData* postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:true];
-    
-    // Calculate length of post data
-    NSString* postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
-    
-    // Create URL request and set url, method, content-length, content-type, and body
-    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
-    [request setURL:deviceURL];
-    [request setHTTPMethod:@"POST"];
-    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    [request setValue:@"application/x-apple-binary-plist" forHTTPHeaderField:@"Content-Type"];
-    [request addValue:@"MediaControl/1.0" forHTTPHeaderField:@"User-Agent"];
-    CFUUIDRef UUID = CFUUIDCreate(kCFAllocatorDefault);
-    CFStringRef UUIDString = CFUUIDCreateString(kCFAllocatorDefault,UUID);
-    NSString *sessionID = (__bridge NSString *)UUIDString;
-    [request addValue:sessionID forHTTPHeaderField:@"X-Apple-Session-ID"];
-    [request setHTTPBody:postData];
-    NSURLResponse *theResponse = nil;
-    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
-    NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
-    NSLog(@"airplay return details: %@", datString);
-    
-    NSDictionary *info = @{@"deviceIP": deviceIP, @"sessionID": sessionID};
-    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
-    [center sendMessageName:@"org.nito.importscience.startAirplay" userInfo:info];
-     */
 }
 
 //take a url and get its raw body, then return in string format

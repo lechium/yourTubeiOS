@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		892A2C3C1C6A8CB1003724D6 /* JGProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */; };
+		892A2C3D1C6A8CB1003724D6 /* JGProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */; };
 		895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */; };
 		895F67041C60125600AE33FA /* KBYTSearchTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */; };
 		895F67861C62B9BD00AE33FA /* KBYTSearchItemViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F67841C62B9BD00AE33FA /* KBYTSearchItemViewController.h */; };
@@ -76,6 +78,8 @@
 		897B4A301C5E8B3D00F50BC2 /* APXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A291C5E8B3D00F50BC2 /* APXML.h */; };
 		898244DB1C6A4A1600131343 /* YTDownloadOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 898244D91C6A4A1600131343 /* YTDownloadOperation.h */; };
 		898244DC1C6A4A1600131343 /* YTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 898244DA1C6A4A1600131343 /* YTDownloadOperation.m */; };
+		898244DF1C6A664A00131343 /* KBYTMessagingCenter.h in Headers */ = {isa = PBXBuildFile; fileRef = 898244DD1C6A664A00131343 /* KBYTMessagingCenter.h */; };
+		898244E01C6A664A00131343 /* KBYTMessagingCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 898244DE1C6A664A00131343 /* KBYTMessagingCenter.m */; };
 		89E06BC61C499E2300B8D1C4 /* ytiOSBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BC51C499E2300B8D1C4 /* ytiOSBundle.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		89E06BD21C499EF000B8D1C4 /* URLCredential.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BCE1C499EF000B8D1C4 /* URLCredential.h */; };
 		89E06BD31C499EF000B8D1C4 /* URLCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BCF1C499EF000B8D1C4 /* URLCredential.m */; };
@@ -99,6 +103,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		892A2C381C6A8400003724D6 /* yourTubeApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yourTubeApplication.h; path = yourTube/yourTubeApplication.h; sourceTree = "<group>"; };
+		892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JGProgressView.h; sourceTree = "<group>"; };
+		892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JGProgressView.m; sourceTree = "<group>"; };
 		895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTSearchTableViewController.h; path = yourTube/KBYTSearchTableViewController.h; sourceTree = "<group>"; };
 		895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTSearchTableViewController.m; path = yourTube/KBYTSearchTableViewController.m; sourceTree = "<group>"; };
 		895F67841C62B9BD00AE33FA /* KBYTSearchItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTSearchItemViewController.h; path = yourTube/KBYTSearchItemViewController.h; sourceTree = "<group>"; };
@@ -170,6 +177,8 @@
 		897B4A291C5E8B3D00F50BC2 /* APXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APXML.h; sourceTree = "<group>"; };
 		898244D91C6A4A1600131343 /* YTDownloadOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTDownloadOperation.h; sourceTree = "<group>"; };
 		898244DA1C6A4A1600131343 /* YTDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTDownloadOperation.m; sourceTree = "<group>"; };
+		898244DD1C6A664A00131343 /* KBYTMessagingCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTMessagingCenter.h; path = yourTube/KBYTMessagingCenter.h; sourceTree = "<group>"; };
+		898244DE1C6A664A00131343 /* KBYTMessagingCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTMessagingCenter.m; path = yourTube/KBYTMessagingCenter.m; sourceTree = "<group>"; };
 		89B9D4221C44F49F00740BF1 /* GCDWebServers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GCDWebServers.framework; sourceTree = "<group>"; };
 		89B9D4231C44F49F00740BF1 /* Gremlin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Gremlin.framework; sourceTree = "<group>"; };
 		89B9D4251C44F49F00740BF1 /* GCDWebServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDWebServer.h; sourceTree = "<group>"; };
@@ -243,6 +252,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		892A2C391C6A8CB1003724D6 /* JGProgressView */ = {
+			isa = PBXGroup;
+			children = (
+				892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */,
+				892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */,
+			);
+			name = JGProgressView;
+			path = yourTube/JGProgressView;
+			sourceTree = "<group>";
+		};
 		895F67881C6520D500AE33FA /* SVProgressHUD */ = {
 			isa = PBXGroup;
 			children = (
@@ -355,6 +374,8 @@
 				89E06BD91C499EFF00B8D1C4 /* KBYTDownloadStream.m */,
 				895F67AF1C6A427500AE33FA /* KBYourTube+Categories.h */,
 				895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */,
+				898244DD1C6A664A00131343 /* KBYTMessagingCenter.h */,
+				898244DE1C6A664A00131343 /* KBYTMessagingCenter.m */,
 			);
 			name = YouTube;
 			sourceTree = "<group>";
@@ -476,6 +497,7 @@
 		89E06BCC1C499ED400B8D1C4 /* yourTube */ = {
 			isa = PBXGroup;
 			children = (
+				892A2C381C6A8400003724D6 /* yourTubeApplication.h */,
 				89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */,
 				895F67881C6520D500AE33FA /* SVProgressHUD */,
 				897B49C61C58A7B500F50BC2 /* SDWebImage */,
@@ -483,6 +505,7 @@
 				897B4A151C59751500F50BC2 /* YouTube */,
 				89E06BDA1C499EFF00B8D1C4 /* main.m */,
 				89E06BDB1C499EFF00B8D1C4 /* Makefile */,
+				892A2C391C6A8CB1003724D6 /* JGProgressView */,
 				895F67961C690C8100AE33FA /* Animations */,
 				897B4A161C59751D00F50BC2 /* View Controllers */,
 				897B4A131C5974F600F50BC2 /* Bonjour */,
@@ -533,6 +556,7 @@
 				895F67A31C690C8100AE33FA /* ModalAnimation.h in Headers */,
 				89E06BE41C499F1B00B8D1C4 /* OurViewController.h in Headers */,
 				897B49F61C58A7B500F50BC2 /* SDWebImageManager.h in Headers */,
+				892A2C3C1C6A8CB1003724D6 /* JGProgressView.h in Headers */,
 				895F67A11C690C8100AE33FA /* BaseAnimation.h in Headers */,
 				895F67931C6520D500AE33FA /* SVRadialGradientLayer.h in Headers */,
 				897B49F21C58A7B500F50BC2 /* SDWebImageDownloader.h in Headers */,
@@ -552,6 +576,7 @@
 				897B49FD1C58A7B500F50BC2 /* UIImage+GIF.h in Headers */,
 				895F67911C6520D500AE33FA /* SVProgressHUD.h in Headers */,
 				897B49EA1C58A7B500F50BC2 /* NSData+ImageContentType.h in Headers */,
+				898244DF1C6A664A00131343 /* KBYTMessagingCenter.h in Headers */,
 				897B49F01C58A7B500F50BC2 /* SDWebImageDecoder.h in Headers */,
 				895F67A51C690C8100AE33FA /* ScaleAnimation.h in Headers */,
 				897B4A301C5E8B3D00F50BC2 /* APXML.h in Headers */,
@@ -668,8 +693,10 @@
 				895F67AE1C6A424F00AE33FA /* KBYourTube+Categories.m in Sources */,
 				895F67A61C690C8100AE33FA /* ScaleAnimation.m in Sources */,
 				897B4A2F1C5E8B3D00F50BC2 /* APElement.m in Sources */,
+				898244E01C6A664A00131343 /* KBYTMessagingCenter.m in Sources */,
 				89E06BD31C499EF000B8D1C4 /* URLCredential.m in Sources */,
 				895F67871C62B9BD00AE33FA /* KBYTSearchItemViewController.m in Sources */,
+				892A2C3D1C6A8CB1003724D6 /* JGProgressView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

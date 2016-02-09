@@ -121,6 +121,13 @@
 @end
 
 
+/**
+ 
+ Is it bad form to add categories to NSObject for frequently used convenience methods? probably. does it make
+ calling these methods from anywhere incredibly easy? yes. so... DONT CARE :-P
+ 
+ */
+
 @implementation NSObject (convenience)
 
 + (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval

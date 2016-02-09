@@ -69,7 +69,7 @@
         
         if (self.downloading == true)
         {
-            self.progressView = [[UIProgressView alloc] initWithFrame:CGRectMake(148, self.detailTextLabel.frame.origin.y + self.textLabel.frame.size.height + 5, textFieldWidth, 2)];
+            self.progressView = [[JGProgressView alloc] initWithFrame:CGRectMake(148, self.detailTextLabel.frame.origin.y + self.textLabel.frame.size.height + 5, textFieldWidth, 2)];
             [[self contentView] addSubview:self.progressView];
         }
     }
@@ -131,6 +131,10 @@
             NSIndexPath *path = [NSIndexPath indexPathForRow:index inSection:0];
             KBYTDownloadCell *cell = [[self tableView] cellForRowAtIndexPath:path];
             [cell.progressView setProgress:[theDict[@"completionPercent"] floatValue]];
+            if ([theDict[@"completionPercent"] integerValue] == 1)
+            {
+                [cell.progressView setIndeterminate:true];
+            }
         }
     }
 }
@@ -351,7 +355,10 @@
             switch (indexPath.section) {
                     
                 case 0://active dl
-                    
+                    if (self.activeDownloads.count == 1)
+                    {
+                        shouldRemoveActiveSection = true;
+                    }
                     mediaToDelete = [self.activeDownloads objectAtIndex:indexPath.row];
                     break;
                     
