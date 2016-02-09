@@ -313,13 +313,14 @@
         
     } else {
         
-        NSLog(@"deleting media: %@ from section: %li", dictionaryMedia, (long)section);
         
         NSString *filePath = [[self downloadPath] stringByAppendingPathComponent:dictionaryMedia[@"outputFilename"]];
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
         [mutableArray removeObject:dictionaryMedia];
-        self.downloadArray = [mutableArray copy];
+        self.downloadArray = [mutableArray copy]; //this needs to be a copy otherwise when we add the item
+        //below top make sure the download plist file stays current the items being added during
+        //download throw off the size of the table section arrays and it leads to a crash
         
         if ([self.activeDownloads count] > 0)
         {
@@ -370,10 +371,6 @@
                     
             }
         }
-        
-        
-        NSLog(@"mediaToDelete: %@ from section: %li indexPath: %@", mediaToDelete, (long)section, indexPath);
-        
         
         [tableView beginUpdates];
         [self deleteMedia:mediaToDelete fromSection:section];
