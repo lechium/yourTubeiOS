@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "MarqueeLabel/MarqueeLabel.h"
-#import "KBYTDownloadsTableViewController.h"
+#import "KBYTDownloadCell.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>

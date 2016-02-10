@@ -7,21 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MarqueeLabel/MarqueeLabel.h"
-#import "SDWebImage/UIImageView+WebCache.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
-#import "JGProgressView/JGProgressView.h"
+#import "KBYTDownloadCell.h"
 
-@interface KBYTDownloadCell: UITableViewCell
-
-@property (nonatomic, strong) MarqueeLabel *marqueeTextLabel;
-@property (nonatomic, strong) MarqueeLabel *marqueeDetailTextLabel;
-@property (nonatomic, strong) JGProgressView *progressView;
-@property (readwrite, assign) BOOL downloading;
-
-@end
 
 @interface KBYTDownloadsTableViewController : UITableViewController
 @property (nonatomic, strong) AVPlayer *player;

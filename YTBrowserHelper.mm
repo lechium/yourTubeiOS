@@ -675,9 +675,7 @@ kAHAirplayStatusPaused= 2;
     self.airplaying = NO;
     [self.infoTimer invalidate];
     self.playbackPosition = 0;
-    //[self.delegate positionUpdated:self.playbackPosition];
-    // [self.delegate durationUpdated:0];
-    //[self.delegate airplayStoppedWithError:error];
+
 }
 
 #pragma mark -
@@ -710,7 +708,7 @@ kAHAirplayStatusPaused= 2;
     NSRange     range;
     
     replyString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSLog(@"socket:didReadData:withTag: data:\r\n%@", replyString);
+    // NSLog(@"socket:didReadData:withTag: data:\r\n%@", replyString);
     
     if (tag == kAHRequestTagPlay) {
         //  /play request reply received and read
@@ -729,7 +727,7 @@ kAHAirplayStatusPaused= 2;
                                                              repeats:YES];
         }
         
-        NSLog(@"read data for /play reply");
+       // NSLog(@"read data for /play reply");
     }
 }
 

@@ -11,74 +11,7 @@
 #import "KBYTSearchTableViewController.h"
 #import "Animations/ScaleAnimation.h"
 
-@implementation KBYTDownloadCell
 
-@synthesize downloading, progressView;
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-    LOG_SELF;
-}
-
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    return self;
-}
-
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    
-    self.imageView.frame = CGRectMake(0,0,133,100);
-    self.imageView.backgroundColor = [UIColor blackColor];
-    float limgW =  self.imageView.image.size.width;
-    self.contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    
-    if(limgW > 0) {
-        
-        CGFloat textFieldWidth = self.frame.size.width - 148 - 10;
-        if ([self marqueeTextLabel] != nil)
-        {
-            [[self marqueeTextLabel] removeFromSuperview];
-        }
-        if ([self marqueeDetailTextLabel] != nil)
-        {
-            [[self marqueeDetailTextLabel] removeFromSuperview];
-        }
-        self.textLabel.frame = CGRectMake(148 ,self.textLabel.frame.origin.y,textFieldWidth,self.textLabel.frame.size.height);
-        self.marqueeTextLabel = [[MarqueeLabel alloc] initWithFrame:self.textLabel.frame];
-        self.marqueeTextLabel.font = self.textLabel.font;
-        self.marqueeTextLabel.textColor = self.textLabel.textColor;
-        self.marqueeTextLabel.text = self.textLabel.text;
-        self.textLabel.hidden = true;
-        self.detailTextLabel.frame = CGRectMake(148,self.detailTextLabel.frame.origin.y,textFieldWidth,self.detailTextLabel.frame.size.height);
-        self.marqueeDetailTextLabel = [[MarqueeLabel alloc] initWithFrame:self.detailTextLabel.frame];
-        self.marqueeDetailTextLabel.font = self.detailTextLabel.font;
-        self.marqueeDetailTextLabel.textColor = [UIColor lightGrayColor];//self.detailTextLabel.textColor;
-        self.marqueeDetailTextLabel.text = self.detailTextLabel.text;
-        [[self contentView] addSubview:self.marqueeDetailTextLabel];
-        [[self contentView] addSubview:self.marqueeTextLabel];
-        self.marqueeDetailTextLabel.frame =  self.detailTextLabel.frame;
-        self.detailTextLabel.hidden = true;
-        
-        if ([self progressView] != nil)
-        {
-            [[self progressView] removeFromSuperview];
-        }
-        
-        if (self.downloading == true)
-        {
-            self.progressView = [[JGProgressView alloc] initWithFrame:CGRectMake(148, self.detailTextLabel.frame.origin.y + self.textLabel.frame.size.height + 5, textFieldWidth, 2)];
-            [[self contentView] addSubview:self.progressView];
-        }
-    }
-    
-    
-    
-}
-
-@end
 
 @interface KBYTDownloadsTableViewController ()
 {
@@ -271,7 +204,8 @@
                 break;
         }
     }
-
+   // NSString *duration = [NSString stringFromTimeInterval:[currentItem[@"duration"]integerValue]];
+    cell.duration = [NSString stringFromTimeInterval:[currentItem[@"duration"]integerValue]];
     cell.detailTextLabel.text = currentItem[@"author"];
     cell.textLabel.text = currentItem[@"title"];
     cell.downloading = downloading;

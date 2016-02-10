@@ -259,6 +259,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     cell.detailTextLabel.text = currentItem.author;
     cell.textLabel.text = currentItem.title;
+    cell.duration = currentItem.duration;
     cell.downloading = false;
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceHolderImage"];
