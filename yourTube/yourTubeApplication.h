@@ -6,15 +6,15 @@
 //
 //
 
-#import "OurViewController.h"
+//#import "OurViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import "KBYTDownloadsTableViewController.h"
 #import "KBYTSearchTableViewController.h"
 #import "KBYourTube.h"
 
-@interface yourTubeApplication: UIApplication <UIApplicationDelegate, OurViewControllerDelegate, KBYTSearchTableViewControllerDelegate> {
+@interface yourTubeApplication: UIApplication <UIApplicationDelegate, KBYTSearchTableViewControllerDelegate> {
     UIWindow *_window;
-    OurViewController *_viewController;
+   // OurViewController *_viewController;
     KBYTDownloadsTableViewController *_searchViewController;
 }
 @property (nonatomic, retain) UIWindow *window;

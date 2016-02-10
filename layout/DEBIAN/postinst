@@ -10,3 +10,4 @@ fi
 /usr/bin/ldid -S /Library/MobileSubstrate/DynamicLibraries/YTBrowser.dylib
 /usr/bin/ldid -S /Library/MobileSubstrate/DynamicLibraries/JODebox.dylib
 /usr/bin/ldid -S /usr/bin/ffmpeg
+/usr/bin/ldid -S /Applications/yourTube.app/yourTube
