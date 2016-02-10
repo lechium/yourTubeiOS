@@ -93,7 +93,7 @@
 @property (nonatomic, strong) NSString *yttimestamp;
 @property (nonatomic, strong) NSString *ytkey;
 @property (nonatomic, strong) NSString *airplayIP;
-
+@property (nonatomic, strong) NSString *lastSearch;
 
 + (id)sharedInstance;
 

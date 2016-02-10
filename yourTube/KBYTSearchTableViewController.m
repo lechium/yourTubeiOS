@@ -43,8 +43,9 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-
     NSString *searchString = [self.searchController.searchBar text];
+    self.lastSearch = searchString;
+    [[KBYourTube sharedInstance] setLastSearch:self.lastSearch];
     //NSLog(@"search string: %@", searchString);
     if (self.currentPage == 1)
         [SVProgressHUD show];
@@ -87,6 +88,21 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    LOG_SELF;
+    NSLog(@"last search: %@", self.lastSearch);
+    if (self.lastSearch != nil)
+    {
+     //   self.searchController.searchBar.text = self.lastSearch;
+       // [self searchBarSearchButtonClicked:self.searchController.searchBar];
+    } else {
+        self.lastSearch = [[KBYourTube sharedInstance] lastSearch];
+        if (self.lastSearch != nil)
+        {
+            self.searchController.searchBar.text = self.lastSearch;
+            [self searchBarSearchButtonClicked:self.searchController.searchBar];
+        }
+        
+    }
     [super viewWillAppear:animated];
     [self checkAirplay];
 }

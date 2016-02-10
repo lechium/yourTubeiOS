@@ -368,7 +368,7 @@
 
 @implementation KBYourTube
 
-@synthesize ytkey, yttimestamp, deviceController, airplayIP;
+@synthesize ytkey, yttimestamp, deviceController, airplayIP, lastSearch;
 
 #pragma mark convenience methods
 

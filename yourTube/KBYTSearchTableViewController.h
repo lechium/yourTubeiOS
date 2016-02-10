@@ -16,7 +16,6 @@
 #import "KBYourTube.h"
 
 
-
 @protocol KBYTSearchTableViewControllerDelegate <NSObject>
 
 - (void)pushViewController:(id)controller;
@@ -41,6 +40,7 @@
 @property (readwrite, assign) CGFloat airplayProgressPercent;
 @property (readwrite, assign) CGFloat airplayDuration;
 @property (readwrite, assign) NSInteger currentPage;
+@property (nonatomic, strong) NSString *lastSearch;
 
 - (void)getNextPage;
 @end
