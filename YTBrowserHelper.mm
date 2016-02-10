@@ -254,8 +254,7 @@ kAHAirplayStatusPaused= 2;
 
 - (void)removeDownloadFromQueue:(NSDictionary *)downloadInfo
 {
-    NSArray *operations = [self operations];
-    for (YTDownloadOperation *operation in operations)
+    for (YTDownloadOperation *operation in [self operations])
     {
         if ([[operation name] isEqualToString:downloadInfo[@"title"]])
         {
@@ -270,21 +269,6 @@ kAHAirplayStatusPaused= 2;
 
 - (void)addDownloadToQueue:(NSDictionary *)downloadInfo
 {
-    NSLog(@"add download: %@", downloadInfo);
-    
-    /*
-     NSArray *operations = [self.downloadQueue operations];
-     for (YTDownloadOperation *operation in operations)
-     {
-     if ([[operation name] isEqualToString:downloadInfo[@"title"]])
-     {
-     NSLog(@"operation already exists, dont add it again!");
-     return;
-     }
-     }
-     */
-    
-    
     YTDownloadOperation *downloadOp = [[YTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
         
         if (downloadedFile == nil)
