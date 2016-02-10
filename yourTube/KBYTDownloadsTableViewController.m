@@ -297,8 +297,7 @@
 {
     if (section == 0) //active download, no file to delete
     {
-        CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
-        [center sendMessageName:@"org.nito.importscience.stopDownload" userInfo:dictionaryMedia];
+        [[KBYTMessagingCenter sharedInstance] stopDownload:dictionaryMedia];
         NSMutableArray *mutableArray = [[self activeDownloads] mutableCopy];
         [mutableArray removeObject:dictionaryMedia];
         self.activeDownloads = mutableArray;

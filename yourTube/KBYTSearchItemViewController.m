@@ -463,8 +463,9 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     NSString *stringURL = [[stream url] absoluteString];
     streamDict[@"url"] = stringURL;
     [self updateDownloadsDictionary:streamDict];
-    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
-    [center sendMessageName:@"org.nito.importscience.addDownload" userInfo:streamDict];
+    [[KBYTMessagingCenter sharedInstance] addDownload:streamDict];
+   // CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
+   // [center sendMessageName:@"org.nito.importscience.addDownload" userInfo:streamDict];
 }
 
 

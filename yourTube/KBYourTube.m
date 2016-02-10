@@ -16,19 +16,7 @@
  in the header file. However, it does provide easier portability since I have yet to make this into a library/framework/pod
  
  
- KBYTStream identifies an actual playback stream
-
- extension = mp4;
- format = 720p MP4;
- height = 720;
- itag = 22;
- title = "Lil Wayne - No Worries %28Explicit%29 ft. Detail\";
- type = "video/mp4; codecs=avc1.64001F, mp4a.40.2";
- url = "https://r9---sn-bvvbax-2ime.googlevideo.com/videoplayback?dur=229.529&sver=3&expire=1451432986&pl=19&ratebypass=yes&nh=EAE&mime=video%2Fmp4&itag=22&ipbits=0&source=youtube&ms=au&mt=1451411225&mv=m&mm=31&mn=sn-bvvbax-2ime&requiressl=yes&key=yt6&lmt=1429504739223021&id=o-ANaYZmZnobN9YUPpUED-68dQ4O8sFyxHtMaQww4kxgTT&upn=PSfKek6hLJg&gcr=us&sparams=dur%2Cgcr%2Cid%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cnh%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cupn%2Cexpire&fexp=9406813%2C9407016%2C9415422%2C9416126%2C9418404%2C9420452%2C9422596%2C9423662%2C9424205%2C9425382%2C9425742%2C9425965&ip=xx&signature=E0F8B6F26BF082B1EB97509DF597AB175DC04D4D.9408359B27A278F16AEF13EA16DE83AA7A600177\";
- 
- the signature deciphering (if necessary) is already taken care of in the url
- 
- */
+*/
 
 @implementation YTKBPlayerViewController
 
@@ -39,7 +27,12 @@
 
 @end
 
-
+/*
+ 
+ KBYTSearchResult keep track of search results through the new HTML scraping search methods that supplanted
+ the old web view that was used in earlier versions.
+ 
+ */
 
 @implementation KBYTSearchResult
 
@@ -79,6 +72,23 @@
 
 
 @end
+
+/*
+ 
+ KBYTStream identifies an actual playback stream
+ 
+ extension = mp4;
+ format = 720p MP4;
+ height = 720;
+ itag = 22;
+ title = "Lil Wayne - No Worries %28Explicit%29 ft. Detail\";
+ type = "video/mp4; codecs=avc1.64001F, mp4a.40.2";
+ url = "https://r9---sn-bvvbax-2ime.googlevideo.com/videoplayback?dur=229.529&sver=3&expire=1451432986&pl=19&ratebypass=yes&nh=EAE&mime=video%2Fmp4&itag=22&ipbits=0&source=youtube&ms=au&mt=1451411225&mv=m&mm=31&mn=sn-bvvbax-2ime&requiressl=yes&key=yt6&lmt=1429504739223021&id=o-ANaYZmZnobN9YUPpUED-68dQ4O8sFyxHtMaQww4kxgTT&upn=PSfKek6hLJg&gcr=us&sparams=dur%2Cgcr%2Cid%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cnh%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cupn%2Cexpire&fexp=9406813%2C9407016%2C9415422%2C9416126%2C9418404%2C9420452%2C9422596%2C9423662%2C9424205%2C9425382%2C9425742%2C9425965&ip=xx&signature=E0F8B6F26BF082B1EB97509DF597AB175DC04D4D.9408359B27A278F16AEF13EA16DE83AA7A600177\";
+ 
+ the signature deciphering (if necessary) is already taken care of in the url
+ 
+ */
+
 
 @implementation KBYTStream
 
@@ -256,6 +266,9 @@
     
     NSNumber *view_count = [numFormatter numberFromString:vars[@"view_count"]];
     
+    //unfortunately get_video_info doesn't include video descriptions, thankfully
+    //none of this is ever called on the mainthread so a little extra minor call here
+    //doesn't add much overhead and doesn't need a separate block call
     NSString *desc = [[KBYourTube sharedInstance] videoDescription:videoID];
     if (desc != nil)
     {
@@ -393,22 +406,17 @@
 
 - (void)pauseAirplay
 {
-    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
-    [center sendMessageName:@"org.nito.importscience.pauseAirplay" userInfo:nil];
+    [[KBYTMessagingCenter sharedInstance] pauseAirplay];
 }
 
 - (void)stopAirplay
 {
-    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
-    [center sendMessageName:@"org.nito.importscience.stopAirplay" userInfo:nil];
+    [[KBYTMessagingCenter sharedInstance] stopAirplay];
 }
 
 - (NSInteger)airplayStatus
 {
-    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
-    NSDictionary *response = [center sendMessageAndReceiveReplyName:@"org.nito.importscience.airplayState" userInfo:nil];
-   // NSLog(@"response: %@", response);
-    return [[response valueForKey:@"playbackState"] integerValue];
+    return [[KBYTMessagingCenter sharedInstance] airplayStatus];
 }
 
 - (NSDictionary *)returnFromURLRequest:(NSString *)requestString requestType:(NSString *)type
@@ -426,13 +434,10 @@
     return [datString dictionaryValue];
 }
 
-- (void)airplayStream:(KBYTStream *)stream ToDeviceIP:(NSString *)deviceIP
+- (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP
 {
-    NSLog(@"airplayStream: %@ to deviceIP: %@", stream, deviceIP);
-  
-    NSDictionary *info = @{@"deviceIP": deviceIP, @"videoURL": [[stream url] absoluteString]};
-    CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
-    [center sendMessageName:@"org.nito.importscience.startAirplay" userInfo:info];
+    [[KBYTMessagingCenter sharedInstance] airplayStream:stream ToDeviceIP:deviceIP];
+
 }
 
 //take a url and get its raw body, then return in string format

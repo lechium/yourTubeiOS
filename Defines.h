@@ -16,12 +16,15 @@
 #define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
 
 static NSString *const KBYTMessageIdentifier   =  @"org.nito.importscience";
+static NSString *const KBYTDownloadIdentifier  =  @"org.nito.dllistener";
 
 static NSString *const KBYTPauseAirplayMessage =  @"pauseAirplay";
 static NSString *const KBYTStopAirplayMessage  =  @"stopAirplay";
 static NSString *const KBYTStartAirplayMessage =  @"startAirplay";
 static NSString *const KBYTAirplayStateMessage =  @"airplayState";
 
-
 static NSString *const KBYTAddDownloadMessage  =  @"addDownload";
 static NSString *const KBYTStopDownloadMessage =  @"stopDownload";
+
+static NSString *const KBYTDownloadProgressMessage    = @"currentProgress";
+static NSString *const KBYTAudioImportFinishedMessage = @"audioImported";

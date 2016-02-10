@@ -42,7 +42,5 @@
 @property (readwrite, assign) CGFloat airplayDuration;
 @property (readwrite, assign) NSInteger currentPage;
 
-- (void)playFile:(NSDictionary *)file;
-- (void)getVideoIDDetails:(NSString *)details;
 - (void)getNextPage;
 @end

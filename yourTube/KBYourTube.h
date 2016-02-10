@@ -123,13 +123,11 @@
                 failureBlock:(void(^)(NSString* error))failureBlock;
 
 
-- (void)extractAudio:(NSString *)theFile
-     completionBlock:(void(^)(NSString *newFile))completionBlock;
 - (NSString *)decodeSignature:(NSString *)theSig;
 
 + (NSDictionary *)formatFromTag:(NSInteger)tag;
 - (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP;
-- (void)airplayStream:(KBYTStream *)stream ToDeviceIP:(NSString *)deviceIP;
+- (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP;
 - (void)pauseAirplay;
 - (NSInteger)airplayStatus;
 @end
