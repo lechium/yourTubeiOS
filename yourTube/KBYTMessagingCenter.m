@@ -118,6 +118,7 @@
 //send a message to our tweak to add a new download
 - (void)addDownload:(NSDictionary *)streamDict
 {
+    LOG_SELF;
     [[self center] sendMessageName:[KBYTMessageIdentifier stringByAppendingPathExtension:KBYTAddDownloadMessage] userInfo:streamDict];
 }
 

@@ -270,7 +270,7 @@ kAHAirplayStatusPaused= 2;
 
 - (void)addDownloadToQueue:(NSDictionary *)downloadInfo
 {
-    //NSLog(@"add download: %@", downloadInfo);
+    NSLog(@"add download: %@", downloadInfo);
     
     /*
      NSArray *operations = [self.downloadQueue operations];
