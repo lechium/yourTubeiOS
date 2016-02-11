@@ -72,15 +72,30 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	/*
-	UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStyleBordered target:self action:@selector(close)];
-	rightBarButtonItem.style = UIBarButtonItemStyleBordered;
-	self.navigationItem.rightBarButtonItem = rightBarButtonItem;
-     */
+
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(showActivitySheet:)];
+    
 }
 
 - (void)close {
 	[self dismissModalViewControllerAnimated:YES];
+}
+
+- (void)showActivitySheet:(id)sender
+{
+    NSString *string = [NSString stringWithFormat:@"%@ by %@ via tuyu", self.ytMedia.title, self.ytMedia.author];
+    NSURL *URL = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", self.ytMedia.videoId]];
+    
+    NSLog(@"string: %@ url: %@", string, URL);
+    
+    UIActivityViewController *activityViewController =
+    [[UIActivityViewController alloc] initWithActivityItems:@[string, URL]
+                                      applicationActivities:nil];
+    [self.navigationController presentViewController:activityViewController
+                                       animated:YES
+                                     completion:^{
+                                         // ...
+                                     }];
 }
 
 /*
