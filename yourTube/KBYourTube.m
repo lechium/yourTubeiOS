@@ -96,11 +96,28 @@
     
 }
 
+- (BOOL)hasVideo
+{
+   AVPlayerItem *playerItem = [[self player] currentItem];
+   NSArray *tracks = [playerItem tracks];
+    for (AVPlayerItemTrack *playerItemTrack in tracks)
+    {
+        // find video tracks
+        if ([playerItemTrack.assetTrack hasMediaCharacteristic:AVMediaCharacteristicVisual])
+        {
+            NSLog(@"is video!");
+            //playerItemTrack.enabled = NO; // disable the track
+            return true;
+        }
+    }
+    return false;
+}
+
 - (void)didBackground:(NSNotification *)n
 {
     //NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
    // NSLog(@"view recursiveDescription: %@", recursiveDesc);
-    if ([self isPlaying] == true)
+    if ([self isPlaying] == true && [self hasVideo] == true)
     {
         _layerToRestore = [self findPlayerView];
         _playerToRestore = [_layerToRestore player];
