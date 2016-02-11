@@ -36,14 +36,33 @@
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didForeground:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    //[[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    
+    MPRemoteCommandCenter *shared = [MPRemoteCommandCenter sharedCommandCenter];
+   [shared.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        
+        [[self player] pause];
+        return MPRemoteCommandHandlerStatusSuccess;
+
+    }];
+    
+    [shared.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        
+        [[self player] play];
+        return MPRemoteCommandHandlerStatusSuccess;
+        
+    }];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
-    
+      [[MPRemoteCommandCenter sharedCommandCenter].pauseCommand removeTarget:self];
+      [[MPRemoteCommandCenter sharedCommandCenter].playCommand removeTarget:self];
 }
 
 - (void)didForeground:(NSNotification *)n
@@ -51,6 +70,8 @@
     if (_playerToRestore != nil && _layerToRestore != nil)
     {
         [_layerToRestore setPlayer:_playerToRestore];
+        _playerToRestore = nil;
+        _layerToRestore = nil;
     }
 }
 

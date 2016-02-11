@@ -344,12 +344,21 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
     [self dismissViewControllerAnimated:true completion:nil];
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
 }
 
 
 - (void)playFile:(NSDictionary *)file
 {
     NSString *outputFile = [[self downloadFolder] stringByAppendingPathComponent:file[@"outputFilename"]];
+    NSURL *artworkURL = [NSURL URLWithString:file[@"images"][@"standard"]];
+    NSData *albumArtwork = [NSData dataWithContentsOfURL:artworkURL];
+    UIImage *artworkImage = [UIImage imageWithData:albumArtwork];
+    NSLog(@"artworkImage: %@", artworkImage);
+    MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc]initWithImage:artworkImage];
+    NSLog(@"artwork: %@", artwork);
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file[@"title"], MPMediaItemPropertyPlaybackDuration: file[@"duration"], MPMediaItemPropertyArtwork: artwork };
+    
     NSURL *playURL = [NSURL fileURLWithPath:outputFile];
     NSLog(@"play url: %@", playURL);
     if ([self isPlaying] == true  ){

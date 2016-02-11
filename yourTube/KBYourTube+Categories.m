@@ -36,6 +36,26 @@
 
 @implementation NSString (TSSAdditions)
 
+- (NSInteger)timeFromDuration
+{
+    NSLog(@"duration: %@", self);
+    NSArray *durationArray = [self componentsSeparatedByString:@":"];
+    if ([durationArray count] == 3)
+    {
+        //has hours
+        NSLog(@"has hours???");
+        NSInteger hoursInSeconds = [[durationArray firstObject] integerValue] * 3600;
+        NSInteger minutesInSeconds = [[durationArray objectAtIndex:1] integerValue] * 60;
+        NSInteger seconds = [[durationArray lastObject] integerValue];
+        return hoursInSeconds + minutesInSeconds + seconds;
+    } else {
+        NSInteger minutesInSeconds = [[durationArray firstObject] integerValue] * 60;
+        NSInteger seconds = [[durationArray lastObject] integerValue];
+        return  minutesInSeconds + seconds;
+    }
+    return 0;
+}
+
 + (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval
 {
     NSInteger interval = timeInterval;

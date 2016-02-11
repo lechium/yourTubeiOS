@@ -369,6 +369,16 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
     
     [self.player play];
+  //  NSURL *artworkURL = [NSURL URLWithString:file[@"images"][@"standard"]];
+    //NSData *albumArtwork = [NSData dataWithContentsOfURL:artworkURL];
+    //UIImage *artworkImage = [UIImage imageWithData:albumArtwork];
+    //NSLog(@"artworkImage: %@", artworkImage);
+   // MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc]initWithImage:artworkImage];
+    //NSLog(@"artwork: %@", artwork);
+    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    ;
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : ytMedia.title, MPMediaItemPropertyPlaybackDuration: [numberFormatter numberFromString:ytMedia.duration]};
+    
     
 }
 

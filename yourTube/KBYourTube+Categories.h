@@ -22,7 +22,7 @@
 
 + (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval;
 - (id)dictionaryValue;
-
+- (NSInteger)timeFromDuration;
 @end
 
 @interface NSDate (convenience)
