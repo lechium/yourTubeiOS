@@ -112,6 +112,9 @@
         {
             self.progressView = [[JGProgressView alloc] initWithFrame:CGRectMake(148, self.detailTextLabel.frame.origin.y + self.textLabel.frame.size.height + 5, textFieldWidth, 2)];
             [[self contentView] addSubview:self.progressView];
+            self.viewsLabel.hidden = true;
+        } else {
+            self.viewsLabel.hidden = false;
         }
     }
     

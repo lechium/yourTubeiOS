@@ -212,6 +212,11 @@
     {
         cell.views = [currentItem[@"views"] stringByAppendingString:@" Views"];
     }
+    
+    if (downloading == true)
+    {
+        cell.views = @"";
+    }
     cell.downloading = downloading;
     NSURL *imageURL = [NSURL URLWithString:currentItem[@"images"][@"medium"]];
     UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GenericArtwork" ofType:@"png"]];
