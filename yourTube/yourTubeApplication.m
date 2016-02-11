@@ -10,6 +10,10 @@
     [[KBYTMessagingCenter sharedInstance] stopDownloadListener];
 }
 
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+}
+
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     [[KBYTMessagingCenter sharedInstance] startDownloadListener];

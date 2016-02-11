@@ -18,6 +18,10 @@
 
 
 @interface YTKBPlayerViewController : AVPlayerViewController
+{
+    AVPlayerLayer *_layerToRestore;
+    AVPlayer *_playerToRestore;
+}
 
 @end
 

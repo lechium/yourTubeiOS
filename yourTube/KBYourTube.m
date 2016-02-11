@@ -18,7 +18,96 @@
  
 */
 
+
 @implementation YTKBPlayerViewController
+
+/*
+ 
+ most of the code in this class are the stupid hurdles to jump through to not roll your own AVPlayerView & 
+ & controller but to maintain playback in the background & then regain video in the foreground.
+ 
+ adapted and fixed from http://stackoverflow.com/questions/31621618/remove-and-restore-avplayer-to-enable-background-video-playback/33240738#33240738
+ 
+ 
+ */
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didForeground:) name:UIApplicationDidBecomeActiveNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+    
+}
+
+- (void)didForeground:(NSNotification *)n
+{
+    if (_playerToRestore != nil && _layerToRestore != nil)
+    {
+        [_layerToRestore setPlayer:_playerToRestore];
+    }
+}
+
+- (AVPlayerLayer *)findPlayerView {
+    return [self findLayerWithAVPlayerLayer:self.view];
+}
+
+- (AVPlayerLayer *)findLayerWithAVPlayerLayer:(UIView *)view {
+    AVPlayerLayer *foundView = nil;
+    @try {
+        foundView = [view valueForKey:@"_videoLayer"];
+    }
+    @catch ( NSException *e ) {
+      //  NSLog(@"exception: %@", e);
+    }
+    @finally
+    {
+        if (foundView != nil)
+        {
+            return foundView;
+        }
+    }
+    for (UIView *v in view.subviews) {
+        AVPlayerLayer *theLayer = [self findLayerWithAVPlayerLayer:v];
+        if (theLayer != nil)
+        {
+            return theLayer;
+        }
+    }
+    return nil;
+}
+
+- (BOOL)isPlaying
+{
+    if ([self player] != nil)
+    {
+        if (self.player.rate != 0)
+        {
+            return true;
+        }
+    }
+    return false;
+    
+}
+
+- (void)didBackground:(NSNotification *)n
+{
+    //NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
+   // NSLog(@"view recursiveDescription: %@", recursiveDesc);
+    if ([self isPlaying] == true)
+    {
+        _layerToRestore = [self findPlayerView];
+        _playerToRestore = [_layerToRestore player];
+        [_layerToRestore setPlayer:nil];
+        
+    }
+}
 
 - (BOOL)shouldAutorotate
 {
