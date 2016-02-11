@@ -208,9 +208,10 @@
     cell.duration = [NSString stringFromTimeInterval:[currentItem[@"duration"]integerValue]];
     cell.detailTextLabel.text = currentItem[@"author"];
     cell.textLabel.text = currentItem[@"title"];
-    if ([[currentItem allKeys] containsObject:@"views"] && downloading == false)
+    if ([[currentItem allKeys] containsObject:@"format"] && downloading == false)
     {
-        cell.views = [currentItem[@"views"] stringByAppendingString:@" Views"];
+        //cell.views = [currentItem[@"views"] stringByAppendingString:@" Views"];
+        cell.views = currentItem[@"format"];
     }
     
     if (downloading == true)
