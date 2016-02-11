@@ -82,6 +82,10 @@
         self.durationLabel.textColor = [UIColor whiteColor];
         self.durationLabel.backgroundColor = [UIColor blackColor];
         self.durationLabel.text = self.duration;
+        [self.durationLabel sizeToFit];
+        durationFrame = self.durationLabel.frame;
+        durationFrame.origin.x = 133 - durationFrame.size.width - 5;
+        self.durationLabel.frame = durationFrame;
         [[self contentView] addSubview:self.durationLabel];
       
         CGRect viewsFrame = CGRectMake(148, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height+2, 100, self.detailTextLabel.frame.size.height);

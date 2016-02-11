@@ -14,7 +14,7 @@
 - (NSString *)stringValue
 {
     NSString *error = nil;
-    NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:kCFPropertyListXMLFormat_v1_0 errorDescription:&error];
+    NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:NSPropertyListXMLFormat_v1_0 errorDescription:&error];
     NSString *s=[[NSString alloc] initWithData:xmlData encoding: NSUTF8StringEncoding];
     return s;
 }
@@ -26,7 +26,7 @@
 - (NSString *)stringFromArray
 {
     NSString *error = nil;
-    NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:kCFPropertyListXMLFormat_v1_0 errorDescription:&error];
+    NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:NSPropertyListXMLFormat_v1_0 errorDescription:&error];
     NSString *s=[[NSString alloc] initWithData:xmlData encoding: NSUTF8StringEncoding];
     return s;
 }
@@ -41,7 +41,12 @@
     NSInteger interval = timeInterval;
     long seconds = interval % 60;
     long minutes = (interval / 60) % 60;
-    //long hours = (interval / 3600);
+    long hours = (interval / 3600);
+    
+    if (hours > 0)
+    {
+        return [NSString stringWithFormat:@"%ld:%ld:%0.2ld", hours, minutes, seconds];
+    }
     
     return [NSString stringWithFormat:@"%ld:%0.2ld", minutes, seconds];
 }

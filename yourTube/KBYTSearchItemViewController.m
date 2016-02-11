@@ -5,7 +5,7 @@
 
 
 float calcLabelHeight(NSString *string, UIFont *font, float width) {
-	float height = [string sizeWithFont:font constrainedToSize:CGSizeMake(width, 1000.0f) lineBreakMode:UILineBreakModeTailTruncation].height + 16.0f;
+	float height = [string sizeWithFont:font constrainedToSize:CGSizeMake(width, 1000.0f) lineBreakMode:NSLineBreakByTruncatingTail].height + 16.0f;
 	if (height > 32.0f)
 		return height;
 	return 32.0f;
@@ -71,7 +71,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 
 
 - (void)viewWillAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
+	[super viewWillAppear:animated];
 
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(showActivitySheet:)];
     
@@ -86,8 +86,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     NSString *string = [NSString stringWithFormat:@"%@ by %@ via tuyu", self.ytMedia.title, self.ytMedia.author];
     NSURL *URL = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", self.ytMedia.videoId]];
     
-    NSLog(@"string: %@ url: %@", string, URL);
-    
+
     UIActivityViewController *activityViewController =
     [[UIActivityViewController alloc] initWithActivityItems:@[string, URL]
                                       applicationActivities:nil];
@@ -98,11 +97,6 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
                                      }];
 }
 
-/*
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-}
-*/
 /*
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
