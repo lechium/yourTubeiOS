@@ -62,6 +62,11 @@
             [[self durationLabel] removeFromSuperview];
         }
         
+        if ([self viewsLabel] != nil)
+        {
+            [[self viewsLabel] removeFromSuperview];
+        }
+        
         self.textLabel.frame = CGRectMake(148 ,self.textLabel.frame.origin.y-10,textFieldWidth,self.textLabel.frame.size.height);
         self.marqueeTextLabel = [[MarqueeLabel alloc] initWithFrame:self.textLabel.frame];
         self.marqueeTextLabel.font = self.textLabel.font;
@@ -69,14 +74,24 @@
         self.marqueeTextLabel.text = self.textLabel.text;
         self.textLabel.hidden = true;
         
-        CGRect durationFrame = CGRectMake(148, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height, 50, self.detailTextLabel.frame.size.height);
+        CGRect durationFrame = CGRectMake(100, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height+2, 25, self.detailTextLabel.frame.size.height);
         self.durationLabel = [[UILabel alloc] initWithFrame:durationFrame];
         //NSLog(@"font: %@", self.detailTextLabel.font);
         UIFont *theFont = [UIFont systemFontOfSize:14];
         self.durationLabel.font = self.detailTextLabel.font;
-        self.durationLabel.textColor = [UIColor blackColor];
+        self.durationLabel.textColor = [UIColor whiteColor];
+        self.durationLabel.backgroundColor = [UIColor blackColor];
         self.durationLabel.text = self.duration;
         [[self contentView] addSubview:self.durationLabel];
+      
+        CGRect viewsFrame = CGRectMake(148, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height+2, 100, self.detailTextLabel.frame.size.height);
+        self.viewsLabel = [[UILabel alloc] initWithFrame:viewsFrame];
+        self.viewsLabel.font = self.detailTextLabel.font;
+        self.viewsLabel.textColor = [UIColor blackColor];
+        self.viewsLabel.text = self.views;
+        [self.viewsLabel sizeToFit];
+        [[self contentView] addSubview:self.viewsLabel];
+        
         
         self.detailTextLabel.frame = CGRectMake(148,self.detailTextLabel.frame.origin.y-5,textFieldWidth,self.detailTextLabel.frame.size.height);
         self.marqueeDetailTextLabel = [[MarqueeLabel alloc] initWithFrame:self.detailTextLabel.frame];

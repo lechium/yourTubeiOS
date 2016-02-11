@@ -460,6 +460,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     streamDict[@"images"] = self.ytMedia.images;
     streamDict[@"inProgress"] = [NSNumber numberWithBool:true];
     streamDict[@"videoId"] = self.ytMedia.videoId;
+    streamDict[@"views"]= self.ytMedia.views;
     NSString *stringURL = [[stream url] absoluteString];
     streamDict[@"url"] = stringURL;
     [self updateDownloadsDictionary:streamDict];

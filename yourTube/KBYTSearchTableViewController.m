@@ -276,6 +276,13 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     cell.detailTextLabel.text = currentItem.author;
     cell.textLabel.text = currentItem.title;
     cell.duration = currentItem.duration;
+    
+    NSNumberFormatter *numFormatter = [NSNumberFormatter new];
+    numFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+    
+    NSNumber *view_count = [numFormatter numberFromString:currentItem.views];
+
+    cell.views = [[numFormatter stringFromNumber:view_count] stringByAppendingString:@" Views"];
     cell.downloading = false;
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceHolderImage"];

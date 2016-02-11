@@ -16,8 +16,10 @@
 @property (nonatomic, strong) MarqueeLabel *marqueeTextLabel;
 @property (nonatomic, strong) MarqueeLabel *marqueeDetailTextLabel;
 @property (nonatomic, strong) UILabel *durationLabel;
+@property (nonatomic, strong) UILabel *viewsLabel;
 @property (nonatomic, strong) JGProgressView *progressView;
 @property (readwrite, assign) BOOL downloading;
 @property (nonatomic, strong) NSString *duration;
+@property (nonatomic, strong) NSString *views;
 
 @end

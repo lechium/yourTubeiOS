@@ -43,7 +43,7 @@
     long minutes = (interval / 60) % 60;
     //long hours = (interval / 3600);
     
-    return [NSString stringWithFormat:@"%0.2ld:%0.2ld", minutes, seconds];
+    return [NSString stringWithFormat:@"%ld:%0.2ld", minutes, seconds];
 }
 
 /*

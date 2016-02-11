@@ -208,6 +208,10 @@
     cell.duration = [NSString stringFromTimeInterval:[currentItem[@"duration"]integerValue]];
     cell.detailTextLabel.text = currentItem[@"author"];
     cell.textLabel.text = currentItem[@"title"];
+    if ([[currentItem allKeys] containsObject:@"views"] && downloading == false)
+    {
+        cell.views = [currentItem[@"views"] stringByAppendingString:@" Views"];
+    }
     cell.downloading = downloading;
     NSURL *imageURL = [NSURL URLWithString:currentItem[@"images"][@"medium"]];
     UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GenericArtwork" ofType:@"png"]];
