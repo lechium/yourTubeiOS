@@ -28,7 +28,7 @@ yourTube_FILES += APDocument/APAttribute.m APDocument/APDocument.m APDocument/AP
 yourTube_FILES += SVProgressHUD/SVIndefiniteAnimatedView.m SVProgressHUD/SVProgressHUD.m SVProgressHUD/SVRadialGradientLayer.m
 yourTube_FILES += Animations/BaseAnimation.m Animations/ModalAnimation.m Animations/ScaleAnimation.m Animations/ShuffleAnimation.m Animations/SlideAnimation.m
 yourTube_FILES += KBYourTube+Categories.m KBYTMessagingCenter.m JGProgressView/JGProgressView.m
-
+yourTube_FILES += Reachability/Reachability.m
 yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit
 yourTube_CXXFLAGS += -fobjc-arc
 yourTube_CFLAGS += -fobjc-arc

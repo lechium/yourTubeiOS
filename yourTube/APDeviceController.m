@@ -9,11 +9,15 @@
 
 @implementation APDeviceController
 
-@synthesize deviceDictionary, airplayServers, acbrowser, apbrowser, services;
+@synthesize deviceDictionary, airplayServers, acbrowser, apbrowser, services, reachabilityManager;
 
 - (id)init {
     
     self = [super init];
+    reachabilityManager = [Reachability reachabilityWithHostname:@"www.google.com"];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
+    
+    [[self reachabilityManager] startNotifier];
     acbrowser = [[NSNetServiceBrowser alloc] init];
     apbrowser = [[NSNetServiceBrowser alloc] init];
     services = [NSMutableArray array];
@@ -23,9 +27,40 @@
    
     [acbrowser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
     [apbrowser searchForServicesOfType:@"_aircontrol._tcp." inDomain:@""];
+    searching = true;
+   
     return self;
 }
 
+- (void)refreshServers {
+    
+    if (searching == true) { return; }
+    LOG_SELF;
+    [services removeAllObjects];
+    airplayServers = nil;
+    acbrowser = [[NSNetServiceBrowser alloc] init];
+    apbrowser = [[NSNetServiceBrowser alloc] init];
+    services = [NSMutableArray array];
+    [acbrowser setDelegate:self];
+    [apbrowser setDelegate:self];
+    [acbrowser searchForServicesOfType:@"_airplay._tcp." inDomain:@""];
+    [apbrowser searchForServicesOfType:@"_aircontrol._tcp." inDomain:@""];
+     searching = true;
+}
+
+- (void)reachabilityChanged:(NSNotification *)n
+{
+    LOG_SELF;
+    if ([self.reachabilityManager isReachableViaWiFi] == true)
+    {
+        NSLog(@"we have wifis!");
+        [self refreshServers];
+    } else {
+        NSLog(@"we dont have wifis!");
+        [services removeAllObjects];
+        airplayServers = nil;
+    }
+}
 
 - (NSString *)convertedName:(NSString *)inputName
 {
@@ -171,6 +206,7 @@
 - (void)netServiceBrowserDidStopSearch:(NSNetServiceBrowser *)browser
 
 {
+    LOG_SELF;
     //NSLog(@"%@ %s", self, _cmd);
     searching = NO;
     [self updateUI];

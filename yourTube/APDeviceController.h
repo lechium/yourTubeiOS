@@ -1,6 +1,7 @@
 /* APDeviceController */
 
 #import <Foundation/Foundation.h>
+#import "Reachability/Reachability.h"
 
 @interface APDeviceController : NSObject <NSNetServiceBrowserDelegate, NSNetServiceDelegate>
 {
@@ -14,7 +15,7 @@
 @property (nonatomic, strong) NSDictionary *deviceDictionary;
 @property (nonatomic, strong) NSArray *airplayServers;
 @property (nonatomic, strong) NSMutableArray *services;
-
+@property (nonatomic, strong) Reachability *reachabilityManager;
 
 - (NSDictionary *)stringDictionaryFromService:(NSNetService *)theService;
 - (NSDictionary *)currentServiceDictionary;

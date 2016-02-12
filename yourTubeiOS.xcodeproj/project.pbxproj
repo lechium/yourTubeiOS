@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8912FA511C6E731D00FB6D67 /* Reachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 8912FA4F1C6E731D00FB6D67 /* Reachability.h */; };
+		8912FA521C6E731D00FB6D67 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA501C6E731D00FB6D67 /* Reachability.m */; };
 		892A2C3C1C6A8CB1003724D6 /* JGProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */; };
 		892A2C3D1C6A8CB1003724D6 /* JGProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */; };
 		895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */; };
@@ -104,6 +106,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8912FA4F1C6E731D00FB6D67 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		8912FA501C6E731D00FB6D67 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		892A2C381C6A8400003724D6 /* yourTubeApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yourTubeApplication.h; path = yourTube/yourTubeApplication.h; sourceTree = "<group>"; };
 		892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JGProgressView.h; sourceTree = "<group>"; };
 		892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JGProgressView.m; sourceTree = "<group>"; };
@@ -255,6 +259,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8912FA4E1C6E731D00FB6D67 /* Reachability */ = {
+			isa = PBXGroup;
+			children = (
+				8912FA4F1C6E731D00FB6D67 /* Reachability.h */,
+				8912FA501C6E731D00FB6D67 /* Reachability.m */,
+			);
+			name = Reachability;
+			path = yourTube/Reachability;
+			sourceTree = "<group>";
+		};
 		892A2C391C6A8CB1003724D6 /* JGProgressView */ = {
 			isa = PBXGroup;
 			children = (
@@ -514,6 +528,7 @@
 				895F67961C690C8100AE33FA /* Animations */,
 				897B4A161C59751D00F50BC2 /* View Controllers */,
 				897B4A131C5974F600F50BC2 /* Bonjour */,
+				8912FA4E1C6E731D00FB6D67 /* Reachability */,
 				897B4A121C5974EE00F50BC2 /* Categories */,
 				89E06BCD1C499EF000B8D1C4 /* Download */,
 				89E06BED1C49F59100B8D1C4 /* theos */,
@@ -545,6 +560,7 @@
 				898244DB1C6A4A1600131343 /* YTDownloadOperation.h in Headers */,
 				89E06BC61C499E2300B8D1C4 /* ytiOSBundle.h in Headers */,
 				895F67A91C690C8100AE33FA /* SlideAnimation.h in Headers */,
+				8912FA511C6E731D00FB6D67 /* Reachability.h in Headers */,
 				897B49F81C58A7B500F50BC2 /* SDWebImageOperation.h in Headers */,
 				897B4A2C1C5E8B3D00F50BC2 /* APDocument.h in Headers */,
 				897B4A031C58A7B500F50BC2 /* UIImageView+HighlightedWebCache.h in Headers */,
@@ -666,6 +682,7 @@
 				89E06BE01C499EFF00B8D1C4 /* main.m in Sources */,
 				897B4A2B1C5E8B3D00F50BC2 /* APAttribute.m in Sources */,
 				895F67A21C690C8100AE33FA /* BaseAnimation.m in Sources */,
+				8912FA521C6E731D00FB6D67 /* Reachability.m in Sources */,
 				897B49ED1C58A7B500F50BC2 /* SDImageCache.m in Sources */,
 				897B49EB1C58A7B500F50BC2 /* NSData+ImageContentType.m in Sources */,
 				895F67941C6520D500AE33FA /* SVRadialGradientLayer.m in Sources */,
