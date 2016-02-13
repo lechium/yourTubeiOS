@@ -102,7 +102,7 @@
 + (id)sharedInstance;
 
 - (NSString *)videoDescription:(NSString *)videoID;
-
+- (NSDictionary *)videoDetailsFromID:(NSString *)videoID;
 /**
  
  searchQuery is just a basic unescaped search string, this will return a dictionary with 
@@ -115,6 +115,9 @@
            pageNumber:(NSInteger)page
       completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
          failureBlock:(void(^)(NSString* error))failureBlock;
+
+- (void)getFeaturedVideosWithCompletionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
+                                failureBlock:(void(^)(NSString* error))failureBlock;
 
 
 - (void)getSearchResults:(NSString *)searchQuery

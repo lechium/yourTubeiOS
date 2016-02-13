@@ -41,6 +41,7 @@
 @property (readwrite, assign) CGFloat airplayDuration;
 @property (readwrite, assign) NSInteger currentPage;
 @property (nonatomic, strong) NSString *lastSearch;
+@property (readwrite, assign) BOOL showingSuggestedVideos;
 
 - (void)getNextPage;
 @end

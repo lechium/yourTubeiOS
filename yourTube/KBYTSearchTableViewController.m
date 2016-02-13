@@ -43,6 +43,8 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
+    self.showingSuggestedVideos = false;
+    self.navigationItem.title = @"YouTube Search";
     NSString *searchString = [self.searchController.searchBar text];
     self.lastSearch = searchString;
     [[KBYourTube sharedInstance] setLastSearch:self.lastSearch];
@@ -92,6 +94,7 @@
     NSLog(@"last search: %@", self.lastSearch);
     if (self.lastSearch != nil)
     {
+        self.showingSuggestedVideos = false;
      //   self.searchController.searchBar.text = self.lastSearch;
        // [self searchBarSearchButtonClicked:self.searchController.searchBar];
     } else {
@@ -100,6 +103,26 @@
         {
             self.searchController.searchBar.text = self.lastSearch;
             [self searchBarSearchButtonClicked:self.searchController.searchBar];
+            self.navigationItem.title = @"YouTube Search";
+        } else {
+            self.navigationItem.title = @"Suggested Videos";
+            self.showingSuggestedVideos = true;
+            if (self.totalResults > 0) { return; }
+            [SVProgressHUD show];
+           [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
+               
+               [SVProgressHUD dismiss];
+               self.totalResults = [searchDetails[@"resultCount"] integerValue];
+               self.pageCount = [searchDetails[@"pageCount"] integerValue];
+               [self updateSearchResults:searchDetails[@"results"]];
+               [self.tableView reloadData];
+               
+               
+               
+           } failureBlock:^(NSString *error) {
+               
+           }];
+            
         }
         
     }
