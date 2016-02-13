@@ -128,7 +128,7 @@
 {
     //
     float percentComplete = [urlDownloader downloadCompleteProcent];
-     NSLog(@"percentComplete: %f", percentComplete);
+    // NSLog(@"percentComplete: %f", percentComplete);
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
     

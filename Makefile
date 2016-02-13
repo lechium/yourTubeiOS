@@ -1,8 +1,8 @@
 ARCHS = armv7 armv7s arm64
 TARGET = iphone:8.4
 include theos/makefiles/common.mk
-#THEOS_DEVICE_IP=other-ipod.local
-THEOS_DEVICE_IP=kbphone.local
+THEOS_DEVICE_IP=other-ipod.local
+#THEOS_DEVICE_IP=kbphone.local
 export GO_EASY_ON_ME=1
 export DEBUG=1
 #export THEOS_DEVICE_IP=kbphone.local
