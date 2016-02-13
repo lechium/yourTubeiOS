@@ -83,6 +83,7 @@
     self.navigationItem.title = @"Downloads";
     [super viewWillAppear:animated];
     [self reloadData];
+    [self.navigationController setToolbarHidden:YES animated:YES];
 }
 
 - (void)viewDidLoad {
