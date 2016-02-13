@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8912FA511C6E731D00FB6D67 /* Reachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 8912FA4F1C6E731D00FB6D67 /* Reachability.h */; };
 		8912FA521C6E731D00FB6D67 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA501C6E731D00FB6D67 /* Reachability.m */; };
+		8912FA571C6EE29400FB6D67 /* ONOXMLDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 8912FA551C6EE29400FB6D67 /* ONOXMLDocument.h */; };
+		8912FA581C6EE29400FB6D67 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA561C6EE29400FB6D67 /* ONOXMLDocument.m */; };
 		892A2C3C1C6A8CB1003724D6 /* JGProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */; };
 		892A2C3D1C6A8CB1003724D6 /* JGProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */; };
 		895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */; };
@@ -108,6 +110,8 @@
 /* Begin PBXFileReference section */
 		8912FA4F1C6E731D00FB6D67 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8912FA501C6E731D00FB6D67 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		8912FA551C6EE29400FB6D67 /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
+		8912FA561C6EE29400FB6D67 /* ONOXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ONOXMLDocument.m; sourceTree = "<group>"; };
 		892A2C381C6A8400003724D6 /* yourTubeApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yourTubeApplication.h; path = yourTube/yourTubeApplication.h; sourceTree = "<group>"; };
 		892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JGProgressView.h; sourceTree = "<group>"; };
 		892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JGProgressView.m; sourceTree = "<group>"; };
@@ -269,6 +273,16 @@
 			path = yourTube/Reachability;
 			sourceTree = "<group>";
 		};
+		8912FA541C6EE29400FB6D67 /* Ono */ = {
+			isa = PBXGroup;
+			children = (
+				8912FA551C6EE29400FB6D67 /* ONOXMLDocument.h */,
+				8912FA561C6EE29400FB6D67 /* ONOXMLDocument.m */,
+			);
+			name = Ono;
+			path = yourTube/Ono;
+			sourceTree = "<group>";
+		};
 		892A2C391C6A8CB1003724D6 /* JGProgressView */ = {
 			isa = PBXGroup;
 			children = (
@@ -384,6 +398,7 @@
 		897B4A151C59751500F50BC2 /* YouTube */ = {
 			isa = PBXGroup;
 			children = (
+				8912FA541C6EE29400FB6D67 /* Ono */,
 				897B4A221C5E8B3D00F50BC2 /* APDocument */,
 				89E06BD61C499EFF00B8D1C4 /* KBYourTube.h */,
 				89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */,
@@ -573,6 +588,7 @@
 				89E06BEB1C499F7000B8D1C4 /* APDeviceController.h in Headers */,
 				897B4A2A1C5E8B3D00F50BC2 /* APAttribute.h in Headers */,
 				897B49EC1C58A7B500F50BC2 /* SDImageCache.h in Headers */,
+				8912FA571C6EE29400FB6D67 /* ONOXMLDocument.h in Headers */,
 				895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */,
 				895F678F1C6520D500AE33FA /* SVIndefiniteAnimatedView.h in Headers */,
 				895F67A31C690C8100AE33FA /* ModalAnimation.h in Headers */,
@@ -705,6 +721,7 @@
 				89E06BDF1C499EFF00B8D1C4 /* KBYTDownloadStream.m in Sources */,
 				897B4A2D1C5E8B3D00F50BC2 /* APDocument.m in Sources */,
 				897B49FA1C58A7B500F50BC2 /* SDWebImagePrefetcher.m in Sources */,
+				8912FA581C6EE29400FB6D67 /* ONOXMLDocument.m in Sources */,
 				895F67921C6520D500AE33FA /* SVProgressHUD.m in Sources */,
 				897B49C51C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m in Sources */,
 				897B49E91C58A7B500F50BC2 /* MKAnnotationView+WebCache.m in Sources */,

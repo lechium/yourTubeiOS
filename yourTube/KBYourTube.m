@@ -8,7 +8,7 @@
 
 #import "KBYourTube.h"
 #import "APDocument/APXML.h"
-
+#import "Ono/ONOXMLDocument.h"
 
 /**
  
@@ -715,6 +715,125 @@
     return [text stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@""];
 }
 
+- (void)youTubeSearch:(NSString *)searchQuery
+            pageNumber:(NSInteger)page
+       completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
+          failureBlock:(void(^)(NSString* error))failureBlock
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        @autoreleasepool {
+            
+            //handle pagination
+            
+            NSString *pageorsm = nil;
+            if (page == 1)
+            {
+                pageorsm = @"sm=1";
+            } else {
+                pageorsm = [NSString stringWithFormat:@"page=%lu", page];
+            }
+            
+            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?%@&q=%@&%@", @"sp=EgIQAQ%253D%253D", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
+            NSString *rawRequestResult = [self stringFromRequest:requestString];
+            ONOXMLDocument *xmlDoc = [ONOXMLDocument HTMLDocumentWithString:rawRequestResult encoding:NSUTF8StringEncoding error:nil];
+            ONOXMLElement *root = [xmlDoc rootElement];
+            NSString *XPath = @"//ol[contains(@class, 'section-list')]";
+            ONOXMLElement *sectionListElement = [root firstChildWithXPath:XPath];
+            ONOXMLElement *numListElement = [sectionListElement firstChildWithXPath:@"//p[contains(@class,'num-results')]"];
+            NSInteger results = 0;
+            if (numListElement !=nil)
+            {
+                NSString *resultText = [numListElement stringValue];
+                results = [[[[[resultText componentsSeparatedByString:@"About"] lastObject] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByReplacingOccurrencesOfString:@"," withString:@""] integerValue];
+            }
+            ONOXMLElement *videosElement = [sectionListElement firstChildWithXPath:@"//ol[contains(@class, 'item-section')]"];
+            id videoEnum = [videosElement XPath:@"//div[contains(@class, 'yt-lockup-video')]"];
+            ONOXMLElement *currentElement = nil;
+            NSMutableArray *finalArray = [NSMutableArray new];
+            NSMutableDictionary *outputDict = [NSMutableDictionary new];
+            outputDict[@"resultCount"] = [NSNumber numberWithInteger:results];
+            while (currentElement = [videoEnum nextObject])
+            {
+                //NSMutableDictionary *scienceDict = [NSMutableDictionary new];
+                KBYTSearchResult *result = [KBYTSearchResult new];
+                NSString *videoID = [currentElement valueForAttribute:@"data-context-item-id"];
+                if (videoID != nil)
+                {
+                    result.videoId = videoID;
+                }
+                ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
+                ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
+                ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-uix-tile-link')]"];
+                ;
+                ONOXMLElement *descElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-description')]"];
+                ONOXMLElement *authorElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
+                ONOXMLElement *ageAndViewsElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"];//yt-lockup-meta-info
+                NSString *imagePath = [thumbNailElement valueForAttribute:@"data-thumb"];
+                if (imagePath == nil)
+                {
+                    imagePath = [thumbNailElement valueForAttribute:@"src"];
+                }
+                if (imagePath != nil)
+                {
+                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                }
+                if (lengthElement != nil)
+                    result.duration = lengthElement.stringValue;
+                
+                if (titleElement != nil)
+                    result.title = [[titleElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                
+                NSString *vdesc = [[descElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                if (vdesc != nil)
+                {
+                    result.details = [vdesc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                }
+                
+                if (authorElement != nil)
+                {
+                    result.author = [authorElement stringValue];
+                }
+                for (ONOXMLElement *currentElement in [ageAndViewsElement children])
+                {
+                    NSString *currentValue = [currentElement stringValue];
+                    if ([currentValue containsString:@"ago"]) //age
+                    {
+                        result.age = currentValue;
+                    } else if ([currentValue containsString:@"views"])
+                    {
+                        result.views = [[currentValue componentsSeparatedByString:@" "] firstObject];
+                    }
+                }
+                
+                if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"])
+                {
+                    //NSLog(@"result: %@", result);
+                    [finalArray addObject:result];
+                } else {
+                    result = nil;
+                }
+                if ([finalArray count] > 0)
+                {
+                    outputDict[@"results"] = finalArray;
+                    NSInteger pageCount = results/[finalArray count];
+                    outputDict[@"pageCount"] = [NSNumber numberWithInteger:pageCount];
+                }
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if([finalArray count] > 0)
+                {
+                    completionBlock(outputDict);
+                } else {
+                    failureBlock(@"fail");
+                }
+            });
+        }
+    });
+    
+}
+
 /*
  
  This method is much tidier now with some recursive magic added to APElement, it is still potentially
@@ -723,7 +842,7 @@
  
  */
 
-- (void)youTubeSearch:(NSString *)searchQuery
+- (void)oldyouTubeSearch:(NSString *)searchQuery
            pageNumber:(NSInteger)page
       completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
          failureBlock:(void(^)(NSString* error))failureBlock
