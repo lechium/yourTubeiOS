@@ -21,7 +21,7 @@
 
 @implementation KBYTDownloadsTableViewController
 
-@synthesize downloadArray, activeDownloads;
+@synthesize downloadArray, activeDownloads, optionIndices;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -88,7 +88,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.optionIndices = [NSMutableIndexSet indexSetWithIndex:1];
     self.navigationItem.title = @"Downloads";
     
     // Uncomment the following line to preserve selection between presentations.
@@ -97,7 +97,49 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearchView:)];
      _scaleAnimationController = [[ScaleAnimation alloc] initWithNavigationController:self.navigationController];
+    
+    NSLog(@"burger: %@", [UIImage imageNamed:@"burger"]);
+    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"burger"] style:UIBarButtonItemStylePlain target:self action:@selector(showHamburgerMenu)];
+
 }
+
+- (void)showHamburgerMenu
+{
+    NSArray *images = @[
+                        [UIImage imageNamed:@"profile"],
+                        [UIImage imageNamed:@"popular"],
+                        [UIImage imageNamed:@"music"],
+                        [UIImage imageNamed:@"sports"],
+                        [UIImage imageNamed:@"360"]];
+    
+    NSArray *colors = @[
+                        [UIColor colorWithRed:240/255.f green:159/255.f blue:254/255.f alpha:1],
+                        [UIColor colorWithRed:255/255.f green:137/255.f blue:167/255.f alpha:1],
+                        [UIColor colorWithRed:126/255.f green:242/255.f blue:195/255.f alpha:1],
+                        [UIColor colorWithRed:119/255.f green:152/255.f blue:255/255.f alpha:1],
+                        [UIColor colorWithRed:119/255.f green:152/255.f blue:255/255.f alpha:1],
+                        ];
+    
+    
+    RNFrostedSidebar *callout = [[RNFrostedSidebar alloc] initWithImages:images selectedIndices:self.optionIndices borderColors:colors];
+    
+    
+    callout.delegate = self;
+    [callout show];
+}
+
+
+- (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index {
+    [sidebar dismissAnimated:YES completion:^(BOOL finished) {
+        if (finished) {
+      
+            KBYTGenericVideoTableViewController *secondVC = [[KBYTGenericVideoTableViewController alloc]initForType:index];
+            [self.navigationController pushViewController:secondVC animated:YES];
+        }
+    }];
+}
+
 
 - (void)showSearchView:(id)sender
 {

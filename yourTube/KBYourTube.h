@@ -16,6 +16,27 @@
 #import "KBYTMessagingCenter.h"
 // Logging
 
+/*
+ 
+ //music channel = UC-9-kyTW8ZkZNDHQJ6FgpwQ
+ //popular on yt = UCF0pVplsI8R5kcAqgtoRqoA
+ //sports = UCEgdi0XIXXZ-qJOFPf4JSKw
+ //gaming = UCOpNcN46UbXVtpKMrmU4Abg
+ //360 = UCzuqhhs6NWbgTzMuM09WKDQ
+ 
+ dont have videos
+ 
+ //news = UCYfdidRxbB8Qhf0Nx7ioOYw
+ //live = UC4R8DWoMoI7CAwX8_LjQHig
+ 
+ 
+ */
+
+static NSString *const KBYTMusicChannelID   =  @"UC-9-kyTW8ZkZNDHQJ6FgpwQ";
+static NSString *const KBYTPopularChannelID =  @"UCF0pVplsI8R5kcAqgtoRqoA";
+static NSString *const KBYTSportsChannelID  =  @"UCEgdi0XIXXZ-qJOFPf4JSKw";
+static NSString *const KBYTGamingChannelID  =  @"UCOpNcN46UbXVtpKMrmU4Abg";
+static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 
 @interface YTKBPlayerViewController : AVPlayerViewController
 {
@@ -115,6 +136,10 @@
            pageNumber:(NSInteger)page
       completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
          failureBlock:(void(^)(NSString* error))failureBlock;
+
+- (void)getChannelVideos:(NSString *)channelID
+         completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
+            failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getFeaturedVideosWithCompletionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
                                 failureBlock:(void(^)(NSString* error))failureBlock;

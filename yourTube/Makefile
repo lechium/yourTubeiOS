@@ -28,8 +28,10 @@ yourTube_FILES += APDocument/APAttribute.m APDocument/APDocument.m APDocument/AP
 yourTube_FILES += SVProgressHUD/SVIndefiniteAnimatedView.m SVProgressHUD/SVProgressHUD.m SVProgressHUD/SVRadialGradientLayer.m
 yourTube_FILES += Animations/BaseAnimation.m Animations/ModalAnimation.m Animations/ScaleAnimation.m Animations/ShuffleAnimation.m Animations/SlideAnimation.m
 yourTube_FILES += KBYourTube+Categories.m KBYTMessagingCenter.m JGProgressView/JGProgressView.m
-yourTube_FILES += Reachability/Reachability.m Ono/ONOXMLDocument.m
-yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit
+yourTube_FILES += Reachability/Reachability.m Ono/ONOXMLDocument.m RNFrostedSidebar/RNFrostedSidebar.m
+yourTube_FILES += KBYTGenericVideoTableViewController.m
+
+yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit QuartzCore Accelerate
 yourTube_CXXFLAGS += -fobjc-arc -I/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/include/libxml2
 yourTube_CFLAGS += -fobjc-arc -I/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/include/libxml2
 yourTube_LDFLAGS = -ObjC -undefined dynamic_lookup -I/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/include/libxml2 -lxml2 -F/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/System/Library/PrivateFrameworks -Wl,-segalign,4000

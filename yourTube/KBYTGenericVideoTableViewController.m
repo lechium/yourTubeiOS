@@ -1,23 +1,20 @@
 //
-//  KBYTSearchTableViewController.m
+//  KBYTGenericVideoTableViewController.m
 //  yourTubeiOS
 //
 //  Created by Kevin Bradley on 2/1/16.
 //
 //
 
-#import "KBYTSearchTableViewController.h"
+#import "KBYTGenericVideoTableViewController.h"
 //#import "OurViewController.h"
 #import "SVProgressHUD/SVProgressHUD.h"
 #import "SVProgressHUD/SVIndefiniteAnimatedView.h"
 #import "KBYTSearchItemViewController.h"
 
-#define kLoadingCellTag 500
 
+@interface KBYTGenericVideoTableViewController ()
 
-@interface KBYTSearchTableViewController () <UISearchResultsUpdating, UISearchBarDelegate>
-
-@property (nonatomic, strong) UISearchController *searchController;
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;
@@ -25,111 +22,20 @@
 
 @end
 
-@implementation KBYTSearchTableViewController
+@implementation KBYTGenericVideoTableViewController
 
-@synthesize delegate;
+@synthesize tableType;
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-   // [self resetSearchResults];
-}
-
-- (void)resetSearchResults
-{
-    self.currentPage = 1;
-    self.totalResults = 0;
-    self.pageCount = 0;
-    [self.searchResults removeAllObjects];
-    [self.tableView reloadData];
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    self.showingSuggestedVideos = false;
-    self.navigationItem.title = @"YouTube Search";
-    NSString *searchString = [self.searchController.searchBar text];
-    self.lastSearch = searchString;
-    [[KBYourTube sharedInstance] setLastSearch:self.lastSearch];
-    //NSLog(@"search string: %@", searchString);
-    if (self.currentPage == 1)
-        [SVProgressHUD show];
-    [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage completionBlock:^(NSDictionary *searchDetails) {
-        
-      //  NSLog(@"search details: %@", searchDetails);
-        if (self.currentPage == 1)
-            [SVProgressHUD dismiss];
-      
-        self.totalResults = [searchDetails[@"resultCount"] integerValue];
-        self.pageCount = [searchDetails[@"pageCount"] integerValue];
-        //self.searchResults = searchDetails[@"results"];
-        [self updateSearchResults:searchDetails[@"results"]];
-        [self.tableView reloadData];
-   
-        
-    } failureBlock:^(NSString *error) {
-        //
-        
-    }];
-    
-    
-}
-
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
-{
-    [self resetSearchResults];
-}
-
-- (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar
-{
-    
-}
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [self.searchController dismissViewControllerAnimated:false completion:nil];
     [super viewWillDisappear:animated];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    
-    NSLog(@"last search: %@", self.lastSearch);
-    if (self.lastSearch != nil)
-    {
-        self.showingSuggestedVideos = false;
-     //   self.searchController.searchBar.text = self.lastSearch;
-       // [self searchBarSearchButtonClicked:self.searchController.searchBar];
-    } else {
-        self.lastSearch = [[KBYourTube sharedInstance] lastSearch];
-        if (self.lastSearch != nil)
-        {
-            self.searchController.searchBar.text = self.lastSearch;
-            [self searchBarSearchButtonClicked:self.searchController.searchBar];
-            self.navigationItem.title = @"YouTube Search";
-        } else {
-            self.navigationItem.title = @"Suggested Videos";
-            self.showingSuggestedVideos = true;
-            if (self.totalResults > 0) { return; }
-            [SVProgressHUD show];
-           [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
-               
-               [SVProgressHUD dismiss];
-               self.totalResults = [searchDetails[@"resultCount"] integerValue];
-               self.pageCount = [searchDetails[@"pageCount"] integerValue];
-               [self updateSearchResults:searchDetails[@"results"]];
-               [self.tableView reloadData];
-               
-               
-               
-           } failureBlock:^(NSString *error) {
-               
-           }];
-            
-        }
-        
-    }
     [super viewWillAppear:animated];
-    [self checkAirplay];
+   // [self checkAirplay];
 }
 
 - (void)viewDidLoad {
@@ -142,82 +48,106 @@
     self.tableView.translatesAutoresizingMaskIntoConstraints = false;
     self.automaticallyAdjustsScrollViewInsets = false;
     
-    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-    
-    self.searchController.searchResultsUpdater = self;
-    self.searchController.hidesNavigationBarDuringPresentation = false;
-    self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
-    self.searchController.searchBar.delegate = self;
-    self.searchController.definesPresentationContext = true;
-    self.searchController.dimsBackgroundDuringPresentation = false;
-    self.tableView.tableHeaderView = self.searchController.searchBar;
-    
-    //NEVER DO THE BELOW LINE, LEFT AS REMINDER
-    //self.definesPresentationContext = YES;
     self.currentPage = 1;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
-    self.navigationItem.title = @"YouTube Search";
+    
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
+    [self updateTableForType:self.tableType];
 }
 
-
-
-//- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller {
-//    
-//    self.navigationController.navigationBar.translucent = YES;
-//}
-//
-//- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller {
-//    self.navigationController.navigationBar.translucent = NO;
-//    
-//}
-
-/*
-- (void) viewDidLayoutSubviews
+- (id)initForType:(NSInteger)detailsType
 {
-    if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1)
-    {
-        CGRect viewBounds = self.view.bounds;
-        CGFloat topBarOffset = self.topLayoutGuide.length;
-        viewBounds.origin.y = topBarOffset * -1;
-        self.view.bounds = viewBounds;
-    }
+    self = [super initWithStyle:UITableViewStylePlain];
+    tableType = detailsType;
+    return self;
 }
-*/
-- (void)getNextPage
+
+- (void)updateTableForType:(NSInteger)type
 {
-    
-    NSInteger nextPage = self.currentPage + 1;
-    if (self.pageCount > nextPage)
+    [SVProgressHUD show];
+    if (type == 0) //featured
     {
-        self.currentPage = nextPage;
-        //[self updateSearchResultsForSearchController:self.searchController];
-        [self searchBarSearchButtonClicked:self.searchController.searchBar];
+        self.navigationItem.title = @"Suggested Videos";
+        [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
+            
+            self.currentPage = 1;
+            [SVProgressHUD dismiss];
+            self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            [self updateSearchResults:searchDetails[@"results"]];
+            [self.tableView reloadData];
+       
+            
+        } failureBlock:^(NSString *error) {
+            
+        }];
+    } else if (type == 1) //popular
+    {
+         self.navigationItem.title = @"Popular on YouTube";
+        [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(NSDictionary *searchDetails) {
+            
+            self.currentPage = 1;
+            [SVProgressHUD dismiss];
+            self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            [self updateSearchResults:searchDetails[@"results"]];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            //
+        }];
+    }  else if (type == 2) //music
+    {
+         self.navigationItem.title = @"Music Videos";
+        [[KBYourTube sharedInstance] getChannelVideos:KBYTMusicChannelID completionBlock:^(NSDictionary *searchDetails) {
+            
+            self.currentPage = 1;
+            [SVProgressHUD dismiss];
+            self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            [self updateSearchResults:searchDetails[@"results"]];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            //
+        }];
+    } else if (type == 3) //sports
+    {
+        self.navigationItem.title = @"Sports Videos";
+        [[KBYourTube sharedInstance] getChannelVideos:KBYTSportsChannelID completionBlock:^(NSDictionary *searchDetails) {
+            
+            self.currentPage = 1;
+            [SVProgressHUD dismiss];
+            self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            [self updateSearchResults:searchDetails[@"results"]];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            //
+        }];
+    } else if (type == 4) //360
+    {
+         self.navigationItem.title = @"360 Videos";
+        [[KBYourTube sharedInstance] getChannelVideos:KBYT360ChannelID completionBlock:^(NSDictionary *searchDetails) {
+            
+            self.currentPage = 1;
+            [SVProgressHUD dismiss];
+            self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            [self updateSearchResults:searchDetails[@"results"]];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            //
+        }];
     }
     
-}
-
--(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-    
-    
-    return;
-    NSString *searchString = [self.searchController.searchBar text];
-    [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage completionBlock:^(NSDictionary *searchDetails) {
-        self.totalResults = [searchDetails[@"resultCount"] integerValue];
-        self.pageCount = [searchDetails[@"pageCount"] integerValue];
-        self.searchResults = searchDetails[@"results"];
-        [self.tableView reloadData];
-
-    } failureBlock:^(NSString *error) {
-        //
-        
-    }];
-    
     
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -235,10 +165,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    if (self.currentPage < self.pageCount)
-    {
-        return self.searchResults.count + 1;
-    }
     return self.searchResults.count;
     
 }
@@ -248,25 +174,6 @@
     tableView.backgroundColor = [UIColor whiteColor];
 }
 
-- (UITableViewCell *)loadingCell {
-    UITableViewCell *cell = [[UITableViewCell alloc]
-                             initWithStyle:UITableViewCellStyleDefault
-                             reuseIdentifier:nil];
-    
-    SVIndefiniteAnimatedView *indefiniteAnimatedView = [[SVIndefiniteAnimatedView alloc] initWithFrame:CGRectZero];
-    indefiniteAnimatedView.strokeColor = [UIColor redColor];
-    indefiniteAnimatedView.radius =  10;
-    indefiniteAnimatedView.strokeThickness = 4;
-    [indefiniteAnimatedView sizeToFit];
-   
-    indefiniteAnimatedView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-    indefiniteAnimatedView.center = cell.contentView.center;
-    cell.contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [cell.contentView addSubview:indefiniteAnimatedView];
-    
-    cell.tag = kLoadingCellTag;
-    return cell;
-}
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -275,26 +182,12 @@
 }
 - (void)updateSearchResults:(NSArray *)newResults
 {
-    if (self.currentPage > 1)
-    {
-        [[self searchResults] addObjectsFromArray:newResults];
-    } else {
-        self.searchResults = [newResults mutableCopy];
-    }
+    self.searchResults = [newResults mutableCopy];
 }
 
-- (void)tableView:(UITableView *)tableView
-  willDisplayCell:(UITableViewCell *)cell
-forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (cell.tag == kLoadingCellTag) {
-        [self getNextPage];
-    }
-}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
-     if (indexPath.row >= self.searchResults.count){
-     return [self loadingCell];
-     }
     
     KBYTDownloadCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {

@@ -11,6 +11,10 @@
 		8912FA521C6E731D00FB6D67 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA501C6E731D00FB6D67 /* Reachability.m */; };
 		8912FA571C6EE29400FB6D67 /* ONOXMLDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 8912FA551C6EE29400FB6D67 /* ONOXMLDocument.h */; };
 		8912FA581C6EE29400FB6D67 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA561C6EE29400FB6D67 /* ONOXMLDocument.m */; };
+		8912FA5D1C6FBB8600FB6D67 /* RNFrostedSidebar.h in Headers */ = {isa = PBXBuildFile; fileRef = 8912FA5B1C6FBB8600FB6D67 /* RNFrostedSidebar.h */; };
+		8912FA5E1C6FBB8600FB6D67 /* RNFrostedSidebar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA5C1C6FBB8600FB6D67 /* RNFrostedSidebar.m */; };
+		8912FA611C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8912FA5F1C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.h */; };
+		8912FA621C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA601C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.m */; };
 		892A2C3C1C6A8CB1003724D6 /* JGProgressView.h in Headers */ = {isa = PBXBuildFile; fileRef = 892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */; };
 		892A2C3D1C6A8CB1003724D6 /* JGProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */; };
 		895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */; };
@@ -112,6 +116,10 @@
 		8912FA501C6E731D00FB6D67 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8912FA551C6EE29400FB6D67 /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
 		8912FA561C6EE29400FB6D67 /* ONOXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ONOXMLDocument.m; sourceTree = "<group>"; };
+		8912FA5B1C6FBB8600FB6D67 /* RNFrostedSidebar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFrostedSidebar.h; sourceTree = "<group>"; };
+		8912FA5C1C6FBB8600FB6D67 /* RNFrostedSidebar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFrostedSidebar.m; sourceTree = "<group>"; };
+		8912FA5F1C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTGenericVideoTableViewController.h; path = yourTube/KBYTGenericVideoTableViewController.h; sourceTree = "<group>"; };
+		8912FA601C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTGenericVideoTableViewController.m; path = yourTube/KBYTGenericVideoTableViewController.m; sourceTree = "<group>"; };
 		892A2C381C6A8400003724D6 /* yourTubeApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yourTubeApplication.h; path = yourTube/yourTubeApplication.h; sourceTree = "<group>"; };
 		892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JGProgressView.h; sourceTree = "<group>"; };
 		892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JGProgressView.m; sourceTree = "<group>"; };
@@ -283,6 +291,16 @@
 			path = yourTube/Ono;
 			sourceTree = "<group>";
 		};
+		8912FA5A1C6FBB8600FB6D67 /* RNFrostedSidebar */ = {
+			isa = PBXGroup;
+			children = (
+				8912FA5B1C6FBB8600FB6D67 /* RNFrostedSidebar.h */,
+				8912FA5C1C6FBB8600FB6D67 /* RNFrostedSidebar.m */,
+			);
+			name = RNFrostedSidebar;
+			path = yourTube/RNFrostedSidebar;
+			sourceTree = "<group>";
+		};
 		892A2C391C6A8CB1003724D6 /* JGProgressView */ = {
 			isa = PBXGroup;
 			children = (
@@ -423,6 +441,8 @@
 				897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */,
 				895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */,
 				895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */,
+				8912FA5F1C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.h */,
+				8912FA601C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.m */,
 				895F67841C62B9BD00AE33FA /* KBYTSearchItemViewController.h */,
 				895F67851C62B9BD00AE33FA /* KBYTSearchItemViewController.m */,
 			);
@@ -536,6 +556,7 @@
 				895F67881C6520D500AE33FA /* SVProgressHUD */,
 				897B49C61C58A7B500F50BC2 /* SDWebImage */,
 				897B4A141C59750D00F50BC2 /* Preferences */,
+				8912FA5A1C6FBB8600FB6D67 /* RNFrostedSidebar */,
 				897B4A151C59751500F50BC2 /* YouTube */,
 				89E06BDA1C499EFF00B8D1C4 /* main.m */,
 				89E06BDB1C499EFF00B8D1C4 /* Makefile */,
@@ -602,10 +623,12 @@
 				897B4A071C58A7B500F50BC2 /* UIView+WebCacheOperation.h in Headers */,
 				897B49FB1C58A7B500F50BC2 /* UIButton+WebCache.h in Headers */,
 				89E06BD21C499EF000B8D1C4 /* URLCredential.h in Headers */,
+				8912FA611C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.h in Headers */,
 				895F67861C62B9BD00AE33FA /* KBYTSearchItemViewController.h in Headers */,
 				897B49F91C58A7B500F50BC2 /* SDWebImagePrefetcher.h in Headers */,
 				897B4A2E1C5E8B3D00F50BC2 /* APElement.h in Headers */,
 				897B49E81C58A7B500F50BC2 /* MKAnnotationView+WebCache.h in Headers */,
+				8912FA5D1C6FBB8600FB6D67 /* RNFrostedSidebar.h in Headers */,
 				897B49C41C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h in Headers */,
 				895F67A71C690C8100AE33FA /* ShuffleAnimation.h in Headers */,
 				897B49FF1C58A7B500F50BC2 /* UIImage+MultiFormat.h in Headers */,
@@ -704,6 +727,7 @@
 				895F67941C6520D500AE33FA /* SVRadialGradientLayer.m in Sources */,
 				895F67AA1C690C8100AE33FA /* SlideAnimation.m in Sources */,
 				895F67901C6520D500AE33FA /* SVIndefiniteAnimatedView.m in Sources */,
+				8912FA5E1C6FBB8600FB6D67 /* RNFrostedSidebar.m in Sources */,
 				89E06BEC1C499F7000B8D1C4 /* APDeviceController.m in Sources */,
 				897B49F11C58A7B500F50BC2 /* SDWebImageDecoder.m in Sources */,
 				895F67A81C690C8100AE33FA /* ShuffleAnimation.m in Sources */,
@@ -723,6 +747,7 @@
 				897B49FA1C58A7B500F50BC2 /* SDWebImagePrefetcher.m in Sources */,
 				8912FA581C6EE29400FB6D67 /* ONOXMLDocument.m in Sources */,
 				895F67921C6520D500AE33FA /* SVProgressHUD.m in Sources */,
+				8912FA621C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.m in Sources */,
 				897B49C51C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m in Sources */,
 				897B49E91C58A7B500F50BC2 /* MKAnnotationView+WebCache.m in Sources */,
 				897B4A061C58A7B500F50BC2 /* UIImageView+WebCache.m in Sources */,

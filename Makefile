@@ -1,8 +1,8 @@
 ARCHS = armv7 armv7s arm64
 TARGET = iphone:8.4
 include theos/makefiles/common.mk
-THEOS_DEVICE_IP=other-ipod.local
-#THEOS_DEVICE_IP=kbphone.local
+#THEOS_DEVICE_IP=other-ipod.local
+THEOS_DEVICE_IP=kbphone.local
 export GO_EASY_ON_ME=1
 export DEBUG=1
 #export THEOS_DEVICE_IP=kbphone.local
@@ -55,7 +55,7 @@ include $(FW_MAKEDIR)/tweak.mk
 
 
 after-install::
-	install.exec "killall -9 SpringBoard"
+	install.exec "killall -9 yourTube"
 
 SUBPROJECTS += yourTube
 include $(THEOS_MAKE_PATH)/aggregate.mk

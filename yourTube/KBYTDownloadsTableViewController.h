@@ -11,14 +11,15 @@
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "KBYTDownloadCell.h"
+#import "RNFrostedSidebar/RNFrostedSidebar.h"
+#import "KBYTGenericVideoTableViewController.h"
 
-
-@interface KBYTDownloadsTableViewController : UITableViewController
+@interface KBYTDownloadsTableViewController : UITableViewController <RNFrostedSidebarDelegate>
 @property (nonatomic, strong) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerViewController *playerView;
 @property (nonatomic, strong) NSArray *downloadArray;
 @property (nonatomic, strong) NSArray *activeDownloads;
-
+@property (nonatomic, strong) NSMutableIndexSet *optionIndices;
 - (void)reloadData;
 - (void)delayedReloadData;
 - (void)updateDownloadProgress:(NSDictionary *)theDict;
