@@ -88,7 +88,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.optionIndices = [NSMutableIndexSet indexSetWithIndex:1];
+    self.optionIndices = [NSMutableIndexSet indexSetWithIndex:0];
     self.navigationItem.title = @"Downloads";
     
     // Uncomment the following line to preserve selection between presentations.

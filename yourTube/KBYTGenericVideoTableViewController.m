@@ -85,7 +85,7 @@
         }];
     } else if (type == 1) //popular
     {
-         self.navigationItem.title = @"Popular on YouTube";
+         self.navigationItem.title = @"#PopularOnYouTube";
         [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(NSDictionary *searchDetails) {
             
             self.currentPage = 1;
@@ -100,7 +100,7 @@
         }];
     }  else if (type == 2) //music
     {
-         self.navigationItem.title = @"Music Videos";
+         self.navigationItem.title = @"#Music";
         [[KBYourTube sharedInstance] getChannelVideos:KBYTMusicChannelID completionBlock:^(NSDictionary *searchDetails) {
             
             self.currentPage = 1;
@@ -115,7 +115,7 @@
         }];
     } else if (type == 3) //sports
     {
-        self.navigationItem.title = @"Sports Videos";
+        self.navigationItem.title = @"#Sports";
         [[KBYourTube sharedInstance] getChannelVideos:KBYTSportsChannelID completionBlock:^(NSDictionary *searchDetails) {
             
             self.currentPage = 1;

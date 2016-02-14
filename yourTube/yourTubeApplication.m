@@ -27,7 +27,7 @@
     _searchViewController = [[KBYTDownloadsTableViewController alloc] init];
     self.nav = [[UINavigationController alloc] initWithRootViewController:_searchViewController];
 
-    
+     [[UINavigationBar appearance] setTintColor:[UIColor redColor]];
     [_window setRootViewController:  self.nav];
 	[_window makeKeyAndVisible];
   
