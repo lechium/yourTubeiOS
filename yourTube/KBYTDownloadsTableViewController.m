@@ -88,7 +88,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.optionIndices = [NSMutableIndexSet indexSetWithIndex:0];
     self.navigationItem.title = @"Downloads";
     
     // Uncomment the following line to preserve selection between presentations.
@@ -114,12 +113,12 @@
     
     
     NSArray *colors = @[
-                        [UIColor colorWithRed:240/255.f green:159/255.f blue:254/255.f alpha:1],
-                        [UIColor colorWithRed:255/255.f green:137/255.f blue:167/255.f alpha:1],
-                        [UIColor colorWithRed:126/255.f green:242/255.f blue:195/255.f alpha:1],
-                        [UIColor colorWithRed:119/255.f green:152/255.f blue:255/255.f alpha:1],
-                        [UIColor colorWithRed:119/255.f green:152/255.f blue:255/255.f alpha:1],
-                        [UIColor colorWithRed:119/255.f green:152/255.f blue:255/255.f alpha:1],
+                        [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
+                        [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
+                        [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
+                        [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
+                        [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
+                        [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
                         ];
     
     
@@ -132,9 +131,13 @@
 
 
 - (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index {
+    
     [sidebar dismissAnimated:YES completion:^(BOOL finished) {
         if (finished) {
-      
+            if (![Reachability checkInternetConnectionWithAlert])
+            {
+                return;
+            }
             if (index == 5) //OG web search
             {
                 OurViewController *ovc = [[OurViewController alloc] init];
@@ -151,6 +154,10 @@
 
 - (void)showSearchView:(id)sender
 {
+    if (![Reachability checkInternetConnectionWithAlert])
+    {
+        return;
+    }
     KBYTSearchTableViewController *searchView = [[KBYTSearchTableViewController alloc] init];
     _scaleAnimationController.viewForInteraction = searchView.view;
     

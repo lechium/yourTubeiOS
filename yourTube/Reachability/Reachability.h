@@ -81,7 +81,7 @@ typedef void (^NetworkUnreachable)(Reachability * reachability);
 + (void)showInternetNotAvailableAlert;
 -(BOOL)startNotifier;
 -(void)stopNotifier;
-
++(BOOL)checkInternetConnectionWithAlert;
 -(BOOL)isReachable;
 -(BOOL)isReachableViaWWAN;
 -(BOOL)isReachableViaWiFi;

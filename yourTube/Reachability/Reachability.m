@@ -98,6 +98,22 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 @synthesize reachabilityObject;
 
++(BOOL)fauxReachableCheck
+{
+    return FALSE;
+}
+
++(BOOL)checkInternetConnectionWithAlert
+{
+    if (![Reachability isInternetReachable])
+    {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Internet Unavailable" message:@"You appear to be disconnected from the internet, please check your network settings and try again." delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+        [alertView show];
+        return FALSE;
+    }
+    return TRUE;
+}
+
 #pragma mark - class constructor methods
 +(Reachability*)reachabilityWithHostname:(NSString*)hostname
 {

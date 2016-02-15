@@ -68,6 +68,7 @@
         
     } failureBlock:^(NSString *error) {
         //
+        [SVProgressHUD dismiss];
         
     }];
     
@@ -92,7 +93,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    
+    [super viewWillAppear:animated];
     NSLog(@"last search: %@", self.lastSearch);
     if (self.lastSearch != nil)
     {
@@ -106,7 +107,7 @@
             self.searchController.searchBar.text = self.lastSearch;
             [self searchBarSearchButtonClicked:self.searchController.searchBar];
             self.navigationItem.title = @"YouTube Search";
-        } else {
+        } /*else {
             self.navigationItem.title = @"Suggested Videos";
             self.showingSuggestedVideos = true;
             if (self.totalResults > 0) { return; }
@@ -122,13 +123,14 @@
                
                
            } failureBlock:^(NSString *error) {
+               [SVProgressHUD dismiss];
                
            }];
             
-        }
+        }*/
         
     }
-    [super viewWillAppear:animated];
+    
     [self checkAirplay];
 }
 
@@ -213,6 +215,7 @@
 
     } failureBlock:^(NSString *error) {
         //
+        [SVProgressHUD dismiss];
         
     }];
     
@@ -342,6 +345,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         
     } failureBlock:^(NSString *error) {
         //
+        [SVProgressHUD dismiss];
+        
     }];
     
     //[self getVideoIDDetails:currentResult.videoId];

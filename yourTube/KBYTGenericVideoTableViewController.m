@@ -81,6 +81,7 @@
        
             
         } failureBlock:^(NSString *error) {
+            [SVProgressHUD dismiss];
             
         }];
     } else if (type == 1) //popular
@@ -96,7 +97,8 @@
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
-            //
+            [SVProgressHUD dismiss];
+            
         }];
     }  else if (type == 2) //music
     {
@@ -111,7 +113,8 @@
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
-            //
+            [SVProgressHUD dismiss];
+            
         }];
     } else if (type == 3) //sports
     {
@@ -126,7 +129,8 @@
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
-            //
+            [SVProgressHUD dismiss];
+            
         }];
     } else if (type == 4) //360
     {
@@ -141,7 +145,8 @@
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
-            //
+            [SVProgressHUD dismiss];
+            
         }];
     }
     
@@ -234,7 +239,8 @@
         [[self navigationController] pushViewController:searchItem animated:true];
         
     } failureBlock:^(NSString *error) {
-        //
+        [SVProgressHUD dismiss];
+        
     }];
     
     //[self getVideoIDDetails:currentResult.videoId];
