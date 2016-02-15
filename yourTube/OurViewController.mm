@@ -7,10 +7,12 @@
 //
 
 #define MessageHandler @"didGetPosts"
-//#import "OurViewController.h"
+#import "OurViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import "APDeviceController.h"
 #import "KBYTDownloadsTableViewController.h"
+#import "KBYTSearchItemViewController.h"
+#import "SVProgressHUD/SVProgressHUD.h"
 
 static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 
@@ -69,9 +71,8 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 
 - (void)updateRightButtons
 {
-    UIBarButtonItem *downloadsButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(showDownloadsTableView)];
     UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadStock)];
-    self.navigationItem.rightBarButtonItems = @[refreshButton, downloadsButton ];
+    self.navigationItem.rightBarButtonItem = refreshButton;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -468,7 +469,8 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
             if (deviceType == 0) //airplay
             {
                 
-                [[KBYourTube sharedInstance] airplayStream:chosenStream ToDeviceIP:self.airplayIP ];
+                
+                //[[KBYourTube sharedInstance] airplayStream:chosenStream ToDeviceIP:self.airplayIP ];
                 [self fireAirplayTimer];
             } else {
                 
@@ -526,22 +528,29 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 
 - (void)getVideoIDDetails:(NSString *)details
 {
+    if (self.currentMedia != nil)
+    {
+        if ([self.previousVideoID isEqualToString:details])
+        {
+            NSLog(@"already got this video, dont do anything");
+            return;
+        }
+    }
+
+    [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForID:details completionBlock:^(KBYTMedia *videoDetails) {
         
-        if (self.currentMedia != nil)
-        {
-            if ([self.previousVideoID isEqualToString:videoDetails.videoId])
-            {
-                NSLog(@"already got this video, dont do anything");
-                return;
-            }
-        }
-        
+       
+        [SVProgressHUD dismiss];
         //  NSLog(@"got details successfully: %@", videoDetails);
         self.currentMedia = videoDetails;
         self.previousVideoID = videoDetails.videoId;
         self.gettingDetails = false;
-        [self showActionSheet]; //show the action sheet
+        //[self showActionSheet]; //show the action sheet
+        KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:videoDetails];
+        [[self navigationController] pushViewController:searchItem animated:true];
+        self.previousVideoID = nil;
+        
         
     } failureBlock:^(NSString *error) {
         

@@ -7,7 +7,7 @@
 //
 
 #import "KBYTDownloadsTableViewController.h"
-//#import "OurViewController.h"
+#import "OurViewController.h"
 #import "KBYTSearchTableViewController.h"
 #import "Animations/ScaleAnimation.h"
 
@@ -98,8 +98,6 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearchView:)];
      _scaleAnimationController = [[ScaleAnimation alloc] initWithNavigationController:self.navigationController];
     
-    NSLog(@"burger: %@", [UIImage imageNamed:@"burger"]);
-    
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"burger"] style:UIBarButtonItemStylePlain target:self action:@selector(showHamburgerMenu)];
 
 }
@@ -111,12 +109,15 @@
                         [UIImage imageNamed:@"popular"],
                         [UIImage imageNamed:@"music"],
                         [UIImage imageNamed:@"sports"],
-                        [UIImage imageNamed:@"360"]];
+                        [UIImage imageNamed:@"360"],
+                        [UIImage imageNamed:@"globe"]];
+    
     
     NSArray *colors = @[
                         [UIColor colorWithRed:240/255.f green:159/255.f blue:254/255.f alpha:1],
                         [UIColor colorWithRed:255/255.f green:137/255.f blue:167/255.f alpha:1],
                         [UIColor colorWithRed:126/255.f green:242/255.f blue:195/255.f alpha:1],
+                        [UIColor colorWithRed:119/255.f green:152/255.f blue:255/255.f alpha:1],
                         [UIColor colorWithRed:119/255.f green:152/255.f blue:255/255.f alpha:1],
                         [UIColor colorWithRed:119/255.f green:152/255.f blue:255/255.f alpha:1],
                         ];
@@ -134,6 +135,13 @@
     [sidebar dismissAnimated:YES completion:^(BOOL finished) {
         if (finished) {
       
+            if (index == 5) //OG web search
+            {
+                OurViewController *ovc = [[OurViewController alloc] init];
+                [self.navigationController pushViewController:ovc animated:true];
+                return;
+            }
+            
             KBYTGenericVideoTableViewController *secondVC = [[KBYTGenericVideoTableViewController alloc]initForType:index];
             [self.navigationController pushViewController:secondVC animated:YES];
         }

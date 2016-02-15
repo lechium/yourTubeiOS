@@ -6,7 +6,7 @@ export SDKVERSION=8.4
 export ARCHS = armv7 armv7s arm64
 
 APPLICATION_NAME = yourTube
-yourTube_FILES = main.m yourTubeApplication.m KBYourTube.m KBYTDownloadStream.m Download/URLCredential.m Download/URLDownloader.m KBYTDownloadsTableViewController.m KBYTDownloadCell.m
+yourTube_FILES = main.m yourTubeApplication.m KBYourTube.m KBYTDownloadStream.m Download/URLCredential.m Download/URLDownloader.m KBYTDownloadsTableViewController.m KBYTDownloadCell.m OurViewController.mm
 yourTube_FILES += APDeviceController.m KBYTPreferences.m UIColor+Additions.m UIImage+Scale.m MarqueeLabel/MarqueeLabel.m KBYTSearchTableViewController.m KBYTSearchItemViewController.m
 yourTube_FILES += SDWebImage/MKAnnotationView+WebCache.m
 yourTube_FILES += SDWebImage/NSData+ImageContentType.m

@@ -84,6 +84,7 @@
 		897B4A2E1C5E8B3D00F50BC2 /* APElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A271C5E8B3D00F50BC2 /* APElement.h */; };
 		897B4A2F1C5E8B3D00F50BC2 /* APElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A281C5E8B3D00F50BC2 /* APElement.m */; };
 		897B4A301C5E8B3D00F50BC2 /* APXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A291C5E8B3D00F50BC2 /* APXML.h */; };
+		897F2D5C1C71592600571C67 /* OurViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BE31C499F1B00B8D1C4 /* OurViewController.mm */; };
 		898244DB1C6A4A1600131343 /* YTDownloadOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 898244D91C6A4A1600131343 /* YTDownloadOperation.h */; };
 		898244DC1C6A4A1600131343 /* YTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 898244DA1C6A4A1600131343 /* YTDownloadOperation.m */; };
 		898244DF1C6A664A00131343 /* KBYTMessagingCenter.h in Headers */ = {isa = PBXBuildFile; fileRef = 898244DD1C6A664A00131343 /* KBYTMessagingCenter.h */; };
@@ -752,6 +753,7 @@
 				897B49E91C58A7B500F50BC2 /* MKAnnotationView+WebCache.m in Sources */,
 				897B4A061C58A7B500F50BC2 /* UIImageView+WebCache.m in Sources */,
 				897B4A081C58A7B500F50BC2 /* UIView+WebCacheOperation.m in Sources */,
+				897F2D5C1C71592600571C67 /* OurViewController.mm in Sources */,
 				895F67041C60125600AE33FA /* KBYTSearchTableViewController.m in Sources */,
 				897B49F71C58A7B500F50BC2 /* SDWebImageManager.m in Sources */,
 				89E06BD51C499EF000B8D1C4 /* URLDownloader.m in Sources */,
