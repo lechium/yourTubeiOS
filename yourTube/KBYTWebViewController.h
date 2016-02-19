@@ -11,21 +11,8 @@
 #import "KBYourTube.h"
 #import "KBYTPreferences.h"
 
-@interface YTPlayerViewController : AVPlayerViewController
+@interface KBYTWebViewController : UIViewController <WKNavigationDelegate, UIActionSheetDelegate, WKScriptMessageHandler>
 
-@end
-
-@protocol OurViewControllerDelegate <NSObject>
-
-- (void)pushViewController:(id)controller;
-
-@end
-
-@interface OurViewController : UIViewController <WKNavigationDelegate, UIActionSheetDelegate, WKScriptMessageHandler>
-{
-    id <OurViewControllerDelegate> __weak delegate;
-}
-@property (nonatomic, weak) id<OurViewControllerDelegate> delegate;
 @property (strong, nonatomic) IBOutlet WKWebView *webView;
 @property (nonatomic, strong) KBYTMedia *currentMedia;
 @property (nonatomic, strong) NSString *previousVideoID;

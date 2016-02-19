@@ -7,7 +7,7 @@
 //
 
 #define MessageHandler @"didGetPosts"
-#import "OurViewController.h"
+#import "KBYTWebViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import "APDeviceController.h"
 #import "KBYTDownloadsTableViewController.h"
@@ -41,22 +41,14 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 
 @end
 
-@implementation YTPlayerViewController
 
-- (BOOL)shouldAutorotate
-{
-    return TRUE;
-}
+@interface KBYTWebViewController ()
 
 @end
 
-@interface OurViewController ()
+@implementation KBYTWebViewController
 
-@end
-
-@implementation OurViewController
-
-@synthesize airplayIP, delegate;
+@synthesize airplayIP;
 
 - (void)loadView {
     self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];

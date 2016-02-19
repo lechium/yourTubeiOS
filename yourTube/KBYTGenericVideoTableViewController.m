@@ -7,7 +7,6 @@
 //
 
 #import "KBYTGenericVideoTableViewController.h"
-//#import "OurViewController.h"
 #import "SVProgressHUD/SVProgressHUD.h"
 #import "SVProgressHUD/SVIndefiniteAnimatedView.h"
 #import "KBYTSearchItemViewController.h"
@@ -290,7 +289,6 @@
  }
  */
 
-//transplants from ourviewcontroller
 
 
 - (void)checkAirplay

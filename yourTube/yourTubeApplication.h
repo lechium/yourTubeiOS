@@ -6,7 +6,6 @@
 //
 //
 
-//#import "OurViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import "KBYTDownloadsTableViewController.h"
 #import "KBYTSearchTableViewController.h"
@@ -14,7 +13,6 @@
 
 @interface yourTubeApplication: UIApplication <UIApplicationDelegate> {
     UIWindow *_window;
-   // OurViewController *_viewController;
     KBYTDownloadsTableViewController *_searchViewController;
 }
 @property (nonatomic, retain) UIWindow *window;

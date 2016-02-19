@@ -7,7 +7,7 @@
 //
 
 #import "KBYTDownloadsTableViewController.h"
-#import "OurViewController.h"
+#import "KBYTWebViewController.h"
 #import "KBYTSearchTableViewController.h"
 #import "Animations/ScaleAnimation.h"
 
@@ -140,7 +140,7 @@
             }
             if (index == 5) //OG web search
             {
-                OurViewController *ovc = [[OurViewController alloc] init];
+                KBYTWebViewController *ovc = [[KBYTWebViewController alloc] init];
                 [self.navigationController pushViewController:ovc animated:true];
                 return;
             }

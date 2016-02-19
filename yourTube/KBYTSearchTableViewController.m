@@ -7,7 +7,6 @@
 //
 
 #import "KBYTSearchTableViewController.h"
-//#import "OurViewController.h"
 #import "SVProgressHUD/SVProgressHUD.h"
 #import "SVProgressHUD/SVIndefiniteAnimatedView.h"
 #import "KBYTSearchItemViewController.h"
@@ -395,7 +394,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
  }
  */
 
-//transplants from ourviewcontroller
 
 
 - (void)checkAirplay

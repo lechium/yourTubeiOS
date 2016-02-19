@@ -84,7 +84,7 @@
 		897B4A2E1C5E8B3D00F50BC2 /* APElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A271C5E8B3D00F50BC2 /* APElement.h */; };
 		897B4A2F1C5E8B3D00F50BC2 /* APElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A281C5E8B3D00F50BC2 /* APElement.m */; };
 		897B4A301C5E8B3D00F50BC2 /* APXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 897B4A291C5E8B3D00F50BC2 /* APXML.h */; };
-		897F2D5C1C71592600571C67 /* OurViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BE31C499F1B00B8D1C4 /* OurViewController.mm */; };
+		897F2D5C1C71592600571C67 /* KBYTWebViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BE31C499F1B00B8D1C4 /* KBYTWebViewController.mm */; };
 		898244DB1C6A4A1600131343 /* YTDownloadOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 898244D91C6A4A1600131343 /* YTDownloadOperation.h */; };
 		898244DC1C6A4A1600131343 /* YTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 898244DA1C6A4A1600131343 /* YTDownloadOperation.m */; };
 		898244DF1C6A664A00131343 /* KBYTMessagingCenter.h in Headers */ = {isa = PBXBuildFile; fileRef = 898244DD1C6A664A00131343 /* KBYTMessagingCenter.h */; };
@@ -101,7 +101,7 @@
 		89E06BDF1C499EFF00B8D1C4 /* KBYTDownloadStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD91C499EFF00B8D1C4 /* KBYTDownloadStream.m */; };
 		89E06BE01C499EFF00B8D1C4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BDA1C499EFF00B8D1C4 /* main.m */; };
 		89E06BE11C499EFF00B8D1C4 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BDB1C499EFF00B8D1C4 /* Makefile */; };
-		89E06BE41C499F1B00B8D1C4 /* OurViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BE21C499F1B00B8D1C4 /* OurViewController.h */; };
+		89E06BE41C499F1B00B8D1C4 /* KBYTWebViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BE21C499F1B00B8D1C4 /* KBYTWebViewController.h */; };
 		89E06BE71C499F2100B8D1C4 /* yourTubeApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */; };
 		89E06BE81C499F3C00B8D1C4 /* KBYourTube.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */; };
 		89E06BEB1C499F7000B8D1C4 /* APDeviceController.h in Headers */ = {isa = PBXBuildFile; fileRef = 89E06BE91C499F7000B8D1C4 /* APDeviceController.h */; };
@@ -251,8 +251,8 @@
 		89E06BD91C499EFF00B8D1C4 /* KBYTDownloadStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadStream.m; path = yourTube/KBYTDownloadStream.m; sourceTree = "<group>"; };
 		89E06BDA1C499EFF00B8D1C4 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = yourTube/main.m; sourceTree = "<group>"; };
 		89E06BDB1C499EFF00B8D1C4 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = yourTube/Makefile; sourceTree = "<group>"; };
-		89E06BE21C499F1B00B8D1C4 /* OurViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OurViewController.h; path = yourTube/OurViewController.h; sourceTree = "<group>"; };
-		89E06BE31C499F1B00B8D1C4 /* OurViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = OurViewController.mm; path = yourTube/OurViewController.mm; sourceTree = "<group>"; };
+		89E06BE21C499F1B00B8D1C4 /* KBYTWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTWebViewController.h; path = yourTube/KBYTWebViewController.h; sourceTree = "<group>"; };
+		89E06BE31C499F1B00B8D1C4 /* KBYTWebViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KBYTWebViewController.mm; path = yourTube/KBYTWebViewController.mm; sourceTree = "<group>"; };
 		89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = yourTubeApplication.m; path = yourTube/yourTubeApplication.m; sourceTree = "<group>"; };
 		89E06BE91C499F7000B8D1C4 /* APDeviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = APDeviceController.h; path = yourTube/APDeviceController.h; sourceTree = "<group>"; };
 		89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = APDeviceController.m; path = yourTube/APDeviceController.m; sourceTree = "<group>"; };
@@ -434,8 +434,8 @@
 		897B4A161C59751D00F50BC2 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				89E06BE21C499F1B00B8D1C4 /* OurViewController.h */,
-				89E06BE31C499F1B00B8D1C4 /* OurViewController.mm */,
+				89E06BE21C499F1B00B8D1C4 /* KBYTWebViewController.h */,
+				89E06BE31C499F1B00B8D1C4 /* KBYTWebViewController.mm */,
 				899F73E81C6BED2A0088B434 /* KBYTDownloadCell.h */,
 				899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */,
 				897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */,
@@ -614,7 +614,7 @@
 				895F67031C60125600AE33FA /* KBYTSearchTableViewController.h in Headers */,
 				895F678F1C6520D500AE33FA /* SVIndefiniteAnimatedView.h in Headers */,
 				895F67A31C690C8100AE33FA /* ModalAnimation.h in Headers */,
-				89E06BE41C499F1B00B8D1C4 /* OurViewController.h in Headers */,
+				89E06BE41C499F1B00B8D1C4 /* KBYTWebViewController.h in Headers */,
 				897B49F61C58A7B500F50BC2 /* SDWebImageManager.h in Headers */,
 				892A2C3C1C6A8CB1003724D6 /* JGProgressView.h in Headers */,
 				895F67A11C690C8100AE33FA /* BaseAnimation.h in Headers */,
@@ -753,7 +753,7 @@
 				897B49E91C58A7B500F50BC2 /* MKAnnotationView+WebCache.m in Sources */,
 				897B4A061C58A7B500F50BC2 /* UIImageView+WebCache.m in Sources */,
 				897B4A081C58A7B500F50BC2 /* UIView+WebCacheOperation.m in Sources */,
-				897F2D5C1C71592600571C67 /* OurViewController.mm in Sources */,
+				897F2D5C1C71592600571C67 /* KBYTWebViewController.mm in Sources */,
 				895F67041C60125600AE33FA /* KBYTSearchTableViewController.m in Sources */,
 				897B49F71C58A7B500F50BC2 /* SDWebImageManager.m in Sources */,
 				89E06BD51C499EF000B8D1C4 /* URLDownloader.m in Sources */,
