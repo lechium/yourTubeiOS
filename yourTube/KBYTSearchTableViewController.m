@@ -27,7 +27,6 @@
 
 @implementation KBYTSearchTableViewController
 
-@synthesize delegate;
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {

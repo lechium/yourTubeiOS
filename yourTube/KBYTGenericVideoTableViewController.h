@@ -17,10 +17,6 @@
 
 @property (readwrite, assign) NSInteger tableType;
 
-@property (nonatomic, strong) KBYTMedia *currentMedia;
-@property (nonatomic, strong) NSString *previousVideoID;
-@property (readwrite, assign) BOOL gettingDetails;
-@property (nonatomic, strong) UIProgressView *progressView;
 @property (nonatomic, strong) NSTimer *airplayTimer;
 @property (nonatomic, strong) NSString *airplayIP;
 @property (nonatomic, strong) UISlider *airplaySlider;
@@ -28,8 +24,6 @@
 @property (readwrite, assign) CGFloat airplayProgressPercent;
 @property (readwrite, assign) CGFloat airplayDuration;
 @property (readwrite, assign) NSInteger currentPage;
-@property (nonatomic, strong) NSString *lastSearch;
-@property (readwrite, assign) BOOL showingSuggestedVideos;
 
 - (id)initForType:(NSInteger)detailsType;
 

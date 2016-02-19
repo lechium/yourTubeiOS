@@ -16,23 +16,9 @@
 #import "KBYourTube.h"
 
 
-@protocol KBYTSearchTableViewControllerDelegate <NSObject>
-
-- (void)pushViewController:(id)controller;
-
-@end
 
 @interface KBYTSearchTableViewController : UITableViewController <UISearchBarDelegate, UIActionSheetDelegate>
-{
-    id <KBYTSearchTableViewControllerDelegate> __weak delegate;
-}
-@property (nonatomic, weak) id<KBYTSearchTableViewControllerDelegate> delegate;
-@property (nonatomic, strong) AVPlayer *player;
-@property (nonatomic, strong) AVPlayerViewController *playerView;
-@property (nonatomic, strong) KBYTMedia *currentMedia;
-@property (nonatomic, strong) NSString *previousVideoID;
-@property (readwrite, assign) BOOL gettingDetails;
-@property (nonatomic, strong) UIProgressView *progressView;
+
 @property (nonatomic, strong) NSTimer *airplayTimer;
 @property (nonatomic, strong) NSString *airplayIP;
 @property (nonatomic, strong) UISlider *airplaySlider;

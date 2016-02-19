@@ -9,11 +9,6 @@
 #import <WebKit/WebKit.h>
 #import <UIKit/UIKit.h>
 #import "KBYourTube.h"
-#import "KBYTDownloadStream.h"
-//#import "URLDownloader.h"
-#import <AVFoundation/AVFoundation.h>
-#import <AVKit/AVKit.h>
-#import <MediaPlayer/MediaPlayer.h>
 #import "KBYTPreferences.h"
 
 @interface YTPlayerViewController : AVPlayerViewController
@@ -32,10 +27,6 @@
 }
 @property (nonatomic, weak) id<OurViewControllerDelegate> delegate;
 @property (strong, nonatomic) IBOutlet WKWebView *webView;
-@property (nonatomic, strong) KBYTDownloadStream *downloadFile;
-@property (readwrite, assign) BOOL downloading;
-@property (nonatomic, strong) AVPlayer *player;
-@property (nonatomic, strong) YTPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTMedia *currentMedia;
 @property (nonatomic, strong) NSString *previousVideoID;
 @property (readwrite, assign) BOOL gettingDetails;
@@ -47,7 +38,6 @@
 @property (readwrite, assign) CGFloat airplayProgressPercent;
 @property (readwrite, assign) CGFloat airplayDuration;
 
-- (void)playFile:(NSDictionary *)file;
 
 @end
 

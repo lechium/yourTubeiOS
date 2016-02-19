@@ -12,7 +12,7 @@
 #import "KBYTSearchTableViewController.h"
 #import "KBYourTube.h"
 
-@interface yourTubeApplication: UIApplication <UIApplicationDelegate, KBYTSearchTableViewControllerDelegate> {
+@interface yourTubeApplication: UIApplication <UIApplicationDelegate> {
     UIWindow *_window;
    // OurViewController *_viewController;
     KBYTDownloadsTableViewController *_searchViewController;
