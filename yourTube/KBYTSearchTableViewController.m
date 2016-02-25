@@ -10,6 +10,7 @@
 #import "SVProgressHUD/SVProgressHUD.h"
 #import "SVProgressHUD/SVIndefiniteAnimatedView.h"
 #import "KBYTSearchItemViewController.h"
+#import "KBYTGenericVideoTableViewController.h"
 
 #define kLoadingCellTag 500
 
@@ -29,7 +30,7 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-   // [self resetSearchResults];
+    // [self resetSearchResults];
 }
 
 - (void)resetSearchResults
@@ -51,18 +52,18 @@
     //NSLog(@"search string: %@", searchString);
     if (self.currentPage == 1)
         [SVProgressHUD show];
-    [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage completionBlock:^(NSDictionary *searchDetails) {
+    [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
         
-      //  NSLog(@"search details: %@", searchDetails);
+        //  NSLog(@"search details: %@", searchDetails);
         if (self.currentPage == 1)
             [SVProgressHUD dismiss];
-      
+        
         self.totalResults = [searchDetails[@"resultCount"] integerValue];
         self.pageCount = [searchDetails[@"pageCount"] integerValue];
         //self.searchResults = searchDetails[@"results"];
         [self updateSearchResults:searchDetails[@"results"]];
         [self.tableView reloadData];
-   
+        
         
     } failureBlock:^(NSString *error) {
         //
@@ -96,8 +97,8 @@
     if (self.lastSearch != nil)
     {
         self.showingSuggestedVideos = false;
-     //   self.searchController.searchBar.text = self.lastSearch;
-       // [self searchBarSearchButtonClicked:self.searchController.searchBar];
+        //   self.searchController.searchBar.text = self.lastSearch;
+        // [self searchBarSearchButtonClicked:self.searchController.searchBar];
     } else {
         self.lastSearch = [[KBYourTube sharedInstance] lastSearch];
         if (self.lastSearch != nil)
@@ -106,26 +107,26 @@
             [self searchBarSearchButtonClicked:self.searchController.searchBar];
             self.navigationItem.title = @"YouTube Search";
         } /*else {
-            self.navigationItem.title = @"Suggested Videos";
-            self.showingSuggestedVideos = true;
-            if (self.totalResults > 0) { return; }
-            [SVProgressHUD show];
+           self.navigationItem.title = @"Suggested Videos";
+           self.showingSuggestedVideos = true;
+           if (self.totalResults > 0) { return; }
+           [SVProgressHUD show];
            [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
-               
-               [SVProgressHUD dismiss];
-               self.totalResults = [searchDetails[@"resultCount"] integerValue];
-               self.pageCount = [searchDetails[@"pageCount"] integerValue];
-               [self updateSearchResults:searchDetails[@"results"]];
-               [self.tableView reloadData];
-               
-               
-               
+           
+           [SVProgressHUD dismiss];
+           self.totalResults = [searchDetails[@"resultCount"] integerValue];
+           self.pageCount = [searchDetails[@"pageCount"] integerValue];
+           [self updateSearchResults:searchDetails[@"results"]];
+           [self.tableView reloadData];
+           
+           
+           
            } failureBlock:^(NSString *error) {
-               [SVProgressHUD dismiss];
-               
+           [SVProgressHUD dismiss];
+           
            }];
-            
-        }*/
+           
+           }*/
         
     }
     
@@ -134,11 +135,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-  
+    
     self.extendedLayoutIncludesOpaqueBars = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.edgesForExtendedLayout = UIRectEdgeNone;
- 
+    
     self.tableView.translatesAutoresizingMaskIntoConstraints = false;
     self.automaticallyAdjustsScrollViewInsets = false;
     
@@ -166,27 +167,27 @@
 
 
 //- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller {
-//    
+//
 //    self.navigationController.navigationBar.translucent = YES;
 //}
 //
 //- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller {
 //    self.navigationController.navigationBar.translucent = NO;
-//    
+//
 //}
 
 /*
-- (void) viewDidLayoutSubviews
-{
-    if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1)
-    {
-        CGRect viewBounds = self.view.bounds;
-        CGFloat topBarOffset = self.topLayoutGuide.length;
-        viewBounds.origin.y = topBarOffset * -1;
-        self.view.bounds = viewBounds;
-    }
-}
-*/
+ - (void) viewDidLayoutSubviews
+ {
+ if(floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1)
+ {
+ CGRect viewBounds = self.view.bounds;
+ CGFloat topBarOffset = self.topLayoutGuide.length;
+ viewBounds.origin.y = topBarOffset * -1;
+ self.view.bounds = viewBounds;
+ }
+ }
+ */
 - (void)getNextPage
 {
     
@@ -202,20 +203,7 @@
 
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     
-    
-    return;
-    NSString *searchString = [self.searchController.searchBar text];
-    [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage completionBlock:^(NSDictionary *searchDetails) {
-        self.totalResults = [searchDetails[@"resultCount"] integerValue];
-        self.pageCount = [searchDetails[@"pageCount"] integerValue];
-        self.searchResults = searchDetails[@"results"];
-        [self.tableView reloadData];
-
-    } failureBlock:^(NSString *error) {
-        //
-        [SVProgressHUD dismiss];
-        
-    }];
+    //no longer do anything here because it would mess up paging functionality, revisit some day.
     
     
 }
@@ -259,7 +247,7 @@
     indefiniteAnimatedView.radius =  10;
     indefiniteAnimatedView.strokeThickness = 4;
     [indefiniteAnimatedView sizeToFit];
-   
+    
     indefiniteAnimatedView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
     indefiniteAnimatedView.center = cell.contentView.center;
     cell.contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -293,9 +281,9 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
-     if (indexPath.row >= self.searchResults.count){
-     return [self loadingCell];
-     }
+    if (indexPath.row >= self.searchResults.count){
+        return [self loadingCell];
+    }
     
     KBYTDownloadCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
@@ -311,9 +299,15 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     NSNumberFormatter *numFormatter = [NSNumberFormatter new];
     numFormatter.numberStyle = NSNumberFormatterDecimalStyle;
     
-    NSNumber *view_count = [numFormatter numberFromString:currentItem.views];
-
-    cell.views = [[numFormatter stringFromNumber:view_count] stringByAppendingString:@" Views"];
+    if (currentItem.resultType != kYTSearchResultTypeVideo)
+    {
+        cell.views = currentItem.details;
+    } else {
+        NSNumber *view_count = [numFormatter numberFromString:currentItem.views];
+        cell.views = [[numFormatter stringFromNumber:view_count] stringByAppendingString:@" Views"];
+        
+    }
+    
     cell.downloading = false;
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceHolderImage"];
@@ -326,7 +320,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-      [[self tableView] deselectRowAtIndexPath:indexPath animated:false];
+    [[self tableView] deselectRowAtIndexPath:indexPath animated:false];
     if (indexPath.row >= self.searchResults.count)
     {
         return; //selected the spinner item, jerks.
@@ -334,19 +328,34 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     KBYTSearchResult *currentResult = [self.searchResults objectAtIndex:indexPath.row];
     //[SVProgressHUD showInfoWithStatus:@"Fetching details"];
     [SVProgressHUD show];
-    [[KBYourTube sharedInstance] getVideoDetailsForID:currentResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
-        
-        //
-        [SVProgressHUD dismiss];
-        KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:videoDetails];
-        [[self navigationController] pushViewController:searchItem animated:true];
-        
-    } failureBlock:^(NSString *error) {
-        //
-        [SVProgressHUD dismiss];
-        
-    }];
     
+    if (currentResult.resultType == kYTSearchResultTypeVideo)
+    {
+        [[KBYourTube sharedInstance] getVideoDetailsForID:currentResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
+            
+            //
+            [SVProgressHUD dismiss];
+            KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:videoDetails];
+            [[self navigationController] pushViewController:searchItem animated:true];
+            
+        } failureBlock:^(NSString *error) {
+            
+            [SVProgressHUD dismiss];
+            
+        }];
+    } else if (currentResult.resultType == kYTSearchResultTypeChannel)
+    {
+        
+        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:5 withTitle:currentResult.title withId:currentResult.videoId];
+        [[self navigationController] pushViewController:genericTableView animated:true];
+        
+    } else if (currentResult.resultType == kYTSearchResultTypePlaylist)
+    {
+        
+        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:6 withTitle:currentResult.title withId:currentResult.videoId];
+        [[self navigationController] pushViewController:genericTableView animated:true];
+        
+    }
     //[self getVideoIDDetails:currentResult.videoId];
 }
 

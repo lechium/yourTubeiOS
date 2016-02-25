@@ -55,6 +55,14 @@ static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 
 @end
 
+typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
+    
+    kYTSearchResultTypeUnknown,
+    kYTSearchResultTypeVideo,
+    kYTSearchResultTypePlaylist,
+    kYTSearchResultTypeChannel,
+};
+
 
 @interface KBYTMedia : NSObject
 
@@ -67,6 +75,7 @@ static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 @property (nonatomic, strong) NSDictionary *images;
 @property (nonatomic, strong) NSArray *streams;
 @property (nonatomic, strong) NSString *details; //description
+
 
 @end
 
@@ -81,7 +90,7 @@ static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 @property (nonatomic, strong) NSString *views;
 @property (nonatomic, strong) NSString *details;
 @property (nonatomic, strong) KBYTMedia *media;
-
+@property (readwrite, assign) kYTSearchResultType resultType;
 
 - (id)initWithDictionary:(NSDictionary *)resultDict;
 
@@ -134,8 +143,13 @@ static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 
 - (void)youTubeSearch:(NSString *)searchQuery
            pageNumber:(NSInteger)page
+    includeAllResults:(BOOL)includeAl
       completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
          failureBlock:(void(^)(NSString* error))failureBlock;
+
+- (void)getPlaylistVideos:(NSString *)listID
+          completionBlock:(void(^)(NSArray * playlistArray))completionBlock
+             failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getChannelVideos:(NSString *)channelID
          completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock

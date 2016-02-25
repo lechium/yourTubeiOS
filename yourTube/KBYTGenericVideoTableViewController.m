@@ -23,7 +23,7 @@
 
 @implementation KBYTGenericVideoTableViewController
 
-@synthesize tableType;
+@synthesize tableType, customTitle, customId;
 
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -34,7 +34,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-   // [self checkAirplay];
+    [self checkAirplay];
 }
 
 - (void)viewDidLoad {
@@ -55,6 +55,16 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self updateTableForType:self.tableType];
 }
+
+- (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier
+{
+    self = [super initWithStyle:UITableViewStylePlain];
+    tableType = detailsType;
+    customTitle = theTitle;
+    customId = identifier;
+    return self;
+}
+
 
 - (id)initForType:(NSInteger)detailsType
 {
@@ -147,6 +157,38 @@
             [SVProgressHUD dismiss];
             
         }];
+    }  else if (type == 5) //custom channel
+    {
+        self.navigationItem.title = customTitle;
+        [[KBYourTube sharedInstance] getChannelVideos:self.customId completionBlock:^(NSDictionary *searchDetails) {
+            
+            self.currentPage = 1;
+            [SVProgressHUD dismiss];
+            self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            [self updateSearchResults:searchDetails[@"results"]];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            [SVProgressHUD dismiss];
+            
+        }];
+    }   else if (type == 6) //custom playlist
+    {
+        self.navigationItem.title = customTitle;
+        [[KBYourTube sharedInstance] getPlaylistVideos:self.customId completionBlock:^(NSArray *searchArray) {
+            
+            self.currentPage = 1;
+            [SVProgressHUD dismiss];
+            self.totalResults = [searchArray count];
+            self.pageCount = 1;
+            [self updateSearchResults:searchArray];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            [SVProgressHUD dismiss];
+            
+        }];
     }
     
     
@@ -200,7 +242,13 @@
     
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
     cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-    cell.detailTextLabel.text = currentItem.author;
+    if ([currentItem.author length] == 0)
+    {
+        cell.detailTextLabel.text = self.customTitle;
+    } else {
+        cell.detailTextLabel.text = currentItem.author;
+        
+    }
     cell.textLabel.text = currentItem.title;
     cell.duration = currentItem.duration;
     

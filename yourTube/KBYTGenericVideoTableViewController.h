@@ -24,7 +24,10 @@
 @property (readwrite, assign) CGFloat airplayProgressPercent;
 @property (readwrite, assign) CGFloat airplayDuration;
 @property (readwrite, assign) NSInteger currentPage;
+@property (nonatomic, strong) NSString *customTitle;
+@property (nonatomic, strong) NSString *customId;
 
 - (id)initForType:(NSInteger)detailsType;
+- (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier;
 
 @end

@@ -3,15 +3,11 @@
 	Filter = {
 		Executables = (
 			itunesstored,
-			gremlind,
 			yourMusic,
 		);
 		Bundles = (
 			"com.apple.springboard",
 			"com.apple.MobileStore",
-			"com.apple.Music",
-			"com.nito.ScienceTest",
-			"co.cocoanuts.gremlin",
 			"com.apple.MusicLibrary",
 			"com.nito.yourMusic",
 		);

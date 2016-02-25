@@ -163,7 +163,7 @@
 
 @implementation KBYTSearchResult
 
-@synthesize title, author, details, imagePath, videoId, duration, age, views;
+@synthesize title, author, details, imagePath, videoId, duration, age, views, resultType;
 
 - (id)initWithDictionary:(NSDictionary *)resultDict
 {
@@ -179,6 +179,18 @@
     return self;
 }
 
+- (NSString *)readableSearchType
+{
+    switch (self.resultType) {
+        case kYTSearchResultTypeUnknown: return @"Unknown";
+        case kYTSearchResultTypeVideo: return @"Video";
+        case kYTSearchResultTypePlaylist: return @"Playlist";
+        case kYTSearchResultTypeChannel: return @"Channel";
+        default:
+            return @"Unknown";
+    }
+}
+
 - (NSDictionary *)dictionaryValue
 {
     if (self.title == nil)self.title = @"Unavailable";
@@ -189,7 +201,7 @@
     if (self.imagePath == nil)self.imagePath = @"Unavailable";
     if (self.duration == nil)self.duration = @"Unavailable";
     if (self.videoId == nil)self.videoId = @"Unavailable";
-    return @{@"title": self.title, @"author": self.author, @"details": self.details, @"imagePath": self.imagePath, @"videoId": self.videoId, @"duration": self.duration, @"age": self.age, @"views": self.views};
+    return @{@"title": self.title, @"author": self.author, @"details": self.details, @"imagePath": self.imagePath, @"videoId": self.videoId, @"duration": self.duration, @"age": self.age, @"views": self.views, @"resultType": [self readableSearchType]};
 }
 
 - (NSString *)description
@@ -759,6 +771,88 @@
     return [text stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@""];
 }
 
+- (void)getPlaylistVideos:(NSString *)listID
+          completionBlock:(void(^)(NSArray * playlistArray))completionBlock
+             failureBlock:(void(^)(NSString *error))failureBlock
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        @autoreleasepool {
+            
+            NSString *requestString = [NSString stringWithFormat:@"https://www.youtube.com/playlist?list=%@", listID];
+            NSString *rawRequestResult = [self stringFromRequest:requestString];
+            ONOXMLDocument *xmlDoc = [ONOXMLDocument HTMLDocumentWithString:rawRequestResult encoding:NSUTF8StringEncoding error:nil];
+            ONOXMLElement *root = [xmlDoc rootElement];
+            //NSLog(@"root element: %@", root);
+            
+            ONOXMLElement *videosElement = [root firstChildWithXPath:@"//*[contains(@class, 'pl-video-list')]"];
+            id videoEnum = [videosElement XPath:@".//*[contains(@class, 'pl-video')]"];
+            ONOXMLElement *currentElement = nil;
+            NSMutableArray *finalArray = [NSMutableArray new];
+            
+            while (currentElement = [videoEnum nextObject])
+            {
+                KBYTSearchResult *result = [KBYTSearchResult new];
+                NSString *videoID = [currentElement valueForAttribute:@"data-video-id"];
+                if (videoID != nil)
+                {
+                    result.videoId = videoID;
+                }
+                // NSLog(@"currentElement: %@", currentElement);
+                NSString *title = [currentElement valueForAttribute:@"data-title"];
+                if (title != nil)
+                {
+                    result.title = title;
+                }
+                
+                
+                ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-clip')]"] children] firstObject];
+                ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
+                ONOXMLElement *authorElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'pl-video-owner')]"] children] firstObject];
+                NSString *imagePath = [thumbNailElement valueForAttribute:@"data-thumb"];
+                if (imagePath == nil)
+                {
+                    imagePath = [thumbNailElement valueForAttribute:@"src"];
+                }
+                if (imagePath != nil)
+                {
+                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                }
+                if (lengthElement != nil)
+                    result.duration = [lengthElement.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                
+                if (authorElement != nil)
+                {
+                    result.author = [authorElement stringValue];
+                }
+                
+                if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"])
+                {
+                    //NSLog(@"result: %@", result);
+                    [finalArray addObject:result];
+                } else {
+                    result = nil;
+                }
+            }
+            
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if ([finalArray count] > 0)
+                {
+                    completionBlock(finalArray);
+                } else {
+                    failureBlock([NSString stringWithFormat:@"failed to fetch playlist information for playlist id: %@",listID]);
+                }
+                
+                
+            });
+            
+        }
+        
+    });
+}
+
 - (void)getChannelVideos:(NSString *)channelID
          completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
             failureBlock:(void(^)(NSString *error))failureBlock
@@ -981,7 +1075,8 @@
  */
 
 - (void)youTubeSearch:(NSString *)searchQuery
-            pageNumber:(NSInteger)page
+           pageNumber:(NSInteger)page
+    includeAllResults:(BOOL)includeAll
        completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
           failureBlock:(void(^)(NSString* error))failureBlock
 {
@@ -999,7 +1094,14 @@
                 pageorsm = [NSString stringWithFormat:@"page=%lu", page];
             }
             
-            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?%@&q=%@&%@", @"sp=EgIQAQ%253D%253D", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
+            NSString *requestString = nil;
+            
+            if (includeAll == false)
+            {
+                requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?%@&q=%@&%@", @"sp=EgIQAQ%253D%253D", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
+            } else {
+                requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?search_query=%@&%@",  [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
+            }
             NSString *rawRequestResult = [self stringFromRequest:requestString];
             ONOXMLDocument *xmlDoc = [ONOXMLDocument HTMLDocumentWithString:rawRequestResult encoding:NSUTF8StringEncoding error:nil];
             ONOXMLElement *root = [xmlDoc rootElement];
@@ -1039,6 +1141,9 @@
                 ONOXMLElement *descElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-description')]"];
                 ONOXMLElement *authorElement = [[[videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
                 ONOXMLElement *ageAndViewsElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"];
+           
+                result.resultType = kYTSearchResultTypeVideo;
+                
                 NSString *imagePath = [thumbNailElement valueForAttribute:@"data-thumb"];
                 if (imagePath == nil)
                 {
@@ -1090,6 +1195,125 @@
                     outputDict[@"pageCount"] = [NSNumber numberWithInteger:pageCount];
                 }
             }
+            
+            if (includeAll == true) //find playlists and channels too
+            {
+                //yt-lockup-playlist
+                ONOXMLElement *currentElement = nil;
+                id plEnum = [videosElement XPath:@"//div[contains(@class, 'yt-lockup-playlist')]"];
+                NSMutableArray *playlistArray = [NSMutableArray new];
+                while (currentElement = [plEnum nextObject])
+                {
+                    //  NSLog(@"plelement: %@", currentElement);
+                    KBYTSearchResult *result = [KBYTSearchResult new];
+                    
+                    ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
+                    ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-uix-tile-link')]"];
+                    ONOXMLElement *authorElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
+                    ONOXMLElement *descElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"] children] firstObject];//yt-lockup-meta-info
+                    
+                    ONOXMLElement *plIdElement = [currentElement firstChildWithXPath:@".//li[contains(@role, 'menuitem')]"];
+                    
+                    result.resultType = kYTSearchResultTypePlaylist;
+                    
+                    NSString *videoID = [plIdElement valueForAttribute:@"data-list-id"];
+                    if (videoID != nil)
+                    {
+                        result.videoId = videoID;
+                    }
+                    NSString *imagePath = [thumbNailElement valueForAttribute:@"data-thumb"];
+                    if (imagePath == nil)
+                    {
+                        imagePath = [thumbNailElement valueForAttribute:@"src"];
+                    }
+                    if (imagePath != nil)
+                    {
+                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    }
+                    if (titleElement != nil)
+                        result.title = [[titleElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                    
+                    if (authorElement != nil)
+                    {
+                        result.author = [authorElement stringValue];
+                    }
+                    if (descElement != nil)
+                    {
+                        result.details = [descElement stringValue];
+                    }
+                    
+                    if ([result.videoId length] > 0)
+                    {
+                        [playlistArray addObject:result];
+                    }
+                }
+                
+                if ([playlistArray count] > 0)
+                {
+                    [finalArray addObjectsFromArray:playlistArray];
+                    outputDict[@"results"] = finalArray;
+                    //outputDict[@"playlists"] = playlistArray;
+                }
+                
+                //yt-lockup-channel
+                id channelEnum = [videosElement XPath:@"//div[contains(@class, 'yt-lockup-channel')]"];
+                NSMutableArray *channelArray = [NSMutableArray new];
+                while (currentElement = [channelEnum nextObject])
+                {
+                    //   NSLog(@"channelelement: %@", currentElement);
+                    KBYTSearchResult *result = [KBYTSearchResult new];
+                    
+                    ONOXMLElement *channelIDElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-thumbnail')]"] children] firstObject];
+                    
+                    NSString *videoID = [channelIDElement valueForAttribute:@"data-ytid"];
+                    if (videoID != nil)
+                    {
+                        result.videoId = videoID;
+                    }
+                    ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
+                    ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-uix-tile-link')]"];
+                    ONOXMLElement *authorElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
+                    ONOXMLElement *descElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"] children] lastObject];//yt-lockup-meta-info
+                    
+                    result.resultType = kYTSearchResultTypeChannel;
+                    
+                    NSString *imagePath = [thumbNailElement valueForAttribute:@"data-thumb"];
+                    if (imagePath == nil)
+                    {
+                        imagePath = [thumbNailElement valueForAttribute:@"src"];
+                    }
+                    if (imagePath != nil)
+                    {
+                        result.imagePath = imagePath;
+                    }
+                    if (titleElement != nil)
+                        result.title = [[titleElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                    
+                    if (authorElement != nil)
+                    {
+                        result.author = [authorElement stringValue];
+                    }
+                    if (descElement != nil)
+                    {
+                        result.details = [descElement stringValue];
+                    }
+                    
+                    if ([result.videoId length] > 0)
+                    {
+                        [channelArray addObject:result];
+                    }
+                }
+                
+                if ([channelArray count] > 0)
+                {
+                    [finalArray addObjectsFromArray:channelArray];
+                    outputDict[@"results"] = finalArray;
+                    //outputDict[@"channels"] = channelArray;
+                }
+                
+                
+            }
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if([finalArray count] > 0)
