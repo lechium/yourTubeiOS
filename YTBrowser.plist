@@ -2,13 +2,10 @@
 	Mode = Any;
 	Filter = {
 		Executables = (
-			itunesstored,
 			yourMusic,
 		);
 		Bundles = (
 			"com.apple.springboard",
-			"com.apple.MobileStore",
-			"com.apple.MusicLibrary",
 			"com.nito.yourMusic",
 		);
 	};
