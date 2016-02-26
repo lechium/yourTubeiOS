@@ -12,6 +12,7 @@
 #import "KBYTPreferences.h"
 #import "KBYourTube.h"
 
+#define kGenericLoadingCellTag 600
 
 @interface KBYTGenericVideoTableViewController : UITableViewController
 
@@ -26,6 +27,7 @@
 @property (readwrite, assign) NSInteger currentPage;
 @property (nonatomic, strong) NSString *customTitle;
 @property (nonatomic, strong) NSString *customId;
+@property (nonatomic, strong) NSString *nextHREF;
 
 - (id)initForType:(NSInteger)detailsType;
 - (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier;

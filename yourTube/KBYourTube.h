@@ -133,6 +133,15 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 
 - (NSString *)videoDescription:(NSString *)videoID;
 - (NSDictionary *)videoDetailsFromID:(NSString *)videoID;
+
+- (void)loadMoreVideosFromHREF:(NSString *)loadMoreLink
+               completionBlock:(void(^)(NSDictionary *outputResults))completionBlock
+                  failureBlock:(void(^)(NSString *error))failureBlock;
+
+- (void)loadMorePlaylistVideosFromHREF:(NSString *)loadMoreLink
+                       completionBlock:(void(^)(NSDictionary *outputResults))completionBlock
+                          failureBlock:(void(^)(NSString *error))failureBlock;
+
 /**
  
  searchQuery is just a basic unescaped search string, this will return a dictionary with 
@@ -148,7 +157,7 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
          failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)getPlaylistVideos:(NSString *)listID
-          completionBlock:(void(^)(NSArray * playlistArray))completionBlock
+          completionBlock:(void(^)(NSDictionary * playlistDetails))completionBlock
              failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getChannelVideos:(NSString *)channelID

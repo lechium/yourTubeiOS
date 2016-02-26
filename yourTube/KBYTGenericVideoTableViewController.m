@@ -73,6 +73,157 @@
     return self;
 }
 
+- (void)getNextPage {
+    
+    self.currentPage++;
+    if (tableType == 0) //featured
+    {
+        self.navigationItem.title = @"Suggested Videos";
+        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
+            
+            self.pageCount = [outputResults[@"pageCount"] integerValue];
+            self.nextHREF = outputResults[@"loadMoreREF"];
+            [self updateSearchResults:outputResults[@"results"]];
+            self.totalResults = [[self searchResults] count];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            
+            self.nextHREF = nil;
+            [self.tableView reloadData];
+        }];
+        
+    
+    } else if (tableType == 1) //popular
+    {
+        self.navigationItem.title = @"#PopularOnYouTube";
+        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
+            
+            self.pageCount = [outputResults[@"pageCount"] integerValue];
+            self.nextHREF = outputResults[@"loadMoreREF"];
+            [self updateSearchResults:outputResults[@"results"]];
+            self.totalResults = [[self searchResults] count];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            
+            self.nextHREF = nil;
+            [self.tableView reloadData];
+        }];
+    }  else if (tableType == 2) //music
+    {
+        self.navigationItem.title = @"#Music";
+        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
+            
+            self.pageCount = [outputResults[@"pageCount"] integerValue];
+            self.nextHREF = outputResults[@"loadMoreREF"];
+            [self updateSearchResults:outputResults[@"results"]];
+            self.totalResults = [[self searchResults] count];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            
+            self.nextHREF = nil;
+            [self.tableView reloadData];
+        }];
+        
+    } else if (tableType == 3) //sports
+    {
+        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
+            
+            self.pageCount = [outputResults[@"pageCount"] integerValue];
+            self.nextHREF = outputResults[@"loadMoreREF"];
+            [self updateSearchResults:outputResults[@"results"]];
+            self.totalResults = [[self searchResults] count];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            
+            self.nextHREF = nil;
+            [self.tableView reloadData];
+        }];
+        
+    } else if (tableType == 4) //360
+    {
+        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
+            
+            self.pageCount = [outputResults[@"pageCount"] integerValue];
+            self.nextHREF = outputResults[@"loadMoreREF"];
+            [self updateSearchResults:outputResults[@"results"]];
+            self.totalResults = [[self searchResults] count];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            
+            self.nextHREF = nil;
+            [self.tableView reloadData];
+        }];
+        
+    }  else if (tableType == 5) //custom channel
+    {
+        self.navigationItem.title = customTitle;
+        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
+            
+            self.pageCount = [outputResults[@"pageCount"] integerValue];
+            self.nextHREF = outputResults[@"loadMoreREF"];
+            [self updateSearchResults:outputResults[@"results"]];
+            self.totalResults = [[self searchResults] count];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            
+            self.nextHREF = nil;
+            [self.tableView reloadData];
+        }];
+    }   else if (tableType == 6) //custom playlist
+    {
+        self.navigationItem.title = customTitle;
+        [[KBYourTube sharedInstance] loadMorePlaylistVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
+            
+            [self updateSearchResults:outputResults[@"results"]];
+            self.totalResults = [[self searchResults] count];
+            self.pageCount = [outputResults[@"pageCount"] integerValue];
+            self.nextHREF = outputResults[@"loadMoreREF"];
+            [self.tableView reloadData];
+            
+        } failureBlock:^(NSString *error) {
+            
+            self.nextHREF = nil;
+            [self.tableView reloadData];
+        }];
+    }
+    
+    
+}
+
+- (void)tableView:(UITableView *)tableView
+  willDisplayCell:(UITableViewCell *)cell
+forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (cell.tag == kGenericLoadingCellTag) {
+        [self getNextPage];
+    }
+}
+
+- (UITableViewCell *)loadingCell {
+    UITableViewCell *cell = [[UITableViewCell alloc]
+                             initWithStyle:UITableViewCellStyleDefault
+                             reuseIdentifier:nil];
+    
+    SVIndefiniteAnimatedView *indefiniteAnimatedView = [[SVIndefiniteAnimatedView alloc] initWithFrame:CGRectZero];
+    indefiniteAnimatedView.strokeColor = [UIColor redColor];
+    indefiniteAnimatedView.radius =  10;
+    indefiniteAnimatedView.strokeThickness = 4;
+    [indefiniteAnimatedView sizeToFit];
+    
+    indefiniteAnimatedView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+    indefiniteAnimatedView.center = cell.contentView.center;
+    cell.contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    [cell.contentView addSubview:indefiniteAnimatedView];
+    
+    cell.tag = kGenericLoadingCellTag;
+    return cell;
+}
+
 - (void)updateTableForType:(NSInteger)type
 {
     [SVProgressHUD show];
@@ -85,6 +236,7 @@
             [SVProgressHUD dismiss];
             self.totalResults = [searchDetails[@"resultCount"] integerValue];
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            self.nextHREF = searchDetails[@"loadMoreREF"];
             [self updateSearchResults:searchDetails[@"results"]];
             [self.tableView reloadData];
        
@@ -103,6 +255,7 @@
             self.totalResults = [searchDetails[@"resultCount"] integerValue];
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
             [self updateSearchResults:searchDetails[@"results"]];
+            self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
@@ -118,6 +271,7 @@
             [SVProgressHUD dismiss];
             self.totalResults = [searchDetails[@"resultCount"] integerValue];
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            self.nextHREF = searchDetails[@"loadMoreREF"];
             [self updateSearchResults:searchDetails[@"results"]];
             [self.tableView reloadData];
             
@@ -134,6 +288,7 @@
             [SVProgressHUD dismiss];
             self.totalResults = [searchDetails[@"resultCount"] integerValue];
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            self.nextHREF = searchDetails[@"loadMoreREF"];
             [self updateSearchResults:searchDetails[@"results"]];
             [self.tableView reloadData];
             
@@ -151,6 +306,7 @@
             self.totalResults = [searchDetails[@"resultCount"] integerValue];
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
             [self updateSearchResults:searchDetails[@"results"]];
+            self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
@@ -167,6 +323,7 @@
             self.totalResults = [searchDetails[@"resultCount"] integerValue];
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
             [self updateSearchResults:searchDetails[@"results"]];
+            self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
@@ -176,13 +333,15 @@
     }   else if (type == 6) //custom playlist
     {
         self.navigationItem.title = customTitle;
-        [[KBYourTube sharedInstance] getPlaylistVideos:self.customId completionBlock:^(NSArray *searchArray) {
+        [[KBYourTube sharedInstance] getPlaylistVideos:self.customId completionBlock:^(NSDictionary *searchDetails) {
             
             self.currentPage = 1;
             [SVProgressHUD dismiss];
+            NSArray *searchArray = searchDetails[@"results"];
             self.totalResults = [searchArray count];
             self.pageCount = 1;
             [self updateSearchResults:searchArray];
+            self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
@@ -211,6 +370,10 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
+    if ([self.nextHREF length] > 0)
+    {
+        return self.searchResults.count + 1;
+    }
     return self.searchResults.count;
     
 }
@@ -228,12 +391,22 @@
 }
 - (void)updateSearchResults:(NSArray *)newResults
 {
-    self.searchResults = [newResults mutableCopy];
+    
+    if (self.currentPage > 1)
+    {
+        [[self searchResults] addObjectsFromArray:newResults];
+    } else {
+        self.searchResults = [newResults mutableCopy];
+    }
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
+    
+    if (indexPath.row >= self.searchResults.count){
+        return [self loadingCell];
+    }
     
     KBYTDownloadCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
