@@ -23,7 +23,7 @@
 
 @implementation KBYTGenericVideoTableViewController
 
-@synthesize tableType, customTitle, customId;
+@synthesize tableType, customTitle, customId, currentPlaybackArray;
 
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -167,6 +167,7 @@
             self.pageCount = [outputResults[@"pageCount"] integerValue];
             self.nextHREF = outputResults[@"loadMoreREF"];
             [self updateSearchResults:outputResults[@"results"]];
+            [self fetchPlaylistDetailsInBackground:outputResults[@"results"]];
             self.totalResults = [[self searchResults] count];
             [self.tableView reloadData];
             
@@ -326,6 +327,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             [self updateSearchResults:searchDetails[@"results"]];
             self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
+            [self fetchPlaylistDetailsInBackground:searchDetails[@"results"]];
             
         } failureBlock:^(NSString *error) {
             [SVProgressHUD dismiss];
@@ -380,9 +382,16 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         if ([result media] != nil)
         {
             AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:[[[[result media]streams] firstObject]url]];
-            [playerItems addObject:playerItem];
+            if (playerItem != nil)
+            {
+                [playerItems addObject:playerItem];
+            }
         }
     }
+    currentPlaybackArray = [self.searchResults mutableCopy];
+    KBYTSearchResult *file = [currentPlaybackArray objectAtIndex:0];
+    
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: [NSNumber numberWithInteger:[[file duration]timeFromDuration]] };
     [self playStreams:playerItems];
 }
 
@@ -413,15 +422,30 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     [self presentViewController:self.playerView animated:YES completion:nil];
     self.playerView.view.frame = self.view.frame;
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[streams firstObject]];
     [self.player play];
     
-    //NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-    ;
-    //[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : ytMedia.title, MPMediaItemPropertyPlaybackDuration: [numberFormatter numberFromString:ytMedia.duration]};
+
     
-    
+}
+
+-(void)itemDidFinishPlaying:(NSNotification *) notification {
+    // Will be called when AVPlayer finishes playing playerItem
+    [[self player] removeItem:[[[self player] items] firstObject]];
+    [currentPlaybackArray removeObjectAtIndex:0];
+    if ([[self.player items] count] == 0)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+        [self dismissViewControllerAnimated:true completion:nil];
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
+    } else {
+        
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[[[self player] items] firstObject]];
+        KBYTSearchResult *file = [currentPlaybackArray objectAtIndex:0];
+        
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: [NSNumber numberWithInteger:[[file duration]timeFromDuration]] };//, MPMediaItemPropertyArtwork: artwork };
+    }
 }
 
 
@@ -522,7 +546,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     KBYTSearchResult *currentResult = [self.searchResults objectAtIndex:indexPath.row];
     if ([currentResult media] != nil)
     {
-        NSLog(@"its a playlist item, we already got media deets");
         KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:[currentResult media]];
         [[self navigationController] pushViewController:searchItem animated:true];
         return;
