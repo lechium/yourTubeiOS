@@ -343,12 +343,83 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             [self updateSearchResults:searchArray];
             self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
+            [self fetchPlaylistDetailsInBackground:searchArray];
             
         } failureBlock:^(NSString *error) {
             [SVProgressHUD dismiss];
             
         }];
     }
+    
+    
+}
+
+- (void)fetchPlaylistDetailsInBackground:(NSArray *)resultArray
+{
+   [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:resultArray completionBlock:^(NSArray *videoArray) {
+       //
+       NSLog(@"finished getting search result science");
+       [self showPlayAllButton];
+       
+   } failureBlock:^(NSString *error) {
+       //
+   }];
+}
+
+- (void)showPlayAllButton
+{
+    UIBarButtonItem *playButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay target:self action:@selector(playAll)];
+    self.navigationItem.rightBarButtonItem = playButton;
+}
+
+- (void)playAll
+{
+    NSMutableArray *playerItems = [NSMutableArray new];
+    for (KBYTSearchResult *result in self.searchResults)
+    {
+        if ([result media] != nil)
+        {
+            AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:[[[[result media]streams] firstObject]url]];
+            [playerItems addObject:playerItem];
+        }
+    }
+    [self playStreams:playerItems];
+}
+
+- (BOOL)isPlaying
+{
+    if ([self player] != nil)
+    {
+        if (self.player.rate != 0)
+        {
+            return true;
+        }
+    }
+    return false;
+    
+}
+
+- (IBAction)playStreams:(NSArray *)streams
+{
+    LOG_SELF;
+
+    if ([self isPlaying] == true  ){
+        return;
+    }
+    self.playerView = [YTKBPlayerViewController alloc];
+    self.playerView.showsPlaybackControls = true;
+    self.player = self.player = [AVQueuePlayer queuePlayerWithItems:streams];
+    self.playerView.player = self.player;
+    
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    self.playerView.view.frame = self.view.frame;
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
+    
+    [self.player play];
+    
+    //NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    ;
+    //[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : ytMedia.title, MPMediaItemPropertyPlaybackDuration: [numberFormatter numberFromString:ytMedia.duration]};
     
     
 }
@@ -449,6 +520,13 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         return; //selected the spinner item, jerks.
     }
     KBYTSearchResult *currentResult = [self.searchResults objectAtIndex:indexPath.row];
+    if ([currentResult media] != nil)
+    {
+        NSLog(@"its a playlist item, we already got media deets");
+        KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:[currentResult media]];
+        [[self navigationController] pushViewController:searchItem animated:true];
+        return;
+    }
     //[SVProgressHUD showInfoWithStatus:@"Fetching details"];
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForID:currentResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
@@ -459,8 +537,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         [[self navigationController] pushViewController:searchItem animated:true];
         
     } failureBlock:^(NSString *error) {
-        [SVProgressHUD dismiss];
         
+        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Failed to get video details" message:error delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+        [SVProgressHUD dismiss];
+        [errorAlert show];
     }];
     
     //[self getVideoIDDetails:currentResult.videoId];

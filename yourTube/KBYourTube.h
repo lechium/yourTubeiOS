@@ -167,11 +167,18 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 - (void)getFeaturedVideosWithCompletionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
                                 failureBlock:(void(^)(NSString* error))failureBlock;
 
+- (void)getVideoDetailsForSearchResults:(NSArray*)searchResults
+                        completionBlock:(void(^)(NSArray* videoArray))completionBlock
+                           failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)getSearchResults:(NSString *)searchQuery
               pageNumber:(NSInteger)page
          completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
             failureBlock:(void(^)(NSString* error))failureBlock;
+
+- (void)getVideoDetailsForIDs:(NSArray*)videoIDs
+              completionBlock:(void(^)(NSArray* videoArray))completionBlock
+                 failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)getVideoDetailsForID:(NSString*)videoID
              completionBlock:(void(^)(KBYTMedia* videoDetails))completionBlock

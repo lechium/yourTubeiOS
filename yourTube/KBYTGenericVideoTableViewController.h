@@ -29,6 +29,10 @@
 @property (nonatomic, strong) NSString *customId;
 @property (nonatomic, strong) NSString *nextHREF;
 
+@property (nonatomic, strong) KBYTMedia *ytMedia;
+@property (nonatomic, strong) AVQueuePlayer *player;
+@property (nonatomic, strong) YTKBPlayerViewController *playerView;
+
 - (id)initForType:(NSInteger)detailsType;
 - (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier;
 

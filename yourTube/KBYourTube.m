@@ -760,6 +760,7 @@
  useless. this trims down to just the pertinent info and feeds back the raw string for processing.
  
  */
+//https://www.youtube.com/playlist?list=PLkijzJW7zLBVjWGGtcA_Q2Vu8UuG5kLvt
 
 - (NSString *)rawYTFromHTML:(NSString *)html {
     
@@ -854,7 +855,7 @@
                     result.author = [authorElement stringValue];
                 }
                 
-                if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"])
+                if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"] && ![result.title isEqualToString:@"[Deleted Video]"]&& ![result.title isEqualToString:@"[Private Video]"])
                 {
                     //NSLog(@"result: %@", result);
                     [finalArray addObject:result];
@@ -961,7 +962,7 @@
                     result.author = [authorElement stringValue];
                 }
                 
-                if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"])
+                if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"] && ![result.title isEqualToString:@"[Deleted Video]"]&& ![result.title isEqualToString:@"[Private Video]"])
                 {
                     [finalArray addObject:result];
                 } else {
@@ -1621,6 +1622,7 @@
     
 }
 
+
 /*
  
  This method is much tidier now with some recursive magic added to APElement, it is still potentially
@@ -1920,8 +1922,8 @@
             if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
             {
                 errorString = @"Failed to decode signature cipher javascript.";
-                self.yttimestamp = @"16806";
-                self.ytkey = @"-1,0,65,-3,0";
+                self.yttimestamp = @"16856";
+                self.ytkey = @"44,49,0";
                 
             }
             
@@ -1943,6 +1945,11 @@
                 {
                     //the call was successful, create our root object.
                     rootInfo = [[KBYTMedia alloc] initWithDictionary:vars];
+                } else {
+                    
+                    errorString = [[[vars objectForKey:@"reason"] stringByReplacingOccurrencesOfString:@"+" withString:@" "] stringByRemovingPercentEncoding];
+                    NSLog(@"get_video_info for %@ failed for reason: %@", videoID, errorString);
+                    
                 }
             } else {
                 
@@ -1954,6 +1961,173 @@
                 if(rootInfo != nil)
                 {
                     completionBlock(rootInfo);
+                } else {
+                    failureBlock(errorString);
+                }
+            });
+        }
+    });
+    
+}
+
+- (void)getVideoDetailsForSearchResults:(NSArray*)searchResults
+              completionBlock:(void(^)(NSArray* videoArray))completionBlock
+                 failureBlock:(void(^)(NSString* error))failureBlock
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        @autoreleasepool {
+            NSMutableArray *finalArray = [NSMutableArray new];
+            //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
+            NSString *errorString = nil;
+            
+            //if we already have the timestamp and key theres no reason to fetch them again, should make additional calls quicker.
+            if (self.yttimestamp.length == 0 && self.ytkey.length == 0)
+            {
+                //get the time stamp and cipher key in case we need to decode the signature.
+                [self getTimeStampAndKey:[[searchResults firstObject] videoId]];
+            }
+            
+            //a fallback just in case the jsbody is changed and we cant automatically grab current signatures
+            //old ciphers generally continue to work at least temporarily.
+            
+            if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
+            {
+                errorString = @"Failed to decode signature cipher javascript.";
+                self.yttimestamp = @"16856";
+                self.ytkey = @"44,49,0";
+                
+            }
+            
+            //the url we use to call get_video_info
+            
+            NSInteger i = 0;
+            
+            for (KBYTSearchResult *result in searchResults) {
+                NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
+                
+                NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", result.videoId, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
+                
+                //get the post body from the url above, gets the initial raw info we work with
+                NSString *body = [self stringFromRequest:url];
+                
+                //turn all of these variables into an nsdictionary by separating elements by =
+                NSDictionary *vars = [self parseFlashVars:body];
+                
+                //  NSLog(@"vars: %@", vars);
+                
+                if ([[vars allKeys] containsObject:@"status"])
+                {
+                    if ([[vars objectForKey:@"status"] isEqualToString:@"ok"])
+                    {
+                        //the call was successful, create our root object.
+                        KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithDictionary:vars];
+                        // NSLog(@"adding media: %@", currentMedia);
+                        result.media = currentMedia;
+                        [finalArray addObject:currentMedia];
+                    } else {
+                        
+                        errorString = [[[vars objectForKey:@"reason"] stringByReplacingOccurrencesOfString:@"+" withString:@" "] stringByRemovingPercentEncoding];
+                        NSLog(@"get_video_info for %@ failed for reason: %@", result.title, errorString);
+                        
+                    }
+                } else {
+                    
+                    errorString = @"get_video_info failed.";
+                    NSLog(@"get video info failed for id: %@", result.videoId);
+                }
+                i++;
+            }
+            
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if([finalArray count] > 0)
+                {
+                    completionBlock(finalArray);
+                } else {
+                    failureBlock(errorString);
+                }
+            });
+        }
+    });
+    
+}
+
+- (void)getVideoDetailsForIDs:(NSArray*)videoIDs
+              completionBlock:(void(^)(NSArray* videoArray))completionBlock
+                 failureBlock:(void(^)(NSString* error))failureBlock
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        @autoreleasepool {
+            NSMutableArray *finalArray = [NSMutableArray new];
+            //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
+            NSString *errorString = nil;
+            
+            //if we already have the timestamp and key theres no reason to fetch them again, should make additional calls quicker.
+            if (self.yttimestamp.length == 0 && self.ytkey.length == 0)
+            {
+                //get the time stamp and cipher key in case we need to decode the signature.
+                [self getTimeStampAndKey:[videoIDs firstObject]];
+            }
+            
+            //a fallback just in case the jsbody is changed and we cant automatically grab current signatures
+            //old ciphers generally continue to work at least temporarily.
+            
+            if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
+            {
+                errorString = @"Failed to decode signature cipher javascript.";
+                self.yttimestamp = @"16856";
+                self.ytkey = @"44,49,0";
+                
+            }
+            
+            //the url we use to call get_video_info
+            
+            NSInteger i = 0;
+            
+            for (NSString *videoID in videoIDs) {
+                NSLog(@"processing videoID %@ at index: %lu", videoID, i);
+                
+                NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", videoID, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
+                
+                //get the post body from the url above, gets the initial raw info we work with
+                NSString *body = [self stringFromRequest:url];
+                
+                //turn all of these variables into an nsdictionary by separating elements by =
+                NSDictionary *vars = [self parseFlashVars:body];
+                
+                //  NSLog(@"vars: %@", vars);
+                
+                if ([[vars allKeys] containsObject:@"status"])
+                {
+                    if ([[vars objectForKey:@"status"] isEqualToString:@"ok"])
+                    {
+                        //the call was successful, create our root object.
+                        KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithDictionary:vars];
+                       // NSLog(@"adding media: %@", currentMedia);
+                        [finalArray addObject:currentMedia];
+                    } else {
+                        
+                        errorString = [[[vars objectForKey:@"reason"] stringByReplacingOccurrencesOfString:@"+" withString:@" "] stringByRemovingPercentEncoding];
+                        NSLog(@"get_video_info for %@ failed for reason: %@", videoID, errorString);
+                        
+                    }
+                } else {
+                    
+                    errorString = @"get_video_info failed.";
+                    NSLog(@"get video info failed for id: %@", videoID);
+                }
+                i++;
+            }
+            
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if([finalArray count] > 0)
+                {
+                    completionBlock(finalArray);
                 } else {
                     failureBlock(errorString);
                 }
