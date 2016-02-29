@@ -21,7 +21,7 @@
 
 @implementation KBYTDownloadsTableViewController
 
-@synthesize downloadArray, activeDownloads, optionIndices;
+@synthesize downloadArray, activeDownloads, optionIndices, currentPlaybackArray;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -399,10 +399,19 @@
 
 -(void)itemDidFinishPlaying:(NSNotification *) notification {
     // Will be called when AVPlayer finishes playing playerItem
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
-    [self dismissViewControllerAnimated:true completion:nil];
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
+    [currentPlaybackArray removeObjectAtIndex:0];
+    if ([[self.player items] count] == 0)
+    {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+        [self dismissViewControllerAnimated:true completion:nil];
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
+    } else {
+        
+        [[self player] removeItem:[[[self player] items] firstObject]];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[[[self player] items] firstObject]];
+        NSDictionary *file = [currentPlaybackArray objectAtIndex:0];
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file[@"title"], MPMediaItemPropertyPlaybackDuration: file[@"duration"] };//, MPMediaItemPropertyArtwork: artwork };
+    }
 }
 
 
@@ -426,7 +435,9 @@
     }
     self.playerView = [YTKBPlayerViewController alloc];
     self.playerView.showsPlaybackControls = true;
-    self.player = [AVPlayer playerWithURL:playURL];
+    AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
+    self.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
+   // self.player = [AVPlayer playerWithURL:playURL];
     self.playerView.player = self.player;
     
     [self presentViewController:self.playerView animated:YES completion:nil];
@@ -456,8 +467,10 @@
       [[self tableView] deselectRowAtIndexPath:indexPath animated:false];
     if (self.activeDownloads.count == 0) { //first section is removed, this is still a bit of a hack but will work.
         
-        NSDictionary *theFile = [self.downloadArray objectAtIndex:indexPath.row];
-        [self playFile:theFile];
+        
+        [self playFilesStartingAtIndex:indexPath.row];
+      //  NSDictionary *theFile = [self.downloadArray objectAtIndex:indexPath.row];
+        //[self playFile:theFile];
     
     } else { //we have active downloads so we need to make sure its section 1
         
@@ -468,6 +481,36 @@
         }
     }
   
+}
+
+- (void)playFilesStartingAtIndex:(NSInteger)index
+{
+    NSArray *subarray = [self.downloadArray subarrayWithRange:NSMakeRange(index, [self.downloadArray count] - index)];
+    currentPlaybackArray = [subarray mutableCopy];
+    NSMutableArray *avPlayerItemArray = [NSMutableArray new];
+    
+    for (NSDictionary *file in subarray)
+    {
+        NSString *filePath = [[self downloadFolder] stringByAppendingPathComponent:file[@"outputFilename"]];
+        NSURL *playURL = [NSURL fileURLWithPath:filePath];
+        AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:playURL];
+        [avPlayerItemArray addObject:playerItem];
+    }
+    
+    NSDictionary *file = [currentPlaybackArray objectAtIndex:0];
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file[@"title"], MPMediaItemPropertyPlaybackDuration: file[@"duration"] };
+    
+    self.playerView = [YTKBPlayerViewController alloc];
+    self.playerView.showsPlaybackControls = true;
+    self.player = [AVQueuePlayer queuePlayerWithItems:avPlayerItemArray];
+    self.playerView.player = self.player;
+    
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    self.playerView.view.frame = self.view.frame;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[avPlayerItemArray firstObject]];
+    
+    [self.player play];
+ 
 }
 
 /*
