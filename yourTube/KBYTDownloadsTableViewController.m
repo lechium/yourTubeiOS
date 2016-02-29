@@ -399,6 +399,7 @@
 
 -(void)itemDidFinishPlaying:(NSNotification *) notification {
     // Will be called when AVPlayer finishes playing playerItem
+    [[self player] removeItem:[[[self player] items] firstObject]];
     [currentPlaybackArray removeObjectAtIndex:0];
     if ([[self.player items] count] == 0)
     {
@@ -407,7 +408,7 @@
         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
     } else {
         
-        [[self player] removeItem:[[[self player] items] firstObject]];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[[[self player] items] firstObject]];
         NSDictionary *file = [currentPlaybackArray objectAtIndex:0];
         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file[@"title"], MPMediaItemPropertyPlaybackDuration: file[@"duration"] };//, MPMediaItemPropertyArtwork: artwork };

@@ -1180,7 +1180,9 @@
                     result.duration = lengthElement.stringValue;
                 
                 if (titleElement != nil)
-                    result.title = [[titleElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                {
+                    result.title = [[[titleElement children]firstObject] valueForAttribute:@"title"];
+                }
                 
                 NSString *vdesc = [[descElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
                 if (vdesc != nil)
