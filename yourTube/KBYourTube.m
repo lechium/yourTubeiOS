@@ -2004,7 +2004,7 @@
             NSInteger i = 0;
             
             for (KBYTSearchResult *result in searchResults) {
-                NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
+            //    NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
                 
                 NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", result.videoId, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
                 

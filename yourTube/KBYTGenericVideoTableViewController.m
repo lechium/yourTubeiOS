@@ -181,6 +181,7 @@
         [[KBYourTube sharedInstance] loadMorePlaylistVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
             
             [self updateSearchResults:outputResults[@"results"]];
+            [self fetchPlaylistDetailsInBackground:outputResults[@"results"]];
             self.totalResults = [[self searchResults] count];
             self.pageCount = [outputResults[@"pageCount"] integerValue];
             self.nextHREF = outputResults[@"loadMoreREF"];
@@ -357,12 +358,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 - (void)fetchPlaylistDetailsInBackground:(NSArray *)resultArray
 {
    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:resultArray completionBlock:^(NSArray *videoArray) {
-       //
-       NSLog(@"finished getting search result science");
+ 
        [self showPlayAllButton];
        
    } failureBlock:^(NSString *error) {
-       //
+       
    }];
 }
 
