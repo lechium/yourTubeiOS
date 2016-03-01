@@ -600,7 +600,7 @@
             if (signedIn == true) {
                 
                 NSDictionary *channelDict = [self channelIDAndWatchLaterCount];
-                NSLog(@"channelDict: %@", channelDict);
+              //  NSLog(@"channelDict: %@", channelDict);
                 NSString *channelID = channelDict[@"channelID"];
                 NSDictionary *ourUserDetails = [self userDetailsFromChannelURL:channelID];
                 NSString *userName = ourUserDetails[@"username"];
@@ -621,6 +621,7 @@
                 wlPl.videoId = @"WL";
                 wlPl.details = [NSString stringWithFormat:@"%@ videos", channelDict[@"wlCount"]];
                 wlPl.title = @"Watch later";
+                wlPl.imagePath = ourUserDetails[@"profileImage"];
                 wlPl.resultType = kYTSearchResultTypePlaylist;
                 
                 [itemArray addObject:wlPl];
