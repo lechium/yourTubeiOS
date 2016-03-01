@@ -43,8 +43,22 @@
     [[KBYTMessagingCenter sharedInstance] startDownloadListener];
     [[KBYTMessagingCenter sharedInstance] registerDownloadListener];
 
+    if ([[KBYourTube sharedInstance] isSignedIn] == true)
+    {
+        [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+            //
+            [[KBYourTube sharedInstance] setUserDetails:outputResults];
+            
+        } failureBlock:^(NSString *error) {
+            
+            NSLog(@"failed fetching user details with error: %@", error);
+            
+        }];
+    } else {
+        NSLog(@"is not signed in");
+    }
     
-    
+   
     
     /*
  

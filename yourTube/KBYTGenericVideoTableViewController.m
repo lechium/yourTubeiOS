@@ -39,11 +39,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-  
+    
     self.extendedLayoutIncludesOpaqueBars = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.edgesForExtendedLayout = UIRectEdgeNone;
- 
+    
     self.tableView.translatesAutoresizingMaskIntoConstraints = false;
     self.automaticallyAdjustsScrollViewInsets = false;
     
@@ -93,7 +93,7 @@
             [self.tableView reloadData];
         }];
         
-    
+        
     } else if (tableType == 1) //popular
     {
         self.navigationItem.title = @"#PopularOnYouTube";
@@ -236,12 +236,47 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             
             self.currentPage = 1;
             [SVProgressHUD dismiss];
-            self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            
+            if ([[KBYourTube sharedInstance] userDetails] != nil)
+            {
+                NSLog(@"include user details!");
+                NSArray *userDetailsArray = [[KBYourTube sharedInstance]userDetails][@"results"];
+                NSMutableArray *fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
+                [fullArray addObjectsFromArray:searchDetails[@"results"]];
+                [self updateSearchResults:fullArray];
+                self.totalResults = [fullArray count];
+            } else {
+                if ([[KBYourTube sharedInstance] isSignedIn] == true)
+                {
+                    [SVProgressHUD show];
+                    [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+                         [SVProgressHUD dismiss];
+                        [[KBYourTube sharedInstance] setUserDetails:outputResults];
+                        NSLog(@"signed in since launch, add user details!");
+                        NSArray *userDetailsArray = [[KBYourTube sharedInstance]userDetails][@"results"];
+                        NSMutableArray *fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
+                        [fullArray addObjectsFromArray:searchDetails[@"results"]];
+                        [self updateSearchResults:fullArray];
+                        self.totalResults = [fullArray count];
+                        
+                    } failureBlock:^(NSString *error) {
+                        
+                         [SVProgressHUD dismiss];
+                        [self updateSearchResults:searchDetails[@"results"]];
+                        self.totalResults = [searchDetails[@"resultCount"] integerValue];
+                    }];
+                } else {
+                    [self updateSearchResults:searchDetails[@"results"]];
+                    self.totalResults = [searchDetails[@"resultCount"] integerValue];
+                }
+            
+            }
+            
+            
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
             self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self updateSearchResults:searchDetails[@"results"]];
             [self.tableView reloadData];
-       
+            
             
         } failureBlock:^(NSString *error) {
             [SVProgressHUD dismiss];
@@ -249,7 +284,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         }];
     } else if (type == 1) //popular
     {
-         self.navigationItem.title = @"#PopularOnYouTube";
+        self.navigationItem.title = @"#PopularOnYouTube";
         [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(NSDictionary *searchDetails) {
             
             self.currentPage = 1;
@@ -266,7 +301,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         }];
     }  else if (type == 2) //music
     {
-         self.navigationItem.title = @"#Music";
+        self.navigationItem.title = @"#Music";
         [[KBYourTube sharedInstance] getChannelVideos:KBYTMusicChannelID completionBlock:^(NSDictionary *searchDetails) {
             
             self.currentPage = 1;
@@ -300,7 +335,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         }];
     } else if (type == 4) //360
     {
-         self.navigationItem.title = @"360 Videos";
+        self.navigationItem.title = @"360 Videos";
         [[KBYourTube sharedInstance] getChannelVideos:KBYT360ChannelID completionBlock:^(NSDictionary *searchDetails) {
             
             self.currentPage = 1;
@@ -359,13 +394,18 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)fetchPlaylistDetailsInBackground:(NSArray *)resultArray
 {
-   [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:resultArray completionBlock:^(NSArray *videoArray) {
- 
-       [self showPlayAllButton];
-       
-   } failureBlock:^(NSString *error) {
-       
-   }];
+    NSDate *myStart = [NSDate date];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:resultArray completionBlock:^(NSArray *videoArray) {
+        
+        NSLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        [self showPlayAllButton];
+        
+    } failureBlock:^(NSString *error) {
+        
+    }];
 }
 
 - (void)showPlayAllButton
@@ -381,7 +421,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     {
         if ([result media] != nil)
         {
-            AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:[[[[result media]streams] firstObject]url]];
+            YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:[[[[result media]streams] firstObject]url]];
+            playerItem.associatedMedia = [result media];
             if (playerItem != nil)
             {
                 [playerItems addObject:playerItem];
@@ -411,7 +452,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 - (IBAction)playStreams:(NSArray *)streams
 {
     LOG_SELF;
-
+    
     if ([self isPlaying] == true  ){
         return;
     }
@@ -425,7 +466,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[streams firstObject]];
     [self.player play];
     
-
+    
     
 }
 
@@ -520,12 +561,18 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     cell.textLabel.text = currentItem.title;
     cell.duration = currentItem.duration;
     
-    NSNumberFormatter *numFormatter = [NSNumberFormatter new];
-    numFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-    
-    NSNumber *view_count = [numFormatter numberFromString:currentItem.views];
-
-    cell.views = [[numFormatter stringFromNumber:view_count] stringByAppendingString:@" Views"];
+    if (currentItem.resultType != kYTSearchResultTypeVideo)
+    {
+        cell.views = currentItem.details;
+    } else {
+        
+        NSNumberFormatter *numFormatter = [NSNumberFormatter new];
+        numFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+        
+        NSNumber *view_count = [numFormatter numberFromString:currentItem.views];
+        
+        cell.views = [[numFormatter stringFromNumber:view_count] stringByAppendingString:@" Views"];
+    }
     cell.downloading = false;
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceHolderImage"];
@@ -538,12 +585,27 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-      [[self tableView] deselectRowAtIndexPath:indexPath animated:false];
+    [[self tableView] deselectRowAtIndexPath:indexPath animated:false];
     if (indexPath.row >= self.searchResults.count)
     {
         return; //selected the spinner item, jerks.
     }
     KBYTSearchResult *currentResult = [self.searchResults objectAtIndex:indexPath.row];
+    
+    if (currentResult.resultType == kYTSearchResultTypeChannel)
+    {
+        
+        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:5 withTitle:currentResult.title withId:currentResult.videoId];
+        [[self navigationController] pushViewController:genericTableView animated:true];
+        return;
+    } else if (currentResult.resultType == kYTSearchResultTypePlaylist)
+    {
+        
+        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:6 withTitle:currentResult.title withId:currentResult.videoId];
+        [[self navigationController] pushViewController:genericTableView animated:true];
+        return;
+    }
+    
     if ([currentResult media] != nil)
     {
         KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:[currentResult media]];

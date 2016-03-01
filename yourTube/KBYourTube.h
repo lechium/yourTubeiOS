@@ -38,11 +38,15 @@ static NSString *const KBYTSportsChannelID  =  @"UCEgdi0XIXXZ-qJOFPf4JSKw";
 static NSString *const KBYTGamingChannelID  =  @"UCOpNcN46UbXVtpKMrmU4Abg";
 static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 
+
+
 @interface YTKBPlayerViewController : AVPlayerViewController
 {
     AVPlayerLayer *_layerToRestore;
     AVPlayer *_playerToRestore;
 }
+
+@property (nonatomic, weak) NSArray *playlistItems;
 
 @end
 
@@ -76,6 +80,11 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 @property (nonatomic, strong) NSArray *streams;
 @property (nonatomic, strong) NSString *details; //description
 
+@end
+
+@interface YTPlayerItem: AVPlayerItem
+
+@property (nonatomic, weak) KBYTMedia *associatedMedia;
 
 @end
 
@@ -128,11 +137,16 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 @property (nonatomic, strong) NSString *ytkey;
 @property (nonatomic, strong) NSString *airplayIP;
 @property (nonatomic, strong) NSString *lastSearch;
+@property (nonatomic, strong) NSDictionary *userDetails; 
 
 + (id)sharedInstance;
+- (BOOL)isSignedIn;
 
 - (NSString *)videoDescription:(NSString *)videoID;
 - (NSDictionary *)videoDetailsFromID:(NSString *)videoID;
+
+- (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock
+                                       failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)loadMoreVideosFromHREF:(NSString *)loadMoreLink
                completionBlock:(void(^)(NSDictionary *outputResults))completionBlock

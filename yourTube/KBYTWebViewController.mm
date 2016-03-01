@@ -138,13 +138,16 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
         [config.userContentController addScriptMessageHandler:self name:MessageHandler];
     }
     
-    NSString *lastVisited = [[KBYTPreferences preferences] valueForKey:@"lastVisitedURL"];
+    //NSString *lastVisited = [[KBYTPreferences preferences] valueForKey:@"lastVisitedURL"];
+    
+    NSString *lastVisited = nil;
+    
     
     NSLog(@"last visited url: %@", lastVisited);
     
     if (lastVisited == nil || lastVisited.length == 0)
     {
-        lastVisited = @"http://m.youtube.com";
+        lastVisited = @"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3";
     }
     
     NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:lastVisited] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
@@ -203,6 +206,8 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 
 - (void)updateBackButtonState
 {
+    self.navigationItem.leftBarButtonItem = nil;
+    return;
     if ([[self webView] canGoBack])
     {
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"grey_arrow_left.png"] style:UIBarButtonItemStylePlain target:[self webView] action:@selector(goBack)];
