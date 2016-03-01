@@ -16,14 +16,14 @@
  in the header file. However, it does provide easier portability since I have yet to make this into a library/framework/pod
  
  
-*/
+ */
 
 
 @implementation YTKBPlayerViewController
 
 /*
  
- most of the code in this class are the stupid hurdles to jump through to not roll your own AVPlayerView & 
+ most of the code in this class are the stupid hurdles to jump through to not roll your own AVPlayerView &
  & controller but to maintain playback in the background & then regain video in the foreground.
  
  adapted and fixed from http://stackoverflow.com/questions/31621618/remove-and-restore-avplayer-to-enable-background-video-playback/33240738#33240738
@@ -39,11 +39,11 @@
     //[[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     MPRemoteCommandCenter *shared = [MPRemoteCommandCenter sharedCommandCenter];
-   [shared.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+    [shared.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
         
         [[self player] pause];
         return MPRemoteCommandHandlerStatusSuccess;
-
+        
     }];
     
     [shared.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
@@ -54,15 +54,14 @@
     }];
     
     [shared.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-    
-       
+        
+        
         NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
         KBYTMedia *currentItem = [[playerItems firstObject] associatedMedia];
-        NSLog(@"currentItem: %@", currentItem);
         [(AVQueuePlayer *)[self player] advanceToNextItem];
         playerItems = [(AVQueuePlayer *)[self player] items];
         currentItem = [[playerItems firstObject] associatedMedia];
-         NSLog(@"currentItem: %@", currentItem);
+        if (currentItem == nil) { return MPRemoteCommandHandlerStatusCommandFailed; }
         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: [NSNumber numberWithInteger:[[currentItem duration]timeFromDuration]] };
         return MPRemoteCommandHandlerStatusSuccess;
     }];
@@ -72,13 +71,18 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    LOG_SELF;
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
-      [[MPRemoteCommandCenter sharedCommandCenter].pauseCommand removeTarget:self];
-      [[MPRemoteCommandCenter sharedCommandCenter].playCommand removeTarget:self];
-   // [[self player] stop];
+    [[MPRemoteCommandCenter sharedCommandCenter].pauseCommand removeTarget:self];
+    [[MPRemoteCommandCenter sharedCommandCenter].playCommand removeTarget:self];
+    [[MPRemoteCommandCenter sharedCommandCenter].nextTrackCommand removeTarget:self];
+    [(AVQueuePlayer *)[self player] removeAllItems];
+    self.player = nil;
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
+    // [[self player] stop];
 }
 
 - (void)didForeground:(NSNotification *)n
@@ -101,7 +105,7 @@
         foundView = [view valueForKey:@"_videoLayer"];
     }
     @catch ( NSException *e ) {
-      //  NSLog(@"exception: %@", e);
+        //  NSLog(@"exception: %@", e);
     }
     @finally
     {
@@ -135,8 +139,8 @@
 
 - (BOOL)hasVideo
 {
-   AVPlayerItem *playerItem = [[self player] currentItem];
-   NSArray *tracks = [playerItem tracks];
+    AVPlayerItem *playerItem = [[self player] currentItem];
+    NSArray *tracks = [playerItem tracks];
     for (AVPlayerItemTrack *playerItemTrack in tracks)
     {
         // find video tracks
@@ -153,7 +157,7 @@
 - (void)didBackground:(NSNotification *)n
 {
     //NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
-   // NSLog(@"view recursiveDescription: %@", recursiveDesc);
+    // NSLog(@"view recursiveDescription: %@", recursiveDesc);
     if ([self isPlaying] == true && [self hasVideo] == true)
     {
         _layerToRestore = [self findPlayerView];
@@ -441,9 +445,9 @@
     self.author = author;
     NSMutableDictionary *images = [NSMutableDictionary new];
     if (iurlhq != nil)
-    images[@"high"] = iurlhq;
+        images[@"high"] = iurlhq;
     if (iurlmq != nil)
-       images[@"medium"] = iurlmq;
+        images[@"medium"] = iurlmq;
     if (iurlsd != nil)
         images[@"standard"] = iurlsd;
     self.images = images;
@@ -506,14 +510,14 @@
 
 - (NSDictionary *)dictionaryRepresentation
 {
-     if (self.details == nil)self.details = @"Unavailable";
+    if (self.details == nil)self.details = @"Unavailable";
     return @{@"title": self.title, @"author": self.author, @"keywords": self.keywords, @"videoID": self.videoId, @"views": self.views, @"duration": self.duration, @"images": self.images, @"streams": self.streams, @"details": self.details};
 }
 
 - (NSString *)description
 {
     return [[self dictionaryRepresentation] description];
-
+    
 }
 
 @end
@@ -826,7 +830,7 @@
 - (NSDictionary *)returnFromURLRequest:(NSString *)requestString requestType:(NSString *)type
 {
     NSURL *deviceURL = [NSURL URLWithString:requestString];
-  
+    
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
     [request setURL:deviceURL];
     [request setHTTPMethod:type];
@@ -841,7 +845,7 @@
 - (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP
 {
     [[KBYTMessagingCenter sharedInstance] airplayStream:stream ToDeviceIP:deviceIP];
-
+    
 }
 
 //take a url and get its raw body, then return in string format
@@ -943,7 +947,7 @@
     ONOXMLElement *root = [document rootElement];
     NSString *XPath = @"//div/meta";
     id titleEnum = [root XPath:XPath];
-
+    
     NSMutableDictionary *detailsDict = [NSMutableDictionary new];
     
     id theObject = nil;
@@ -1082,7 +1086,7 @@
                 }
                 i++;
             }
-
+            
             while (currentElement = [videoEnum nextObject])
             {
                 KBYTSearchResult *result = [KBYTSearchResult new];
@@ -1326,7 +1330,7 @@
                 if (titleElement != nil)
                 {
                     result.title = [[[titleElement children]firstObject] valueForAttribute:@"title"];
-                 //   result.title = [[titleElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                    //   result.title = [[titleElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
                 }
                 NSString *vdesc = [[descElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
                 if (vdesc != nil)
@@ -1417,7 +1421,7 @@
             {
                 outputDict[@"keywords"] = [channelKeywordsElement valueForAttribute:@"content"];
             }
-
+            
             while (currentElement = [videoEnum nextObject])
             {
                 //NSMutableDictionary *scienceDict = [NSMutableDictionary new];
@@ -1625,7 +1629,7 @@
 
 /**
  
- did some massive refactoring here, added mattt's epic Ono XML parsing library that is based 
+ did some massive refactoring here, added mattt's epic Ono XML parsing library that is based
  on libxml2. the speed of the search seems to be pretty much identical, however, the scraping
  is much more elegant using various XPath queries rather than finding search results by using
  massive hacks on delimiting items that was done in the old search version
@@ -1635,8 +1639,8 @@
 - (void)youTubeSearch:(NSString *)searchQuery
            pageNumber:(NSInteger)page
     includeAllResults:(BOOL)includeAll
-       completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
-          failureBlock:(void(^)(NSString* error))failureBlock
+      completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
+         failureBlock:(void(^)(NSString* error))failureBlock
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
@@ -1699,7 +1703,7 @@
                 ONOXMLElement *descElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-description')]"];
                 ONOXMLElement *authorElement = [[[videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
                 ONOXMLElement *ageAndViewsElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"];
-           
+                
                 result.resultType = kYTSearchResultTypeVideo;
                 
                 NSString *imagePath = [thumbNailElement valueForAttribute:@"data-thumb"];
@@ -1896,9 +1900,9 @@
  */
 
 - (void)ogYouTubeSearch:(NSString *)searchQuery
-           pageNumber:(NSInteger)page
-      completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
-         failureBlock:(void(^)(NSString* error))failureBlock
+             pageNumber:(NSInteger)page
+        completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
+           failureBlock:(void(^)(NSString* error))failureBlock
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
@@ -2012,11 +2016,11 @@
                 
                 //done setting data, hopefully everything is good to go!
                 
-               // NSLog(@"result: %@", result);
+                // NSLog(@"result: %@", result);
                 
                 //if we got keys we got a result, add it to the array
                 if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"])
-                //if (result.title.length > 0)
+                    //if (result.title.length > 0)
                 {
                     [finalArray addObject:result];
                 } else {
@@ -2048,7 +2052,7 @@
  
  This will get ALL the info about EVERY search result. it initially just compiles a list of video ID's scraping
  youtubes search, this scrape should be MUCH less fragile. However, since it runs through get_video_info
- with EVERY video id its a LOT slower then the basic search above. so it would be better to use as a 
+ with EVERY video id its a LOT slower then the basic search above. so it would be better to use as a
  fallback if the one above fails.
  
  */
@@ -2235,8 +2239,8 @@
 }
 
 - (void)getVideoDetailsForSearchResults:(NSArray*)searchResults
-              completionBlock:(void(^)(NSArray* videoArray))completionBlock
-                 failureBlock:(void(^)(NSString* error))failureBlock
+                        completionBlock:(void(^)(NSArray* videoArray))completionBlock
+                           failureBlock:(void(^)(NSString* error))failureBlock
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
@@ -2268,7 +2272,7 @@
             NSInteger i = 0;
             
             for (KBYTSearchResult *result in searchResults) {
-            //    NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
+                //    NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
                 
                 NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", result.videoId, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
                 
@@ -2370,7 +2374,7 @@
                     {
                         //the call was successful, create our root object.
                         KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithDictionary:vars];
-                       // NSLog(@"adding media: %@", currentMedia);
+                        // NSLog(@"adding media: %@", currentMedia);
                         [finalArray addObject:currentMedia];
                     } else {
                         
@@ -2422,30 +2426,30 @@
         case 37: dict = @{@"format": @"1080p MP4", @"height": @1080, @"extension": @"mp4"}; break;
         case 22: dict = @{@"format": @"720p MP4", @"height": @720, @"extension": @"mp4"}; break;
         case 18: dict = @{@"format": @"360p MP4", @"height": @360, @"extension": @"mp4"}; break;
-        
+            
             /*
-            //FLV
-        case 35: dict = @{@"format": @"480p FLV", @"height": @480, @"extension": @"flv"}; break;
-        case 34: dict = @{@"format": @"360p FLV", @"height": @360, @"extension": @"flv"}; break;
-        case 6: dict = @{@"format": @"270p FLV", @"height": @270, @"extension": @"flv"}; break;
-        case 5: dict = @{@"format": @"240p FLV", @"height": @240, @"extension": @"flv"}; break;
-            //WebM
-        case 46: dict = @{@"format": @"1080p WebM", @"height": @1080, @"extension": @"webm"}; break;
-        case 45: dict = @{@"format": @"720p WebM", @"height": @720, @"extension": @"webm"}; break;
-        case 44: dict = @{@"format": @"480p WebM", @"height": @480, @"extension": @"webm"}; break;
-        case 43: dict = @{@"format": @"360p WebM", @"height": @360, @"extension": @"webm"}; break;
-            //3gp
-        case 36: dict = @{@"format": @"320p 3GP", @"height": @320, @"extension": @"3gp"}; break;
-        case 17: dict = @{@"format": @"176p 3GP", @"height": @176, @"extension": @"3gp"}; break;
-            
+             //FLV
+             case 35: dict = @{@"format": @"480p FLV", @"height": @480, @"extension": @"flv"}; break;
+             case 34: dict = @{@"format": @"360p FLV", @"height": @360, @"extension": @"flv"}; break;
+             case 6: dict = @{@"format": @"270p FLV", @"height": @270, @"extension": @"flv"}; break;
+             case 5: dict = @{@"format": @"240p FLV", @"height": @240, @"extension": @"flv"}; break;
+             //WebM
+             case 46: dict = @{@"format": @"1080p WebM", @"height": @1080, @"extension": @"webm"}; break;
+             case 45: dict = @{@"format": @"720p WebM", @"height": @720, @"extension": @"webm"}; break;
+             case 44: dict = @{@"format": @"480p WebM", @"height": @480, @"extension": @"webm"}; break;
+             case 43: dict = @{@"format": @"360p WebM", @"height": @360, @"extension": @"webm"}; break;
+             //3gp
+             case 36: dict = @{@"format": @"320p 3GP", @"height": @320, @"extension": @"3gp"}; break;
+             case 17: dict = @{@"format": @"176p 3GP", @"height": @176, @"extension": @"3gp"}; break;
              
-        case 137: dict = @{@"format": @"1080p M4V", @"height": @1080, @"extension": @"m4v", @"quality": @"adaptive"}; break;
-        case 138: dict = @{@"format": @"4K M4V", @"height": @2160, @"extension": @"m4v", @"quality": @"adaptive"}; break;
-        case 264: dict = @{@"format": @"1440p M4v", @"height": @1440, @"extension": @"m4v", @"quality": @"adaptive"}; break;
-            
-        case 266: dict = @{@"format": @"4K M4V", @"height": @2160, @"extension": @"m4v", @"quality": @"adaptive"}; break;
-            
-        case 299: dict = @{@"format": @"1080p HFR M4V", @"height": @1080, @"extension": @"m4v", @"quality": @"adaptive"}; break;
+             
+             case 137: dict = @{@"format": @"1080p M4V", @"height": @1080, @"extension": @"m4v", @"quality": @"adaptive"}; break;
+             case 138: dict = @{@"format": @"4K M4V", @"height": @2160, @"extension": @"m4v", @"quality": @"adaptive"}; break;
+             case 264: dict = @{@"format": @"1440p M4v", @"height": @1440, @"extension": @"m4v", @"quality": @"adaptive"}; break;
+             
+             case 266: dict = @{@"format": @"4K M4V", @"height": @2160, @"extension": @"m4v", @"quality": @"adaptive"}; break;
+             
+             case 299: dict = @{@"format": @"1080p HFR M4V", @"height": @1080, @"extension": @"m4v", @"quality": @"adaptive"}; break;
              */
         case 140: dict = @{@"format": @"128K AAC M4A", @"height": @0, @"extension": @"aac", @"quality": @"adaptive"}; break;
         case 141: dict = @{@"format": @"256K AAC M4A", @"height": @0, @"extension": @"aac", @"quality": @"adaptive"}; break;
@@ -2739,7 +2743,7 @@
 
 - (NSString *)decodeSignature:(NSString *)theSig
 {
-   NSMutableArray *s = [[theSig splitString] mutableCopy];
+    NSMutableArray *s = [[theSig splitString] mutableCopy];
     NSArray *keyArray = [self.ytkey componentsSeparatedByString:@","];
     int i = 0;
     for (i = 0; i < [keyArray count]; i++)

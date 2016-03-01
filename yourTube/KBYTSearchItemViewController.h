@@ -15,7 +15,7 @@
 }
 
 @property (nonatomic, strong) KBYTMedia *ytMedia;
-@property (nonatomic, strong) AVPlayer *player;
+@property (nonatomic, strong) AVQueuePlayer *player;
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
 @property (nonatomic, strong) NSString *airplayIP;
 

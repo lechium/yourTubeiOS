@@ -361,7 +361,8 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     }
     self.playerView = [YTKBPlayerViewController alloc];
     self.playerView.showsPlaybackControls = true;
-    self.player = [AVPlayer playerWithURL:playURL];
+    AVPlayerItem *playItem = [[AVPlayerItem alloc] initWithURL:playURL];
+    self.player = [[AVQueuePlayer alloc] initWithPlayerItem:playItem];
     self.playerView.player = self.player;
     
     [self presentViewController:self.playerView animated:YES completion:nil];
