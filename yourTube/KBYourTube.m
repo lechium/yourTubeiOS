@@ -575,6 +575,17 @@
     return false;
 }
 
+- (NSInteger)videoCountForUserName:(NSString *)channelID
+{
+    //channels-browse-content-grid
+    //channels-content-item
+    ONOXMLDocument *xmlDoct = [self documentFromURL:[NSString stringWithFormat:@"https://m.youtube.com/user/%@/videos", channelID]];
+    ONOXMLElement *root = [xmlDoct rootElement];
+    ONOXMLElement *canon = [root firstChildWithXPath:@"//ul[contains(@id, 'channels-browse-content-grid')]"];
+    NSArray *objects = [(NSEnumerator *)[canon XPath:@".//li[contains(@class, 'channels-content-item')]"] allObjects];
+    return [objects count];
+}
+
 
 - (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock
                                        failureBlock:(void(^)(NSString *error))failureBlock
@@ -588,22 +599,27 @@
             NSDictionary *returnDict = nil;
             if (signedIn == true) {
                 
-                NSString *channelID = [self channelID];
-                NSString *userName = [self userNameFromChannelURL:channelID];
+                NSDictionary *channelDict = [self channelIDAndWatchLaterCount];
+                NSLog(@"channelDict: %@", channelDict);
+                NSString *channelID = channelDict[@"channelID"];
+                NSDictionary *ourUserDetails = [self userDetailsFromChannelURL:channelID];
+                NSString *userName = ourUserDetails[@"username"];
+                NSInteger channelVideoCount = [self videoCountForUserName:userName];
                 //NSArray *playlists = [self playlistArrayFromUserName:userName];
                 NSMutableArray *itemArray = [[NSMutableArray alloc] initWithArray:[self playlistArrayFromUserName:userName]];
                 KBYTSearchResult *userChannel = [KBYTSearchResult new];
                 userChannel.title = @"Your channel";
                 userChannel.author = userName;
                 userChannel.videoId = channelID;
-                userChannel.details = @"";
+                userChannel.details = [NSString stringWithFormat:@"%lu videos", channelVideoCount];
+                userChannel.imagePath = ourUserDetails[@"profileImage"];
                 userChannel.resultType = kYTSearchResultTypeChannel;
                 [itemArray addObject:userChannel];
                 
                 KBYTSearchResult *wlPl = [KBYTSearchResult new];
                 wlPl.author = userName;
                 wlPl.videoId = @"WL";
-                wlPl.details = @"";
+                wlPl.details = [NSString stringWithFormat:@"%@ videos", channelDict[@"wlCount"]];
                 wlPl.title = @"Watch later";
                 wlPl.resultType = kYTSearchResultTypePlaylist;
                 
@@ -634,6 +650,24 @@
     });
 }
 
+- (NSDictionary *)channelIDAndWatchLaterCount
+{
+    ONOXMLDocument *xmlDoc = [self documentFromURL:@"https://m.youtube.com"];
+    ONOXMLElement *root = [xmlDoc rootElement];
+    NSArray *itemCounts = [(NSEnumerator *)[root XPath:@".//span[contains(@class, 'yt-valign-container guide-count-value')]"] allObjects];
+    NSString *watchLaterCount = [[itemCounts objectAtIndex:1] stringValue];
+    ONOXMLElement *guideSection = [root firstChildWithXPath:@"//li[contains(@class, 'guide-section')]"];
+    NSArray *allObjects = [(NSEnumerator *)[guideSection XPath:@".//a[contains(@class, 'guide-item')]"] allObjects];
+    if ([allObjects count] > 1)
+    {
+        ONOXMLElement *channelElement = [allObjects objectAtIndex:1];
+        return @{@"channelID": [[channelElement valueForAttribute:@"href"] lastPathComponent], @"wlCount": watchLaterCount};
+    }
+    
+    //<span class="yt-valign-container guide-count-value">4</span>
+    return nil;
+}
+
 - (NSString *)channelID
 {
     ONOXMLDocument *xmlDoc = [self documentFromURL:@"https://m.youtube.com"];
@@ -646,6 +680,18 @@
         return [[channelElement valueForAttribute:@"href"] lastPathComponent];
     }
     return nil;
+}
+
+- (NSDictionary *)userDetailsFromChannelURL:(NSString *)channelURL
+{
+    ONOXMLDocument *xmlDoct = [self documentFromURL:[NSString stringWithFormat:@"https://m.youtube.com/channel/%@", channelURL]];
+    ONOXMLElement *root = [xmlDoct rootElement];
+    ONOXMLElement *canon = [root firstChildWithXPath:@"//link[contains(@rel, 'canonical')]"];
+    //<img class="channel-header-profile-image" src="//i.ytimg.com/i/iuFEQ2-YiaW97Uzu00bOZQ/mq1.jpg?v=564b8e92" title="nito" alt="nito">
+    NSString *profileImage = [[root firstChildWithXPath:@"//img[contains(@class, 'channel-header-profile-image')]"] valueForAttribute:@"src"];
+    
+    
+    return @{@"username": [[canon valueForAttribute:@"href"] lastPathComponent], @"profileImage": [NSString stringWithFormat:@"http:%@", profileImage] } ;
 }
 
 - (NSString *)userNameFromChannelURL:(NSString *)channelURL
@@ -1547,6 +1593,7 @@
                 {
                     result.videoId = videoID;
                 }
+                result.resultType = kYTSearchResultTypeVideo;
                 ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
                 ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                 ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"];
