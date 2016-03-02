@@ -27,8 +27,15 @@
 {
     self = [super initWithStyle:style];
     NSArray *fullArray = [NSArray arrayWithContentsOfFile:[self downloadFile]];
-    self.activeDownloads = [fullArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == YES"]];
-    self.downloadArray = [fullArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == NO"]];
+    NSMutableArray *fileArray = [NSMutableArray new];
+    for (NSDictionary *itemDict in fullArray)
+    {
+        KBYTLocalMedia *localMedia = [[KBYTLocalMedia alloc] initWithDictionary:itemDict];
+        [fileArray addObject:localMedia];
+    }
+    
+    self.activeDownloads = [fileArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == YES"]];
+    self.downloadArray = [fileArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == NO"]];
     self.navigationController.view.backgroundColor = [UIColor redColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     return self;
@@ -43,8 +50,15 @@
     LOG_SELF;
     dispatch_async(dispatch_get_main_queue(), ^{
         NSArray *fullArray = [NSArray arrayWithContentsOfFile:[self downloadFile]];
-        self.activeDownloads = [fullArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == YES"]];
-        self.downloadArray = [fullArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == NO"]];
+        NSMutableArray *fileArray = [NSMutableArray new];
+        for (NSDictionary *itemDict in fullArray)
+        {
+            KBYTLocalMedia *localMedia = [[KBYTLocalMedia alloc] initWithDictionary:itemDict];
+            [fileArray addObject:localMedia];
+        }
+        
+        self.activeDownloads = [fileArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == YES"]];
+        self.downloadArray = [fileArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"inProgress == NO"]];
         [[self tableView] reloadData];
     });
     
@@ -242,7 +256,8 @@
         cell = [[KBYTDownloadCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
-    NSDictionary *currentItem = nil;
+   // NSDictionary *currentItem = nil;
+    KBYTLocalMedia *currentItem = nil;
     BOOL downloading = false;
     
     if ([[self activeDownloads] count] == 0)
@@ -263,13 +278,13 @@
         }
     }
    // NSString *duration = [NSString stringFromTimeInterval:[currentItem[@"duration"]integerValue]];
-    cell.duration = [NSString stringFromTimeInterval:[currentItem[@"duration"]integerValue]];
-    cell.detailTextLabel.text = currentItem[@"author"];
-    cell.textLabel.text = currentItem[@"title"];
-    if ([[currentItem allKeys] containsObject:@"format"] && downloading == false)
+    cell.duration = [NSString stringFromTimeInterval:[currentItem.duration integerValue]];
+    cell.detailTextLabel.text = currentItem.author;
+    cell.textLabel.text = currentItem.title;
+    if (currentItem.format != nil && downloading == false)
     {
         //cell.views = [currentItem[@"views"] stringByAppendingString:@" Views"];
-        cell.views = currentItem[@"format"];
+        cell.views = currentItem.format;
     }
     
     if (downloading == true)
@@ -277,7 +292,7 @@
         cell.views = @"";
     }
     cell.downloading = downloading;
-    NSURL *imageURL = [NSURL URLWithString:currentItem[@"images"][@"medium"]];
+    NSURL *imageURL = [NSURL URLWithString:currentItem.images[@"medium"]];
     UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"GenericArtwork" ofType:@"png"]];
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
     cell.imageView.autoresizingMask = ( UIViewAutoresizingNone );
@@ -295,13 +310,13 @@
  }
  */
 
-- (void)deleteMedia:(NSDictionary *)dictionaryMedia fromSection:(NSInteger)section
+- (void)deleteMedia:(KBYTLocalMedia *)theMedia fromSection:(NSInteger)section
 {
     if (section == 0) //active download, no file to delete
     {
-        [[KBYTMessagingCenter sharedInstance] stopDownload:dictionaryMedia];
+        [[KBYTMessagingCenter sharedInstance] stopDownload:[theMedia dictionaryValue]];
         NSMutableArray *mutableArray = [[self activeDownloads] mutableCopy];
-        [mutableArray removeObject:dictionaryMedia];
+        [mutableArray removeObject:theMedia];
         self.activeDownloads = mutableArray;
         //NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
         
@@ -309,10 +324,10 @@
     } else {
         
         
-        NSString *filePath = [[self downloadFolder] stringByAppendingPathComponent:dictionaryMedia[@"outputFilename"]];
+        NSString *filePath = theMedia.filePath;
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
-        [mutableArray removeObject:dictionaryMedia];
+        [mutableArray removeObject:theMedia];
         self.downloadArray = [mutableArray copy]; //this needs to be a copy otherwise when we add the item
         //below top make sure the download plist file stays current the items being added during
         //download throw off the size of the table section arrays and it leads to a crash
@@ -341,7 +356,8 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         
-        NSDictionary *mediaToDelete = nil;
+        KBYTLocalMedia *mediaToDelete = nil;
+        //NSDictionary *mediaToDelete = nil;
         NSInteger section = indexPath.section;
       
         BOOL shouldRemoveActiveSection = false;
@@ -410,15 +426,15 @@
         
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[[[self player] items] firstObject]];
-        NSDictionary *file = [currentPlaybackArray objectAtIndex:0];
-        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file[@"title"], MPMediaItemPropertyPlaybackDuration: file[@"duration"] };//, MPMediaItemPropertyArtwork: artwork };
+        KBYTLocalMedia *file = [currentPlaybackArray objectAtIndex:0];
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };//, MPMediaItemPropertyArtwork: artwork };
     }
 }
 
 
-- (void)playFile:(NSDictionary *)file
+- (void)playFile:(KBYTLocalMedia *)file
 {
-    NSString *outputFile = [[self downloadFolder] stringByAppendingPathComponent:file[@"outputFilename"]];
+    NSString *outputFile = file.filePath;
     /*
     NSURL *artworkURL = [NSURL URLWithString:file[@"images"][@"standard"]];
     NSData *albumArtwork = [NSData dataWithContentsOfURL:artworkURL];
@@ -427,7 +443,7 @@
     MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc]initWithImage:artworkImage];
     NSLog(@"artwork: %@", artwork);
      */
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file[@"title"], MPMediaItemPropertyPlaybackDuration: file[@"duration"] };//, MPMediaItemPropertyArtwork: artwork };
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };//, MPMediaItemPropertyArtwork: artwork };
     
     NSURL *playURL = [NSURL fileURLWithPath:outputFile];
     NSLog(@"play url: %@", playURL);
@@ -487,23 +503,31 @@
 - (void)playFilesStartingAtIndex:(NSInteger)index
 {
     NSArray *subarray = [self.downloadArray subarrayWithRange:NSMakeRange(index, [self.downloadArray count] - index)];
+    
+    self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingLocalMediaArray:subarray];
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    [self.playerView.player play];
+    KBYTLocalMedia *file = [subarray objectAtIndex:0];
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };
+    return;
+    
     currentPlaybackArray = [subarray mutableCopy];
     NSMutableArray *avPlayerItemArray = [NSMutableArray new];
     
-    for (NSDictionary *file in subarray)
+    for (KBYTLocalMedia *file in subarray)
     {
-        NSString *filePath = [[self downloadFolder] stringByAppendingPathComponent:file[@"outputFilename"]];
+        NSString *filePath = file.filePath;
         NSURL *playURL = [NSURL fileURLWithPath:filePath];
         AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:playURL];
         [avPlayerItemArray addObject:playerItem];
     }
     
-    NSDictionary *file = [currentPlaybackArray objectAtIndex:0];
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file[@"title"], MPMediaItemPropertyPlaybackDuration: file[@"duration"] };
+   // KBYTLocalMedia *file = [currentPlaybackArray objectAtIndex:0];
+    //[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };
     
     self.playerView = [YTKBPlayerViewController alloc];
     self.playerView.showsPlaybackControls = true;
-    self.player = [AVQueuePlayer queuePlayerWithItems:avPlayerItemArray];
+    self.player = [KBYTQueuePlayer queuePlayerWithItems:avPlayerItemArray];
     self.playerView.player = self.player;
     
     [self presentViewController:self.playerView animated:YES completion:nil];

@@ -14,6 +14,7 @@
 #import "KBYourTube+Categories.h"
 #import "APDeviceController.h"
 #import "KBYTMessagingCenter.h"
+#import "YTKBPlayerViewController.h"
 // Logging
 
 /*
@@ -38,15 +39,9 @@ static NSString *const KBYTSportsChannelID  =  @"UCEgdi0XIXXZ-qJOFPf4JSKw";
 static NSString *const KBYTGamingChannelID  =  @"UCOpNcN46UbXVtpKMrmU4Abg";
 static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 
-
-
-@interface YTKBPlayerViewController : AVPlayerViewController
-{
-    AVPlayerLayer *_layerToRestore;
-}
-
-@property (nonatomic, weak) NSArray *playlistItems;
-
+@protocol YTPlayerItemProtocol <NSObject>
+- (NSString *)duration;
+- (NSString *)title;
 @end
 
 @interface YTBrowserHelper : NSObject
@@ -66,8 +61,27 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
     kYTSearchResultTypeChannel,
 };
 
+@interface KBYTLocalMedia : NSObject <YTPlayerItemProtocol>
 
-@interface KBYTMedia : NSObject
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *author;
+@property (nonatomic, strong) NSString *videoId;
+@property (nonatomic, strong) NSString *views;
+@property (nonatomic, strong) NSString *duration;
+@property (nonatomic, strong) NSDictionary *images;
+@property (nonatomic, strong) NSString *extension;
+@property (nonatomic, strong) NSString *format;
+@property (nonatomic, strong) NSString *filePath;
+@property (nonatomic, strong) NSString *outputFilename;
+@property (readwrite, assign) BOOL inProgress;
+
+- (id)initWithDictionary:(NSDictionary *)inputDict;
+- (NSDictionary *)dictionaryValue;
+
+@end
+
+
+@interface KBYTMedia : NSObject <YTPlayerItemProtocol>
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *author;
@@ -81,9 +95,11 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 
 @end
 
+
+
 @interface YTPlayerItem: AVPlayerItem
 
-@property (nonatomic, weak) KBYTMedia *associatedMedia;
+@property (nonatomic, weak) NSObject <YTPlayerItemProtocol> *associatedMedia;
 
 @end
 

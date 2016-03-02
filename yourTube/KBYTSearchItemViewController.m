@@ -1,7 +1,7 @@
 
 #import "KBYTSearchItemViewController.h"
 #import <MediaPlayer/MediaPlayer.h>
-
+#import "KBYTQueuePlayer.h"
 
 
 float calcLabelHeight(NSString *string, UIFont *font, float width) {
@@ -360,20 +360,22 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
         return;
     }
     self.playerView = [YTKBPlayerViewController alloc];
+    YTPlayerItem *playItem = [[YTPlayerItem alloc] initWithURL:playURL];
+    playItem.associatedMedia = self.ytMedia;
     self.playerView.showsPlaybackControls = true;
-    AVPlayerItem *playItem = [[AVPlayerItem alloc] initWithURL:playURL];
-    self.player = [[AVQueuePlayer alloc] initWithPlayerItem:playItem];
+    //AVPlayerItem *playItem = [[AVPlayerItem alloc] initWithURL:playURL];
+    self.player = [[KBYTQueuePlayer alloc] initWithItems:@[playItem]];
     self.playerView.player = self.player;
     
     [self presentViewController:self.playerView animated:YES completion:nil];
     self.playerView.view.frame = self.view.frame;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
+  //  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
     
     [self.player play];
   
-    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    //NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
     ;
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : ytMedia.title, MPMediaItemPropertyPlaybackDuration: [numberFormatter numberFromString:ytMedia.duration]};
+    //[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : ytMedia.title, MPMediaItemPropertyPlaybackDuration: [numberFormatter numberFromString:ytMedia.duration]};
     
     
 }

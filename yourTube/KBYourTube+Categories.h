@@ -53,3 +53,9 @@
 - (NSArray *)splitString;
 
 @end
+
+@interface NSObject (AMAssociatedObjects)
+- (void)associateValue:(id)value withKey:(void *)key; // Strong reference
+- (void)weaklyAssociateValue:(id)value withKey:(void *)key;
+- (id)associatedValueForKey:(void *)key;
+@end

@@ -416,6 +416,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)playAll
 {
+    self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:self.searchResults];
+    
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    [[self.playerView player] play];
+    return;
     NSMutableArray *playerItems = [NSMutableArray new];
     for (KBYTSearchResult *result in self.searchResults)
     {

@@ -29,7 +29,7 @@ yourTube_FILES += SVProgressHUD/SVIndefiniteAnimatedView.m SVProgressHUD/SVProgr
 yourTube_FILES += Animations/BaseAnimation.m Animations/ModalAnimation.m Animations/ScaleAnimation.m Animations/ShuffleAnimation.m Animations/SlideAnimation.m
 yourTube_FILES += KBYourTube+Categories.m KBYTMessagingCenter.m JGProgressView/JGProgressView.m
 yourTube_FILES += Reachability/Reachability.m Ono/ONOXMLDocument.m RNFrostedSidebar/RNFrostedSidebar.m
-yourTube_FILES += KBYTGenericVideoTableViewController.m
+yourTube_FILES += KBYTGenericVideoTableViewController.m YTKBPlayerViewController.m KBYTQueuePlayer.m
 
 yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit QuartzCore Accelerate
 yourTube_CXXFLAGS += -fobjc-arc -I/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/include/libxml2

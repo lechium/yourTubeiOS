@@ -18,166 +18,47 @@
  
  */
 
+@implementation KBYTLocalMedia
 
-@implementation YTKBPlayerViewController
+@synthesize author, title, images, inProgress, videoId, views, duration, extension, filePath, format, outputFilename;
 
-/*
- 
- most of the code in this class are the stupid hurdles to jump through to not roll your own AVPlayerView &
- & controller but to maintain playback in the background & then regain video in the foreground.
- 
- adapted and fixed from http://stackoverflow.com/questions/31621618/remove-and-restore-avplayer-to-enable-background-video-playback/33240738#33240738
- 
- 
- */
-
-- (void)viewWillAppear:(BOOL)animated
+- (id)initWithDictionary:(NSDictionary *)inputDict
 {
-    [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didForeground:) name:UIApplicationDidBecomeActiveNotification object:nil];
-    //[[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    
-    MPRemoteCommandCenter *shared = [MPRemoteCommandCenter sharedCommandCenter];
-    [shared.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        
-        [[self player] pause];
-        return MPRemoteCommandHandlerStatusSuccess;
-        
-    }];
-    
-    [shared.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        
-        [[self player] play];
-        return MPRemoteCommandHandlerStatusSuccess;
-        
-    }];
-    
-    [shared.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        
-        
-        NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
-        KBYTMedia *currentItem = [[playerItems firstObject] associatedMedia];
-        [(AVQueuePlayer *)[self player] advanceToNextItem];
-        playerItems = [(AVQueuePlayer *)[self player] items];
-        currentItem = [[playerItems firstObject] associatedMedia];
-        if (currentItem == nil) { return MPRemoteCommandHandlerStatusCommandFailed; }
-        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: [NSNumber numberWithInteger:[[currentItem duration]timeFromDuration]] };
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-    
-    
+    self = [super init];
+    author = inputDict[@"author"];
+    title = inputDict[@"title"];
+    inProgress = [inputDict[@"inProgress"] boolValue];
+    videoId = inputDict[@"videoId"];
+    duration = inputDict[@"duration"];
+    images = inputDict[@"images"];
+    views = inputDict[@"views"];
+    extension = inputDict[@"extension"];
+    format = inputDict[@"format"];
+    outputFilename = inputDict[@"outputFilename"];
+    filePath = [[self downloadFolder] stringByAppendingPathComponent:outputFilename];
+    return self;
 }
 
-- (void)viewWillDisappear:(BOOL)animated
+- (NSDictionary *)dictionaryValue
 {
-    LOG_SELF;
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
-    [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
-    [[MPRemoteCommandCenter sharedCommandCenter].pauseCommand removeTarget:self];
-    [[MPRemoteCommandCenter sharedCommandCenter].playCommand removeTarget:self];
-    [[MPRemoteCommandCenter sharedCommandCenter].nextTrackCommand removeTarget:self];
-    [(AVQueuePlayer *)[self player] removeAllItems];
-    self.player = nil;
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
-    // [[self player] stop];
+    if (self.title == nil)self.title = @"Unavailable";
+    if (self.views == nil)self.views = @"Unavailable";
+    if (self.author == nil)self.author = @"Unavailable";
+    if (self.duration == nil)self.duration = @"Unavailable";
+    if (self.videoId == nil)self.videoId = @"Unavailable";
+    if (self.outputFilename == nil)self.outputFilename = @"Unavailable";
+    if (self.format == nil)self.format = @"Unavailable";
+    if (self.images == nil)self.images = @{};
+    return @{@"title": self.title, @"author": self.author, @"outputFilename": self.outputFilename, @"images": self.images, @"videoId": self.videoId, @"duration": self.duration, @"inProgress": [NSNumber numberWithBool:self.inProgress], @"views": self.views, @"extension": self.extension, @"format": self.format};
 }
 
-- (void)didForeground:(NSNotification *)n
+- (NSString *)description
 {
-    if (_layerToRestore != nil)
-    {
-        [_layerToRestore setPlayer:[self player]];
-        _layerToRestore = nil;
-    }
-}
-
-- (AVPlayerLayer *)findPlayerView {
-    return [self findLayerWithAVPlayerLayer:self.view];
-}
-
-- (AVPlayerLayer *)findLayerWithAVPlayerLayer:(UIView *)view {
-    AVPlayerLayer *foundView = nil;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0"))
-    {
-        if ([view.layer isKindOfClass:[AVPlayerLayer class]]) {
-            return (AVPlayerLayer *)view.layer;
-        }
-    } else {
-        @try {
-            foundView = [view valueForKey:@"_videoLayer"];
-        }
-        @catch ( NSException *e ) {
-            //  NSLog(@"exception: %@", e);
-        }
-        @finally
-        {
-            if (foundView != nil)
-            {
-                return foundView;
-            }
-        }
-    }
-  
-    for (UIView *v in view.subviews) {
-        AVPlayerLayer *theLayer = [self findLayerWithAVPlayerLayer:v];
-        if (theLayer != nil)
-        {
-            return theLayer;
-        }
-    }
-    return nil;
-}
-
-- (BOOL)isPlaying
-{
-    if ([self player] != nil)
-    {
-        if (self.player.rate != 0)
-        {
-            return true;
-        }
-    }
-    return false;
-    
-}
-
-- (BOOL)hasVideo
-{
-    AVPlayerItem *playerItem = [[self player] currentItem];
-    NSArray *tracks = [playerItem tracks];
-    for (AVPlayerItemTrack *playerItemTrack in tracks)
-    {
-        // find video tracks
-        if ([playerItemTrack.assetTrack hasMediaCharacteristic:AVMediaCharacteristicVisual])
-        {
-            //playerItemTrack.enabled = NO; // disable the track
-            return true;
-        }
-    }
-    return false;
-}
-
-- (void)didBackground:(NSNotification *)n
-{
-   // NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
-    //NSLog(@"### view recursiveDescription: %@", recursiveDesc);
-    if ([self isPlaying] == true && [self hasVideo] == true)
-    {
-        _layerToRestore = [self findPlayerView];
-        [_layerToRestore setPlayer:nil];
-        
-    }
-}
-
-- (BOOL)shouldAutorotate
-{
-    return TRUE;
+    return [[self dictionaryValue] description];
 }
 
 @end
+
 
 /*
  
