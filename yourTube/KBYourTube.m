@@ -156,8 +156,8 @@
 
 - (void)didBackground:(NSNotification *)n
 {
-    //NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
-    // NSLog(@"view recursiveDescription: %@", recursiveDesc);
+    NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
+    NSLog(@"### view recursiveDescription: %@", recursiveDesc);
     if ([self isPlaying] == true && [self hasVideo] == true)
     {
         _layerToRestore = [self findPlayerView];
