@@ -43,7 +43,6 @@ static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 @interface YTKBPlayerViewController : AVPlayerViewController
 {
     AVPlayerLayer *_layerToRestore;
-    AVPlayer *_playerToRestore;
 }
 
 @property (nonatomic, weak) NSArray *playlistItems;

@@ -87,10 +87,9 @@
 
 - (void)didForeground:(NSNotification *)n
 {
-    if (_playerToRestore != nil && _layerToRestore != nil)
+    if (_layerToRestore != nil)
     {
-        [_layerToRestore setPlayer:_playerToRestore];
-        _playerToRestore = nil;
+        [_layerToRestore setPlayer:[self player]];
         _layerToRestore = nil;
     }
 }
@@ -101,19 +100,27 @@
 
 - (AVPlayerLayer *)findLayerWithAVPlayerLayer:(UIView *)view {
     AVPlayerLayer *foundView = nil;
-    @try {
-        foundView = [view valueForKey:@"_videoLayer"];
-    }
-    @catch ( NSException *e ) {
-        //  NSLog(@"exception: %@", e);
-    }
-    @finally
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0"))
     {
-        if (foundView != nil)
+        if ([view.layer isKindOfClass:[AVPlayerLayer class]]) {
+            return (AVPlayerLayer *)view.layer;
+        }
+    } else {
+        @try {
+            foundView = [view valueForKey:@"_videoLayer"];
+        }
+        @catch ( NSException *e ) {
+            //  NSLog(@"exception: %@", e);
+        }
+        @finally
         {
-            return foundView;
+            if (foundView != nil)
+            {
+                return foundView;
+            }
         }
     }
+  
     for (UIView *v in view.subviews) {
         AVPlayerLayer *theLayer = [self findLayerWithAVPlayerLayer:v];
         if (theLayer != nil)
@@ -146,7 +153,6 @@
         // find video tracks
         if ([playerItemTrack.assetTrack hasMediaCharacteristic:AVMediaCharacteristicVisual])
         {
-            NSLog(@"is video!");
             //playerItemTrack.enabled = NO; // disable the track
             return true;
         }
@@ -156,12 +162,11 @@
 
 - (void)didBackground:(NSNotification *)n
 {
-    NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
-    NSLog(@"### view recursiveDescription: %@", recursiveDesc);
+   // NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
+    //NSLog(@"### view recursiveDescription: %@", recursiveDesc);
     if ([self isPlaying] == true && [self hasVideo] == true)
     {
         _layerToRestore = [self findPlayerView];
-        _playerToRestore = [_layerToRestore player];
         [_layerToRestore setPlayer:nil];
         
     }
