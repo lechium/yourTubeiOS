@@ -16,7 +16,10 @@ Cydia - > Sources - > Edit - > Add - > http://nitosoft.com/beta2/
 
 Some basic notes on this:
 
-The Xcode Project will NOT build anything, it is solely there for convenient code editing and auto completion. 
+the tuyu target in the Xcode app will build now, although to get the full proper experience you need to
+build through theos in the command line, building through Xcode was just added to allow non-jailbroken
+users to enjoy some of the functionality, download does not work yet, and importing to the music library
+will never work through a stock application.
 
 To build you need to edit the main Makefile with your device ip address (THEOS_DEVICE_IP), fire up the terminal, cd into yourTubeiOS and 
 
