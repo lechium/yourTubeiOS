@@ -7,6 +7,7 @@
 //
 
 #import "KBYTQueuePlayer.h"
+#import "KBYourTube.h"
 
 @interface KBYTQueuePlayer ()
 
@@ -20,12 +21,15 @@
 
 @implementation KBYTQueuePlayer
 
+@synthesize multipleItemsDelegateCalled;
+
 - (instancetype)initWithItems:(NSArray *)items {
     // This function calls the constructor for AVQueuePlayer, then sets up the nowPlayingIndex to 0 and saves the array that the player was generated from as itemsForPlayer
     self = [super initWithItems:items];
     if (self){
         _innerItems = [NSMutableArray arrayWithArray:items];
         _nowPlayingIndex = 0;
+        multipleItemsDelegateCalled = NO;
         _isCalledFromPlayPreviousItem = NO;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(songEnded:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
     }
@@ -174,6 +178,14 @@
     } else { // afterItem is nil
         [self.innerItems addObject:item];
     }
+    if ([self.innerItems count] > 1)
+    {
+        if ([self.delegate respondsToSelector:@selector(queuePlayerHasMultipleItems:)] && multipleItemsDelegateCalled == NO)
+        {
+            [self.delegate queuePlayerHasMultipleItems:self];
+            multipleItemsDelegateCalled = YES;
+        }
+    }
 }
 
 - (void)play {
@@ -183,10 +195,11 @@
     }
 }
 
+
 - (void)addItemToQueue:(id)itemToAdd
 {
-    id lastObject = [[self items] lastObject];
-    [self insertItem:itemToAdd afterItem:lastObject];
+    //id lastObject = [[self items] lastObject];
+    [self insertItem:itemToAdd afterItem:nil];
 }
 
 

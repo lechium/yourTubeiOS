@@ -22,4 +22,6 @@
 - (id)initWithFrame:(CGRect)frame usingStreamingMediaArray:(NSArray *)streamingMedia;
 - (id)initWithFrame:(CGRect)frame  usingLocalMediaArray:(NSArray *)localMediaArray;
 
+- (void)addObjectsToPlayerQueue:(NSArray *)objects;
+
 @end

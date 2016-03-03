@@ -21,11 +21,13 @@
 @optional
 
 - (void)queuePlayer:(KBYTQueuePlayer *)player didStartPlayingItem:(AVPlayerItem *)item;
-
+- (void)queuePlayerHasMultipleItems:(KBYTQueuePlayer *)player;
 @end
 
 @interface KBYTQueuePlayer : AVQueuePlayer
-
+{
+}
+@property (readwrite, assign) BOOL multipleItemsDelegateCalled;
 @property (nonatomic, weak) id <KBYTQueuePlayerDelegate> delegate;
 @property (nonatomic, readonly) NSArray *itemsForPlayer;
 @property (nonatomic, readonly) NSInteger index;

@@ -394,18 +394,34 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)fetchPlaylistDetailsInBackground:(NSArray *)resultArray
 {
-    NSDate *myStart = [NSDate date];
-    
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:resultArray completionBlock:^(NSArray *videoArray) {
+    //void start just by fetching the first object so we can start playing as soon as possible
+    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[resultArray firstObject]] completionBlock:^(NSArray *videoArray) {
         
-        NSLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        NSDate *myStart = [NSDate date];
+        
+        //[[resultArray firstObject]setAssociatedMedia:videoDetails];
         [self showPlayAllButton];
+        NSArray *subarray = [resultArray subarrayWithRange:NSMakeRange(1, resultArray.count-1)];
+        
+        
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+        [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
+            
+            NSLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            [self.playerView addObjectsToPlayerQueue:videoArray];
+            //[self showPlayAllButton];
+            
+        } failureBlock:^(NSString *error) {
+            
+        }];
         
     } failureBlock:^(NSString *error) {
-        
+        //
     }];
+    
+    
+
 }
 
 - (void)showPlayAllButton

@@ -45,24 +45,42 @@
         
     }];
     
-    [shared.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-        
-        
-        [(AVQueuePlayer *)[self player] advanceToNextItem];
-      
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
-    
-    [shared.previousTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
-       
-        [(KBYTQueuePlayer *)[self player] playPreviousItem];
-        return MPRemoteCommandHandlerStatusSuccess;
-        
-    }];
+   
     
     self.titleTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(setNowPlayingInfo) userInfo:nil repeats:true];
     
     
+}
+
+- (void)queuePlayerHasMultipleItems:(KBYTQueuePlayer *)player
+{
+    LOG_SELF;
+    
+    MPRemoteCommandCenter *shared = [MPRemoteCommandCenter sharedCommandCenter];
+    
+    if ([[shared nextTrackCommand]isEnabled])
+    {
+       // NSLog(@"already enabled, dont add new targets!");
+     //   return;
+        //remove them just in case before re-adding, kinda a kill shot double tap
+        [[MPRemoteCommandCenter sharedCommandCenter].nextTrackCommand removeTarget:self];
+        [[MPRemoteCommandCenter sharedCommandCenter].previousTrackCommand removeTarget:self];
+    }
+    
+    [shared.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        
+        
+        [(KBYTQueuePlayer *)[self player] advanceToNextItem];
+        
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+    
+    [shared.previousTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
+        
+        [(KBYTQueuePlayer *)[self player] playPreviousItem];
+        return MPRemoteCommandHandlerStatusSuccess;
+        
+    }];
 }
 
 - (id)initWithFrame:(CGRect)frame usingStreamingMediaArray:(NSArray *)streamingMedia
@@ -91,6 +109,20 @@
     return self;
 }
 
+- (void)addObjectsToPlayerQueue:(NSArray *)objects
+{
+    for (KBYTMedia *result in objects)
+    {
+            YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:[[[result streams] firstObject]url]];
+            playerItem.associatedMedia = result;
+            if (playerItem != nil)
+            {
+                [(KBYTQueuePlayer *)self.player addItemToQueue:playerItem];
+                //[avPlayerItemArray addObject:playerItem];
+            }
+    }
+}
+
 - (id)initWithFrame:(CGRect)frame usingLocalMediaArray:(NSArray *)localMediaArray
 {
     self = [super init];
@@ -111,7 +143,12 @@
     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };
     self.showsPlaybackControls = true;
     self.player = [KBYTQueuePlayer queuePlayerWithItems:avPlayerItemArray];
+    if ([localMediaArray count] > 1)
+    {
+        [self queuePlayerHasMultipleItems:(KBYTQueuePlayer*)self.player];
+    }
     [(KBYTQueuePlayer *)self.player setDelegate:self];
+    [(KBYTQueuePlayer *)self.player setMultipleItemsDelegateCalled:TRUE ];
     self.view.frame = frame;
     return self;
 }
