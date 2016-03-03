@@ -397,24 +397,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     //void start just by fetching the first object so we can start playing as soon as possible
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[resultArray firstObject]] completionBlock:^(NSArray *videoArray) {
         
-        NSDate *myStart = [NSDate date];
+       
         
         //[[resultArray firstObject]setAssociatedMedia:videoDetails];
         [self showPlayAllButton];
-        NSArray *subarray = [resultArray subarrayWithRange:NSMakeRange(1, resultArray.count-1)];
-        
-        
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-        [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
-            
-            NSLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-            [self.playerView addObjectsToPlayerQueue:videoArray];
-            //[self showPlayAllButton];
-            
-        } failureBlock:^(NSString *error) {
-            
-        }];
+     
         
     } failureBlock:^(NSString *error) {
         //
@@ -436,6 +423,20 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     [self presentViewController:self.playerView animated:YES completion:nil];
     [[self.playerView player] play];
+    NSArray *subarray = [self.searchResults subarrayWithRange:NSMakeRange(1, self.searchResults.count-1)];
+    
+     NSDate *myStart = [NSDate date];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
+        
+        NSLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+        [self.playerView addObjectsToPlayerQueue:videoArray];
+        //[self showPlayAllButton];
+        
+    } failureBlock:^(NSString *error) {
+        
+    }];
     return;
     NSMutableArray *playerItems = [NSMutableArray new];
     for (KBYTSearchResult *result in self.searchResults)

@@ -2213,6 +2213,11 @@
             for (KBYTSearchResult *result in searchResults) {
                 //    NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
                 
+                if ([result media] != nil) //skip it if we've already fetched it.
+                {
+                    [finalArray addObject:[result media]];
+                    continue;
+                }
                 NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", result.videoId, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
                 
                 //get the post body from the url above, gets the initial raw info we work with

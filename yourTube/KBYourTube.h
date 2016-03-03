@@ -15,6 +15,7 @@
 #import "APDeviceController.h"
 #import "KBYTMessagingCenter.h"
 #import "YTKBPlayerViewController.h"
+#import "KBYTQueuePlayer.h"
 // Logging
 
 /*
@@ -42,6 +43,7 @@ static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 @protocol YTPlayerItemProtocol <NSObject>
 - (NSString *)duration;
 - (NSString *)title;
+- (NSString *)videoId;
 @end
 
 @interface YTBrowserHelper : NSObject

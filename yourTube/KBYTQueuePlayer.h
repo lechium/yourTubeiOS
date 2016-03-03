@@ -15,6 +15,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+
 @class KBYTQueuePlayer;
 
 @protocol KBYTQueuePlayerDelegate <NSObject>
@@ -32,6 +33,7 @@
 @property (nonatomic, readonly) NSArray *itemsForPlayer;
 @property (nonatomic, readonly) NSInteger index;
 
+- (BOOL)mediaObjectExists:(id)media;
 - (void)playPreviousItem;
 - (void)playBeginningItem;
 - (void)addItemToQueue:(id)itemToAdd;

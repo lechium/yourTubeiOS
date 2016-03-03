@@ -7,8 +7,9 @@
 //
 
 #import <AVKit/AVKit.h>
-#import "KBYourTube.h"
 #import "KBYTQueuePlayer.h"
+#import "KBYourTube.h"
+
 
 @interface YTKBPlayerViewController : AVPlayerViewController <KBYTQueuePlayerDelegate>
 {

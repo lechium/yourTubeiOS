@@ -113,6 +113,11 @@
 {
     for (KBYTMedia *result in objects)
     {
+        if ([(KBYTQueuePlayer *)self.player mediaObjectExists:result])
+        {
+            NSLog(@"media already exists, dont add it again!");
+            return;
+        }
             YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:[[[result streams] firstObject]url]];
             playerItem.associatedMedia = result;
             if (playerItem != nil)

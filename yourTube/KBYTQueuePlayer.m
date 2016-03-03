@@ -144,6 +144,18 @@
     [self.innerItems removeObject:item];
 }
 
+- (BOOL)mediaObjectExists:(id)media
+{
+    for (YTPlayerItem *item in self.innerItems)
+    {
+        if ([[[item associatedMedia] videoId] isEqualToString:[(KBYTMedia *)media videoId]])
+        {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (void)advanceToNextItem {
     // The only addition this method makes to AVQueuePlayer is advancing the nowPlayingIndex by 1.
     [super advanceToNextItem];
