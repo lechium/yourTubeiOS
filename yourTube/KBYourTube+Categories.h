@@ -39,6 +39,7 @@
 
 @interface NSObject  (convenience)
 
+- (BOOL)vanillaApp;
 - (NSString *)downloadFile;
 - (NSString *)appSupportFolder;
 - (NSString *)downloadFolder;

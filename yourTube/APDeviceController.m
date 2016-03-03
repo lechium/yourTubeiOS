@@ -35,7 +35,6 @@
 - (void)refreshServers {
     
     if (searching == true) { return; }
-    LOG_SELF;
     [services removeAllObjects];
     airplayServers = nil;
     acbrowser = [[NSNetServiceBrowser alloc] init];
@@ -50,7 +49,6 @@
 
 - (void)reachabilityChanged:(NSNotification *)n
 {
-    LOG_SELF;
     if ([self.reachabilityManager isReachableViaWiFi] == true)
     {
         NSLog(@"we have wifis!");
@@ -79,7 +77,6 @@
 
 - (BOOL)serviceHasYoutube:(NSNetService *)netService
 {
-    LOG_SELF;
     NSString *ip;
     int port;
     struct sockaddr_in *addr;
@@ -206,7 +203,6 @@
 - (void)netServiceBrowserDidStopSearch:(NSNetServiceBrowser *)browser
 
 {
-    LOG_SELF;
     //NSLog(@"%@ %s", self, _cmd);
     searching = NO;
     [self updateUI];
@@ -240,7 +236,6 @@
 
 - (void)netServiceBrowserWillSearch:(NSNetServiceBrowser *)browser
 {
-    LOG_SELF;
     //NSLog(@"%@ %s", self, _cmd);
     searching = YES;
     
@@ -294,7 +289,6 @@
 
 - (void)netServiceWillResolve:(NSNetService *)sender
 {
-    LOG_SELF;
     
 }
 
@@ -318,7 +312,6 @@
            forServiceType:(NSString *)serviceType
 
 {
-    LOG_SELF;
     //NSLog(@"%@ %s", self, _cmd);
     // Perform appropriate logic to ensure that [netService addresses]
     
@@ -333,7 +326,6 @@
 - (void)netServiceDidResolveAddress:(NSNetService *)netService
 
 {
-    LOG_SELF;
     if ([[netService type] isEqualToString:@"_aircontrol._tcp."])
     {
         if (![self serviceHasYoutube:netService])
@@ -359,7 +351,6 @@
      didNotResolve:(NSDictionary *)errorDict
 
 {
-    LOG_SELF;
     [self handleError:[errorDict objectForKey:NSNetServicesErrorCode]];
     
     [services removeObject:netService];

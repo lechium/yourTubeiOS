@@ -40,6 +40,8 @@
         [audioSession setActive:YES error:&error];
     }
     
+    NSLog(@"app support: %@", [self appSupportFolder]);
+    
     [[KBYTMessagingCenter sharedInstance] startDownloadListener];
     [[KBYTMessagingCenter sharedInstance] registerDownloadListener];
 

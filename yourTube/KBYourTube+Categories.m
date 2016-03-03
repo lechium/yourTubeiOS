@@ -212,18 +212,38 @@
     return dict;
 }
 
+- (BOOL)vanillaApp
+{
+    return ![FM fileExistsAtPath:@"/var/mobile/Library/Application Support/tuyu"];
+}
+
 - (NSString *)downloadFile
 {
     return [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads.plist"];
 }
 
+- (NSString *)vanillaAppSupport
+{
+    NSArray *paths =
+    NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+                                        NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:
+                                                0] : NSTemporaryDirectory();
+    if (![FM fileExistsAtPath:basePath])
+        [FM createDirectoryAtPath:basePath withIntermediateDirectories:YES attributes:nil error:nil];
+    return basePath;
+}
+
 - (NSString *)appSupportFolder
 {
-    NSFileManager *man = [NSFileManager defaultManager];
-    NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu";
-    if (![man fileExistsAtPath:outputFolder])
+    if ([self vanillaApp])
     {
-        [man createDirectoryAtPath:outputFolder withIntermediateDirectories:true attributes:nil error:nil];
+        return [self vanillaAppSupport];
+    }
+    NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu";
+    if (![FM fileExistsAtPath:outputFolder])
+    {
+        [FM createDirectoryAtPath:outputFolder withIntermediateDirectories:true attributes:nil error:nil];
     }
     return outputFolder;
 }
