@@ -1,7 +1,7 @@
 Architecture: iphoneos-arm
 Name: tuyu
 Package: com.nito.ytbrowser
-Version: 1.2
+Version: 1.3
 Maintainer: Kevin Bradley
 Author: Kevin Bradley
 Description: Simple clean YouTube client; picture the days before google ruined it! Browse suggested videos, #PopularOnYoutube, #music, #sports. Download videos and audio directly into the music library, share videos links and more!
