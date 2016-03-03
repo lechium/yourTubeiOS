@@ -214,7 +214,14 @@
 
 - (BOOL)vanillaApp
 {
-    return ![FM fileExistsAtPath:@"/var/mobile/Library/Application Support/tuyu"];
+    NSArray *paths =
+    NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+                                        NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:
+                                                0] : NSTemporaryDirectory();
+    //NSLog(@"basePath: %@", basePath);
+    return ![basePath isEqualToString:@"/var/mobile/Library/Application Support"];
+   
 }
 
 - (NSString *)downloadFile
