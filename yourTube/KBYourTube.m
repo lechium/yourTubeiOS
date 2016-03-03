@@ -248,6 +248,11 @@
 
 @synthesize associatedMedia;
 
+- (NSString *)description
+{
+    return self.associatedMedia.title;
+}
+
 @end
 
 /**

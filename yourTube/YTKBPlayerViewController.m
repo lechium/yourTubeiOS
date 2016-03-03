@@ -48,23 +48,8 @@
     [shared.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent * _Nonnull event) {
         
         
-        NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
-        NSObject <YTPlayerItemProtocol> *currentItem = [[playerItems firstObject] associatedMedia];
         [(AVQueuePlayer *)[self player] advanceToNextItem];
-        playerItems = [(AVQueuePlayer *)[self player] items];
-        currentItem = [[playerItems firstObject] associatedMedia];
-        NSString *duration = [currentItem duration];
-        NSNumber *usableDuration = nil;
-        if ([duration containsString:@":"])
-        {
-            usableDuration = [NSNumber numberWithInteger:[[currentItem duration]timeFromDuration]];
-        } else {
-            NSNumberFormatter *numFormatter = [NSNumberFormatter new];
-            usableDuration = [numFormatter numberFromString:duration];
-        }
-        NSLog(@"nextTrackCommandCI: %@", currentItem.title);
-        if (currentItem == nil) { return MPRemoteCommandHandlerStatusCommandFailed; }
-        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: usableDuration };
+      
         return MPRemoteCommandHandlerStatusSuccess;
     }];
     
@@ -75,7 +60,7 @@
         
     }];
     
-    self.titleTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(setNowPlayingInfo) userInfo:nil repeats:true];
+    self.titleTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(setNowPlayingInfo) userInfo:nil repeats:true];
     
     
 }
@@ -118,7 +103,7 @@
         NSURL *playURL = [NSURL fileURLWithPath:filePath];
         YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:playURL];
         playerItem.associatedMedia = file;
-        NSLog(@"associatedMedia: %@", file.title);
+        //NSLog(@"associatedMedia: %@", file.title);
         [avPlayerItemArray addObject:playerItem];
     }
     
@@ -137,7 +122,7 @@
     NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
     YTPlayerItem *currentPlayerItem = [playerItems firstObject];
     double currentTime = currentPlayerItem.currentTime.value/currentPlayerItem.currentTime.timescale;
-    NSObject <YTPlayerItemProtocol> *currentItem = [[playerItems firstObject] associatedMedia];
+    NSObject <YTPlayerItemProtocol> *currentItem = [currentPlayerItem associatedMedia];
     //NSLog(@"currentItem: %@", currentItem);
     NSString *duration = [currentItem duration];
     NSNumber *usableDuration = nil;
@@ -150,37 +135,28 @@
     }
     if (currentItem == nil) { return; }
     
-    if ([MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo  != nil){
-        
-        NSMutableDictionary *nowPlayingInfo = [[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo mutableCopy];
-        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = [NSNumber numberWithDouble:currentTime];
-        nowPlayingInfo[MPMediaItemPropertyTitle] = currentItem.title;
-        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nowPlayingInfo;
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = usableDuration;
-        
-    } else {
-
-        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: usableDuration }; //, MPMediaItemPropertyArtwork: artwork };
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: usableDuration, MPNowPlayingInfoPropertyElapsedPlaybackTime: [NSNumber numberWithDouble:currentTime] }; //, MPMediaItemPropertyArtwork: artwork };
     
-    }
+
 }
 
--(void)queuePlayerDidReceiveNotificationForSongIncrement:(KBYTQueuePlayer*)previousPlayer
+- (void)queuePlayer:(KBYTQueuePlayer *)player didStartPlayingItem:(AVPlayerItem *)item
 {
-    LOG_SELF;
+//    LOG_SELF;
+    [self setNowPlayingInfo];
+    /*
     if ([[(KBYTQueuePlayer *)self.player items] count] == 0)
     {
-
         [self dismissViewControllerAnimated:true completion:nil];
         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
     } else {
         [self setNowPlayingInfo];
     }
+     */
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
@@ -199,7 +175,7 @@
             self.titleTimer = nil;
         }
     }
-    // [[self player] stop];
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 }
 
 - (void)didForeground:(NSNotification *)n
@@ -279,7 +255,6 @@
 
 - (void)didBackground:(NSNotification *)n
 {
-    [self setNowPlayingInfo];
     // NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
     //NSLog(@"### view recursiveDescription: %@", recursiveDesc);
     if ([self isPlaying] == true && [self hasVideo] == true)

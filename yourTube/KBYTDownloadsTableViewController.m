@@ -507,8 +507,7 @@
     self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingLocalMediaArray:subarray];
     [self presentViewController:self.playerView animated:YES completion:nil];
     [self.playerView.player play];
-    KBYTLocalMedia *file = [subarray objectAtIndex:0];
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };
+   
     return;
     
     currentPlaybackArray = [subarray mutableCopy];
