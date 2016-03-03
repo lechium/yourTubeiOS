@@ -480,7 +480,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     self.playerView = [YTKBPlayerViewController alloc];
     self.playerView.showsPlaybackControls = true;
-    self.player = self.player = [AVQueuePlayer queuePlayerWithItems:streams];
+    self.player = [AVQueuePlayer queuePlayerWithItems:streams];
     self.playerView.player = self.player;
     
     [self presentViewController:self.playerView animated:YES completion:nil];
