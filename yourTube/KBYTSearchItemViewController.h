@@ -5,7 +5,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
-
+#import "KBYTDownloadManager.h"
 
 
 @interface KBYTSearchItemViewController : UITableViewController {

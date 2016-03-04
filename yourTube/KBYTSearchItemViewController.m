@@ -435,22 +435,6 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 }
 
 
-- (NSString *)appSupportFolder
-{
-    NSFileManager *man = [NSFileManager defaultManager];
-    NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu";
-    if (![man fileExistsAtPath:outputFolder])
-    {
-        [man createDirectoryAtPath:outputFolder withIntermediateDirectories:true attributes:nil error:nil];
-    }
-    return outputFolder;
-}
-
-- (NSString *)downloadFolder
-{
-    return [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads"];
-}
-
 - (void)updateDownloadsDictionary:(NSDictionary *)streamDictionary
 {
     NSFileManager *man = [NSFileManager defaultManager];
@@ -481,7 +465,13 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     NSString *stringURL = [[stream url] absoluteString];
     streamDict[@"url"] = stringURL;
     [self updateDownloadsDictionary:streamDict];
-    [[KBYTMessagingCenter sharedInstance] addDownload:streamDict];
+    if ([self vanillaApp])
+    {
+        [[KBYTDownloadManager sharedInstance] addDownloadToQueue:streamDict];
+    } else {
+        [[KBYTMessagingCenter sharedInstance] addDownload:streamDict];
+
+    }
 }
 
 

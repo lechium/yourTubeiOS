@@ -10,7 +10,7 @@
 #import "KBYTWebViewController.h"
 #import "KBYTSearchTableViewController.h"
 #import "Animations/ScaleAnimation.h"
-
+#import "KBYTDownloadManager.h"
 
 
 @interface KBYTDownloadsTableViewController ()
@@ -314,7 +314,16 @@
 {
     if (section == 0) //active download, no file to delete
     {
-        [[KBYTMessagingCenter sharedInstance] stopDownload:[theMedia dictionaryValue]];
+     
+        if ([self vanillaApp])
+        {
+            [[KBYTDownloadManager sharedInstance] removeDownloadFromQueue:[theMedia dictionaryValue]];
+        } else {
+            [[KBYTMessagingCenter sharedInstance] stopDownload:[theMedia dictionaryValue]];
+            
+            
+        }
+        
         NSMutableArray *mutableArray = [[self activeDownloads] mutableCopy];
         [mutableArray removeObject:theMedia];
         self.activeDownloads = mutableArray;
