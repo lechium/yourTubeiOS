@@ -212,12 +212,18 @@
         [self presentViewController:playerView animated:YES completion:nil];
         [playerView.player play];
         
-        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerView];
         
     } failureBlock:^(NSString *error) {
         
     }];
 
+}
+
+- (void)itemDidFinishPlaying:(NSNotification *)n
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
+    [self dismissViewControllerAnimated:true completion:nil];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath

@@ -74,6 +74,12 @@
     // Do any additional setup after loading the view, typically from a nib.
 }
 
+- (void)itemDidFinishPlaying:(NSNotification *)n
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
+    [self dismissViewControllerAnimated:true completion:nil];
+}
+
 - (void)viewDidLayoutSubviews
 {
     self.scrollView.contentSize = CGSizeMake(1920, 2220);
@@ -185,7 +191,7 @@
         playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
         [self presentViewController:playerView animated:YES completion:nil];
         [playerView.player play];
-        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerView];
         
         
     } failureBlock:^(NSString *error) {
