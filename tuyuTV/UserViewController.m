@@ -248,7 +248,7 @@
             NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
             UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
             [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
-            cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
+            cell.title.text = currentItem.title;
         } else {
             cell.image.image = [UIImage imageNamed:@"YTPlaceholder"];
             cell.title.text = @"Movie Title";
@@ -265,7 +265,7 @@
             NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
             UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
             [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
-            cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
+            cell.title.text = currentItem.title;
         } else {
             cell.image.image = [UIImage imageNamed:@"YTPlaceholder"];
             cell.title.text = @"Movie Title";
@@ -283,7 +283,7 @@
             NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
             UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
             [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
-            cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
+            cell.title.text = currentItem.title;
         } else {
             cell.image.image = [UIImage imageNamed:@"YTPlaceholder"];
             cell.title.text = @"Movie Title";

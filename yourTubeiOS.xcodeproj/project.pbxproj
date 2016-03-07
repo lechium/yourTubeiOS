@@ -374,7 +374,7 @@
 		898244DA1C6A4A1600131343 /* YTDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTDownloadOperation.m; sourceTree = "<group>"; };
 		898244DD1C6A664A00131343 /* KBYTMessagingCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTMessagingCenter.h; path = yourTube/KBYTMessagingCenter.h; sourceTree = "<group>"; };
 		898244DE1C6A664A00131343 /* KBYTMessagingCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTMessagingCenter.m; path = yourTube/KBYTMessagingCenter.m; sourceTree = "<group>"; };
-		898E92661C8D056700B34DAA /* tuyuTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tuyuTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		898E92661C8D056700B34DAA /* tuyu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tuyu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		898E92691C8D056700B34DAA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		898E926B1C8D056700B34DAA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		898E926C1C8D056700B34DAA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -1107,7 +1107,7 @@
 			isa = PBXGroup;
 			children = (
 				89A83A191C88A89300E1987E /* tuyu.app */,
-				898E92661C8D056700B34DAA /* tuyuTV.app */,
+				898E92661C8D056700B34DAA /* tuyu.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1176,7 +1176,7 @@
 			);
 			name = tuyuTV;
 			productName = tuyuTV;
-			productReference = 898E92661C8D056700B34DAA /* tuyuTV.app */;
+			productReference = 898E92661C8D056700B34DAA /* tuyu.app */;
 			productType = "com.apple.product-type.application";
 		};
 		89A83A181C88A89300E1987E /* tuyu */ = {
@@ -1594,7 +1594,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = tuyu;
 				PROVISIONING_PROFILE = "e42aae3b-2cb7-47a2-b03b-b994bcf603c0";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -1654,7 +1654,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = tuyu;
 				PROVISIONING_PROFILE = "e42aae3b-2cb7-47a2-b03b-b994bcf603c0";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -1817,6 +1817,7 @@
 				898E927B1C8D056700B34DAA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		89A83A2D1C88A89300E1987E /* Build configuration list for PBXNativeTarget "tuyu" */ = {
 			isa = XCConfigurationList;
