@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MarqueeLabel.h"
 
 @interface YTTVStandardCollectionViewCell : UICollectionViewCell
 
 @property (nonatomic, weak) IBOutlet UIImageView *image;
-@property (nonatomic, weak) IBOutlet UILabel *title;
+@property (nonatomic, weak) IBOutlet MarqueeLabel *title;
 
 @end

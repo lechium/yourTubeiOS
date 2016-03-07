@@ -18,6 +18,12 @@
 @property (nonatomic, strong) NSString *reuseStandardID;
 @property (nonatomic, strong) NSDictionary *featuredVideosDict;
 @property (nonatomic, strong) NSArray *featuredVideos;
+@property (nonatomic, strong) NSDictionary *popularVideosDict;
+@property (nonatomic, strong) NSArray *popularVideos;
+@property (nonatomic, strong) NSDictionary *musicVideosDict;
+@property (nonatomic, strong) NSArray *musicVideos;
+@property (nonatomic, strong) NSDictionary *sportsVideosDict;
+@property (nonatomic, strong) NSArray *sportsVideos;
 
 @end
 

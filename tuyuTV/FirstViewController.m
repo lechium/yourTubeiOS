@@ -13,6 +13,7 @@
 #import "UIImageView+WebCache.h"
 #import "SVProgressHUD.h"
 #import "YTKBPlayerViewController.h"
+#import "MarqueeLabel.h"
 
 @interface FirstViewController ()
 
@@ -29,15 +30,46 @@
     [super viewDidLoad];
     [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
         
-        //
         self.featuredVideosDict = searchDetails;
         self.featuredVideos = searchDetails[@"results"];
         [[self collectionView1] reloadData];
         
-        NSLog(@"got featured videos: %@", searchDetails);
         
     } failureBlock:^(NSString *error) {
-        //
+    
+    }];
+    
+    [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(NSDictionary *searchDetails) {
+    
+        self.popularVideosDict = searchDetails;
+        self.popularVideos = searchDetails[@"results"];
+        [[self collectionView2] reloadData];
+        
+    } failureBlock:^(NSString *error) {
+        
+    
+    }];
+    
+    [[KBYourTube sharedInstance] getChannelVideos:KBYTMusicChannelID completionBlock:^(NSDictionary *searchDetails) {
+        
+        self.musicVideosDict = searchDetails;
+        self.musicVideos = searchDetails[@"results"];
+        [[self collectionView3] reloadData];
+        
+    } failureBlock:^(NSString *error) {
+        
+        
+    }];
+    
+    [[KBYourTube sharedInstance] getChannelVideos:KBYTSportsChannelID completionBlock:^(NSDictionary *searchDetails) {
+        
+        self.sportsVideosDict = searchDetails;
+        self.sportsVideos = searchDetails[@"results"];
+        [[self collectionView4] reloadData];
+        
+    } failureBlock:^(NSString *error) {
+        
+        
     }];
     // Do any additional setup after loading the view, typically from a nib.
 }
@@ -75,6 +107,29 @@
             return self.featuredVideos.count;
         }
         return 8;
+    } else if (collectionView == self.collectionView2) {
+    
+        if ([self.popularVideos count] > 0)
+        {
+            return self.popularVideos.count;
+        }
+        return 10;
+    } else if (collectionView == self.collectionView3) {
+        
+        if ([self.musicVideos count] > 0)
+        {
+            return self.musicVideos.count;
+        }
+        return 10;
+        
+    } else if (collectionView == self.collectionView4) {
+        
+        if ([self.sportsVideos count] > 0)
+        {
+            return self.sportsVideos.count;
+        }
+        return 10;
+        
     } else {
         return 10;
     }
@@ -87,29 +142,56 @@
         if (self.featuredVideos.count > 0)
         {
             KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
-            if (currentItem.resultType == kYTSearchResultTypeVideo)
-            {
-                [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
-                [SVProgressHUD show];
-                [[KBYourTube sharedInstance] getVideoDetailsForID:currentItem.videoId completionBlock:^(KBYTMedia *videoDetails) {
-               
-                    [SVProgressHUD dismiss];
-                    NSURL *playURL = [[videoDetails.streams firstObject] url];
-                    AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
-                    AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
-            
-                    playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-                    [self presentViewController:playerView animated:YES completion:nil];
-                    [playerView.player play];
-
-
-                    
-                } failureBlock:^(NSString *error) {
-                    
-                }];
-            }
+            [self playFirstStreamForResult:currentItem];
         }
+    } else if (collectionView == self.collectionView2)
+    {
+        if (self.popularVideos.count > 0)
+        {
+            KBYTSearchResult *currentItem = [self.popularVideos objectAtIndex:indexPath.row];
+            [self playFirstStreamForResult:currentItem];
+        }
+       
+    } else if (collectionView == self.collectionView3)
+    {
+        if (self.musicVideos.count > 0)
+        {
+            KBYTSearchResult *currentItem = [self.musicVideos objectAtIndex:indexPath.row];
+            [self playFirstStreamForResult:currentItem];
+        }
+        
+    } else if (collectionView == self.collectionView4)
+    {
+        if (self.sportsVideos.count > 0)
+        {
+            KBYTSearchResult *currentItem = [self.sportsVideos objectAtIndex:indexPath.row];
+            [self playFirstStreamForResult:currentItem];
+        }
+        
     }
+}
+
+- (void)playFirstStreamForResult:(KBYTSearchResult *)searchResult
+{
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD show];
+    [[KBYourTube sharedInstance] getVideoDetailsForID:searchResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
+        
+        [SVProgressHUD dismiss];
+        NSURL *playURL = [[videoDetails.streams firstObject] url];
+        AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
+        AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
+        
+        playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
+        [self presentViewController:playerView animated:YES completion:nil];
+        [playerView.player play];
+        
+        
+        
+    } failureBlock:^(NSString *error) {
+        
+    }];
+
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -134,29 +216,34 @@
     if (collectionView == self.collectionView2)
     {
         YTTVStandardCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseStandardID forIndexPath:indexPath];
-        NSString *imageFileName = [NSString stringWithFormat:@"movie-%li.jpg", indexPath.row];
-        cell.image.image = [UIImage imageNamed:imageFileName];
-        cell.title.text = @"Movie Title";
-        return cell;
-    }
-    
-    if (collectionView == self.collectionView2)
-    {
-        YTTVStandardCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseStandardID forIndexPath:indexPath];
-        NSString *imageFileName = [NSString stringWithFormat:@"movie-%li.jpg", indexPath.row];
-        cell.image.image = [UIImage imageNamed:imageFileName];
+        if (self.popularVideos.count > 0)
+        {
+            KBYTSearchResult *currentItem = [self.popularVideos objectAtIndex:indexPath.row];
+            NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
+            UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
+            [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+            cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
+        } else {
+            cell.image.image = [UIImage imageNamed:@"YTPlaceholder"];
             cell.title.text = @"Movie Title";
+        }
         return cell;
     }
     
     if (collectionView == self.collectionView3)
     {
         YTTVStandardCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseStandardID forIndexPath:indexPath];
-        
-        NSInteger fileNumber = indexPath.row + 10;
-        NSString *imageFileName = [NSString stringWithFormat:@"movie-%li.jpg", fileNumber];
-        cell.image.image = [UIImage imageNamed:imageFileName];
+        if (self.musicVideos.count > 0)
+        {
+            KBYTSearchResult *currentItem = [self.musicVideos objectAtIndex:indexPath.row];
+            NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
+            UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
+            [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+            cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
+        } else {
+            cell.image.image = [UIImage imageNamed:@"YTPlaceholder"];
             cell.title.text = @"Movie Title";
+        }
         return cell;
     }
     
@@ -164,10 +251,17 @@
     {
         YTTVStandardCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseStandardID forIndexPath:indexPath];
         
-        NSInteger fileNumber = 19 - indexPath.row;
-        NSString *imageFileName = [NSString stringWithFormat:@"movie-%li.jpg", fileNumber];
-        cell.image.image = [UIImage imageNamed:imageFileName];
+        if (self.sportsVideos.count > 0)
+        {
+            KBYTSearchResult *currentItem = [self.sportsVideos objectAtIndex:indexPath.row];
+            NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
+            UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
+            [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+            cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
+        } else {
+            cell.image.image = [UIImage imageNamed:@"YTPlaceholder"];
             cell.title.text = @"Movie Title";
+        }
         return cell;
     }
     

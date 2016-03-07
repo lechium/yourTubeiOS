@@ -5,10 +5,10 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--First-->
+        <!--YouTube-->
         <scene sceneID="hNz-n2-bh7">
             <objects>
-                <viewController id="9pv-A4-QxB" customClass="FirstViewController" sceneMemberID="viewController">
+                <viewController title="YouTube" id="9pv-A4-QxB" userLabel="YouTube" customClass="FirstViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ia1-K6-d13"/>
                         <viewControllerLayoutGuide type="bottom" id="4ug-Mw-9AY"/>
@@ -62,7 +62,7 @@
                                             <outlet property="delegate" destination="9pv-A4-QxB" id="XRz-PE-fMr"/>
                                         </connections>
                                     </collectionView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recommended Movies" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qI3-PY-x6V">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="#PopularOnYouTube" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qI3-PY-x6V">
                                         <rect key="frame" x="48" y="565" width="433" height="41"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="433" id="9nJ-Lz-K8M"/>
@@ -73,28 +73,28 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="c0H-ds-uM8">
-                                        <rect key="frame" x="0.0" y="626" width="1920" height="420"/>
+                                        <rect key="frame" x="0.0" y="626" width="1920" height="340"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="420" id="aNt-rW-hgb"/>
+                                            <constraint firstAttribute="height" constant="340" id="aNt-rW-hgb"/>
                                         </constraints>
                                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="2an-G9-Rhg">
-                                            <size key="itemSize" width="226" height="420"/>
+                                            <size key="itemSize" width="320" height="340"/>
                                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         </collectionViewFlowLayout>
                                         <cells>
                                             <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="StandardCell" id="f5O-Aq-wTJ" customClass="YTTVStandardCollectionViewCell">
-                                                <rect key="frame" x="0.0" y="0.0" width="226" height="420"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                                    <rect key="frame" x="0.0" y="0.0" width="226" height="420"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tcW-uE-5dJ">
-                                                            <rect key="frame" x="0.0" y="0.0" width="226" height="340"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                                                         </imageView>
-                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Nv-i1-5yE">
+                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Nv-i1-5yE" customClass="MarqueeLabel">
                                                             <rect key="frame" x="0.0" y="380" width="226" height="40"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="40" id="y0D-1h-r7q"/>
@@ -126,8 +126,8 @@
                                             <outlet property="delegate" destination="9pv-A4-QxB" id="pro-Vy-iHk"/>
                                         </connections>
                                     </collectionView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Popular Movies" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wkf-qn-kih">
-                                        <rect key="frame" x="48" y="1070" width="352" height="40"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="#Music" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wkf-qn-kih">
+                                        <rect key="frame" x="48" y="990" width="352" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="SvT-hy-3LD"/>
                                             <constraint firstAttribute="width" constant="352" id="zr4-Ms-Qya"/>
@@ -137,28 +137,28 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="ROt-zW-ZwD">
-                                        <rect key="frame" x="0.0" y="1130" width="1920" height="420"/>
+                                        <rect key="frame" x="0.0" y="1050" width="1920" height="340"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="420" id="Ndi-rh-bVc"/>
+                                            <constraint firstAttribute="height" constant="340" id="Ndi-rh-bVc"/>
                                         </constraints>
                                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="R1w-XI-Q3w">
-                                            <size key="itemSize" width="226" height="420"/>
+                                            <size key="itemSize" width="320" height="340"/>
                                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         </collectionViewFlowLayout>
                                         <cells>
                                             <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="StandardCell" id="RS1-Za-Af3" customClass="YTTVStandardCollectionViewCell">
-                                                <rect key="frame" x="0.0" y="0.0" width="226" height="420"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                                    <rect key="frame" x="0.0" y="0.0" width="226" height="420"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
-                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="92p-3n-77y">
-                                                            <rect key="frame" x="0.0" y="0.0" width="226" height="340"/>
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="92p-3n-77y">
+                                                            <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                                                         </imageView>
-                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hPw-kD-OCm">
+                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hPw-kD-OCm" customClass="MarqueeLabel">
                                                             <rect key="frame" x="0.0" y="380" width="226" height="40"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="40" id="xag-jo-EZ0"/>
@@ -190,8 +190,8 @@
                                             <outlet property="delegate" destination="9pv-A4-QxB" id="Se2-Dm-Y8x"/>
                                         </connections>
                                     </collectionView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Top Rated Movies" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MDU-p5-hhg">
-                                        <rect key="frame" x="48" y="1574" width="352" height="40"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="#Sports" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MDU-p5-hhg">
+                                        <rect key="frame" x="48" y="1414" width="352" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="ka5-2Y-CxV"/>
                                         </constraints>
@@ -200,28 +200,28 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="RA6-1r-zOh">
-                                        <rect key="frame" x="0.0" y="1634" width="1920" height="420"/>
+                                        <rect key="frame" x="0.0" y="1474" width="1920" height="340"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="420" id="Eru-4Y-0Fg"/>
+                                            <constraint firstAttribute="height" constant="340" id="Eru-4Y-0Fg"/>
                                         </constraints>
                                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="cOj-BX-u8o">
-                                            <size key="itemSize" width="226" height="420"/>
+                                            <size key="itemSize" width="320" height="340"/>
                                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         </collectionViewFlowLayout>
                                         <cells>
                                             <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="StandardCell" id="qT6-fb-JSA" customClass="YTTVStandardCollectionViewCell">
-                                                <rect key="frame" x="0.0" y="0.0" width="226" height="420"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                                    <rect key="frame" x="0.0" y="0.0" width="226" height="420"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
-                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6zk-1F-hEQ">
-                                                            <rect key="frame" x="0.0" y="0.0" width="226" height="340"/>
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6zk-1F-hEQ">
+                                                            <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                                                         </imageView>
-                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WkF-zZ-jf0">
+                                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WkF-zZ-jf0" customClass="MarqueeLabel">
                                                             <rect key="frame" x="0.0" y="380" width="226" height="40"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="40" id="DbA-kf-CIs"/>
@@ -289,7 +289,7 @@
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
-                    <tabBarItem key="tabBarItem" title="First" image="first" id="acW-dT-cKf"/>
+                    <tabBarItem key="tabBarItem" title="tuyu" id="acW-dT-cKf"/>
                     <connections>
                         <outlet property="collectionView1" destination="zJb-y3-zgG" id="jAk-DY-bRJ"/>
                         <outlet property="collectionView2" destination="c0H-ds-uM8" id="utb-4f-E8p"/>
@@ -302,10 +302,10 @@
             </objects>
             <point key="canvasLocation" x="2246" y="-640"/>
         </scene>
-        <!--Second-->
+        <!--Search-->
         <scene sceneID="wg7-f3-ORb">
             <objects>
-                <viewController id="8rJ-Kc-sve" customClass="SecondViewController" sceneMemberID="viewController">
+                <viewController id="8rJ-Kc-sve" customClass="WebViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="L7p-HK-0SC"/>
                         <viewControllerLayoutGuide type="bottom" id="Djb-ko-YwX"/>
@@ -336,16 +336,16 @@
                             <constraint firstAttribute="centerY" secondItem="zEq-FU-wV5" secondAttribute="centerY" id="qzY-Ky-pLD"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Second" image="second" id="cPa-gy-q4n"/>
+                    <tabBarItem key="tabBarItem" title="Search" id="cPa-gy-q4n"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2246" y="624"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--YouTube-->
         <scene sceneID="yl2-sM-qoP">
             <objects>
-                <tabBarController id="49e-Tb-3d3" sceneMemberID="viewController">
+                <tabBarController title="YouTube" id="49e-Tb-3d3" sceneMemberID="viewController">
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="W28-zg-YXA">
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="120"/>
@@ -364,7 +364,5 @@
     </scenes>
     <resources>
         <image name="feature-0.jpg" width="432" height="270"/>
-        <image name="first" width="30" height="30"/>
-        <image name="second" width="30" height="30"/>
     </resources>
 </document>
