@@ -129,10 +129,12 @@
 
 - (void)sendAudioCompleteMessage
 {
+    #if TARGET_OS_IOS
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent};
     
     [center sendMessageName:@"org.nito.dllistener.audioImported" userInfo:info];
+#endif
 }
 
 //use CPDistributedMessagingCenter to relay progress details back to the yourTube/tuyu application.
@@ -142,11 +144,12 @@
     //
     float percentComplete = [urlDownloader downloadCompleteProcent];
     // NSLog(@"percentComplete: %f", percentComplete);
+    #if TARGET_OS_IOS
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
     
     [center sendMessageName:@"org.nito.dllistener.currentProgress" userInfo:info];
-    
+#endif
 }
 
 
@@ -182,12 +185,14 @@
         double progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
         //NSLog(@"DownloadTask: %@ progress: %lf", downloadTask, progress);
         dispatch_async(dispatch_get_main_queue(), ^{
+#if TARGET_OS_IOS
             yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
             if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
             {
                 NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:progress] };
                 [(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] updateDownloadProgress:info];
             }
+#endif
             // self.progressView.progress = progress;
         });
     }
@@ -212,11 +217,13 @@
     if (success)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
+#if TARGET_OS_IOS
             yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
             if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
             {
                 [(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] delayedReloadData];
             }
+#endif
         });
     }
     else

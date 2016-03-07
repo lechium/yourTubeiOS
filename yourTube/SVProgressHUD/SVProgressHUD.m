@@ -68,8 +68,9 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
 - (void)updateHUDFrame;
 - (void)updateMask;
 - (void)updateBlurBounds;
+#if TARGET_OS_IOS
 - (void)updateMotionEffectForOrientation:(UIInterfaceOrientation)orientation;
-
+#endif
 - (void)setStatus:(NSString*)string;
 - (void)setFadeOutTimer:(NSTimer*)newTimer;
 
@@ -329,13 +330,17 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
         SVProgressHUDDefaultAnimationType = SVProgressHUDAnimationTypeFlat;
 
         SVProgressHUDRingThickness = 2;
+#if TARGET_OS_TV
+        SVProgressHUDRingThickness = 5;
+#endif
         SVProgressHUDCornerRadius = 14;
         //SVProgressHUDForegroundColor = [UIColor colorFromHex:@"0080ff"];
         
         SVProgressHUDForegroundColor = [UIColor redColor];
         
+#if TARGET_OS_IOS
         SVProgressHUDBackgroundColor = [UIColor whiteColor];
-        
+#endif
         if([UIFont respondsToSelector:@selector(preferredFontForTextStyle:)]){
             SVProgressHUDFont = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
         } else{
@@ -372,6 +377,13 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
 - (void)updateHUDFrame{
     CGFloat hudWidth = 100.0f;
     CGFloat hudHeight = 100.0f;
+
+#if TARGET_OS_TV
+    // tvOS-specific code
+    hudWidth = 300.0f;
+    hudHeight = 300.0f;
+    
+#endif
     CGFloat stringHeightBuffer = 20.0f;
     CGFloat stringAndContentHeightBuffer = 80.0f;
     CGRect labelRect = CGRectZero;
@@ -395,11 +407,14 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
             if([string respondsToSelector:@selector(sizeWithAttributes:)]){
                 stringSize = [string sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:self.stringLabel.font.fontName size:self.stringLabel.font.pointSize]}];
             } else{
+#if TARGET_OS_IOS
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
                 stringSize = [string sizeWithFont:self.stringLabel.font constrainedToSize:CGSizeMake(200.0f, 300.0f)];
 #pragma clang diagnostic pop
+                #endif
             }
+
             stringRect = CGRectMake(0.0f, 0.0f, stringSize.width, stringSize.height);
         }
 
@@ -535,6 +550,8 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
 #endif
 }
 
+#if TARGET_OS_IOS
+
 - (void)updateMotionEffectForOrientation:(UIInterfaceOrientation)orientation{
     if([_hudView respondsToSelector:@selector(addMotionEffect:)]){
         UIInterpolatingMotionEffectType motionEffectType = UIInterfaceOrientationIsPortrait(orientation) ? UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis : UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis;
@@ -555,7 +572,7 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
         [self.hudView addMotionEffect:effectGroup];
     }
 }
-
+#endif
 - (void)setStatus:(NSString*)string{
     self.stringLabel.text = string;
     [self updateHUDFrame];
@@ -574,10 +591,12 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
 #pragma mark - Notifications and their handling
 
 - (void)registerNotifications{
+#if TARGET_OS_IOS
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(positionHUD:)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
+#endif
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(positionHUD:)
                                                  name:UIApplicationDidBecomeActiveNotification
@@ -614,7 +633,9 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
     
 #if !defined(SV_APP_EXTENSIONS)
     self.frame = [UIApplication sharedApplication].keyWindow.bounds;
+    #if TARGET_OS_IOS
     UIInterfaceOrientation orientation = UIApplication.sharedApplication.statusBarOrientation;
+#endif
 #else
     self.frame = UIScreen.mainScreen.bounds;
     UIInterfaceOrientation orientation = CGRectGetWidth(self.frame) > CGRectGetHeight(self.frame) ? UIInterfaceOrientationLandscapeLeft : UIInterfaceOrientationPortrait;
@@ -628,6 +649,7 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
     }
 #endif
     
+    #if TARGET_OS_IOS
     // Get keyboardHeight in regards to current state
     if(notification){
         NSDictionary* keyboardInfo = [notification userInfo];
@@ -644,15 +666,20 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
     } else{
         keyboardHeight = self.visibleKeyboardHeight;
     }
+#endif
     
     // Get the currently active frame of the display (depends on orientation)
     CGRect orientationFrame = self.bounds;
 #if !defined(SV_APP_EXTENSIONS)
+    #if TARGET_OS_IOS
     CGRect statusBarFrame = UIApplication.sharedApplication.statusBarFrame;
+#else 
+    CGRect statusBarFrame = CGRectZero;
+#endif
 #else
     CGRect statusBarFrame = CGRectZero;
 #endif
-    
+#if TARGET_OS_IOS
     if(!ignoreOrientation && UIInterfaceOrientationIsLandscape(orientation)){
         float temp = CGRectGetWidth(orientationFrame);
         orientationFrame.size.width = CGRectGetHeight(orientationFrame);
@@ -662,10 +689,10 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
         statusBarFrame.size.width = CGRectGetHeight(statusBarFrame);
         statusBarFrame.size.height = temp;
     }
-    
+
     // Update the motion effects in regards to orientation
     [self updateMotionEffectForOrientation:orientation];
-    
+#endif
     // Calculate available height for display
     CGFloat activeHeight = CGRectGetHeight(orientationFrame);
     if(keyboardHeight > 0){
@@ -684,6 +711,8 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
         rotateAngle = 0.0;
         newCenter = CGPointMake(posX, posY);
     } else{
+        
+        #if TARGET_OS_IOS
         switch (orientation){
             case UIInterfaceOrientationPortraitUpsideDown:
                 rotateAngle = (CGFloat) M_PI;
@@ -702,6 +731,7 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
                 newCenter = CGPointMake(posX, posY);
                 break;
         }
+#endif
     }
     
     if(notification){
@@ -955,10 +985,12 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
                                  
                                  // Tell the rootViewController to update the StatusBar appearance
 #if !defined(SV_APP_EXTENSIONS)
+#if TARGET_OS_IOS
                                  UIViewController *rootController = [[UIApplication sharedApplication] keyWindow].rootViewController;
                                  if([rootController respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]){
                                      [rootController setNeedsStatusBarAppearanceUpdate];
                                  }
+#endif
 #endif
                                  // uncomment to make sure UIWindow is gone from app.windows
                                  //NSLog(@"%@", [UIApplication sharedApplication].windows);
@@ -1083,7 +1115,11 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
 
 - (UIColor*)backgroundColorForStyle{
     if(self.style == SVProgressHUDStyleLight){
+        #if TARGET_OS_IOS
         return [UIColor whiteColor];
+#else 
+        return [UIColor clearColor];
+#endif
     } else if(self.style == SVProgressHUDStyleDark){
         return [UIColor blackColor];
     } else{

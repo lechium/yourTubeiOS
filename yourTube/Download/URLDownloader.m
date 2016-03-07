@@ -95,14 +95,17 @@
 	self.urlConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
 
     [self.urlConnection start];
+#if TARGET_OS_IOS
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+#endif
 	NSLog(@"[URLDownloader] Download started");
 }
 
 - (void)cancel
 {
+#if TARGET_OS_IOS
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-    
+#endif
 	[urlConnection cancel];
 	
 	NSLog(@"[URLDownloader] Download canceled");
@@ -203,10 +206,10 @@
 {
     
     [self setState:URLDownloaderStateInactive];
-    
+#if TARGET_OS_IOS
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-
-	NSLog(@"[URLDownloader] Error: %@, %d", error, [error code]);
+#endif
+    NSLog(@"[URLDownloader] Error: %@, %d", error, [error code]);
 	switch ([error code])
 	{
 		case NSURLErrorNotConnectedToInternet:
@@ -220,9 +223,9 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    
+#if TARGET_OS_IOS
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-
+#endif
     NSLog(@"[URLDownloader] Download finished");
 
     NSData *data = [NSData dataWithData:self.urlData];

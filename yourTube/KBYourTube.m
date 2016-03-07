@@ -750,6 +750,7 @@
     NSLog(@"aircontrol return details: %@", datString);
 }
 
+#if TARGET_OS_IOS
 - (void)pauseAirplay
 {
     [[KBYTMessagingCenter sharedInstance] pauseAirplay];
@@ -764,6 +765,14 @@
 {
     return [[KBYTMessagingCenter sharedInstance] airplayStatus];
 }
+
+- (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP
+{
+    [[KBYTMessagingCenter sharedInstance] airplayStream:stream ToDeviceIP:deviceIP];
+    
+}
+
+#endif
 
 - (NSDictionary *)returnFromURLRequest:(NSString *)requestString requestType:(NSString *)type
 {
@@ -780,11 +789,7 @@
     return [datString dictionaryValue];
 }
 
-- (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP
-{
-    [[KBYTMessagingCenter sharedInstance] airplayStream:stream ToDeviceIP:deviceIP];
-    
-}
+
 
 //take a url and get its raw body, then return in string format
 
@@ -2351,11 +2356,14 @@
 
 #pragma mark utility methods
 
+
 - (void)importFileWithJO:(NSString *)theFile duration:(NSInteger)duration
 {
+    #if TARGET_OS_IOS
     NSDictionary *info = @{@"filePath": theFile, @"duration": [NSNumber numberWithInteger:duration]};
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.importscience"];
     [center sendMessageName:@"org.nito.importscience.import" userInfo:info];
+#endif
 }
 
 

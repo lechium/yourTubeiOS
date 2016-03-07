@@ -9,6 +9,10 @@
 #import "FirstViewController.h"
 #import "YTTVFeaturedCollectionViewCell.h"
 #import "YTTVStandardCollectionViewCell.h"
+#import "KBYourTube.h"
+#import "UIImageView+WebCache.h"
+#import "SVProgressHUD.h"
+#import "YTKBPlayerViewController.h"
 
 @interface FirstViewController ()
 
@@ -23,6 +27,18 @@
     self.reuseFeatureID = @"FeaturedCell";
     self.reuseStandardID = @"StandardCell";
     [super viewDidLoad];
+    [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
+        
+        //
+        self.featuredVideosDict = searchDetails;
+        self.featuredVideos = searchDetails[@"results"];
+        [[self collectionView1] reloadData];
+        
+        NSLog(@"got featured videos: %@", searchDetails);
+        
+    } failureBlock:^(NSString *error) {
+        //
+    }];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -54,9 +70,45 @@
 {
     if (collectionView == self.collectionView1)
     {
+        if ([self.featuredVideos count] > 0)
+        {
+            return self.featuredVideos.count;
+        }
         return 8;
     } else {
         return 10;
+    }
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (collectionView == self.collectionView1)
+    {
+        if (self.featuredVideos.count > 0)
+        {
+            KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
+            if (currentItem.resultType == kYTSearchResultTypeVideo)
+            {
+                [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+                [SVProgressHUD show];
+                [[KBYourTube sharedInstance] getVideoDetailsForID:currentItem.videoId completionBlock:^(KBYTMedia *videoDetails) {
+               
+                    [SVProgressHUD dismiss];
+                    NSURL *playURL = [[videoDetails.streams firstObject] url];
+                    AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
+                    AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
+            
+                    playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
+                    [self presentViewController:playerView animated:YES completion:nil];
+                    [playerView.player play];
+
+
+                    
+                } failureBlock:^(NSString *error) {
+                    
+                }];
+            }
+        }
     }
 }
 
@@ -65,8 +117,17 @@
     if (collectionView == self.collectionView1)
     {
         YTTVFeaturedCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseFeatureID forIndexPath:indexPath];
-        NSString *imageFileName = [NSString stringWithFormat:@"feature-%li.jpg", indexPath.row];
-        cell.featuredImage.image = [UIImage imageNamed:imageFileName];
+      if ([self.featuredVideos count] > 0)
+      {
+          KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
+          NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
+          UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
+          [cell.featuredImage sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+      } else {
+        //  NSString *imageFileName = [NSString stringWithFormat:@"feature-%li.jpg", indexPath.row];
+          cell.featuredImage.image = [UIImage imageNamed:@"YTPlaceholder"];
+      }
+       
         return cell;
     }
     

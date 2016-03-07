@@ -107,8 +107,10 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 {
     if (![Reachability isInternetReachable])
     {
+#if TARGET_OS_IOS
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Internet Unavailable" message:@"You appear to be disconnected from the internet, please check your network settings and try again." delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
         [alertView show];
+#endif
         return FALSE;
     }
     return TRUE;
@@ -152,8 +154,10 @@ static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
 
 + (void)showInternetNotAvailableAlert
 {
+    #if TARGET_OS_IOS
    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Internet Unavailable", @"no alert title") message:NSLocalizedString(@"Currently the internet is unreachable, please remedy this and try again", @"Message when the internet is unavailable") delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"OK", @"OK"), nil];
     [alertView show];
+#endif
 }
 
 + (BOOL)isInternetReachableWifiOnly

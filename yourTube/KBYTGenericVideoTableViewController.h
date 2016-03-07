@@ -20,7 +20,9 @@
 
 @property (nonatomic, strong) NSTimer *airplayTimer;
 @property (nonatomic, strong) NSString *airplayIP;
+#if TARGET_OS_IOS
 @property (nonatomic, strong) UISlider *airplaySlider;
+#endif
 @property (nonatomic, strong) UIView *sliderView;
 @property (readwrite, assign) CGFloat airplayProgressPercent;
 @property (readwrite, assign) CGFloat airplayDuration;

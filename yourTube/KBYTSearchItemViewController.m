@@ -355,7 +355,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 {
     LOG_SELF;
     NSURL *playURL = [stream url];
-    //NSLog(@"play url: %@", playURL);
+    NSLog(@"play url: %@", playURL);
     if ([self isPlaying] == true  ){
         return;
     }

@@ -7,13 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AppSupport/CPDistributedMessagingCenter.h"
 #import <AVFoundation/AVFoundation.h>
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "KBYourTube+Categories.h"
 #import "APDeviceController.h"
+#if TARGET_OS_IOS
 #import "KBYTMessagingCenter.h"
+#endif
 #import "YTKBPlayerViewController.h"
 #import "KBYTQueuePlayer.h"
 // Logging

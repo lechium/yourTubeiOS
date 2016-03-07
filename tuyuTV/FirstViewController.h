@@ -16,7 +16,8 @@
 @property (nonatomic, strong) IBOutlet UICollectionView *collectionView4;
 @property (nonatomic, strong) NSString *reuseFeatureID;
 @property (nonatomic, strong) NSString *reuseStandardID;
-
+@property (nonatomic, strong) NSDictionary *featuredVideosDict;
+@property (nonatomic, strong) NSArray *featuredVideos;
 
 @end
 
