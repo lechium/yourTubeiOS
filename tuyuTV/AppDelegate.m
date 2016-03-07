@@ -23,6 +23,7 @@
 
 #import "AppDelegate.h"
 #import "KBYourTube.h"
+#import "UserViewController.h"
 
 @interface AppDelegate ()
 
@@ -34,13 +35,24 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
+    self.tabBar = (UITabBarController *)self.window.rootViewController;
+   
     if ([[KBYourTube sharedInstance] isSignedIn])
     {
         NSLog(@"is signed in!");
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
            
-            NSLog(@"userdeets : %@", outputResults);
+           // NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
+            NSMutableArray *vc = [self.tabBar.viewControllers mutableCopy];
+            UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
+            //NSLog(@"uvc: %@", uvc);
+            uvc.title = outputResults[@"userName"];
+            [vc insertObject:uvc atIndex:1];
+            //[vc addObject:uvc];
+            self.tabBar.viewControllers = vc;
+            
             
         } failureBlock:^(NSString *error) {
             //
