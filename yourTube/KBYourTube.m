@@ -1611,6 +1611,9 @@
             NSString *rawRequestResult = [self stringFromRequest:requestString];
             ONOXMLDocument *xmlDoc = [ONOXMLDocument HTMLDocumentWithString:rawRequestResult encoding:NSUTF8StringEncoding error:nil];
             ONOXMLElement *root = [xmlDoc rootElement];
+            
+          //  NSLog(@"root: %@", root);
+            
             //scan down to the section-list to find the videos
             NSString *fullSectionXPath = @"//ol[contains(@class, 'section-list')]";
             ONOXMLElement *sectionListElement = [root firstChildWithXPath:fullSectionXPath];
@@ -1643,7 +1646,8 @@
                 ONOXMLElement *thumbNailElement = [[[videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
                 ONOXMLElement *lengthElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                 ONOXMLElement *titleElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-uix-tile-link')]"];
-                ;
+               // NSLog(@"videoDetailXMLRepresentation: %@", videoDetailXMLRepresentation);
+                 //NSLog(@"title element: %@", titleElement);
                 ONOXMLElement *descElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-description')]"];
                 ONOXMLElement *authorElement = [[[videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
                 ONOXMLElement *ageAndViewsElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"];
@@ -1663,8 +1667,12 @@
                     result.duration = lengthElement.stringValue;
                 
                 if (titleElement != nil)
+                {
                     result.title = [[titleElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-                
+                } else {
+                    titleElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"];
+                    result.title = [[[titleElement children]firstObject] valueForAttribute:@"title"];
+                }
                 NSString *vdesc = [[descElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
                 if (vdesc != nil)
                 {
@@ -1715,6 +1723,7 @@
                     
                     ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
                     ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-uix-tile-link')]"];
+                   
                     ONOXMLElement *authorElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
                     ONOXMLElement *descElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"] children] firstObject];//yt-lockup-meta-info
                     

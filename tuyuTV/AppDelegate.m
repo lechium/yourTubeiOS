@@ -24,6 +24,8 @@
 #import "AppDelegate.h"
 #import "KBYourTube.h"
 #import "UserViewController.h"
+#import "KBYTSearchTableViewController.h"
+#import "KBYTSearchResultsViewController.h"
 
 @interface AppDelegate ()
 
@@ -31,12 +33,59 @@
 
 @implementation AppDelegate
 
+/*
+ 
+ func packagedSearchController() -> UIViewController {
+ // Load a `SearchResultsViewController` from its storyboard.
+ let storyboard = UIStoryboard(name: "ViewControllerSamples", bundle: nil)
+ guard let searchResultsController = storyboard.instantiateViewControllerWithIdentifier(SearchResultsViewController.storyboardIdentifier) as? SearchResultsViewController else {
+ fatalError("Unable to instatiate a SearchResultsViewController from the storyboard.")
+ }
+ 
+ 
+ //Create a UISearchController, passing the `searchResultsController` to
+ //use to display search results.
+ 
+let searchController = UISearchController(searchResultsController: searchResultsController)
+searchController.searchResultsUpdater = searchResultsController
+searchController.searchBar.placeholder = NSLocalizedString("Enter keyword (e.g. iceland)", comment: "")
+
+// Contain the `UISearchController` in a `UISearchContainerViewController`.
+let searchContainer = UISearchContainerViewController(searchController: searchController)
+searchContainer.title = NSLocalizedString("Search", comment: "")
+
+// Finally contain the `UISearchContainerViewController` in a `UINavigationController`.
+let searchNavigationController = UINavigationController(rootViewController: searchContainer)
+return searchNavigationController
+}
+
+ */
+
+- (UIViewController *)packagedSearchController
+{
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    KBYTSearchResultsViewController *svc = [sb instantiateViewControllerWithIdentifier:@"SearchResultsViewController"];
+    UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:svc];
+    searchController.searchResultsUpdater = svc;
+    searchController.searchBar.placeholder = @"YouTube search";
+    searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    UISearchContainerViewController *searchContainer = [[UISearchContainerViewController alloc] initWithSearchController:searchController];
+    searchContainer.title = @"search";
+    searchContainer.view.backgroundColor = [UIColor blackColor];
+    UINavigationController *searchNavigationController = [[UINavigationController alloc] initWithRootViewController:searchContainer];
+    return searchNavigationController;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
     self.tabBar = (UITabBarController *)self.window.rootViewController;
-   
+    NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIViewController *vc = [self packagedSearchController];
+    [viewControllers insertObject:vc atIndex:1];
+    self.tabBar.viewControllers = viewControllers;
+    
     if ([[KBYourTube sharedInstance] isSignedIn])
     {
         NSLog(@"is signed in!");
@@ -44,14 +93,13 @@
            
            // NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
-            NSMutableArray *vc = [self.tabBar.viewControllers mutableCopy];
-            UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            
             UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
             //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
-            [vc insertObject:uvc atIndex:1];
+            [viewControllers insertObject:uvc atIndex:1];
             //[vc addObject:uvc];
-            self.tabBar.viewControllers = vc;
+            self.tabBar.viewControllers = viewControllers;
             
             
         } failureBlock:^(NSString *error) {

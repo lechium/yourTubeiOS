@@ -469,8 +469,10 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     {
         [[KBYTDownloadManager sharedInstance] addDownloadToQueue:streamDict];
     } else {
+#if TARGET_OS_IOS
         [[KBYTMessagingCenter sharedInstance] addDownload:streamDict];
 
+#endif
     }
 }
 

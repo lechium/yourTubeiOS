@@ -44,6 +44,7 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
+    LOG_SELF;
     self.showingSuggestedVideos = false;
     self.navigationItem.title = @"YouTube Search";
     NSString *searchString = [self.searchController.searchBar text];
@@ -152,9 +153,15 @@
     self.searchController.definesPresentationContext = true;
     self.searchController.dimsBackgroundDuringPresentation = false;
     self.tableView.tableHeaderView = self.searchController.searchBar;
-    
+
+#if TARGET_OS_TV
+
     //NEVER DO THE BELOW LINE, LEFT AS REMINDER
-    //self.definesPresentationContext = YES;
+    self.definesPresentationContext = YES;
+    
+    //[self.view addSubview:self.searchController.searchBar];
+    //[self.searchController.searchBar becomeFirstResponder];
+#endif
     self.currentPage = 1;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -204,8 +211,10 @@
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     
     //no longer do anything here because it would mess up paging functionality, revisit some day.
-    
-    
+    LOG_SELF;
+#if TARGET_OS_TV
+    [self searchBarSearchButtonClicked:self.searchController.searchBar];
+#endif
 }
 
 - (void)didReceiveMemoryWarning {
@@ -336,8 +345,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             //
             [SVProgressHUD dismiss];
             KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:videoDetails];
+#if TARGET_OS_TV
+            [self presentViewController:searchItem animated:true completion:nil];
+#else
             [[self navigationController] pushViewController:searchItem animated:true];
-            
+#endif
         } failureBlock:^(NSString *error) {
             
             [SVProgressHUD dismiss];
@@ -407,6 +419,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)checkAirplay
 {
+#if TARGET_OS_IOS
     NSInteger status = [[KBYourTube sharedInstance] airplayStatus];
     
     if (status == 0) {
@@ -436,6 +449,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             });
         }
     });
+#endif
 }
 
 - (void)fireAirplayTimer
@@ -454,6 +468,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)populateToolbar:(NSInteger)status
 {
+#if TARGET_OS_IOS
     self.sliderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 220, 40)];
     self.airplaySlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, 220, 40)];
     self.airplaySlider.value = self.airplayProgressPercent;
@@ -469,6 +484,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     UIBarButtonItem *fixSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixSpace.width = 10.0f;
     self.toolbarItems = @[FLEXY,stopButton, fixSpace,playButton, fixSpace, sliderItem, FLEXY];
+#endif
 }
 
 

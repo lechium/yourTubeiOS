@@ -14,6 +14,7 @@
 
 - (id)initWithFrame:(CGRect)frame
 {
+   
     self = [super initWithFrame:frame];
     [self commonInit];
     return self;
@@ -24,17 +25,20 @@
     [self layoutIfNeeded];
     [self layoutSubviews];
     [self setNeedsDisplay];
+    self.title.alpha = 0;
 }
+
+
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
 {
     if ([self isFocused])
     {
         self.image.adjustsImageWhenAncestorFocused = true;
-        self.title.hidden = false;
+        self.title.alpha = 1;
     } else {
         self.image.adjustsImageWhenAncestorFocused = false;
-        self.title.hidden = true;
+        self.title.alpha = 0;
     }
 }
 
@@ -46,11 +50,13 @@
 - (void)prepareForReuse
 {
     [super prepareForReuse];
+    self.title.alpha = 0;
 }
 
 - (void)awakeFromNib
 {
     [super awakeFromNib];
+        self.title.alpha = 0;
 }
 
 @end

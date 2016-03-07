@@ -222,6 +222,13 @@
 		898E935F1C8D63C900B34DAA /* YTKBPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A83A0E1C877B6900E1987E /* YTKBPlayerViewController.m */; };
 		898E93621C8D74B300B34DAA /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93611C8D74B300B34DAA /* WebViewController.m */; };
 		898E93651C8D7ECE00B34DAA /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93641C8D7ECE00B34DAA /* UserViewController.m */; };
+		898E93661C8D8FA900B34DAA /* KBYTSearchTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */; };
+		898E93671C8D8FEC00B34DAA /* KBYTSearchItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67851C62B9BD00AE33FA /* KBYTSearchItemViewController.m */; };
+		898E93681C8D8FF400B34DAA /* KBYTGenericVideoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA601C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.m */; };
+		898E93691C8D910500B34DAA /* KBYTDownloadCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */; };
+		898E936A1C8D911700B34DAA /* JGProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */; };
+		898E936E1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */; };
+		898E93711C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93701C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m */; };
 		89A35CF11C8A222A000FFCA0 /* KBYTDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */; };
 		89A35CF41C8A27ED000FFCA0 /* kBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* kBYTDownloadOperation.m */; };
 		89A83A281C88A89300E1987E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A271C88A89300E1987E /* Assets.xcassets */; };
@@ -457,6 +464,10 @@
 		898E93611C8D74B300B34DAA /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
 		898E93631C8D7ECE00B34DAA /* UserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserViewController.h; sourceTree = "<group>"; };
 		898E93641C8D7ECE00B34DAA /* UserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserViewController.m; sourceTree = "<group>"; };
+		898E936C1C8E17CF00B34DAA /* KBYTSearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBYTSearchResultsViewController.h; sourceTree = "<group>"; };
+		898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTSearchResultsViewController.m; sourceTree = "<group>"; };
+		898E936F1C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBYTSearchResultCollectionViewCell.h; sourceTree = "<group>"; };
+		898E93701C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTSearchResultCollectionViewCell.m; sourceTree = "<group>"; };
 		899F73E81C6BED2A0088B434 /* KBYTDownloadCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadCell.h; path = yourTube/KBYTDownloadCell.h; sourceTree = "<group>"; };
 		899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadCell.m; path = yourTube/KBYTDownloadCell.m; sourceTree = "<group>"; };
 		89A35CEF1C8A222A000FFCA0 /* KBYTDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadManager.h; path = yourTube/KBYTDownloadManager.h; sourceTree = "<group>"; };
@@ -842,10 +853,7 @@
 				898E92831C8D254F00B34DAA /* Images */,
 				898E926B1C8D056700B34DAA /* AppDelegate.h */,
 				898E926C1C8D056700B34DAA /* AppDelegate.m */,
-				898E927D1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.h */,
-				898E927E1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.m */,
-				898E92801C8D162800B34DAA /* YTTVStandardCollectionViewCell.h */,
-				898E92811C8D162800B34DAA /* YTTVStandardCollectionViewCell.m */,
+				898E936B1C8E15A300B34DAA /* Collection View Cells */,
 				898E93601C8D74B300B34DAA /* WebViewController.h */,
 				898E93611C8D74B300B34DAA /* WebViewController.m */,
 				898E926E1C8D056700B34DAA /* FirstViewController.h */,
@@ -854,6 +862,8 @@
 				898E93641C8D7ECE00B34DAA /* UserViewController.m */,
 				898E92711C8D056700B34DAA /* SecondViewController.h */,
 				898E92721C8D056700B34DAA /* SecondViewController.m */,
+				898E936C1C8E17CF00B34DAA /* KBYTSearchResultsViewController.h */,
+				898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */,
 				898E92741C8D056700B34DAA /* Main.storyboard */,
 				898E92771C8D056700B34DAA /* Assets.xcassets */,
 				898E92791C8D056700B34DAA /* Info.plist */,
@@ -931,6 +941,19 @@
 				898E92BB1C8D254F00B34DAA /* tv-9.jpg */,
 			);
 			path = Images;
+			sourceTree = "<group>";
+		};
+		898E936B1C8E15A300B34DAA /* Collection View Cells */ = {
+			isa = PBXGroup;
+			children = (
+				898E936F1C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.h */,
+				898E93701C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m */,
+				898E927D1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.h */,
+				898E927E1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.m */,
+				898E92801C8D162800B34DAA /* YTTVStandardCollectionViewCell.h */,
+				898E92811C8D162800B34DAA /* YTTVStandardCollectionViewCell.m */,
+			);
+			name = "Collection View Cells";
 			sourceTree = "<group>";
 		};
 		89A83A1A1C88A89300E1987E /* tuyu */ = {
@@ -1412,10 +1435,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				898E93581C8D56D100B34DAA /* UIView+WebCacheOperation.m in Sources */,
+				898E93681C8D8FF400B34DAA /* KBYTGenericVideoTableViewController.m in Sources */,
 				898E93461C8D56BB00B34DAA /* SVIndefiniteAnimatedView.m in Sources */,
+				898E93691C8D910500B34DAA /* KBYTDownloadCell.m in Sources */,
+				898E93711C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m in Sources */,
 				898E92821C8D162800B34DAA /* YTTVStandardCollectionViewCell.m in Sources */,
 				898E93041C8D564300B34DAA /* APElement.m in Sources */,
 				898E92731C8D056700B34DAA /* SecondViewController.m in Sources */,
+				898E936A1C8D911700B34DAA /* JGProgressView.m in Sources */,
 				898E93051C8D564600B34DAA /* ONOXMLDocument.m in Sources */,
 				898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */,
 				898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */,
@@ -1444,11 +1471,14 @@
 				898E93551C8D56D100B34DAA /* UIImage+WebP.m in Sources */,
 				898E93621C8D74B300B34DAA /* WebViewController.m in Sources */,
 				898E930F1C8D568B00B34DAA /* APDeviceController.m in Sources */,
+				898E93661C8D8FA900B34DAA /* KBYTSearchTableViewController.m in Sources */,
 				898E93101C8D569100B34DAA /* Reachability.m in Sources */,
 				898E93031C8D564100B34DAA /* APDocument.m in Sources */,
+				898E936E1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m in Sources */,
 				898E93081C8D565800B34DAA /* KBYTQueuePlayer.m in Sources */,
 				898E93571C8D56D100B34DAA /* UIImageView+WebCache.m in Sources */,
 				898E934E1C8D56D100B34DAA /* SDWebImageDownloader.m in Sources */,
+				898E93671C8D8FEC00B34DAA /* KBYTSearchItemViewController.m in Sources */,
 				898E93091C8D565B00B34DAA /* KBYourTube.m in Sources */,
 				898E93651C8D7ECE00B34DAA /* UserViewController.m in Sources */,
 				898E935B1C8D5B4F00B34DAA /* MarqueeLabel.m in Sources */,

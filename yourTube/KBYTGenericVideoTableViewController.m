@@ -701,6 +701,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)checkAirplay
 {
+    #if TARGET_OS_IOS
     NSInteger status = [[KBYourTube sharedInstance] airplayStatus];
     
     if (status == 0) {
@@ -730,6 +731,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             });
         }
     });
+#endif
 }
 
 - (void)fireAirplayTimer
@@ -748,6 +750,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)populateToolbar:(NSInteger)status
 {
+    #if TARGET_OS_IOS
     self.sliderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 220, 40)];
     self.airplaySlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, 220, 40)];
     self.airplaySlider.value = self.airplayProgressPercent;
@@ -763,6 +766,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     UIBarButtonItem *fixSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixSpace.width = 10.0f;
     self.toolbarItems = @[FLEXY,stopButton, fixSpace,playButton, fixSpace, sliderItem, FLEXY];
+#endif
 }
 
 
