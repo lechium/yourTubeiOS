@@ -191,7 +191,7 @@
         playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
         [self presentViewController:playerView animated:YES completion:nil];
         [playerView.player play];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerView];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
         
         
     } failureBlock:^(NSString *error) {

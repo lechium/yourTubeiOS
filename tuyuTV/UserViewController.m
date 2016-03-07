@@ -212,7 +212,7 @@
         [self presentViewController:playerView animated:YES completion:nil];
         [playerView.player play];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:playerView];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
         
     } failureBlock:^(NSString *error) {
         
@@ -222,6 +222,7 @@
 
 - (void)itemDidFinishPlaying:(NSNotification *)n
 {
+    LOG_SELF;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     [self dismissViewControllerAnimated:true completion:nil];
 }
