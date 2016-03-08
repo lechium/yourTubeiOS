@@ -15,10 +15,12 @@
 @interface KBYTSearchResultsViewController ()
 
 @property (readwrite, assign) NSInteger currentPage;
+@property (readwrite, assign) NSInteger rows; //5 items per row
 @property (nonatomic, strong) NSString *filterString;
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;
+
 
 @end
 
@@ -40,52 +42,50 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 #pragma mark <UICollectionViewDataSource>
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-
+    
     return 1;
 }
 
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-
- 
+    
+    
     return self.searchResults.count;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    LOG_SELF;
+
+  
 }
-/*
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    LOG_SELF;
-     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
-    YTTVStandardCollectionViewCell *theCell = (YTTVStandardCollectionViewCell *)cell;
-    NSLog(@"cell: %@", theCell);
-    NSLog(@"title: %@", theCell.title.text);
-    
-    theCell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
-    NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
-    UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
-    [theCell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
-    NSLog(@"title: %@", theCell.title.text);
-    
-    
-}
+
+ - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+ {
+     
+     //check to see if we are on the last row
+     NSInteger rowCount = self.searchResults.count / 5;
+     NSInteger currentRow = indexPath.row / 5;
+   //  NSLog(@"indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
+     if (currentRow+1 >= rowCount)
+     {
+         [self getNextPage];
+     }
  
- */
+ }
+ 
+ 
 
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -93,7 +93,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
     
-     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
+    NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
     [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
     cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
@@ -144,15 +144,13 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
-
+    self.currentPage = 1; //reset for new search
     self.filterString = searchController.searchBar.text;
-    if (self.currentPage == 1)
-        [SVProgressHUD show];
+ 
+    
     [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:false completionBlock:^(NSDictionary *searchDetails) {
         
         //  NSLog(@"search details: %@", searchDetails);
-        if (self.currentPage == 1)
-            [SVProgressHUD dismiss];
         
         self.totalResults = [searchDetails[@"resultCount"] integerValue];
         self.pageCount = [searchDetails[@"pageCount"] integerValue];
@@ -168,20 +166,54 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }];
 }
 
+- (void)getNextPage
+{
+    if (_gettingPage) return;
+    NSInteger nextPage = self.currentPage + 1;
+    if (self.pageCount > nextPage)
+    {
+        _gettingPage = true;
+        self.currentPage = nextPage;
+        [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:false completionBlock:^(NSDictionary *searchDetails) {
+            
+            //  NSLog(@"search details: %@", searchDetails);
+            if (self.currentPage == 1)
+                [SVProgressHUD dismiss];
+            
+            self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            //self.searchResults = searchDetails[@"results"];
+            [self updateSearchResults:searchDetails[@"results"]];
+            [self.collectionView reloadData];
+            _gettingPage = false;
+            
+        } failureBlock:^(NSString *error) {
+            //
+            [SVProgressHUD dismiss];
+            
+        }];
+    
+    }
+    
+}
+
 #pragma mark <UICollectionViewDelegate>
 
 
 // Uncomment this method to specify if the specified item should be highlighted during tracking
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
-	return YES;
+    LOG_SELF;
+    return YES;
 }
 
 
 
 // Uncomment this method to specify if the specified item should be selected
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+        LOG_SELF;
     return YES;
 }
+
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -190,18 +222,18 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 /*
-// Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
+ // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
+ - (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
 	return NO;
-}
-
-- (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+ }
+ 
+ - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
 	return NO;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+ }
+ 
+ - (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
 	
-}
-*/
+ }
+ */
 
 @end

@@ -13,15 +13,19 @@
 #import "UIImageView+WebCache.h"
 #import "SVProgressHUD.h"
 #import "YTKBPlayerViewController.h"
+#import "KBYTQueuePlayer.h"
 #import "MarqueeLabel.h"
 
 @interface UserViewController ()
+
+@property (nonatomic, strong) YTKBPlayerViewController *playerView;
+@property (nonatomic, strong) KBYTQueuePlayer *player;
 
 @end
 
 @implementation UserViewController
 
-@synthesize reuseFeatureID, reuseStandardID;
+@synthesize reuseFeatureID, reuseStandardID, playerView;
 
 - (void)viewDidLoad {
     
@@ -161,6 +165,35 @@
     }
 }
 
+- (void)playAllSearchResults:(NSArray *)searchResults
+{
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD show];
+    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
+        
+        [SVProgressHUD dismiss];
+        self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
+        
+        [self presentViewController:self.playerView animated:YES completion:nil];
+        [[self.playerView player] play];
+        NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(1, searchResults.count-1)];
+        
+        NSDate *myStart = [NSDate date];
+        [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
+            
+            NSLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            [self.playerView addObjectsToPlayerQueue:videoArray];
+            
+        } failureBlock:^(NSString *error) {
+            
+        }];
+
+        
+    } failureBlock:^(NSString *error) {
+        
+    }];
+  }
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (collectionView == self.collectionView1)
@@ -174,24 +207,21 @@
     {
         if (self.popularVideos.count > 0)
         {
-            KBYTSearchResult *currentItem = [self.popularVideos objectAtIndex:indexPath.row];
-            [self playFirstStreamForResult:currentItem];
+            [self playAllSearchResults:self.popularVideos];
         }
        
     } else if (collectionView == self.collectionView3)
     {
         if (self.musicVideos.count > 0)
         {
-            KBYTSearchResult *currentItem = [self.musicVideos objectAtIndex:indexPath.row];
-            [self playFirstStreamForResult:currentItem];
+            [self playAllSearchResults:self.musicVideos];
         }
         
     } else if (collectionView == self.collectionView4)
     {
         if (self.sportsVideos.count > 0)
         {
-            KBYTSearchResult *currentItem = [self.sportsVideos objectAtIndex:indexPath.row];
-            [self playFirstStreamForResult:currentItem];
+            [self playAllSearchResults:self.sportsVideos];
         }
         
     }
@@ -222,7 +252,6 @@
 
 - (void)itemDidFinishPlaying:(NSNotification *)n
 {
-    LOG_SELF;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     [self dismissViewControllerAnimated:true completion:nil];
 }

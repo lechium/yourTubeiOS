@@ -46,9 +46,9 @@
     }];
     
    
-    
+#if TARGET_OS_IOS
     self.titleTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(setNowPlayingInfo) userInfo:nil repeats:true];
-    
+#endif 
     
 }
 
@@ -185,7 +185,9 @@
 - (void)queuePlayer:(KBYTQueuePlayer *)player didStartPlayingItem:(AVPlayerItem *)item
 {
 //    LOG_SELF;
+#if TARGET_OS_IOS
     [self setNowPlayingInfo];
+#endif
     /*
     if ([[(KBYTQueuePlayer *)self.player items] count] == 0)
     {

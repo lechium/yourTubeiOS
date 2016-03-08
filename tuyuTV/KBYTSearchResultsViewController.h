@@ -9,5 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface KBYTSearchResultsViewController : UICollectionViewController <UISearchResultsUpdating>
-
+{
+    BOOL _gettingPage;
+}
 @end
