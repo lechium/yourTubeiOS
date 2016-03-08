@@ -115,7 +115,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)itemDidFinishPlaying:(NSNotification *)n
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
-    [self dismissViewControllerAnimated:true completion:nil];
+    [[self.presentingViewController navigationController] popViewControllerAnimated:true];
 }
 
 
@@ -129,9 +129,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         NSURL *playURL = [[videoDetails.streams firstObject] url];
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
         AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
-        
         playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-        [self presentViewController:playerView animated:YES completion:nil];
+        [[self.presentingViewController navigationController] pushViewController:playerView animated:true];
         [playerView.player play];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
         
