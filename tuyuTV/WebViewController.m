@@ -9,6 +9,8 @@
 
 #import "WebViewController.h"
 #import <GameController/GameController.h>
+#import "KBYourTube.h"
+#import "AppDelegate.h"
 
 typedef struct _Input
 {
@@ -24,6 +26,8 @@ typedef struct _Input
     Input input;
     NSString *requestURL;
     NSString *previousURL;
+    NSString *_currentURL;
+    BOOL _alertShowing;
 }
 
 @property UIWebView *webview;
@@ -70,9 +74,134 @@ typedef struct _Input
     NSArray *toStoreArray = historyArray;
     [[NSUserDefaults standardUserDefaults] setObject:toStoreArray forKey:@"HISTORY"];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    if ([[KBYourTube sharedInstance] isSignedIn])
+    {
+        NSLog(@"we be signed in!");
+        AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        
+        if ([[KBYourTube sharedInstance] userDetails] == nil)
+        {
+            [ad updateForSignedIn];
+        }
+        return;
+    }
+    
+    if (currentURL == _currentURL)
+    {
+        return;
+    }
+    
+    _currentURL = currentURL;
+    
+    
+    NSString * email = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"Email\").placeholder;"];
+    
+    if ([email isEqualToString:@"Enter your email"] && ![currentURL isEqualToString:@"https://accounts.google.com/ServiceLoginAuth"])
+    {
+        [self promptForEmail];
+        return;
+    }
+    
+    NSString *password = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"Passwd\").placeholder;"];
+    
+    if ([password isEqualToString:@"Password"])
+    {
+        
+        [self promptForPassword];
+        return;
+    }
+    
+    /*
+    NSString *javascript = @"var textField = document.getElementById(\"Passwd\");"
+     "textField.value = 'pw';"
+     "textField.form.submit();";
+     [_webview stringByEvaluatingJavaScriptFromString:javascript];
+ 
+ */
 }
+
+- (void)promptForEmail
+{
+    LOG_SELF;
+        if (_alertShowing) { return; }
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Input Text"
+                                          message: @"Enter your email"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+       
+        textField.placeholder = @"Enter your email";
+        textField.keyboardType = UIKeyboardTypeEmailAddress;
+        textField.keyboardAppearance = UIKeyboardAppearanceDark;
+
+    }];
+    
+    UIAlertAction *inputAndSubmitAction = [UIAlertAction
+                                           actionWithTitle:@"Submit"
+                                           style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction *action)
+                                           {
+                                               UITextField *inputViewTextField = alertController.textFields[0];
+                                               NSString *javaScript = [NSString stringWithFormat:@"var textField = document.getElementById(\"Email\");"
+                                                                       "textField.value = '%@';"
+                                                                       "textField.form.submit();",inputViewTextField.text];
+                                               [_webview stringByEvaluatingJavaScriptFromString:javaScript];
+                                               _alertShowing = false;
+                                           }];
+    
+    [alertController addAction:inputAndSubmitAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+    //UITextField *inputViewTextField = alertController.textFields[0];
+    //[inputViewTextField becomeFirstResponder];
+    _alertShowing = true;
+}
+
+- (void)promptForPassword
+{
+    if (_alertShowing) { return; }
+    LOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Input Text"
+                                          message: @"Enter your Password"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        
+        textField.placeholder = @"Password";
+        textField.keyboardType = UIKeyboardTypeDefault;
+        textField.keyboardAppearance = UIKeyboardAppearanceDark;
+        textField.secureTextEntry = true;
+        
+    }];
+    
+    UIAlertAction *inputAndSubmitAction = [UIAlertAction
+                                           actionWithTitle:@"Submit"
+                                           style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction *action)
+                                           {
+                                               UITextField *inputViewTextField = alertController.textFields[0];
+                                               NSString *javaScript = [NSString stringWithFormat:@"var textField = document.getElementById(\"Passwd\");"
+                                                                       "textField.value = '%@';"
+                                                                       "textField.form.submit();",inputViewTextField.text];
+                                               [_webview stringByEvaluatingJavaScriptFromString:javaScript];
+                                               _alertShowing = false;
+                                           }];
+    
+    [alertController addAction:inputAndSubmitAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+    //UITextField *inputViewTextField = alertController.textFields[0];
+    //[inputViewTextField becomeFirstResponder];
+    
+    _alertShowing = true;
+}
+
 -(void)viewDidAppear:(BOOL)animated {
+    LOG_SELF;
+    
     loadingSpinner.center = CGPointMake(CGRectGetMidX([UIScreen mainScreen].bounds), CGRectGetMidY([UIScreen mainScreen].bounds));
+    
     if ([[NSUserDefaults standardUserDefaults] stringForKey:@"savedURLtoReopen"] != nil) {
         [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[NSUserDefaults standardUserDefaults] stringForKey:@"savedURLtoReopen"]]]];
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"savedURLtoReopen"];
@@ -88,6 +217,8 @@ typedef struct _Input
     _displayedHintsOnLaunch = YES;
 }
 -(void)loadHomePage {
+    
+    
     if ([[NSUserDefaults standardUserDefaults] stringForKey:@"homepage"] != nil) {
         [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[NSUserDefaults standardUserDefaults] stringForKey:@"homepage"]]]];
     }
@@ -120,7 +251,19 @@ typedef struct _Input
     [self.view addGestureRecognizer:longPress];
     
     self.webview = [[UIWebView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3"]]];
+    
+    NSString *authString = @"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3#identifier";
+    
+    
+    if ([[KBYourTube sharedInstance] isSignedIn])
+    {
+        authString = @"https://www.youtube.com/logout";
+        AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        [ad updateForSignedOut];
+    }
+    
+    
+    [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:authString]]];
     
     [self.view addSubview:self.webview];
     [self.view addSubview:cursorView];
@@ -456,6 +599,7 @@ typedef struct _Input
 }
 -(void)requestURLorSearchInput
 {
+    LOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Enter URL or Search Terms"
                                           message:@""
@@ -638,7 +782,7 @@ typedef struct _Input
         }
         
         [alertController addAction:cancelAction];
-        [self presentViewController:alertController animated:YES completion:nil];
+     //   [self presentViewController:alertController animated:YES completion:nil];
     }
 }
 -(void)toggleMode
@@ -660,6 +804,7 @@ typedef struct _Input
 }
 - (void)showHintsAlert
 {
+    LOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Usage Guide"
                                           message:@"Double press the touch area to switch between cursor & scroll mode.\nPress the touch area while in cursor mode to click.\nPress the Menu button to navigate back.\nPress the Play/Pause button for a URL bar.\nDouble tap the Play/Pause button or Menu button for more options."
@@ -742,7 +887,7 @@ typedef struct _Input
 }
 -(void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event
 {
-    
+     LOG_SELF;
     if (presses.anyObject.type == UIPressTypeMenu)
     {
         UIAlertController *alertController = (UIAlertController *)self.presentedViewController;
@@ -777,7 +922,7 @@ typedef struct _Input
         {
             /* Gross. */
             CGPoint point = [self.webview convertPoint:cursorView.frame.origin toView:nil];
-            
+          
             [self.webview stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.elementFromPoint(%i, %i).click()", (int)point.x, (int)point.y]];
             // Make the UIWebView method call
             NSString *fieldType = [_webview stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"document.elementFromPoint(%i, %i).type;", (int)point.x, (int)point.y]];

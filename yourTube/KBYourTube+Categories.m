@@ -265,6 +265,23 @@
     return dlF;
 }
 
+//take a url and get its raw body, then return in string format
+
+- (NSString *)stringFromRequest:(NSString *)url
+{
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]
+                                                           cachePolicy:NSURLRequestReloadIgnoringCacheData
+                                                       timeoutInterval:10];
+    
+    NSURLResponse *response = nil;
+    
+    [request setHTTPMethod:@"GET"];
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
+}
+
 @end
 
 

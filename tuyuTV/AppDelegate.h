@@ -13,5 +13,8 @@
 @property (strong, nonatomic) UIWindow *window;
 @property (weak, nonatomic) UITabBarController *tabBar;
 
+- (void)updateForSignedIn;
+- (void)updateForSignedOut;
+
 @end
 

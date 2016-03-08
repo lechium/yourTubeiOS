@@ -229,6 +229,7 @@
 		898E936A1C8D911700B34DAA /* JGProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */; };
 		898E936E1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */; };
 		898E93711C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93701C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m */; };
+		898E93741C8F65F200B34DAA /* SignOutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93731C8F65F200B34DAA /* SignOutViewController.m */; };
 		89A35CF11C8A222A000FFCA0 /* KBYTDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */; };
 		89A35CF41C8A27ED000FFCA0 /* kBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* kBYTDownloadOperation.m */; };
 		89A83A281C88A89300E1987E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A271C88A89300E1987E /* Assets.xcassets */; };
@@ -468,6 +469,8 @@
 		898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTSearchResultsViewController.m; sourceTree = "<group>"; };
 		898E936F1C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBYTSearchResultCollectionViewCell.h; sourceTree = "<group>"; };
 		898E93701C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTSearchResultCollectionViewCell.m; sourceTree = "<group>"; };
+		898E93721C8F65F200B34DAA /* SignOutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignOutViewController.h; sourceTree = "<group>"; };
+		898E93731C8F65F200B34DAA /* SignOutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignOutViewController.m; sourceTree = "<group>"; };
 		899F73E81C6BED2A0088B434 /* KBYTDownloadCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadCell.h; path = yourTube/KBYTDownloadCell.h; sourceTree = "<group>"; };
 		899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadCell.m; path = yourTube/KBYTDownloadCell.m; sourceTree = "<group>"; };
 		89A35CEF1C8A222A000FFCA0 /* KBYTDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadManager.h; path = yourTube/KBYTDownloadManager.h; sourceTree = "<group>"; };
@@ -854,6 +857,8 @@
 				898E926B1C8D056700B34DAA /* AppDelegate.h */,
 				898E926C1C8D056700B34DAA /* AppDelegate.m */,
 				898E936B1C8E15A300B34DAA /* Collection View Cells */,
+				898E93721C8F65F200B34DAA /* SignOutViewController.h */,
+				898E93731C8F65F200B34DAA /* SignOutViewController.m */,
 				898E93601C8D74B300B34DAA /* WebViewController.h */,
 				898E93611C8D74B300B34DAA /* WebViewController.m */,
 				898E926E1C8D056700B34DAA /* FirstViewController.h */,
@@ -1462,6 +1467,7 @@
 				898E92701C8D056700B34DAA /* FirstViewController.m in Sources */,
 				898E93121C8D569800B34DAA /* UIImage+Scale.m in Sources */,
 				898E926A1C8D056700B34DAA /* main.m in Sources */,
+				898E93741C8F65F200B34DAA /* SignOutViewController.m in Sources */,
 				898E93021C8D563E00B34DAA /* APAttribute.m in Sources */,
 				898E935A1C8D56D800B34DAA /* RNFrostedSidebar.m in Sources */,
 				898E934B1C8D56D100B34DAA /* SDImageCache.m in Sources */,

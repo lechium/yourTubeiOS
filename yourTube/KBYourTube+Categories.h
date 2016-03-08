@@ -46,6 +46,7 @@
 - (NSMutableDictionary *)parseFlashVars:(NSString *)vars;
 - (NSArray *)matchesForString:(NSString *)string withRegex:(NSString *)pattern;
 - (NSMutableDictionary *)dictionaryFromString:(NSString *)string withRegex:(NSString *)pattern;
+- (NSString *)stringFromRequest:(NSString *)url;
 
 @end
 

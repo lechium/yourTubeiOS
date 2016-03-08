@@ -9,6 +9,7 @@
 #import "KBYourTube.h"
 #import "APDocument/APXML.h"
 #import "Ono/ONOXMLDocument.h"
+#import "KBYourTube+Categories.h"
 
 /**
  
@@ -457,7 +458,7 @@
     ONOXMLElement *root = [xmlDoc rootElement];
     ONOXMLElement * displayMessage = [root firstChildWithXPath:@"//div[contains(@class, 'display-message')]"];
     NSString *displayMessageString = [displayMessage stringValue];
-    NSLog(@"displayMessageString: %@", displayMessageString);
+   // NSLog(@"displayMessageString: %@", displayMessageString);
     NSString *checkString = @"Watch History isn't viewable when signed out.";
     if ([displayMessageString rangeOfString:checkString].location == NSNotFound || [displayMessageString length] == 0 || displayMessageString == nil)
     {
@@ -553,7 +554,10 @@
     if ([allObjects count] > 1)
     {
         ONOXMLElement *channelElement = [allObjects objectAtIndex:1];
+        if ([channelElement valueForAttribute:@"href"] != nil && watchLaterCount != nil)
+        {
         return @{@"channelID": [[channelElement valueForAttribute:@"href"] lastPathComponent], @"wlCount": watchLaterCount};
+        }
     }
     
     //<span class="yt-valign-container guide-count-value">4</span>
@@ -787,25 +791,6 @@
     NSString *datString = [[NSString alloc] initWithData:returnData  encoding:NSUTF8StringEncoding];
     NSLog(@"return details: %@", datString);
     return [datString dictionaryValue];
-}
-
-
-
-//take a url and get its raw body, then return in string format
-
-- (NSString *)stringFromRequest:(NSString *)url
-{
-    
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]
-                                                           cachePolicy:NSURLRequestReloadIgnoringCacheData
-                                                       timeoutInterval:10];
-    
-    NSURLResponse *response = nil;
-    
-    [request setHTTPMethod:@"GET"];
-    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
-    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    
 }
 
 

@@ -51,6 +51,23 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
  }
  */
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
+    [sc.searchBar becomeFirstResponder];
+}
+
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
+    [sc.searchBar resignFirstResponder];
+    //NSLog(@"sc: %@", sc);
+    
+}
+
 #pragma mark <UICollectionViewDataSource>
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {

@@ -23,9 +23,12 @@
 
 #import "AppDelegate.h"
 #import "KBYourTube.h"
+#import "KBYourTube+Categories.h"
 #import "UserViewController.h"
 #import "KBYTSearchTableViewController.h"
 #import "KBYTSearchResultsViewController.h"
+#import "SignOutViewController.h"
+#import "WebViewController.h"
 
 @interface AppDelegate ()
 
@@ -48,6 +51,58 @@
     return searchNavigationController;
 }
 
+- (void)updateForSignedIn
+{
+    NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
+    if ([viewControllers count] == 4) { return; }
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    [self.tabBar setSelectedIndex:0];
+    [viewControllers removeObjectAtIndex:1];
+    UIViewController *pvc = [self packagedSearchController];
+    [viewControllers insertObject:pvc atIndex:1];
+    if ([[KBYourTube sharedInstance] isSignedIn])
+    {
+        [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+            
+            // NSLog(@"userdeets : %@", outputResults);
+            [[KBYourTube sharedInstance] setUserDetails:outputResults];
+            
+            UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
+            //NSLog(@"uvc: %@", uvc);
+            uvc.title = outputResults[@"userName"];
+            [viewControllers insertObject:uvc atIndex:1];
+            [viewControllers removeLastObject];
+            SignOutViewController *svc = [SignOutViewController new];
+            svc.title = @"sign out";
+            [viewControllers addObject:svc];
+            self.tabBar.viewControllers = viewControllers;
+            
+            
+        } failureBlock:^(NSString *error) {
+            //
+        }];
+    }
+}
+
+- (void)updateForSignedOut
+{
+    NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
+    [self.tabBar setSelectedIndex:0];
+    if ([viewControllers count] == 4)
+    {
+        [viewControllers removeObjectAtIndex:1];
+    }
+    
+    [viewControllers removeLastObject];
+    WebViewController *wvc = [[WebViewController alloc] init];
+    wvc.title = @"sign in";
+    [viewControllers addObject:wvc];
+    self.tabBar.viewControllers = viewControllers;
+    [[KBYourTube sharedInstance] setUserDetails:nil];
+}
+
+
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
@@ -60,7 +115,6 @@
     
     if ([[KBYourTube sharedInstance] isSignedIn])
     {
-        NSLog(@"is signed in!");
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
            
            // NSLog(@"userdeets : %@", outputResults);
@@ -71,6 +125,10 @@
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];
             //[vc addObject:uvc];
+            [viewControllers removeLastObject];
+            SignOutViewController *svc = [SignOutViewController new];
+            svc.title = @"sign out";
+            [viewControllers addObject:svc];
             self.tabBar.viewControllers = viewControllers;
             
             
