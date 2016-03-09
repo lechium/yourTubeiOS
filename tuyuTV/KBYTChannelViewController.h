@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface KBYTChannelViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+{
+    BOOL _gettingPage;
+}
 
 @property (nonatomic, weak) IBOutlet UILabel *authorLabel;
 @property (nonatomic, weak) IBOutlet UILabel *subscribersLabel;
@@ -16,7 +19,9 @@
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;
+@property (readwrite, assign) NSInteger currentPage;
 @property (nonatomic, strong) NSString *channelTitle;
 @property (nonatomic, strong) NSString *subscribers;
 @property (nonatomic, strong) NSString *bannerURL;
+@property (nonatomic, strong) NSString *nextHREF;
 @end

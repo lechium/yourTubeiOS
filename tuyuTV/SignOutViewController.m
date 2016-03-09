@@ -20,8 +20,14 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
     
-    [self showSignOutAlert];
+    
     // Do any additional setup after loading the view.
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self showSignOutAlert];
 }
 
 - (void)showSignOutAlert

@@ -27,13 +27,14 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-   
+    _gettingPage = false;
     // Do any additional setup after loading the view.
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.currentPage = 1;
     UIImage *banner = [UIImage imageNamed:@"Banner"];
     NSURL *imageURL = [NSURL URLWithString:self.bannerURL];
     [self.bannerImage sd_setImageWithURL:imageURL placeholderImage:banner options:SDWebImageAllowInvalidSSLCertificates];
@@ -83,6 +84,62 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     // Configure the cell
     
     return cell;
+}
+
+- (void)updateSearchResults:(NSArray *)newResults
+{
+    if (self.currentPage > 1)
+    {
+        [[self searchResults] addObjectsFromArray:newResults];
+    } else {
+        self.searchResults = [newResults mutableCopy];
+    }
+}
+
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    //check to see if we are on the last row
+    NSInteger rowCount = self.searchResults.count / 5;
+    NSInteger currentRow = indexPath.row / 5;
+    //  NSLog(@"indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
+    if (currentRow+1 >= rowCount)
+    {
+        [self getNextPage];
+    }
+    
+}
+
+- (void)getNextPage
+{
+    if (_gettingPage) return;
+    NSInteger nextPage = self.currentPage + 1;
+    if ([self.nextHREF length] > 0)
+    {
+        _gettingPage = true;
+        self.currentPage = nextPage;
+         [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
+            
+              NSLog(@"search details: %@", outputResults);
+            if (self.currentPage == 1)
+                [SVProgressHUD dismiss];
+            
+            self.nextHREF = outputResults[@"loadMoreREF"];;
+            self.totalResults = [outputResults[@"resultCount"] integerValue];
+            self.pageCount = [outputResults[@"pageCount"] integerValue];
+            //self.searchResults = searchDetails[@"results"];
+            [self updateSearchResults:outputResults[@"results"]];
+            [self.channelCollectionView reloadData];
+            _gettingPage = false;
+            
+        } failureBlock:^(NSString *error) {
+            //
+            [SVProgressHUD dismiss];
+            self.nextHREF = nil;
+        }];
+        
+    }
+    
 }
 
 - (void)itemDidFinishPlaying:(NSNotification *)n

@@ -250,6 +250,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             [SVProgressHUD dismiss];
             cv.searchResults = searchDetails[@"results"];
             cv.pageCount = 1;
+            cv.nextHREF = searchDetails[@"loadMoreREF"];
             cv.bannerURL = searchDetails[@"banner"];
             cv.channelTitle = searchDetails[@"name"];
             cv.subscribers = searchDetails[@"subscribers"];
