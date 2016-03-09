@@ -77,7 +77,6 @@ typedef struct _Input
     
     if ([[KBYourTube sharedInstance] isSignedIn])
     {
-        NSLog(@"we be signed in!");
         AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
         if ([[KBYourTube sharedInstance] userDetails] == nil)

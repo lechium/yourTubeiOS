@@ -230,6 +230,8 @@
 		898E936E1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */; };
 		898E93711C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93701C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m */; };
 		898E93741C8F65F200B34DAA /* SignOutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93731C8F65F200B34DAA /* SignOutViewController.m */; };
+		898E93761C90AFAA00B34DAA /* Banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 898E93751C90AFAA00B34DAA /* Banner.png */; };
+		898E93791C90B0A000B34DAA /* KBYTChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93781C90B0A000B34DAA /* KBYTChannelViewController.m */; };
 		89A35CF11C8A222A000FFCA0 /* KBYTDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */; };
 		89A35CF41C8A27ED000FFCA0 /* kBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* kBYTDownloadOperation.m */; };
 		89A83A281C88A89300E1987E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A271C88A89300E1987E /* Assets.xcassets */; };
@@ -471,6 +473,9 @@
 		898E93701C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTSearchResultCollectionViewCell.m; sourceTree = "<group>"; };
 		898E93721C8F65F200B34DAA /* SignOutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignOutViewController.h; sourceTree = "<group>"; };
 		898E93731C8F65F200B34DAA /* SignOutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignOutViewController.m; sourceTree = "<group>"; };
+		898E93751C90AFAA00B34DAA /* Banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Banner.png; sourceTree = "<group>"; };
+		898E93771C90B0A000B34DAA /* KBYTChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBYTChannelViewController.h; sourceTree = "<group>"; };
+		898E93781C90B0A000B34DAA /* KBYTChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTChannelViewController.m; sourceTree = "<group>"; };
 		899F73E81C6BED2A0088B434 /* KBYTDownloadCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadCell.h; path = yourTube/KBYTDownloadCell.h; sourceTree = "<group>"; };
 		899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadCell.m; path = yourTube/KBYTDownloadCell.m; sourceTree = "<group>"; };
 		89A35CEF1C8A222A000FFCA0 /* KBYTDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadManager.h; path = yourTube/KBYTDownloadManager.h; sourceTree = "<group>"; };
@@ -869,6 +874,8 @@
 				898E92721C8D056700B34DAA /* SecondViewController.m */,
 				898E936C1C8E17CF00B34DAA /* KBYTSearchResultsViewController.h */,
 				898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */,
+				898E93771C90B0A000B34DAA /* KBYTChannelViewController.h */,
+				898E93781C90B0A000B34DAA /* KBYTChannelViewController.m */,
 				898E92741C8D056700B34DAA /* Main.storyboard */,
 				898E92771C8D056700B34DAA /* Assets.xcassets */,
 				898E92791C8D056700B34DAA /* Info.plist */,
@@ -888,6 +895,7 @@
 		898E92831C8D254F00B34DAA /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				898E93751C90AFAA00B34DAA /* Banner.png */,
 				898E92841C8D254F00B34DAA /* feature-0.jpg */,
 				898E92851C8D254F00B34DAA /* feature-1.jpg */,
 				898E92861C8D254F00B34DAA /* feature-2.jpg */,
@@ -1370,6 +1378,7 @@
 				898E93331C8D56A700B34DAA /* Icon@2x.png in Resources */,
 				898E92DF1C8D254F00B34DAA /* movie-9.jpg in Resources */,
 				898E93181C8D56A700B34DAA /* activityAudio@3x.png in Resources */,
+				898E93761C90AFAA00B34DAA /* Banner.png in Resources */,
 				898E92C41C8D254F00B34DAA /* featuredtv-0.jpg in Resources */,
 				898E92E31C8D254F00B34DAA /* tv-11.jpg in Resources */,
 			);
@@ -1473,6 +1482,7 @@
 				898E934B1C8D56D100B34DAA /* SDImageCache.m in Sources */,
 				898E935F1C8D63C900B34DAA /* YTKBPlayerViewController.m in Sources */,
 				898E93481C8D56BF00B34DAA /* SVRadialGradientLayer.m in Sources */,
+				898E93791C90B0A000B34DAA /* KBYTChannelViewController.m in Sources */,
 				898E93501C8D56D100B34DAA /* SDWebImageManager.m in Sources */,
 				898E93551C8D56D100B34DAA /* UIImage+WebP.m in Sources */,
 				898E93621C8D74B300B34DAA /* WebViewController.m in Sources */,

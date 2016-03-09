@@ -25,7 +25,7 @@
     [self layoutIfNeeded];
     [self layoutSubviews];
     [self setNeedsDisplay];
-    self.title.alpha = 0;
+    self.title.alpha = 1;
 }
 
 
@@ -38,7 +38,7 @@
         self.title.alpha = 1;
     } else {
         self.image.adjustsImageWhenAncestorFocused = false;
-        self.title.alpha = 0;
+        self.title.alpha = 1;
     }
 }
 
@@ -50,13 +50,13 @@
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    self.title.alpha = 0;
+    self.title.alpha = 1;
 }
 
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-        self.title.alpha = 0;
+        self.title.alpha = 1;
 }
 
 @end

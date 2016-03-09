@@ -11,6 +11,8 @@
 #import "SVProgressHUD.h"
 #import "KBYourTube.h"
 #import "UIImageView+WebCache.h"
+#import "KBYTChannelViewController.h"
+#import "SVProgressHUD.h"
 
 @interface KBYTSearchResultsViewController ()
 
@@ -164,7 +166,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     self.filterString = searchController.searchBar.text;
  
     
-    [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:false completionBlock:^(NSDictionary *searchDetails) {
+    [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
         
         //  NSLog(@"search details: %@", searchDetails);
         
@@ -190,7 +192,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     {
         _gettingPage = true;
         self.currentPage = nextPage;
-        [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:false completionBlock:^(NSDictionary *searchDetails) {
+        [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
             
             //  NSLog(@"search details: %@", searchDetails);
             if (self.currentPage == 1)
@@ -234,7 +236,31 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
-    [self playFirstStreamForResult:searchResult];
+    if (searchResult.resultType == kYTSearchResultTypeVideo)
+    {
+        [self playFirstStreamForResult:searchResult];
+    } else if (searchResult.resultType == kYTSearchResultTypeChannel)
+    {
+        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        KBYTChannelViewController *cv = [sb instantiateViewControllerWithIdentifier:@"channelViewController"];
+        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+        [SVProgressHUD show];
+        [[KBYourTube sharedInstance] getChannelVideos:searchResult.videoId completionBlock:^(NSDictionary *searchDetails) {
+            
+            [SVProgressHUD dismiss];
+            cv.searchResults = searchDetails[@"results"];
+            cv.pageCount = 1;
+            cv.bannerURL = searchDetails[@"banner"];
+            cv.channelTitle = searchDetails[@"name"];
+            cv.subscribers = searchDetails[@"subscribers"];
+          
+            [[self.presentingViewController navigationController] pushViewController:cv animated:true];
+            
+        } failureBlock:^(NSString *error) {
+            //
+        }];
+    }
+    
 }
 
 /*

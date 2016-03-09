@@ -1328,6 +1328,13 @@
             ONOXMLDocument *xmlDoc = [ONOXMLDocument HTMLDocumentWithString:rawRequestResult encoding:NSUTF8StringEncoding error:nil];
             ONOXMLElement *root = [xmlDoc rootElement];
             //NSLog(@"root element: %@", root);
+            ONOXMLElement *headerSection = [root firstChildWithXPath:@"//div[contains(@id, 'gh-banner')]"];
+            NSString *headerString = [[[headerSection children] firstObject] stringValue];
+            NSScanner *bannerScanner = [NSScanner scannerWithString:headerString];
+            NSString *headerBanner = nil;
+            [bannerScanner scanUpToString:@");" intoString:&headerBanner];
+            headerBanner = [[headerBanner componentsSeparatedByString:@"//"] lastObject];
+            headerBanner = [@"https://" stringByAppendingString:headerBanner];
             
             ONOXMLElement *videosElement = [root firstChildWithXPath:@"//*[contains(@class, 'channels-browse-content-grid')]"];
             id videoEnum = [videosElement XPath:@"//div[contains(@class, 'yt-lockup-video')]"];
@@ -1336,7 +1343,19 @@
             NSMutableDictionary *outputDict = [NSMutableDictionary new];
             ONOXMLElement *channelNameElement = [root firstChildWithXPath:@"//meta[contains(@name, 'title')]"];
             ONOXMLElement *channelDescElement = [root firstChildWithXPath:@"//meta[contains(@name, 'description')]"];
+            
+            //<span class="yt-subscription-button-subscriber-count-branded-horizontal subscribed yt-uix-tooltip" title="10,323,793" tabindex="0" aria-label="10,323,793 subscribers" data-tooltip-text="10,323,793" aria-labelledby="yt-uix-tooltip88-arialabel">10,323,793</span>
+            
+            ONOXMLElement *channelSubscribersElement = [root firstChildWithXPath:@"//span[contains(@class, 'yt-subscription-button-subscriber-count-branded-horizontal')]"];
+        
             ONOXMLElement *channelKeywordsElement = [root firstChildWithXPath:@"//meta[contains(@name, 'keywords')]"];
+            
+            
+            if (channelSubscribersElement != nil)
+            {
+                outputDict[@"subscribers"] = [channelSubscribersElement valueForAttribute:@"aria-label"];
+            }
+            
             if (channelNameElement != nil)
             {
                 outputDict[@"name"] = [channelNameElement valueForAttribute:@"content"];
@@ -1349,7 +1368,10 @@
             {
                 outputDict[@"keywords"] = [channelKeywordsElement valueForAttribute:@"content"];
             }
-            
+            if (headerBanner != nil)
+            {
+                outputDict[@"banner"] = headerBanner;
+            }
             while (currentElement = [videoEnum nextObject])
             {
                 //NSMutableDictionary *scienceDict = [NSMutableDictionary new];
