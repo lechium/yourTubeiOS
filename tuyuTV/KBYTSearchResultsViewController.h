@@ -12,4 +12,7 @@
 {
     BOOL _gettingPage;
 }
+
+@property (nonatomic, strong) NSIndexPath *selectedItem;
+
 @end

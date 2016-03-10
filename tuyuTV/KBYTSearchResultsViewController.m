@@ -185,6 +185,13 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }];
 }
 
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+
+    YTTVStandardCollectionViewCell *selectedCell = (YTTVStandardCollectionViewCell*)context.nextFocusedView;
+    self.selectedItem=  [[self collectionView] indexPathForCell:selectedCell];
+}
+
 - (void)getNextPage
 {
     if (_gettingPage) return;
@@ -202,9 +209,19 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             self.totalResults = [searchDetails[@"resultCount"] integerValue];
             self.pageCount = [searchDetails[@"pageCount"] integerValue];
             //self.searchResults = searchDetails[@"results"];
+            
             [self updateSearchResults:searchDetails[@"results"]];
-            [self.collectionView reloadData];
-            _gettingPage = false;
+           // NSIndexPath *currentIndexPath = [[self collectionView] indexPathsForSelectedItems][0];
+            [self.collectionView reloadDataWithCompletion:^{
+                
+                /*
+                [self.collectionView selectItemAtIndexPath:self.selectedItem animated:false scrollPosition:UICollectionViewScrollPositionCenteredVertically];
+                UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
+                [sc.searchBar resignFirstResponder];
+                */
+                _gettingPage = false;
+            }];
+            
             
         } failureBlock:^(NSString *error) {
             //
@@ -274,7 +291,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             
             NSString *nextHREF = searchDetails[@"loadMoreREF"];
             YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:searchResult.title backgroundColor:[UIColor blackColor] withPlaylistItems:searchDetails[@"results"]];
-            
+            playlistViewController.loadMoreHREF = nextHREF;
             
             [[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
             

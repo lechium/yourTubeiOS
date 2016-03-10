@@ -9,6 +9,38 @@
 #import <Foundation/Foundation.h>
 #import "KBYourTube+Categories.h"
 
+@implementation UITableView (completion)
+
+- (void)reloadDataWithCompletion:(void(^)(void))completionBlock
+{
+    [self reloadData];
+    
+    dispatch_async(dispatch_get_main_queue(),^{
+       // NSIndexPath *path = [NSIndexPath indexPathForRow:yourRow inSection:yourSection];
+        //Basically maintain your logic to get the indexpath
+        //[yourTableview scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        completionBlock();
+    });
+}
+
+@end
+
+@implementation UICollectionView (completion)
+
+- (void)reloadDataWithCompletion:(void(^)(void))completionBlock
+{
+    [self reloadData];
+    
+    dispatch_async(dispatch_get_main_queue(),^{
+        // NSIndexPath *path = [NSIndexPath indexPathForRow:yourRow inSection:yourSection];
+        //Basically maintain your logic to get the indexpath
+        //[yourTableview scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        completionBlock();
+    });
+}
+
+
+@end
 
 @implementation NSDictionary (strings)
 

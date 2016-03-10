@@ -6,6 +6,18 @@
 //
 //
 
+@interface UITableView (completion)
+
+- (void)reloadDataWithCompletion:(void(^)(void))completionBlock;
+
+@end
+
+@interface UICollectionView (completion)
+
+- (void)reloadDataWithCompletion:(void(^)(void))completionBlock;
+
+@end
+
 @interface NSDictionary (strings)
 
 - (NSString *)stringValue;
