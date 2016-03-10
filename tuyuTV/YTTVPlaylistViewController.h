@@ -87,7 +87,7 @@
 @property (nonatomic, strong) NSArray *imageNames;
 @property (nonatomic, strong) NSString *viewTitle;
 @property (nonatomic, strong) UIColor *backgroundColor;
-@property (nonatomic, strong) NSString *loadMoreHREF;
+//@property (nonatomic, strong) NSString *loadMoreHREF;
 
 @property (copy, nonatomic) NSArray *viewControllers;
 @property (weak, nonatomic) id delegate;        // Not used yet
