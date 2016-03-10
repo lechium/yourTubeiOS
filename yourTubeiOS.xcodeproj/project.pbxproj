@@ -292,6 +292,8 @@
 		89A83AD21C88AB6600E1987E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A83AD11C88AB6600E1987E /* MapKit.framework */; };
 		89A83AD41C88AB6B00E1987E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A83AD31C88AB6B00E1987E /* AVFoundation.framework */; };
 		89A83AD61C88AB7100E1987E /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A83AD51C88AB7100E1987E /* AVKit.framework */; };
+		89EEC1001C921421006B1944 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89EEC0FF1C921421006B1944 /* SettingsViewController.m */; };
+		89EEC1031C9214B0006B1944 /* YTTVPlaylistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -606,6 +608,10 @@
 		89E06BED1C49F59100B8D1C4 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
 		89E06C061C4CA1DC00B8D1C4 /* KBYTPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTPreferences.h; path = yourTube/KBYTPreferences.h; sourceTree = "<group>"; };
 		89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTPreferences.m; path = yourTube/KBYTPreferences.m; sourceTree = "<group>"; };
+		89EEC0FE1C921421006B1944 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		89EEC0FF1C921421006B1944 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		89EEC1011C9214B0006B1944 /* YTTVPlaylistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTTVPlaylistViewController.h; sourceTree = "<group>"; };
+		89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTTVPlaylistViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -861,6 +867,10 @@
 				898E92831C8D254F00B34DAA /* Images */,
 				898E926B1C8D056700B34DAA /* AppDelegate.h */,
 				898E926C1C8D056700B34DAA /* AppDelegate.m */,
+				89EEC1011C9214B0006B1944 /* YTTVPlaylistViewController.h */,
+				89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */,
+				89EEC0FE1C921421006B1944 /* SettingsViewController.h */,
+				89EEC0FF1C921421006B1944 /* SettingsViewController.m */,
 				898E936B1C8E15A300B34DAA /* Collection View Cells */,
 				898E93721C8F65F200B34DAA /* SignOutViewController.h */,
 				898E93731C8F65F200B34DAA /* SignOutViewController.m */,
@@ -1475,6 +1485,8 @@
 				898E93141C8D569E00B34DAA /* URLDownloader.m in Sources */,
 				898E92701C8D056700B34DAA /* FirstViewController.m in Sources */,
 				898E93121C8D569800B34DAA /* UIImage+Scale.m in Sources */,
+				89EEC1001C921421006B1944 /* SettingsViewController.m in Sources */,
+				89EEC1031C9214B0006B1944 /* YTTVPlaylistViewController.m in Sources */,
 				898E926A1C8D056700B34DAA /* main.m in Sources */,
 				898E93741C8F65F200B34DAA /* SignOutViewController.m in Sources */,
 				898E93021C8D563E00B34DAA /* APAttribute.m in Sources */,

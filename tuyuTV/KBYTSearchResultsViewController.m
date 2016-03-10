@@ -13,6 +13,7 @@
 #import "UIImageView+WebCache.h"
 #import "KBYTChannelViewController.h"
 #import "SVProgressHUD.h"
+#import "YTTVPlaylistViewController.h"
 
 @interface KBYTSearchResultsViewController ()
 
@@ -259,6 +260,23 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             cv.subscribers = searchDetails[@"subscribers"];
           
             [[self.presentingViewController navigationController] pushViewController:cv animated:true];
+            
+        } failureBlock:^(NSString *error) {
+            //
+        }];
+    } else if (searchResult.resultType == kYTSearchResultTypePlaylist)
+    {
+        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+        [SVProgressHUD show];
+        [[KBYourTube sharedInstance] getPlaylistVideos:searchResult.videoId completionBlock:^(NSDictionary *searchDetails) {
+            
+            [SVProgressHUD dismiss];
+            
+            NSString *nextHREF = searchDetails[@"loadMoreREF"];
+            YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:searchResult.title backgroundColor:[UIColor blackColor] withPlaylistItems:searchDetails[@"results"]];
+            
+            
+            [[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
             
         } failureBlock:^(NSString *error) {
             //

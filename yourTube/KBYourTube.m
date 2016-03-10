@@ -426,10 +426,16 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     
 }
 
+- (NSString *)expiredString
+{
+    if ([self isExpired]) return @"YES";
+    return @"NO";
+}
+
 - (NSDictionary *)dictionaryRepresentation
 {
     if (self.details == nil)self.details = @"Unavailable";
-    return @{@"title": self.title, @"author": self.author, @"keywords": self.keywords, @"videoID": self.videoId, @"views": self.views, @"duration": self.duration, @"images": self.images, @"streams": self.streams, @"details": self.details};
+    return @{@"title": self.title, @"author": self.author, @"keywords": self.keywords, @"videoID": self.videoId, @"views": self.views, @"duration": self.duration, @"images": self.images, @"streams": self.streams, @"details": self.details, @"expireTime": [NSNumber numberWithInteger:self.expireTime], @"isExpired": [self expiredString]};
 }
 
 - (NSString *)description
