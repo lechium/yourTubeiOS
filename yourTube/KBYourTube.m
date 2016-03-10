@@ -11,6 +11,10 @@
 #import "Ono/ONOXMLDocument.h"
 #import "KBYourTube+Categories.h"
 
+
+static NSString * const hardcodedTimestamp = @"16864";
+static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
+
 /**
  
  out of pure laziness I put the implementation KBYTStream and KBYTMedia classes in this file and their interfaces
@@ -149,6 +153,17 @@
     return nil;
 }
 
+
+- (BOOL)isExpired
+{
+    if ([NSDate passedEpochDateInterval:self.expireTime])
+    {
+        return true;
+    }
+    return false;
+}
+
+
 /**
  
  take the input dictionary and update our values according to it.
@@ -198,6 +213,7 @@
         }
         
         self.url = [NSURL URLWithString:url];
+        self.expireTime = [[self.url parameterDictionary][@"expire"] integerValue];
         self.format = tags[@"format"]; //@{@"format": @"4K MP4", @"height": @2304, @"extension": @"mp4"}
         self.height = tags[@"height"];
         self.extension = tags[@"extension"];
@@ -276,6 +292,15 @@
  */
 
 @implementation KBYTMedia
+
+- (BOOL)isExpired
+{
+    if ([NSDate passedEpochDateInterval:self.expireTime])
+    {
+        return true;
+    }
+    return false;
+}
 
 //make sure if its an adaptive stream that we match the video streams with the proper audio stream.
 
@@ -365,6 +390,7 @@
         //NSDictionary *processed = [self processSource:videoDict];
         if (processed.title != nil)
         {
+            self.expireTime = [processed expireTime];
             //if we actually have a video detail dictionary add it to final array
             [videoArray addObject:processed];
         }
@@ -707,7 +733,7 @@
 
 - (NSArray *)playlistArrayFromUserName:(NSString *)userName
 {
-    ONOXMLDocument *xmlDoct = [self documentFromURL:[NSString stringWithFormat:@"https://m.youtube.com/%@/playlists", userName]];
+    ONOXMLDocument *xmlDoct = [self documentFromURL:[NSString stringWithFormat:@"https://m.youtube.com/%@/playlists?sort=da&flow=grid&view=1", userName]];
     ONOXMLElement *root = [xmlDoct rootElement];
     ONOXMLElement *playlistGroup = [root firstChildWithXPath:@"//ul[contains(@id, 'channels-browse-content-grid')]"];
     id playlistEnum = [playlistGroup XPath:@".//li[contains(@class, 'channels-content-item')]"];
@@ -1434,18 +1460,24 @@
                 } else {
                     result = nil;
                 }
-                if ([finalArray count] > 0)
-                {
-                    ONOXMLElement *loadMoreButton = [root firstChildWithXPath:@"//button[contains(@class, 'load-more-button')]"];
-                    NSString *loadMoreHREF = [loadMoreButton valueForAttribute:@"data-uix-load-more-href"];
-                    if (loadMoreHREF != nil){
-                        outputDict[@"loadMoreREF"] = loadMoreHREF;
-                    }
-                    outputDict[@"results"] = finalArray;
-                    outputDict[@"resultCount"] = [NSNumber numberWithInteger:[finalArray count]];
-                    NSInteger pageCount = 1;
-                    outputDict[@"pageCount"] = [NSNumber numberWithInteger:pageCount];
+                
+            }
+            if (outputDict[@"name"] != nil)
+            {
+                NSArray *channelPlaylists = [self playlistArrayFromUserName:outputDict[@"name"]];
+                outputDict[@"playlists"] = channelPlaylists;
+            }
+            if ([finalArray count] > 0)
+            {
+                ONOXMLElement *loadMoreButton = [root firstChildWithXPath:@"//button[contains(@class, 'load-more-button')]"];
+                NSString *loadMoreHREF = [loadMoreButton valueForAttribute:@"data-uix-load-more-href"];
+                if (loadMoreHREF != nil){
+                    outputDict[@"loadMoreREF"] = loadMoreHREF;
                 }
+                outputDict[@"results"] = finalArray;
+                outputDict[@"resultCount"] = [NSNumber numberWithInteger:[finalArray count]];
+                NSInteger pageCount = 1;
+                outputDict[@"pageCount"] = [NSNumber numberWithInteger:pageCount];
             }
             NSString *errorString = @"failed to get featured details";
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -2059,8 +2091,8 @@
             if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
             {
                 errorString = @"Failed to decode signature cipher javascript.";
-                self.yttimestamp = @"16806";
-                self.ytkey = @"-1,0,65,-3,0";
+                self.yttimestamp = hardcodedTimestamp;
+                self.ytkey = hardcodedCipher;
                 
             }
             
@@ -2150,8 +2182,8 @@
             if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
             {
                 errorString = @"Failed to decode signature cipher javascript.";
-                self.yttimestamp = @"16856";
-                self.ytkey = @"44,49,0";
+                self.yttimestamp = hardcodedTimestamp;
+                self.ytkey = hardcodedCipher;
                 
             }
             
@@ -2222,8 +2254,8 @@
             if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
             {
                 errorString = @"Failed to decode signature cipher javascript.";
-                self.yttimestamp = @"16856";
-                self.ytkey = @"44,49,0";
+                self.yttimestamp = hardcodedTimestamp;
+                self.ytkey = hardcodedCipher;
                 
             }
             
@@ -2234,7 +2266,7 @@
             for (KBYTSearchResult *result in searchResults) {
                 //    NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
                 
-                if ([result media] != nil) //skip it if we've already fetched it.
+                if ([result media] != nil && [[result media] isExpired] == false) //skip it if we've already fetched it.
                 {
                     [finalArray addObject:[result media]];
                     continue;
@@ -2311,8 +2343,8 @@
             if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
             {
                 errorString = @"Failed to decode signature cipher javascript.";
-                self.yttimestamp = @"16856";
-                self.ytkey = @"44,49,0";
+                self.yttimestamp = hardcodedTimestamp;
+                self.ytkey = hardcodedCipher;
                 
             }
             

@@ -248,6 +248,9 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         [[KBYourTube sharedInstance] getChannelVideos:searchResult.videoId completionBlock:^(NSDictionary *searchDetails) {
             
             [SVProgressHUD dismiss];
+            
+          //  NSLog(@"searchDeets: %@", searchDetails);
+            
             cv.searchResults = searchDetails[@"results"];
             cv.pageCount = 1;
             cv.nextHREF = searchDetails[@"loadMoreREF"];

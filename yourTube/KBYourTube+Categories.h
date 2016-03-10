@@ -28,6 +28,7 @@
 @interface NSDate (convenience)
 
 - (NSString *)timeStringFromCurrentDate;
++ (BOOL)passedEpochDateInterval:(NSTimeInterval)interval;
 
 @end
 

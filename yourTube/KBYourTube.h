@@ -95,6 +95,9 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 @property (nonatomic, strong) NSDictionary *images;
 @property (nonatomic, strong) NSArray *streams;
 @property (nonatomic, strong) NSString *details; //description
+@property (readwrite, assign) NSInteger expireTime;
+
+- (BOOL)isExpired;
 
 @end
 
@@ -138,9 +141,11 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 @property (nonatomic, strong) NSURL *url;
 @property (readwrite, assign) BOOL playable;
 @property (nonatomic, assign) KBYTStream *audioStream; //will be empty if its multiplexed
+@property (readwrite, assign) NSInteger expireTime;
 
 - (id)initWithDictionary:(NSDictionary *)streamDict;
 - (NSDictionary *)dictionaryValue;
+- (BOOL)isExpired;
 
 @end
 

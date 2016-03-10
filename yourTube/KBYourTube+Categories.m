@@ -94,6 +94,19 @@
 
 @implementation NSDate (convenience)
 
++ (BOOL)passedEpochDateInterval:(NSTimeInterval)interval
+{
+    //return true; //force to test to see if it works
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:interval];
+    NSComparisonResult result = [date compare:[NSDate date]];
+    if (result == NSOrderedAscending)
+    {
+        return true;
+    }
+    return false;
+}
+
+
 - (NSString *)timeStringFromCurrentDate
 {
     NSDate *currentDate = [NSDate date];
