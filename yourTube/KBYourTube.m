@@ -1073,6 +1073,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 }
                 if (imagePath != nil)
                 {
+                    if ([[imagePath lastPathComponent]isEqualToString:@"default.jpg"])
+                    {
+                        imagePath = [[imagePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"hqdefault.jpg"];
+                    }
                     result.imagePath = [@"https:" stringByAppendingString:imagePath];
                 }
                 if (lengthElement != nil)

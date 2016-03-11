@@ -96,7 +96,8 @@
     [super viewDidLoad];
     CGRect selfFrame = [self.view frame];
     selfFrame.size.width = selfFrame.size.width / 2;
-    CGRect imageRect = CGRectMake((selfFrame.size.width - 512)/2, (selfFrame.size.height - 512)/2, 512, 512);
+    CGSize imageSize = CGSizeMake(768, 768);
+    CGRect imageRect = CGRectMake((selfFrame.size.width - imageSize.width)/2, (selfFrame.size.height - imageSize.height)/2, imageSize.width, imageSize.height);
     self.imageView = [[UIImageView alloc] initWithFrame:imageRect];
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     self.imageView.image = [UIImage imageNamed:@"YTPlaceholder"];
