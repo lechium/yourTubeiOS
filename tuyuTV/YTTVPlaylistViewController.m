@@ -111,6 +111,13 @@
 
 }
 
+- (void)addImageURLs:(NSArray *)urls
+{
+    NSMutableArray *images = [[NSMutableArray alloc] initWithArray:self.imageURLs];
+    [images addObjectsFromArray:urls];
+    self.imageURLs = images;
+}
+
 - (void)selectedItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row < self.imageURLs.count)
@@ -148,6 +155,8 @@
 @interface PlaylistTableViewController ()
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTQueuePlayer *player;
+@property (readwrite, assign) NSInteger currentPage;
+
 @end
 
 @implementation PlaylistTableViewController
@@ -155,6 +164,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.currentPage = 1;
     self.tableView.contentInset = UIEdgeInsetsMake(30, 0, 20, 0);
     //self.view.backgroundColor = [UIColor blackColor];
     [self.tableView registerClass:[PlaylistTableViewCell class] forCellReuseIdentifier:@"Science"];
@@ -177,6 +187,16 @@
     if ([self.delegate respondsToSelector:@selector(selectedItemAtIndexPath:)])
     {
         [self.delegate selectedItemAtIndexPath:indexPath];
+    }
+}
+
+- (void)updateSearchResults:(NSArray *)newResults
+{
+    if (self.currentPage > 1)
+    {
+        [[self itemNames] addObjectsFromArray:newResults];
+    } else {
+        self.itemNames = [newResults mutableCopy];
     }
 }
 
@@ -207,6 +227,37 @@
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:focusedCell];
     [self.delegate selectedItemAtIndexPath:indexPath];
+    if (indexPath.row == self.itemNames.count-1)
+    {
+        if (self.nextHREF.length > 0)
+        {
+            [self getNextPage];
+        }
+    }
+}
+
+- (void)getNextPage
+{
+    LOG_SELF;
+    self.currentPage++;
+    [[KBYourTube sharedInstance] loadMorePlaylistVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
+        
+        NSArray *results = outputResults[@"results"];
+        [self updateSearchResults:results];
+        NSMutableArray *imageArray = [NSMutableArray new];
+        for (KBYTSearchResult *result in results)
+        {
+            [imageArray addObject:result.imagePath];
+        }
+        [self.delegate addImageURLs:imageArray];
+        self.nextHREF = outputResults[@"loadMoreREF"];
+        [self.tableView reloadData];
+        
+    } failureBlock:^(NSString *error) {
+        
+        self.nextHREF = nil;
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)playAllSearchResults:(NSArray *)searchResults
@@ -370,7 +421,7 @@
     //splitViewController.imageNames = images;
     splitViewController.view.backgroundColor = bgColor;
     PlaylistTableViewController *masterTableViewController = [[PlaylistTableViewController alloc] init];
-    masterTableViewController.itemNames = playlistItems;
+    masterTableViewController.itemNames = [[NSMutableArray alloc] initWithArray:playlistItems];
     
     masterTableViewController.selectionDelegate = splitViewController;
     PLDetailViewController *detailViewController = [[PLDetailViewController alloc] init];
@@ -388,6 +439,7 @@
     [splitViewController setTitle:theTitle];
     return splitViewController;
 }
+
 
 - (void)itemSelectedAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -432,6 +484,8 @@
 	// Do any additional setup after loading the view.
     //self.view.backgroundColor = [UIColor blackColor];
     [self layoutViewControllers];
+    
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -439,6 +493,9 @@
     [super viewWillAppear:animated];
     
     [self layoutViewsForCollapsed:self.collapsed animated:NO];
+    //NSLog(@"masterViewContorller: %@", self.detailViewController);
+    PlaylistTableViewController *plTvC = (PlaylistTableViewController *)self.detailViewController;
+    plTvC.nextHREF = self.loadMoreHREF;
 }
 
 - (void)viewDidUnload

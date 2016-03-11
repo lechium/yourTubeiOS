@@ -547,9 +547,9 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 {
     return 100;
 }
+
 - (void)updateSearchResults:(NSArray *)newResults
 {
-    
     if (self.currentPage > 1)
     {
         [[self searchResults] addObjectsFromArray:newResults];

@@ -39,6 +39,7 @@
 @protocol PLDetailViewSelectionDelegate <NSObject>
 
 - (void)selectedItemAtIndexPath:(NSIndexPath *)indexPath;
+- (void)addImageURLs:(NSArray *)URLs;
 
 @end
 
@@ -47,6 +48,8 @@
 
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) NSArray *imageURLs;
+
+- (void)addImageURLs:(NSArray *)urls;
 
 @end
 
@@ -60,7 +63,8 @@
 
 @property (nonatomic, weak) id<PlaylistTableViewSelectionDelegate> selectionDelegate;
 @property (nonatomic, weak) id<PLDetailViewSelectionDelegate> delegate;
-@property (nonatomic, strong) NSArray *itemNames;
+@property (nonatomic, strong) NSMutableArray *itemNames;
+@property (nonatomic, weak) NSString *nextHREF;
 
 - (void)focusedCell:(UITableViewCell *)focusedCell;
 
@@ -68,6 +72,7 @@
 
 
 @protocol PlaylistViewDelegate <NSObject>
+
 
 - (void)itemSelectedAtIndexPath:(NSIndexPath *)indexPath fromNavigationController:(UINavigationController *)nav;
 
@@ -87,7 +92,7 @@
 @property (nonatomic, strong) NSArray *imageNames;
 @property (nonatomic, strong) NSString *viewTitle;
 @property (nonatomic, strong) UIColor *backgroundColor;
-//@property (nonatomic, strong) NSString *loadMoreHREF;
+@property (nonatomic, strong) NSString *loadMoreHREF;
 
 @property (copy, nonatomic) NSArray *viewControllers;
 @property (weak, nonatomic) id delegate;        // Not used yet
