@@ -13,5 +13,6 @@
 
 @property (nonatomic, weak) IBOutlet UIImageView *image;
 @property (nonatomic, weak) IBOutlet MarqueeLabel *title;
-
+@property (nonatomic, weak) IBOutlet UIView *overlayView;
+@property (nonatomic, weak) IBOutlet UILabel *overlayInfo;
 @end

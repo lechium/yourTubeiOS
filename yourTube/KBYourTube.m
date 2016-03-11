@@ -1550,7 +1550,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 }
                 if (imagePath != nil)
                 {
-                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    if ([imagePath containsString:@"https:"])
+                    {
+                        result.imagePath = imagePath;
+                    } else {
+                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    }
                 }
                 if (lengthElement != nil)
                     result.duration = lengthElement.stringValue;
@@ -1799,7 +1804,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                     if (descElement != nil)
                     {
-                        result.details = [descElement stringValue];
+                        NSString *trimmedDetails = [[[[descElement stringValue] componentsSeparatedByString:@"("] lastObject] stringByReplacingOccurrencesOfString:@")" withString:@""];
+                        result.details = trimmedDetails;
                     }
                     
                     if ([result.videoId length] > 0)

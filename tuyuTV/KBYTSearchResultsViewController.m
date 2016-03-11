@@ -112,7 +112,15 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     YTTVStandardCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
-    
+    if (currentItem.resultType != kYTSearchResultTypeVideo)
+    {
+        cell.overlayView.hidden = false;
+        cell.overlayInfo.text = currentItem.details;
+ 
+    } else {
+        cell.overlayView.hidden = true;
+        cell.overlayInfo.text = @"";
+    }
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
     [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
