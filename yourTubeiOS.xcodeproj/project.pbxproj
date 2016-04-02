@@ -61,6 +61,8 @@
 		892669501C88B2F500082B31 /* success@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A611C88A90000E1987E /* success@3x.png */; };
 		892669511C88B3CF00082B31 /* YTPlaceHolderImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A631C88A90000E1987E /* YTPlaceHolderImage.png */; };
 		892669531C88BCA000082B31 /* AppSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 892669521C88BCA000082B31 /* AppSupport.framework */; };
+		8929758C1CB026B3003D7473 /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8929758B1CB026B3003D7473 /* AboutViewController.m */; };
+		8929758E1CB026D8003D7473 /* About.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8929758D1CB026D8003D7473 /* About.txt */; };
 		898E926A1C8D056700B34DAA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E92691C8D056700B34DAA /* main.m */; };
 		898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E926C1C8D056700B34DAA /* AppDelegate.m */; };
 		898E92701C8D056700B34DAA /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E926F1C8D056700B34DAA /* FirstViewController.m */; };
@@ -310,6 +312,9 @@
 		892669191C88B1A900082B31 /* MarqueeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarqueeLabel.h; sourceTree = "<group>"; };
 		8926691A1C88B1A900082B31 /* MarqueeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarqueeLabel.m; sourceTree = "<group>"; };
 		892669521C88BCA000082B31 /* AppSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppSupport.framework; path = ../../../../../Applications/Xcode64.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/PrivateFrameworks/AppSupport.framework; sourceTree = "<group>"; };
+		8929758A1CB026B3003D7473 /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutViewController.h; sourceTree = "<group>"; };
+		8929758B1CB026B3003D7473 /* AboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutViewController.m; sourceTree = "<group>"; };
+		8929758D1CB026D8003D7473 /* About.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = About.txt; sourceTree = "<group>"; };
 		892A2C381C6A8400003724D6 /* yourTubeApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yourTubeApplication.h; path = yourTube/yourTubeApplication.h; sourceTree = "<group>"; };
 		892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JGProgressView.h; sourceTree = "<group>"; };
 		892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JGProgressView.m; sourceTree = "<group>"; };
@@ -863,7 +868,10 @@
 		898E92671C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXGroup;
 			children = (
+				8929758D1CB026D8003D7473 /* About.txt */,
 				898E935D1C8D62B000B34DAA /* YTPlaceholder.png */,
+				8929758A1CB026B3003D7473 /* AboutViewController.h */,
+				8929758B1CB026B3003D7473 /* AboutViewController.m */,
 				898E92831C8D254F00B34DAA /* Images */,
 				898E926B1C8D056700B34DAA /* AppDelegate.h */,
 				898E926C1C8D056700B34DAA /* AppDelegate.m */,
@@ -1215,6 +1223,7 @@
 				898E92621C8D056700B34DAA /* Sources */,
 				898E92631C8D056700B34DAA /* Frameworks */,
 				898E92641C8D056700B34DAA /* Resources */,
+				8929758F1CB02987003D7473 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1386,6 +1395,7 @@
 				898E93311C8D56A700B34DAA /* Icon-Small@2x.png in Resources */,
 				898E92E41C8D254F00B34DAA /* tv-12.jpg in Resources */,
 				898E93331C8D56A700B34DAA /* Icon@2x.png in Resources */,
+				8929758E1CB026D8003D7473 /* About.txt in Resources */,
 				898E92DF1C8D254F00B34DAA /* movie-9.jpg in Resources */,
 				898E93181C8D56A700B34DAA /* activityAudio@3x.png in Resources */,
 				898E93761C90AFAA00B34DAA /* Banner.png in Resources */,
@@ -1453,6 +1463,22 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		8929758F1CB02987003D7473 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=jbatv.local\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/tuyuTV/layout\n\nAPPLETV_APP_FOLDER=\"$DPKG_BUILD_PATH\"/Applications/\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\nldid -S \"$FINAL_APP_PATH\"/\"$EXECUTABLE_NAME\"\n\nexit 0\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		898E92621C8D056700B34DAA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -1468,6 +1494,7 @@
 				898E92731C8D056700B34DAA /* SecondViewController.m in Sources */,
 				898E936A1C8D911700B34DAA /* JGProgressView.m in Sources */,
 				898E93051C8D564600B34DAA /* ONOXMLDocument.m in Sources */,
+				8929758C1CB026B3003D7473 /* AboutViewController.m in Sources */,
 				898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */,
 				898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */,
 				898E934F1C8D56D100B34DAA /* SDWebImageDownloaderOperation.m in Sources */,
@@ -1612,6 +1639,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Kevin Bradley (JXV33BLVYS)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1656,7 +1684,7 @@
 				PROVISIONING_PROFILE = "e42aae3b-2cb7-47a2-b03b-b994bcf603c0";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.1;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
@@ -1679,6 +1707,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Kevin Bradley (JXV33BLVYS)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1716,7 +1745,7 @@
 				PROVISIONING_PROFILE = "e42aae3b-2cb7-47a2-b03b-b994bcf603c0";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.1;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

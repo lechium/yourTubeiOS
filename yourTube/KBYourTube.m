@@ -490,13 +490,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     ONOXMLElement *root = [xmlDoc rootElement];
     ONOXMLElement * displayMessage = [root firstChildWithXPath:@"//div[contains(@class, 'display-message')]"];
     NSString *displayMessageString = [displayMessage stringValue];
-   // NSLog(@"displayMessageString: %@", displayMessageString);
-    NSString *checkString = @"Watch History isn't viewable when signed out.";
-    if ([displayMessageString rangeOfString:checkString].location == NSNotFound || [displayMessageString length] == 0 || displayMessageString == nil)
+    if (displayMessageString.length == 0 || displayMessageString == nil)
     {
         return true;
     }
     return false;
+
 }
 
 - (NSInteger)videoCountForUserName:(NSString *)channelID
@@ -527,6 +526,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
               //  NSLog(@"channelDict: %@", channelDict);
                 NSString *channelID = channelDict[@"channelID"];
                 NSDictionary *ourUserDetails = [self userDetailsFromChannelURL:channelID];
+                if (ourUserDetails == nil)
+                {
+                    NSLog(@"false positive on signed in, bail");
+                    failureBlock(@"false positive on signed in");
+                    return;
+                }
                 NSString *userName = ourUserDetails[@"username"];
                 NSInteger channelVideoCount = [self videoCountForUserName:userName];
                 //NSArray *playlists = [self playlistArrayFromUserName:userName];
@@ -618,8 +623,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     //<img class="channel-header-profile-image" src="//i.ytimg.com/i/iuFEQ2-YiaW97Uzu00bOZQ/mq1.jpg?v=564b8e92" title="nito" alt="nito">
     NSString *profileImage = [[root firstChildWithXPath:@"//img[contains(@class, 'channel-header-profile-image')]"] valueForAttribute:@"src"];
     
-    
+    if (canon != nil & profileImage != nil)
+    {
     return @{@"username": [[canon valueForAttribute:@"href"] lastPathComponent], @"profileImage": [NSString stringWithFormat:@"http:%@", profileImage] } ;
+    }
+    
+    return nil;
 }
 
 - (NSString *)userNameFromChannelURL:(NSString *)channelURL
@@ -1702,6 +1711,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     result.videoId = videoID;
                 }
                 ONOXMLElement *thumbNailElement = [[[videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
+                
+               // NSLog(@"thumbNailElement: %@", thumbNailElement);
+                
+                /*
+                 
+                  thumbNailElement: <img src="https://s.ytimg.com/yts/img/pixel-vfl3z5WfW.gif" alt="" data-thumb="https://i.ytimg.com/vi/2h4Hn9vLANw/hqdefault.jpg?custom=true&amp;w=196&amp;h=110&amp;stc=true&amp;jpg444=true&amp;jpgq=90&amp;sp=68&amp;sigh=WUwmd0Rr6_oK6ou9T27gJg7Fbf0" width="196" height="110"/>
+                 
+                 */
+                
                 ONOXMLElement *lengthElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                 ONOXMLElement *titleElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-uix-tile-link')]"];
                // NSLog(@"videoDetailXMLRepresentation: %@", videoDetailXMLRepresentation);
@@ -1717,9 +1735,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 {
                     imagePath = [thumbNailElement valueForAttribute:@"src"];
                 }
+                
                 if (imagePath != nil)
                 {
-                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    if (![imagePath containsString:@"https:"])
+                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    else
+                        result.imagePath = imagePath;
                 }
                 if (lengthElement != nil)
                     result.duration = lengthElement.stringValue;

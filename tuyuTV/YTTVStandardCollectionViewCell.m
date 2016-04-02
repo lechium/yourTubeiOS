@@ -36,6 +36,7 @@
     //{{160, 30}, {160, 222}}
     if ([self isFocused])
     {
+        
         self.image.adjustsImageWhenAncestorFocused = true;
         CGRect frame = self.overlayView.frame;
         frame.size.height = 300;

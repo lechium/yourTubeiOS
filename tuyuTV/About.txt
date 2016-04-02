@@ -1,0 +1,15 @@
+tuyu 0.2 for AppleTV 4
+
+By: Kevin Bradley
+
+
+tuyu is tvOS port of tuyu for iOS. View featured videos, sign in to your account, view limited account related material, extremely powerful search with channel and playlist support.
+
+
+Changelog:
+
+0.2: Bug fixes for sign in detection, will fail elegantly if sign in detection gets false positive. Search result image bug fixes.
+
+0.1: Initial release in nitoTV
+
+

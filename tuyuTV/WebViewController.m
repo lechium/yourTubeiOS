@@ -136,7 +136,12 @@ typedef struct _Input
         textField.keyboardAppearance = UIKeyboardAppearanceDark;
 
     }];
-    
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
     UIAlertAction *inputAndSubmitAction = [UIAlertAction
                                            actionWithTitle:@"Submit"
                                            style:UIAlertActionStyleDefault
@@ -151,6 +156,7 @@ typedef struct _Input
                                            }];
     
     [alertController addAction:inputAndSubmitAction];
+    [alertController addAction:cancelAction];
     [self presentViewController:alertController animated:YES completion:nil];
     //UITextField *inputViewTextField = alertController.textFields[0];
     //[inputViewTextField becomeFirstResponder];
@@ -211,7 +217,7 @@ typedef struct _Input
         [self loadHomePage];
     }
     if (![[NSUserDefaults standardUserDefaults] boolForKey:@"DontShowHintsOnLaunch"] && !_displayedHintsOnLaunch) {
-        [self showHintsAlert];
+       // [self showHintsAlert];
     }
     _displayedHintsOnLaunch = YES;
 }

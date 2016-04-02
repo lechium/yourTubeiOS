@@ -24,6 +24,7 @@
     {
         self.image.adjustsImageWhenAncestorFocused = true;
         self.title.hidden = false;
+       
     } else {
         self.image.adjustsImageWhenAncestorFocused = false;
         self.title.hidden = true;

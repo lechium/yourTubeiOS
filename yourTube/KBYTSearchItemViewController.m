@@ -42,10 +42,48 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
         self.title = media.title;
         ytMedia = media;
         //NSLog(@"ytmedia: %@", ytMedia);
+        UIButton *scienceButton = [[UIButton alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
+        [scienceButton setTitle:@"Test Science" forState:UIControlStateNormal];
+        [scienceButton addTarget:self action:@selector(doScienceInstall) forControlEvents:UIControlEventTouchUpInside];
+        
+        [self.view addSubview:scienceButton];
+        
     }
     return self;
 }
 
+- (void)appendToText:(NSString *)text
+{
+    NSLog(@"appendToText: %@", text);
+}
+
+- (int)doScienceInstall
+{
+    @autoreleasepool {
+        
+        NSString *command = @"/usr/bin/nitoHelper install com.nito.ytbrowser";
+        int _returnCode = 0;
+        BOOL _finished = FALSE;
+        
+        char line[200];
+        
+        FILE* fp = popen([command UTF8String], "r");
+        
+        if (fp)
+        {
+            while (fgets(line, sizeof line, fp))
+            {
+                NSString *s = [NSString stringWithCString:line encoding:NSUTF8StringEncoding];
+                [self performSelectorOnMainThread:@selector(appendToText:) withObject:[s stringByAppendingString:@"\n"] waitUntilDone:YES];
+            }
+        }
+        
+        _returnCode = pclose(fp);
+        _finished =YES;
+        return _returnCode;
+    }
+   
+}
 
 /*
 - (id)initWithStyle:(UITableViewStyle)style {

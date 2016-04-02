@@ -29,6 +29,7 @@
 #import "KBYTSearchResultsViewController.h"
 #import "SignOutViewController.h"
 #import "WebViewController.h"
+#import "AboutViewController.h"
 
 @interface AppDelegate ()
 
@@ -54,7 +55,7 @@
 - (void)updateForSignedIn
 {
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
-    if ([viewControllers count] == 4) { return; }
+    if ([viewControllers count] == 5) { return; }
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     [self.tabBar setSelectedIndex:0];
     [viewControllers removeObjectAtIndex:1];
@@ -72,9 +73,13 @@
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];
             [viewControllers removeLastObject];
+            [viewControllers removeLastObject];
             SignOutViewController *svc = [SignOutViewController new];
             svc.title = @"sign out";
             [viewControllers addObject:svc];
+            AboutViewController *avc = [AboutViewController new];
+            avc.title = @"about";
+            [viewControllers addObject:avc];
             self.tabBar.viewControllers = viewControllers;
             
             
@@ -94,9 +99,13 @@
     }
     
     [viewControllers removeLastObject];
+    [viewControllers removeLastObject];
     WebViewController *wvc = [[WebViewController alloc] init];
     wvc.title = @"sign in";
     [viewControllers addObject:wvc];
+    AboutViewController *avc = [AboutViewController new];
+    avc.title = @"about";
+    [viewControllers addObject:avc];
     self.tabBar.viewControllers = viewControllers;
     [[KBYourTube sharedInstance] setUserDetails:nil];
 }
@@ -111,6 +120,9 @@
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     UIViewController *vc = [self packagedSearchController];
     [viewControllers insertObject:vc atIndex:1];
+    AboutViewController *avc = [AboutViewController new];
+    avc.title = @"about";
+    [viewControllers addObject:avc];
     self.tabBar.viewControllers = viewControllers;
     
     if ([[KBYourTube sharedInstance] isSignedIn])
@@ -126,9 +138,13 @@
             [viewControllers insertObject:uvc atIndex:1];
             //[vc addObject:uvc];
             [viewControllers removeLastObject];
+            [viewControllers removeLastObject];
             SignOutViewController *svc = [SignOutViewController new];
             svc.title = @"sign out";
             [viewControllers addObject:svc];
+            AboutViewController *avc = [AboutViewController new];
+            avc.title = @"about";
+            [viewControllers addObject:avc];
             self.tabBar.viewControllers = viewControllers;
             
             
