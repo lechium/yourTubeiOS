@@ -36,6 +36,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    
     // Do any additional setup after loading the view.
 }
 
@@ -56,9 +57,13 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    
     [super viewDidAppear:animated];
     UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
     [sc.searchBar becomeFirstResponder];
+    
+    //NSString *recurse = [sc.searchBar performSelector:@selector(recursiveDescription)];
+    //NSLog(@"recurse: %@", recurse);
 }
 
 

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
+//NSString* appClass = @"tuyuApplication";
 
 int main(int argc, char * argv[]) {
     @autoreleasepool {

@@ -63,6 +63,7 @@
 		892669531C88BCA000082B31 /* AppSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 892669521C88BCA000082B31 /* AppSupport.framework */; };
 		8929758C1CB026B3003D7473 /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8929758B1CB026B3003D7473 /* AboutViewController.m */; };
 		8929758E1CB026D8003D7473 /* About.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8929758D1CB026D8003D7473 /* About.txt */; };
+		8929FCBF1CB44540003D7473 /* tuyuApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 8929FCBE1CB44540003D7473 /* tuyuApplication.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		898E926A1C8D056700B34DAA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E92691C8D056700B34DAA /* main.m */; };
 		898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E926C1C8D056700B34DAA /* AppDelegate.m */; };
 		898E92701C8D056700B34DAA /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E926F1C8D056700B34DAA /* FirstViewController.m */; };
@@ -170,7 +171,6 @@
 		898E93261C8D56A700B34DAA /* gaming.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A421C88A90000E1987E /* gaming.png */; };
 		898E93271C8D56A700B34DAA /* gear.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A431C88A90000E1987E /* gear.png */; };
 		898E93281C8D56A700B34DAA /* gear@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A441C88A90000E1987E /* gear@2x.png */; };
-		898E93291C8D56A700B34DAA /* GenericArtwork.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A451C88A90000E1987E /* GenericArtwork.png */; };
 		898E932A1C8D56A700B34DAA /* globe.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A461C88A90000E1987E /* globe.png */; };
 		898E932B1C8D56A700B34DAA /* globe@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A471C88A90000E1987E /* globe@2x.png */; };
 		898E932C1C8D56A700B34DAA /* grey_arrow_left.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A481C88A90000E1987E /* grey_arrow_left.png */; };
@@ -315,6 +315,9 @@
 		8929758A1CB026B3003D7473 /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutViewController.h; sourceTree = "<group>"; };
 		8929758B1CB026B3003D7473 /* AboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutViewController.m; sourceTree = "<group>"; };
 		8929758D1CB026D8003D7473 /* About.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = About.txt; sourceTree = "<group>"; };
+		8929FCBC1CB44240003D7473 /* GSEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSEvent.h; sourceTree = "<group>"; };
+		8929FCBD1CB4453F003D7473 /* tuyuApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tuyuApplication.h; sourceTree = "<group>"; };
+		8929FCBE1CB44540003D7473 /* tuyuApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tuyuApplication.m; sourceTree = "<group>"; };
 		892A2C381C6A8400003724D6 /* yourTubeApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yourTubeApplication.h; path = yourTube/yourTubeApplication.h; sourceTree = "<group>"; };
 		892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JGProgressView.h; sourceTree = "<group>"; };
 		892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JGProgressView.m; sourceTree = "<group>"; };
@@ -868,6 +871,7 @@
 		898E92671C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXGroup;
 			children = (
+				8929FCBC1CB44240003D7473 /* GSEvent.h */,
 				8929758D1CB026D8003D7473 /* About.txt */,
 				898E935D1C8D62B000B34DAA /* YTPlaceholder.png */,
 				8929758A1CB026B3003D7473 /* AboutViewController.h */,
@@ -875,6 +879,8 @@
 				898E92831C8D254F00B34DAA /* Images */,
 				898E926B1C8D056700B34DAA /* AppDelegate.h */,
 				898E926C1C8D056700B34DAA /* AppDelegate.m */,
+				8929FCBD1CB4453F003D7473 /* tuyuApplication.h */,
+				8929FCBE1CB44540003D7473 /* tuyuApplication.m */,
 				89EEC1011C9214B0006B1944 /* YTTVPlaylistViewController.h */,
 				89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */,
 				89EEC0FE1C921421006B1944 /* SettingsViewController.h */,
@@ -1304,7 +1310,6 @@
 				898E92C31C8D254F00B34DAA /* feature-7.jpg in Resources */,
 				898E92F21C8D254F00B34DAA /* tv-8.jpg in Resources */,
 				898E93231C8D56A700B34DAA /* error.png in Resources */,
-				898E93291C8D56A700B34DAA /* GenericArtwork.png in Resources */,
 				898E92DD1C8D254F00B34DAA /* movie-7.jpg in Resources */,
 				898E92EE1C8D254F00B34DAA /* tv-4.jpg in Resources */,
 				898E92BE1C8D254F00B34DAA /* feature-2.jpg in Resources */,
@@ -1534,6 +1539,7 @@
 				898E93571C8D56D100B34DAA /* UIImageView+WebCache.m in Sources */,
 				898E934E1C8D56D100B34DAA /* SDWebImageDownloader.m in Sources */,
 				898E93671C8D8FEC00B34DAA /* KBYTSearchItemViewController.m in Sources */,
+				8929FCBF1CB44540003D7473 /* tuyuApplication.m in Sources */,
 				898E93091C8D565B00B34DAA /* KBYourTube.m in Sources */,
 				898E93651C8D7ECE00B34DAA /* UserViewController.m in Sources */,
 				898E935B1C8D5B4F00B34DAA /* MarqueeLabel.m in Sources */,
@@ -1681,7 +1687,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
 				PRODUCT_NAME = tuyu;
-				PROVISIONING_PROFILE = "e42aae3b-2cb7-47a2-b03b-b994bcf603c0";
+				PROVISIONING_PROFILE = "cd10c931-dd8a-4e77-8f6f-84e533b16789";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -1742,7 +1748,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
 				PRODUCT_NAME = tuyu;
-				PROVISIONING_PROFILE = "e42aae3b-2cb7-47a2-b03b-b994bcf603c0";
+				PROVISIONING_PROFILE = "cd10c931-dd8a-4e77-8f6f-84e533b16789";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;

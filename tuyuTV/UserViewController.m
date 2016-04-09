@@ -194,6 +194,7 @@
     }];
   }
 
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (collectionView == self.collectionView1)
@@ -207,21 +208,24 @@
     {
         if (self.popularVideos.count > 0)
         {
-            [self playAllSearchResults:self.popularVideos];
+            NSArray *subarray = [self.popularVideos subarrayWithRange:NSMakeRange(indexPath.row, self.popularVideos.count - indexPath.row)];
+            [self playAllSearchResults:subarray];
         }
        
     } else if (collectionView == self.collectionView3)
     {
         if (self.musicVideos.count > 0)
         {
-            [self playAllSearchResults:self.musicVideos];
+            NSArray *subarray = [self.musicVideos subarrayWithRange:NSMakeRange(indexPath.row, self.musicVideos.count - indexPath.row)];
+            [self playAllSearchResults:subarray];
         }
         
     } else if (collectionView == self.collectionView4)
     {
         if (self.sportsVideos.count > 0)
         {
-            [self playAllSearchResults:self.sportsVideos];
+            NSArray *subarray = [self.sportsVideos subarrayWithRange:NSMakeRange(indexPath.row, self.sportsVideos.count - indexPath.row)];
+            [self playAllSearchResults:subarray];
         }
         
     }
