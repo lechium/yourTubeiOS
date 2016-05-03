@@ -693,7 +693,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         }
         if (imagePath != nil)
         {
-            result.imagePath = [@"https:" stringByAppendingString:imagePath];
+            if ([imagePath containsString:@"https:"])
+            {
+                result.imagePath = imagePath;
+            } else {
+                result.imagePath = [@"https:" stringByAppendingString:imagePath];
+            }
         }
         if (lengthElement != nil)
             result.duration = lengthElement.stringValue;
@@ -1086,7 +1091,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     {
                         imagePath = [[imagePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"hqdefault.jpg"];
                     }
-                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    if ([imagePath containsString:@"https:"])
+                    {
+                        result.imagePath = imagePath;
+                    } else {
+                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    }
                 }
                 if (lengthElement != nil)
                     result.duration = [lengthElement.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -1197,7 +1207,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     {
                         imagePath = [[imagePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"hqdefault.jpg"];
                     }
-                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    if ([imagePath containsString:@"https:"])
+                    {
+                        result.imagePath = imagePath;
+                    } else {
+                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    }
                 }
                 if (lengthElement != nil)
                     result.duration = [lengthElement.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -1299,7 +1314,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 }
                 if (imagePath != nil)
                 {
-                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    if ([imagePath containsString:@"https:"])
+                    {
+                        result.imagePath = imagePath;
+                    } else {
+                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    }
                 }
                 if (lengthElement != nil)
                     result.duration = lengthElement.stringValue;
@@ -1444,7 +1464,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 }
                 if (imagePath != nil)
                 {
-                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    if ([imagePath containsString:@"https:"])
+                    {
+                        result.imagePath = imagePath;
+                    } else {
+                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    }
                 }
                 if (lengthElement != nil)
                     result.duration = lengthElement.stringValue;
@@ -1823,7 +1848,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                     if (imagePath != nil)
                     {
-                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                        if ([imagePath containsString:@"https:"])
+                        {
+                            result.imagePath = imagePath;
+                        } else {
+                            result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                        }
                     }
                     if (titleElement != nil)
                         result.title = [[titleElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
@@ -1880,7 +1910,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                     if (imagePath != nil)
                     {
-                        result.imagePath = imagePath;
+                        if ([imagePath containsString:@"https:"])
+                        {
+                            result.imagePath = imagePath;
+                        } else {
+                            result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                        }
                     }
                     if (titleElement != nil)
                         result.title = [[titleElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
@@ -2014,7 +2049,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 }
                 if (imagePath != nil)
                 {
-                    result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    if ([imagePath containsString:@"https:"])
+                    {
+                        result.imagePath = imagePath;
+                    } else {
+                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    }
                 }
                 
                 //set the title and duration

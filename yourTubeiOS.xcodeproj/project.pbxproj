@@ -294,6 +294,7 @@
 		89A83AD21C88AB6600E1987E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A83AD11C88AB6600E1987E /* MapKit.framework */; };
 		89A83AD41C88AB6B00E1987E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A83AD31C88AB6B00E1987E /* AVFoundation.framework */; };
 		89A83AD61C88AB7100E1987E /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A83AD51C88AB7100E1987E /* AVKit.framework */; };
+		89E76ACD1CCD85C2006E5397 /* asu_pid.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 89E76ACC1CCD85C2006E5397 /* asu_pid.entitlements */; };
 		89EEC1001C921421006B1944 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89EEC0FF1C921421006B1944 /* SettingsViewController.m */; };
 		89EEC1031C9214B0006B1944 /* YTTVPlaylistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */; };
 /* End PBXBuildFile section */
@@ -616,6 +617,7 @@
 		89E06BED1C49F59100B8D1C4 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
 		89E06C061C4CA1DC00B8D1C4 /* KBYTPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTPreferences.h; path = yourTube/KBYTPreferences.h; sourceTree = "<group>"; };
 		89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTPreferences.m; path = yourTube/KBYTPreferences.m; sourceTree = "<group>"; };
+		89E76ACC1CCD85C2006E5397 /* asu_pid.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = asu_pid.entitlements; path = ../../../Downloads/asu_pid.entitlements; sourceTree = "<group>"; };
 		89EEC0FE1C921421006B1944 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		89EEC0FF1C921421006B1944 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		89EEC1011C9214B0006B1944 /* YTTVPlaylistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTTVPlaylistViewController.h; sourceTree = "<group>"; };
@@ -871,6 +873,7 @@
 		898E92671C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXGroup;
 			children = (
+				89E76ACC1CCD85C2006E5397 /* asu_pid.entitlements */,
 				8929FCBC1CB44240003D7473 /* GSEvent.h */,
 				8929758D1CB026D8003D7473 /* About.txt */,
 				898E935D1C8D62B000B34DAA /* YTPlaceholder.png */,
@@ -1318,6 +1321,7 @@
 				898E92781C8D056700B34DAA /* Assets.xcassets in Resources */,
 				898E93271C8D56A700B34DAA /* gear.png in Resources */,
 				898E933A1C8D56AC00B34DAA /* info@3x.png in Resources */,
+				89E76ACD1CCD85C2006E5397 /* asu_pid.entitlements in Resources */,
 				898E92C11C8D254F00B34DAA /* feature-5.jpg in Resources */,
 				898E932C1C8D56A700B34DAA /* grey_arrow_left.png in Resources */,
 				898E92E81C8D254F00B34DAA /* tv-16.jpg in Resources */,
@@ -1645,7 +1649,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Kevin Bradley (JXV33BLVYS)";
+				CODE_SIGN_ENTITLEMENTS = $SRCROOT/tuyuTV/asu_pid.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1687,7 +1692,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
 				PRODUCT_NAME = tuyu;
-				PROVISIONING_PROFILE = "cd10c931-dd8a-4e77-8f6f-84e533b16789";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -1713,7 +1718,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Kevin Bradley (JXV33BLVYS)";
+				CODE_SIGN_ENTITLEMENTS = $SRCROOT/tuyuTV/asu_pid.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1748,7 +1754,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
 				PRODUCT_NAME = tuyu;
-				PROVISIONING_PROFILE = "cd10c931-dd8a-4e77-8f6f-84e533b16789";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
