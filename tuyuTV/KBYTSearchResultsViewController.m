@@ -139,9 +139,30 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 {
     if (self.currentPage > 1)
     {
-        [[self searchResults] addObjectsFromArray:newResults];
+       // [[self.collectionView]
+        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForItem:[[self searchResults] count]-1 inSection:0];
+        [self.collectionView performBatchUpdates:^{
+            
+            [[self searchResults] addObjectsFromArray:newResults];
+            NSMutableArray *indexPathArray = [NSMutableArray new];
+            NSInteger i = 0;
+            for (i = 0; i < [newResults count]; i++)
+            {
+                NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:lastIndexPath.item+i inSection:0];
+                [indexPathArray addObject:newIndexPath];
+            }
+            
+            [self.collectionView insertItemsAtIndexPaths:indexPathArray];
+            
+        } completion:^(BOOL finished) {
+            
+            //
+        }];
+        
     } else {
         self.searchResults = [newResults mutableCopy];
+        [self.collectionView reloadData];
+        
     }
 }
 
@@ -177,8 +198,15 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     self.currentPage = 1; //reset for new search
+    
+    if ([_lastSearchResult isEqualToString:searchController.searchBar.text])
+    {
+        //no need to refresh a search with an old string...
+        return;
+    }
+    
     self.filterString = searchController.searchBar.text;
- 
+    _lastSearchResult = self.filterString;
     
     [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
         
@@ -188,7 +216,6 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         self.pageCount = [searchDetails[@"pageCount"] integerValue];
         //self.searchResults = searchDetails[@"results"];
         [self updateSearchResults:searchDetails[@"results"]];
-        [self.collectionView reloadData];
         
         
     } failureBlock:^(NSString *error) {
@@ -213,8 +240,12 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     {
         _gettingPage = true;
         self.currentPage = nextPage;
+        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+        [SVProgressHUD show];
+         
         [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
             
+            [SVProgressHUD dismiss];
             //  NSLog(@"search details: %@", searchDetails);
             if (self.currentPage == 1)
                 [SVProgressHUD dismiss];

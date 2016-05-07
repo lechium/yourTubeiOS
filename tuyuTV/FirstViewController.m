@@ -209,7 +209,7 @@
       {
           KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
           NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
-          NSLog(@"imageURL: %@", imageURL);
+       //   NSLog(@"imageURL: %@", imageURL);
           UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
           [cell.featuredImage sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
       } else {

@@ -11,6 +11,7 @@
 @interface KBYTSearchResultsViewController : UICollectionViewController <UISearchResultsUpdating>
 {
     BOOL _gettingPage;
+    NSString *_lastSearchResult;
 }
 
 @property (nonatomic, strong) NSIndexPath *selectedItem;

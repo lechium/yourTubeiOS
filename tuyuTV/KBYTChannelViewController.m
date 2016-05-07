@@ -90,6 +90,37 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 {
     if (self.currentPage > 1)
     {
+        // [[self.collectionView]
+        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForItem:[[self searchResults] count]-1 inSection:0];
+        [self.channelCollectionView performBatchUpdates:^{
+            
+            [[self searchResults] addObjectsFromArray:newResults];
+            NSMutableArray *indexPathArray = [NSMutableArray new];
+            NSInteger i = 0;
+            for (i = 0; i < [newResults count]; i++)
+            {
+                NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:lastIndexPath.item+i inSection:0];
+                [indexPathArray addObject:newIndexPath];
+            }
+            
+            [self.channelCollectionView insertItemsAtIndexPaths:indexPathArray];
+            
+        } completion:^(BOOL finished) {
+            
+            //
+        }];
+        
+    } else {
+        self.searchResults = [newResults mutableCopy];
+        [self.channelCollectionView reloadData];
+        
+    }
+}
+
+- (void)oldUpdateSearchResults:(NSArray *)newResults
+{
+    if (self.currentPage > 1)
+    {
         [[self searchResults] addObjectsFromArray:newResults];
     } else {
         self.searchResults = [newResults mutableCopy];
@@ -129,7 +160,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             self.pageCount = [outputResults[@"pageCount"] integerValue];
             //self.searchResults = searchDetails[@"results"];
             [self updateSearchResults:outputResults[@"results"]];
-            [self.channelCollectionView reloadData];
+           // [self.channelCollectionView reloadData];
             _gettingPage = false;
             
         } failureBlock:^(NSString *error) {
