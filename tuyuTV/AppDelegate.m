@@ -30,6 +30,7 @@
 #import "SignOutViewController.h"
 #import "WebViewController.h"
 #import "AboutViewController.h"
+#import "TYUserViewController.h"
 
 @interface AppDelegate ()
 
@@ -74,7 +75,8 @@
             // NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
             
-            UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
+          //  UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
+            TYUserViewController *uvc = [[TYUserViewController alloc] init];
             //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];
@@ -138,7 +140,8 @@
            // NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
             
-            UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
+           // UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
+            TYUserViewController *uvc = [[TYUserViewController alloc] init];
             //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];

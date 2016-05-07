@@ -11,6 +11,7 @@
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "KBYourTube+Categories.h"
+#import "PureLayout.h"
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 #define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))

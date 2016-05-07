@@ -234,6 +234,17 @@
 		898E93741C8F65F200B34DAA /* SignOutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93731C8F65F200B34DAA /* SignOutViewController.m */; };
 		898E93761C90AFAA00B34DAA /* Banner.png in Resources */ = {isa = PBXBuildFile; fileRef = 898E93751C90AFAA00B34DAA /* Banner.png */; };
 		898E93791C90B0A000B34DAA /* KBYTChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93781C90B0A000B34DAA /* KBYTChannelViewController.m */; };
+		899876521CDE7725006A639E /* TYUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899876511CDE7725006A639E /* TYUserViewController.m */; };
+		8998765D1CDE77A5006A639E /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 899876551CDE77A5006A639E /* ALView+PureLayout.m */; };
+		8998765E1CDE77A5006A639E /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 899876551CDE77A5006A639E /* ALView+PureLayout.m */; };
+		8998765F1CDE77A5006A639E /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 899876571CDE77A5006A639E /* NSArray+PureLayout.m */; };
+		899876601CDE77A5006A639E /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 899876571CDE77A5006A639E /* NSArray+PureLayout.m */; };
+		899876611CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 899876591CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m */; };
+		899876621CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 899876591CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m */; };
+		899876671CDE78BA006A639E /* CollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 899876661CDE78BA006A639E /* CollectionViewLayout.m */; };
+		899876691CDE7BEE006A639E /* YTTVStandardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899876681CDE7BEE006A639E /* YTTVStandardCollectionViewCell.xib */; };
+		8998766B1CDE7CC0006A639E /* YTTVFeaturedCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8998766A1CDE7CC0006A639E /* YTTVFeaturedCollectionViewCell.xib */; };
+		8998766F1CDEA423006A639E /* UIView+RecursiveFind.m in Sources */ = {isa = PBXBuildFile; fileRef = 8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */; };
 		89A35CF11C8A222A000FFCA0 /* KBYTDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */; };
 		89A35CF41C8A27ED000FFCA0 /* kBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* kBYTDownloadOperation.m */; };
 		89A83A281C88A89300E1987E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A271C88A89300E1987E /* Assets.xcassets */; };
@@ -487,6 +498,23 @@
 		898E93751C90AFAA00B34DAA /* Banner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Banner.png; sourceTree = "<group>"; };
 		898E93771C90B0A000B34DAA /* KBYTChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBYTChannelViewController.h; sourceTree = "<group>"; };
 		898E93781C90B0A000B34DAA /* KBYTChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTChannelViewController.m; sourceTree = "<group>"; };
+		899876501CDE7725006A639E /* TYUserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYUserViewController.h; sourceTree = "<group>"; };
+		899876511CDE7725006A639E /* TYUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYUserViewController.m; sourceTree = "<group>"; };
+		899876541CDE77A5006A639E /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
+		899876551CDE77A5006A639E /* ALView+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALView+PureLayout.m"; sourceTree = "<group>"; };
+		899876561CDE77A5006A639E /* NSArray+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+PureLayout.h"; sourceTree = "<group>"; };
+		899876571CDE77A5006A639E /* NSArray+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+PureLayout.m"; sourceTree = "<group>"; };
+		899876581CDE77A5006A639E /* NSLayoutConstraint+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+PureLayout.h"; sourceTree = "<group>"; };
+		899876591CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+PureLayout.m"; sourceTree = "<group>"; };
+		8998765A1CDE77A5006A639E /* PureLayout+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PureLayout+Internal.h"; sourceTree = "<group>"; };
+		8998765B1CDE77A5006A639E /* PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PureLayout.h; sourceTree = "<group>"; };
+		8998765C1CDE77A5006A639E /* PureLayoutDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PureLayoutDefines.h; sourceTree = "<group>"; };
+		899876651CDE78BA006A639E /* CollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewLayout.h; sourceTree = "<group>"; };
+		899876661CDE78BA006A639E /* CollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionViewLayout.m; sourceTree = "<group>"; };
+		899876681CDE7BEE006A639E /* YTTVStandardCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YTTVStandardCollectionViewCell.xib; sourceTree = "<group>"; };
+		8998766A1CDE7CC0006A639E /* YTTVFeaturedCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YTTVFeaturedCollectionViewCell.xib; sourceTree = "<group>"; };
+		8998766D1CDEA423006A639E /* UIView+RecursiveFind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+RecursiveFind.h"; sourceTree = "<group>"; };
+		8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+RecursiveFind.m"; sourceTree = "<group>"; };
 		899F73E81C6BED2A0088B434 /* KBYTDownloadCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadCell.h; path = yourTube/KBYTDownloadCell.h; sourceTree = "<group>"; };
 		899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadCell.m; path = yourTube/KBYTDownloadCell.m; sourceTree = "<group>"; };
 		89A35CEF1C8A222A000FFCA0 /* KBYTDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadManager.h; path = yourTube/KBYTDownloadManager.h; sourceTree = "<group>"; };
@@ -873,6 +901,7 @@
 		898E92671C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXGroup;
 			children = (
+				8998766C1CDEA423006A639E /* Categories */,
 				89E76ACC1CCD85C2006E5397 /* asu_pid.entitlements */,
 				8929FCBC1CB44240003D7473 /* GSEvent.h */,
 				8929758D1CB026D8003D7473 /* About.txt */,
@@ -880,6 +909,7 @@
 				8929758A1CB026B3003D7473 /* AboutViewController.h */,
 				8929758B1CB026B3003D7473 /* AboutViewController.m */,
 				898E92831C8D254F00B34DAA /* Images */,
+				899876641CDE78BA006A639E /* CollectionView */,
 				898E926B1C8D056700B34DAA /* AppDelegate.h */,
 				898E926C1C8D056700B34DAA /* AppDelegate.m */,
 				8929FCBD1CB4453F003D7473 /* tuyuApplication.h */,
@@ -897,6 +927,8 @@
 				898E926F1C8D056700B34DAA /* FirstViewController.m */,
 				898E93631C8D7ECE00B34DAA /* UserViewController.h */,
 				898E93641C8D7ECE00B34DAA /* UserViewController.m */,
+				899876501CDE7725006A639E /* TYUserViewController.h */,
+				899876511CDE7725006A639E /* TYUserViewController.m */,
 				898E92711C8D056700B34DAA /* SecondViewController.h */,
 				898E92721C8D056700B34DAA /* SecondViewController.m */,
 				898E936C1C8E17CF00B34DAA /* KBYTSearchResultsViewController.h */,
@@ -990,10 +1022,46 @@
 				898E93701C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m */,
 				898E927D1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.h */,
 				898E927E1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.m */,
+				8998766A1CDE7CC0006A639E /* YTTVFeaturedCollectionViewCell.xib */,
 				898E92801C8D162800B34DAA /* YTTVStandardCollectionViewCell.h */,
 				898E92811C8D162800B34DAA /* YTTVStandardCollectionViewCell.m */,
+				899876681CDE7BEE006A639E /* YTTVStandardCollectionViewCell.xib */,
 			);
 			name = "Collection View Cells";
+			sourceTree = "<group>";
+		};
+		899876531CDE77A5006A639E /* PureLayout */ = {
+			isa = PBXGroup;
+			children = (
+				899876541CDE77A5006A639E /* ALView+PureLayout.h */,
+				899876551CDE77A5006A639E /* ALView+PureLayout.m */,
+				899876561CDE77A5006A639E /* NSArray+PureLayout.h */,
+				899876571CDE77A5006A639E /* NSArray+PureLayout.m */,
+				899876581CDE77A5006A639E /* NSLayoutConstraint+PureLayout.h */,
+				899876591CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m */,
+				8998765A1CDE77A5006A639E /* PureLayout+Internal.h */,
+				8998765B1CDE77A5006A639E /* PureLayout.h */,
+				8998765C1CDE77A5006A639E /* PureLayoutDefines.h */,
+			);
+			path = PureLayout;
+			sourceTree = "<group>";
+		};
+		899876641CDE78BA006A639E /* CollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				899876651CDE78BA006A639E /* CollectionViewLayout.h */,
+				899876661CDE78BA006A639E /* CollectionViewLayout.m */,
+			);
+			path = CollectionView;
+			sourceTree = "<group>";
+		};
+		8998766C1CDEA423006A639E /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				8998766D1CDEA423006A639E /* UIView+RecursiveFind.h */,
+				8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */,
+			);
+			path = Categories;
 			sourceTree = "<group>";
 		};
 		89A83A1A1C88A89300E1987E /* tuyu */ = {
@@ -1089,6 +1157,7 @@
 				89B9D4211C44F49F00740BF1 /* Frameworks */,
 				89B9D4241C44F49F00740BF1 /* GCDWebServer */,
 				89B9D4411C44F49F00740BF1 /* InspCWrapper.m */,
+				899876531CDE77A5006A639E /* PureLayout */,
 				89B9D4421C44F49F00740BF1 /* ipodimport.h */,
 				89B9D4441C44F49F00740BF1 /* LICENSE */,
 				89B9D4451C44F49F00740BF1 /* Makefile */,
@@ -1356,6 +1425,7 @@
 				898E92F01C8D254F00B34DAA /* tv-6.jpg in Resources */,
 				898E933F1C8D56AC00B34DAA /* sports.png in Resources */,
 				898E92D11C8D254F00B34DAA /* movie-13.jpg in Resources */,
+				899876691CDE7BEE006A639E /* YTTVStandardCollectionViewCell.xib in Resources */,
 				898E92E91C8D254F00B34DAA /* tv-17.jpg in Resources */,
 				898E93151C8D56A700B34DAA /* 360.png in Resources */,
 				898E93281C8D56A700B34DAA /* gear@2x.png in Resources */,
@@ -1400,6 +1470,7 @@
 				898E92C61C8D254F00B34DAA /* featuredtv-2.jpg in Resources */,
 				898E92D31C8D254F00B34DAA /* movie-15.jpg in Resources */,
 				898E92DB1C8D254F00B34DAA /* movie-5.jpg in Resources */,
+				8998766B1CDE7CC0006A639E /* YTTVFeaturedCollectionViewCell.xib in Resources */,
 				898E92EF1C8D254F00B34DAA /* tv-5.jpg in Resources */,
 				898E93311C8D56A700B34DAA /* Icon-Small@2x.png in Resources */,
 				898E92E41C8D254F00B34DAA /* tv-12.jpg in Resources */,
@@ -1507,13 +1578,16 @@
 				898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */,
 				898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */,
 				898E934F1C8D56D100B34DAA /* SDWebImageDownloaderOperation.m in Sources */,
+				899876621CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,
 				898E93511C8D56D100B34DAA /* SDWebImagePrefetcher.m in Sources */,
 				898E93061C8D565300B34DAA /* kBYTDownloadOperation.m in Sources */,
+				8998766F1CDEA423006A639E /* UIView+RecursiveFind.m in Sources */,
 				898E93591C8D56D400B34DAA /* KBYTPreferences.m in Sources */,
 				898E93471C8D56BD00B34DAA /* SVProgressHUD.m in Sources */,
 				898E93111C8D569600B34DAA /* UIColor+Additions.m in Sources */,
 				898E93541C8D56D100B34DAA /* UIImage+MultiFormat.m in Sources */,
 				898E930A1C8D566000B34DAA /* KBYTDownloadStream.m in Sources */,
+				899876671CDE78BA006A639E /* CollectionViewLayout.m in Sources */,
 				898E927F1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.m in Sources */,
 				898E93521C8D56D100B34DAA /* UIButton+WebCache.m in Sources */,
 				898E93531C8D56D100B34DAA /* UIImage+GIF.m in Sources */,
@@ -1541,13 +1615,16 @@
 				898E936E1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m in Sources */,
 				898E93081C8D565800B34DAA /* KBYTQueuePlayer.m in Sources */,
 				898E93571C8D56D100B34DAA /* UIImageView+WebCache.m in Sources */,
+				899876521CDE7725006A639E /* TYUserViewController.m in Sources */,
 				898E934E1C8D56D100B34DAA /* SDWebImageDownloader.m in Sources */,
 				898E93671C8D8FEC00B34DAA /* KBYTSearchItemViewController.m in Sources */,
 				8929FCBF1CB44540003D7473 /* tuyuApplication.m in Sources */,
+				899876601CDE77A5006A639E /* NSArray+PureLayout.m in Sources */,
 				898E93091C8D565B00B34DAA /* KBYourTube.m in Sources */,
 				898E93651C8D7ECE00B34DAA /* UserViewController.m in Sources */,
 				898E935B1C8D5B4F00B34DAA /* MarqueeLabel.m in Sources */,
 				898E930B1C8D566200B34DAA /* KBYourTube+Categories.m in Sources */,
+				8998765E1CDE77A5006A639E /* ALView+PureLayout.m in Sources */,
 				898E934D1C8D56D100B34DAA /* SDWebImageDecoder.m in Sources */,
 				898E934C1C8D56D100B34DAA /* SDWebImageCompat.m in Sources */,
 				898E93561C8D56D100B34DAA /* UIImageView+HighlightedWebCache.m in Sources */,
@@ -1591,6 +1668,7 @@
 				8926691D1C88B1A900082B31 /* MarqueeLabel.m in Sources */,
 				89A83A9C1C88A95C00E1987E /* MKAnnotationView+WebCache.m in Sources */,
 				89A83A9F1C88A95C00E1987E /* SDWebImageCompat.m in Sources */,
+				899876611CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,
 				89A83AAD1C88A96D00E1987E /* APElement.m in Sources */,
 				89A83AA41C88A95C00E1987E /* SDWebImagePrefetcher.m in Sources */,
 				89A83AB21C88A97700E1987E /* KBYourTube+Categories.m in Sources */,
@@ -1602,6 +1680,7 @@
 				89A83A9E1C88A95C00E1987E /* SDImageCache.m in Sources */,
 				89A83A961C88A93000E1987E /* yourTubeApplication.m in Sources */,
 				89A83AC21C88AAFC00E1987E /* Reachability.m in Sources */,
+				8998765D1CDE77A5006A639E /* ALView+PureLayout.m in Sources */,
 				89A83AAB1C88A96D00E1987E /* APAttribute.m in Sources */,
 				89A83A9B1C88A94F00E1987E /* UIView+WebCacheOperation.m in Sources */,
 				89A83A981C88A93900E1987E /* SVProgressHUD.m in Sources */,
@@ -1610,6 +1689,7 @@
 				89A83ABA1C88AADF00E1987E /* SlideAnimation.m in Sources */,
 				89A83AA61C88A95C00E1987E /* UIImage+GIF.m in Sources */,
 				89A83A9D1C88A95C00E1987E /* NSData+ImageContentType.m in Sources */,
+				8998765F1CDE77A5006A639E /* NSArray+PureLayout.m in Sources */,
 				89A83AA81C88A95C00E1987E /* UIImage+WebP.m in Sources */,
 				89A83AB91C88AADF00E1987E /* ShuffleAnimation.m in Sources */,
 				89A83AAE1C88A97700E1987E /* YTKBPlayerViewController.m in Sources */,
