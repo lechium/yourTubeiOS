@@ -32,7 +32,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self.title = [[UILabel alloc] initWithFrame:CGRectMake(150, 0, 400, 40)];
+        self.title = [[UILabel alloc] initWithFrame:CGRectMake(100, 20, 400, 40)];
         self.title.textColor = [UIColor whiteColor];
         self.title.font = [UIFont systemFontOfSize:40];
         [self addSubview:self.title];
@@ -171,8 +171,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     layoutTwo.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     layoutTwo.minimumInteritemSpacing = 10;
     layoutTwo.minimumLineSpacing = 50;
-    layoutTwo.itemSize = CGSizeMake(320, 340);
-    layoutTwo.sectionInset = UIEdgeInsetsMake(35, 50, 20, 50);
+    layoutTwo.itemSize = CGSizeMake(320, 420);
+    layoutTwo.sectionInset = UIEdgeInsetsMake(35, 0, 20, 0);
     layoutTwo.headerReferenceSize = CGSizeMake(100, 100);
     
     NSInteger i = 0;
@@ -198,25 +198,21 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.channelVideosCollectionView withOffset:-50];
         } else {
             UIView *previousView = [self.view viewWithTag:collectionView.tag-1];
-            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousView withOffset:50];
+            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousView withOffset:20];
             
         }
         
         [collectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:0];
         [collectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:0];
+
+        _totalHeight+=550;
         
-       // [collectionView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
-        _totalHeight+=480;
+          [collectionView autoSetDimension:ALDimensionHeight toSize:530];
         if (i == [_backingSectionLabels count]-1)
         {
-            DLog(@"pin to bottom");
-            [collectionView autoSetDimension:ALDimensionHeight toSize:450];
-            [collectionView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-           // [NSLayoutConstraint deactivateConstraints:collectionView.constraints];
-           // [collectionView removeFromSuperview];
-           // [_backingSectionLabels removeLastObject];
-        } else {
-            [collectionView autoSetDimension:ALDimensionHeight toSize:450];
+        
+           // [collectionView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
         }
     }
     

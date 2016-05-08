@@ -8,10 +8,10 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="StandardCell" id="yAb-OF-xlr" customClass="YTTVStandardCollectionViewCell">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="420"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="420"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ueK-FZ-9cL">
@@ -38,10 +38,12 @@
                 <constraint firstItem="9Oc-hh-w30" firstAttribute="leading" secondItem="yAb-OF-xlr" secondAttribute="leadingMargin" id="Zeg-fm-C4h"/>
                 <constraint firstAttribute="bottomMargin" secondItem="9Oc-hh-w30" secondAttribute="bottom" id="b8q-Wo-0xX"/>
             </constraints>
+            <size key="customSize" width="320" height="420"/>
             <connections>
                 <outlet property="image" destination="ueK-FZ-9cL" id="4g6-b6-Dcj"/>
                 <outlet property="title" destination="9Oc-hh-w30" id="Rn3-ih-Gyn"/>
             </connections>
+            <point key="canvasLocation" x="296" y="280"/>
         </collectionViewCell>
     </objects>
 </document>
