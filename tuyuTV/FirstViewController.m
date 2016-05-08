@@ -71,7 +71,22 @@
         
         
     }];
+    
+    
+   
+    [self.scrollView addObserver:self
+                      forKeyPath:@"contentInset"
+                         options:NSKeyValueObservingOptionNew
+                         context:NULL];
     // Do any additional setup after loading the view, typically from a nib.
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+    
+    NSLog(@"keyPath: %@", keyPath);
+    id newValue = change[@"new"];
+    NSLog(@"newValue: %@", newValue);
 }
 
 - (void)itemDidFinishPlaying:(NSNotification *)n
@@ -80,9 +95,34 @@
     [self dismissViewControllerAnimated:true completion:nil];
 }
 
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+    LOG_SELF;
+    CGPoint offset = self.scrollView.contentOffset;
+    DLog(@"offset: %@", NSStringFromCGPoint(offset));
+    DLog(@"nextView: %@", [[context nextFocusedView] superview]);
+}
+
+
 - (void)viewDidLayoutSubviews
 {
+        LOG_SELF;
     self.scrollView.contentSize = CGSizeMake(1920, 2220);
+    DLog(@"insets : %i", self.collectionView1.translatesAutoresizingMaskIntoConstraints);
+    
+
+     //[self.view printRecursiveDescription];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    LOG_SELF;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    LOG_SELF;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section

@@ -31,6 +31,8 @@
 #import "WebViewController.h"
 #import "AboutViewController.h"
 #import "TYUserViewController.h"
+#import "TYBaseGridViewController.h"
+
 
 @interface AppDelegate ()
 
@@ -76,7 +78,7 @@
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
             
           //  UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-            TYUserViewController *uvc = [[TYUserViewController alloc] init];
+            TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];//baseGridController
             //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];
@@ -141,7 +143,8 @@
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
             
            // UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-            TYUserViewController *uvc = [[TYUserViewController alloc] init];
+           // TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
+           TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];
             //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];

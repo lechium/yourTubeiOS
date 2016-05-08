@@ -6,7 +6,7 @@
 //
 //
 
-#import "TYUserViewController.h"
+#import "TYBaseGridViewController.h"
 #import "YTTVStandardCollectionViewCell.h"
 #import "KBYourTube.h"
 #import "UIImageView+WebCache.h"
@@ -17,7 +17,7 @@
 #import "CollectionViewLayout.h"
 #import "YTTVFeaturedCollectionViewCell.h"
 
-@interface TYPlaylistCollectionHeaderView : UICollectionReusableView
+@interface TYBaseGridCollectionHeaderView : UICollectionReusableView
 {
     
 }
@@ -25,14 +25,14 @@
 
 @end
 
-@implementation TYPlaylistCollectionHeaderView
+@implementation TYBaseGridCollectionHeaderView
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self.title = [[UILabel alloc] initWithFrame:CGRectMake(40, 50, 400, 40)];
+        self.title = [[UILabel alloc] initWithFrame:CGRectMake(150, 0, 400, 40)];
         self.title.textColor = [UIColor whiteColor];
         self.title.font = [UIFont systemFontOfSize:40];
         [self addSubview:self.title];
@@ -52,7 +52,10 @@
 @end
 
 
-@interface TYUserViewController ()
+@interface TYBaseGridViewController ()
+{
+    CGFloat _totalHeight;
+}
 
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTQueuePlayer *player;
@@ -63,76 +66,164 @@
 static NSString * const featuredReuseIdentifier = @"FeaturedCell";
 static NSString * const standardReuseIdentifier = @"StandardCell";
 
-@implementation TYUserViewController
+@implementation TYBaseGridViewController
 
 - (void)viewDidLoad {
+
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
-    [self setupViews];
+    NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
+    NSArray *results = userDetails[@"results"];
+    _backingSectionLabels = [NSMutableArray new];
+    
+    for (KBYTSearchResult *result in results)
+    {
+        if (result.resultType == kYTSearchResultTypePlaylist)
+        {
+            [_backingSectionLabels addObject:result.title];
+        }
+    }
    // [self fetchUserDetails];
+    [self setupViews];
     [self fetchUserDetailsWithCompletionBlock:^(NSDictionary *finishedDetails) {
         
         self.playlistDictionary = finishedDetails;
-        [[self playlistVideosCollectionView] reloadData];
+        
+        [self reloadCollectionViews];
     }];
     // Do any additional setup after loading the view.
 }
 
+- (void)reloadCollectionViews
+{
+
+    NSInteger i = 0;
+    for (i = 0; i < [_backingSectionLabels count]; i++)
+    {
+        UICollectionView *collectionView = (UICollectionView*)[self.view viewWithTag:60+i];
+       // NSLog(@"collectionView: %@", collectionView);
+        if ([collectionView isKindOfClass:[UICollectionView class]])
+        {
+            [collectionView reloadData];
+        }
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+ 
+    NSLog(@"keyPath: %@", keyPath);
+    id newValue = change[@"new"];
+    NSLog(@"newValue: %@", newValue);
+}
+
 - (void)setupViews
 {
+    /*
+    self.scrollView = [[UIScrollView alloc] initForAutoLayout];
+    self.scrollView.translatesAutoresizingMaskIntoConstraints = false;
+    [self.mainView addSubview:self.scrollView];
+   // [self.scrollView autoSetDimension:ALDimensionHeight toSize:940];
+  //  [self.scrollView auto]
+    [self.scrollView autoMatchDimension:ALDimensionHeight toDimension:ALDimensionHeight ofView:self.view];
+    [self.scrollView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self.view];
+    //[self.scrollView autoPinEdgesToSuperviewEdges];
+    [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.scrollView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [self.scrollView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    // [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    self.scrollView.userInteractionEnabled = true;
+    //self.scrollView.panGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
+    self.scrollView.scrollEnabled = true;
+    self.scrollView.directionalLockEnabled = false;
+     */
+   
     CollectionViewLayout *layout = [CollectionViewLayout new];
     layout.minimumInteritemSpacing = 50;
     layout.minimumLineSpacing = 50;
     layout.itemSize = CGSizeMake(640, 480);
     layout.sectionInset = UIEdgeInsetsMake(-5, 50, 0, 50);
+
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     //layout.sectionInset = UIEdgeInsetsZero;
     self.channelVideosCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     self.channelVideosCollectionView.translatesAutoresizingMaskIntoConstraints = false;
     [self.channelVideosCollectionView registerNib:[UINib nibWithNibName:@"YTTVFeaturedCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:featuredReuseIdentifier];
     
-    [self.channelVideosCollectionView registerClass:[TYPlaylistCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
+    [self.channelVideosCollectionView registerClass:[TYBaseGridCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
     [self.channelVideosCollectionView setDelegate:self];
     [self.channelVideosCollectionView setDataSource:self];
+    [self.scrollView addSubview:self.channelVideosCollectionView];
     
-    [self.view addSubview:self.channelVideosCollectionView];
+    [self.channelVideosCollectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:50];
+    [self.channelVideosCollectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.scrollView];
+    
+    [self.channelVideosCollectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:50];
+    
+    [self.channelVideosCollectionView autoSetDimension:ALDimensionHeight toSize:640];
+    
+    [self.channelVideosCollectionView autoSetDimension:ALDimensionWidth toSize:1920];
+    
     
     CollectionViewLayout *layoutTwo = [CollectionViewLayout new];
     
-    layoutTwo.scrollDirection = UICollectionViewScrollDirectionVertical;
+    layoutTwo.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     layoutTwo.minimumInteritemSpacing = 10;
     layoutTwo.minimumLineSpacing = 50;
     layoutTwo.itemSize = CGSizeMake(320, 340);
     layoutTwo.sectionInset = UIEdgeInsetsMake(35, 50, 20, 50);
     layoutTwo.headerReferenceSize = CGSizeMake(100, 100);
-    self.playlistVideosCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layoutTwo];
-    self.playlistVideosCollectionView.translatesAutoresizingMaskIntoConstraints = false;
-    [self.playlistVideosCollectionView registerNib:[UINib nibWithNibName:@"YTTVStandardCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:standardReuseIdentifier];
-    [self.playlistVideosCollectionView registerClass:[TYPlaylistCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
-    [self.playlistVideosCollectionView setDelegate:self];
-    [self.playlistVideosCollectionView setDataSource:self];
     
-    [self.view addSubview:self.playlistVideosCollectionView];
+    NSInteger i = 0;
+    _totalHeight = 640;
+    for (i = 0; i < [_backingSectionLabels count]; i++)
+    {
+
+        UICollectionView *collectionView  = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layoutTwo];
+        //collectionView.scrollEnabled = true;
+        collectionView.tag = 60 + i;
+        collectionView.translatesAutoresizingMaskIntoConstraints = false;
+        [collectionView registerNib:[UINib nibWithNibName:@"YTTVStandardCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:standardReuseIdentifier];
+        [collectionView registerClass:[TYBaseGridCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
+        [collectionView setDelegate:self];
+        [collectionView setDataSource:self];
+        
+       
+        [self.scrollView addSubview:collectionView];
+ 
+        
+        if (i == 0) //first one
+        {
+            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.channelVideosCollectionView withOffset:-50];
+        } else {
+            UIView *previousView = [self.view viewWithTag:collectionView.tag-1];
+            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousView withOffset:50];
+            
+        }
+        
+        [collectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:0];
+        [collectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:0];
+        
+       // [collectionView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
+        _totalHeight+=480;
+        if (i == [_backingSectionLabels count]-1)
+        {
+            DLog(@"pin to bottom");
+            [collectionView autoSetDimension:ALDimensionHeight toSize:450];
+            [collectionView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+           // [NSLayoutConstraint deactivateConstraints:collectionView.constraints];
+           // [collectionView removeFromSuperview];
+           // [_backingSectionLabels removeLastObject];
+        } else {
+            [collectionView autoSetDimension:ALDimensionHeight toSize:450];
+        }
+    }
     
-    [self.channelVideosCollectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.view withOffset:50];
-    [self.channelVideosCollectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view];
-    
-    [self.channelVideosCollectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.view withOffset:50];
-    
-    //[self.channelVideosCollectionView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self.view];
-    
-    [self.channelVideosCollectionView autoSetDimension:ALDimensionHeight toSize:640];
-    
-    
-    [self.playlistVideosCollectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.view withOffset:0];
-    
-    [self.playlistVideosCollectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.channelVideosCollectionView withOffset:10];
-    
-    [self.playlistVideosCollectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.view withOffset:0];
-    
-    [self.playlistVideosCollectionView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
-    
+  
 }
+
+
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
@@ -146,7 +237,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     }
     
     if (kind == UICollectionElementKindSectionHeader) {
-        TYPlaylistCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
+        TYBaseGridCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
         
         headerView.title.text = theTitle;
         reusableview = headerView;
@@ -155,25 +246,50 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     return reusableview;
 }
 
+
 - (void)viewDidLayoutSubviews
 {
-    [super viewDidLayoutSubviews];
-  //  [self.view printRecursiveDescription];
+    LOG_SELF;
+      [[self scrollView] setContentSize:CGSizeMake(1920, _totalHeight)];
+      DLog(@"insets : %@", NSStringFromUIEdgeInsets(self.scrollView.contentInset));
+  //  DLog(@"total height: %f", _totalHeight);
+    
+    [self.view printRecursiveDescription];
 
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+    LOG_SELF;
+    CGPoint offset = self.scrollView.contentOffset;
+    CGFloat height = self.view.bounds.size.height;
+    DLog(@"offset: %@", NSStringFromCGPoint(offset));
+    UICollectionView *collectionView = (UICollectionView*)[[context nextFocusedView] superview];
+    if (collectionView.frame.origin.y > height)
+    {
+       
+        CGFloat newY = collectionView.frame.origin.y - height;
+        offset.y = newY;
+        DLog(@"we needs to scroll: %f", newY);
+        dispatch_async(dispatch_get_main_queue(), ^{
+           //  [self.scrollView setContentOffset:offset animated:true];
+        });
+      //  [self.scrollView setContentOffset:offset animated:true];
+    }
+    
 }
 
 
 - (void)fetchUserDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock
 {
     NSMutableDictionary *playlists = [NSMutableDictionary new];
-    _backingSectionLabels = [NSMutableArray new];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
     NSString *channelID = userDetails[@"channelID"];
     [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(NSDictionary *searchDetails) {
         
         //self.featuredVideosDict = searchDetails;
         self.channelVideos = searchDetails[@"results"];
-        [[self channelVideosCollectionView] reloadData];
+          [[self channelVideosCollectionView] reloadData];
         
         
     } failureBlock:^(NSString *error) {
@@ -182,6 +298,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     NSArray *results = userDetails[@"results"];
     NSInteger playlistCount = 0;
+    /*
     for (KBYTSearchResult *result in results)
     {
         if (result.resultType == kYTSearchResultTypePlaylist)
@@ -189,6 +306,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             [_backingSectionLabels addObject:result.title];
         }
     }
+     */
     playlistCount = [_backingSectionLabels count];
     __block NSInteger currentIndex = 0;
     for (KBYTSearchResult *result in results)
@@ -255,7 +373,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     {
         count = self.channelVideos.count;
         
-    } else if (collectionView == self.playlistVideosCollectionView)
+    } else
     {
         NSString *titleForSection = [_backingSectionLabels objectAtIndex:section];
         NSArray *arrayForSection = self.playlistDictionary[titleForSection];
@@ -282,7 +400,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         }
         
         return cell;
-    } else if (collectionView == self.playlistVideosCollectionView)
+    } else 
     {
         YTTVStandardCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:standardReuseIdentifier forIndexPath:indexPath];
     

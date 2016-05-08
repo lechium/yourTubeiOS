@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UIView+RecursiveFind.h"
 
-@interface FirstViewController : UIViewController <UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIScrollViewDelegate>
+@interface FirstViewController : UIViewController <UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIScrollViewDelegate, UIScrollViewDelegate>
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UICollectionView *collectionView1;
 @property (nonatomic, strong) IBOutlet UICollectionView *collectionView2;

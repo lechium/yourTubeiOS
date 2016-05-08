@@ -566,7 +566,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="20Y-4v-Lri">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="20Y-4v-Lri">
                                 <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Fgf-k6-Jr0">
@@ -827,6 +827,9 @@
                                     <constraint firstItem="9pO-qT-S1j" firstAttribute="leading" secondItem="20Y-4v-Lri" secondAttribute="leading" id="zkd-JY-DO1"/>
                                     <constraint firstItem="epb-mx-eTR" firstAttribute="leading" secondItem="RhR-5H-NKb" secondAttribute="leading" id="zso-rg-j83"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="mPM-GT-geH" id="Egg-fk-DgB"/>
+                                </connections>
                             </scrollView>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -851,6 +854,44 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nWy-3h-mMb" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2246" y="-640"/>
+        </scene>
+        <!--YouTube-->
+        <scene sceneID="VMN-Mj-PTQ">
+            <objects>
+                <viewController storyboardIdentifier="baseGridController" title="user" id="tWy-S6-jSQ" userLabel="YouTube" customClass="TYBaseGridViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="8VG-h5-hF9"/>
+                        <viewControllerLayoutGuide type="bottom" id="N2V-mZ-Oo4"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" verticalCompressionResistancePriority="751" id="k2F-bJ-1YX">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kBv-Bv-5Ma">
+                                <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="delegate" destination="tWy-S6-jSQ" id="6Bi-tp-kDf"/>
+                                </connections>
+                            </scrollView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="kBv-Bv-5Ma" firstAttribute="leading" secondItem="k2F-bJ-1YX" secondAttribute="leading" id="1zd-es-HxH"/>
+                            <constraint firstItem="kBv-Bv-5Ma" firstAttribute="top" secondItem="8VG-h5-hF9" secondAttribute="bottom" id="Q6y-wc-LlU"/>
+                            <constraint firstAttribute="trailing" secondItem="kBv-Bv-5Ma" secondAttribute="trailing" id="c7B-FA-aWC"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="kBv-Bv-5Ma" secondAttribute="bottom" id="kml-Xs-7gg"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <tabBarItem key="tabBarItem" title="User" id="fVW-LQ-BFe"/>
+                    <connections>
+                        <outlet property="scrollView" destination="kBv-Bv-5Ma" id="ACU-Mb-eY4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="UO4-MQ-OCM" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2246" y="-640"/>
         </scene>

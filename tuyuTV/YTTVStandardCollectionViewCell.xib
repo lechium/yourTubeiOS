@@ -30,7 +30,7 @@
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
-                <constraint firstItem="9Oc-hh-w30" firstAttribute="top" secondItem="ueK-FZ-9cL" secondAttribute="bottom" constant="40" id="0WU-rZ-9Fl"/>
+                <constraint firstItem="9Oc-hh-w30" firstAttribute="top" secondItem="ueK-FZ-9cL" secondAttribute="bottom" constant="30" id="0WU-rZ-9Fl"/>
                 <constraint firstItem="9Oc-hh-w30" firstAttribute="trailing" secondItem="ueK-FZ-9cL" secondAttribute="trailing" id="Hwx-1K-a2f"/>
                 <constraint firstItem="ueK-FZ-9cL" firstAttribute="top" secondItem="yAb-OF-xlr" secondAttribute="top" id="LIC-iY-o4C"/>
                 <constraint firstAttribute="trailingMargin" secondItem="ueK-FZ-9cL" secondAttribute="trailing" id="RcR-7y-nBc"/>

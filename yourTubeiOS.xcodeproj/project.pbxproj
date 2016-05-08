@@ -245,6 +245,7 @@
 		899876691CDE7BEE006A639E /* YTTVStandardCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899876681CDE7BEE006A639E /* YTTVStandardCollectionViewCell.xib */; };
 		8998766B1CDE7CC0006A639E /* YTTVFeaturedCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8998766A1CDE7CC0006A639E /* YTTVFeaturedCollectionViewCell.xib */; };
 		8998766F1CDEA423006A639E /* UIView+RecursiveFind.m in Sources */ = {isa = PBXBuildFile; fileRef = 8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */; };
+		899876721CDEB109006A639E /* TYBaseGridViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899876711CDEB109006A639E /* TYBaseGridViewController.m */; };
 		89A35CF11C8A222A000FFCA0 /* KBYTDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */; };
 		89A35CF41C8A27ED000FFCA0 /* kBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* kBYTDownloadOperation.m */; };
 		89A83A281C88A89300E1987E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A271C88A89300E1987E /* Assets.xcassets */; };
@@ -515,6 +516,8 @@
 		8998766A1CDE7CC0006A639E /* YTTVFeaturedCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YTTVFeaturedCollectionViewCell.xib; sourceTree = "<group>"; };
 		8998766D1CDEA423006A639E /* UIView+RecursiveFind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+RecursiveFind.h"; sourceTree = "<group>"; };
 		8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+RecursiveFind.m"; sourceTree = "<group>"; };
+		899876701CDEB109006A639E /* TYBaseGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYBaseGridViewController.h; sourceTree = "<group>"; };
+		899876711CDEB109006A639E /* TYBaseGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYBaseGridViewController.m; sourceTree = "<group>"; };
 		899F73E81C6BED2A0088B434 /* KBYTDownloadCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadCell.h; path = yourTube/KBYTDownloadCell.h; sourceTree = "<group>"; };
 		899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadCell.m; path = yourTube/KBYTDownloadCell.m; sourceTree = "<group>"; };
 		89A35CEF1C8A222A000FFCA0 /* KBYTDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadManager.h; path = yourTube/KBYTDownloadManager.h; sourceTree = "<group>"; };
@@ -927,6 +930,8 @@
 				898E926F1C8D056700B34DAA /* FirstViewController.m */,
 				898E93631C8D7ECE00B34DAA /* UserViewController.h */,
 				898E93641C8D7ECE00B34DAA /* UserViewController.m */,
+				899876701CDEB109006A639E /* TYBaseGridViewController.h */,
+				899876711CDEB109006A639E /* TYBaseGridViewController.m */,
 				899876501CDE7725006A639E /* TYUserViewController.h */,
 				899876511CDE7725006A639E /* TYUserViewController.m */,
 				898E92711C8D056700B34DAA /* SecondViewController.h */,
@@ -1566,6 +1571,7 @@
 			files = (
 				898E93581C8D56D100B34DAA /* UIView+WebCacheOperation.m in Sources */,
 				898E93681C8D8FF400B34DAA /* KBYTGenericVideoTableViewController.m in Sources */,
+				899876721CDEB109006A639E /* TYBaseGridViewController.m in Sources */,
 				898E93461C8D56BB00B34DAA /* SVIndefiniteAnimatedView.m in Sources */,
 				898E93691C8D910500B34DAA /* KBYTDownloadCell.m in Sources */,
 				898E93711C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m in Sources */,
