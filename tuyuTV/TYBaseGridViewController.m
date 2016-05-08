@@ -17,6 +17,29 @@
 #import "CollectionViewLayout.h"
 #import "YTTVFeaturedCollectionViewCell.h"
 
+static int tagOffset = 60;
+
+@interface KBCollectionView: UICollectionView
+
+@end
+
+@implementation KBCollectionView
+
+/*
+-(NSArray*)layoutAttributesForElementsInRect:(CGRect)rect
+{
+for(NSInteger i=0 ; i < self.numberOfSections; i++) {
+    for (NSInteger j=0 ; j < [self numberOfItemsInSection:i]; j++) {
+        NSIndexPath* indexPath = [NSIndexPath indexPathForItem:j inSection:i];
+        [attributes addObject:[self layoutAttributesForItemAtIndexPath:indexPath]];
+    }
+}
+}
+ 
+ */
+
+@end
+
 @interface TYBaseGridCollectionHeaderView : UICollectionReusableView
 {
     
@@ -70,6 +93,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)viewDidLoad {
 
+    DLOG_SELF;
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
@@ -83,6 +107,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             [_backingSectionLabels addObject:result.title];
         }
     }
+    
    // [self fetchUserDetails];
     [self setupViews];
     [self fetchUserDetailsWithCompletionBlock:^(NSDictionary *finishedDetails) {
@@ -96,11 +121,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)reloadCollectionViews
 {
-
+    DLOG_SELF;
     NSInteger i = 0;
     for (i = 0; i < [_backingSectionLabels count]; i++)
     {
-        UICollectionView *collectionView = (UICollectionView*)[self.view viewWithTag:60+i];
+        UICollectionView *collectionView = (UICollectionView*)[self.view viewWithTag:tagOffset+i];
        // NSLog(@"collectionView: %@", collectionView);
         if ([collectionView isKindOfClass:[UICollectionView class]])
         {
@@ -119,6 +144,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)setupViews
 {
+    DLOG_SELF;
     /*
     self.scrollView = [[UIScrollView alloc] initForAutoLayout];
     self.scrollView.translatesAutoresizingMaskIntoConstraints = false;
@@ -166,23 +192,24 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     [self.channelVideosCollectionView autoSetDimension:ALDimensionWidth toSize:1920];
     
     
-    CollectionViewLayout *layoutTwo = [CollectionViewLayout new];
     
-    layoutTwo.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    layoutTwo.minimumInteritemSpacing = 10;
-    layoutTwo.minimumLineSpacing = 50;
-    layoutTwo.itemSize = CGSizeMake(320, 420);
-    layoutTwo.sectionInset = UIEdgeInsetsMake(35, 0, 20, 0);
-    layoutTwo.headerReferenceSize = CGSizeMake(100, 100);
     
     NSInteger i = 0;
     _totalHeight = 640;
     for (i = 0; i < [_backingSectionLabels count]; i++)
     {
 
+        CollectionViewLayout *layoutTwo = [CollectionViewLayout new];
+        
+        layoutTwo.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        layoutTwo.minimumInteritemSpacing = 10;
+        layoutTwo.minimumLineSpacing = 50;
+        layoutTwo.itemSize = CGSizeMake(320, 420);
+        layoutTwo.sectionInset = UIEdgeInsetsMake(35, 0, 20, 0);
+        layoutTwo.headerReferenceSize = CGSizeMake(100, 100);
         UICollectionView *collectionView  = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layoutTwo];
         //collectionView.scrollEnabled = true;
-        collectionView.tag = 60 + i;
+        collectionView.tag = tagOffset + i;
         collectionView.translatesAutoresizingMaskIntoConstraints = false;
         [collectionView registerNib:[UINib nibWithNibName:@"YTTVStandardCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:standardReuseIdentifier];
         [collectionView registerClass:[TYBaseGridCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
@@ -223,13 +250,16 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
+    DLOG_SELF;
     UICollectionReusableView *reusableview = nil;
     NSString *theTitle = nil;
     if (collectionView == self.channelVideosCollectionView)
     {
         theTitle = @"Your Videos";
     } else {
-        theTitle = _backingSectionLabels[indexPath.section];
+        
+        NSInteger viewTag = collectionView.tag - tagOffset;
+        theTitle = _backingSectionLabels[viewTag];
     }
     
     if (kind == UICollectionElementKindSectionHeader) {
@@ -245,21 +275,18 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)viewDidLayoutSubviews
 {
-    LOG_SELF;
+    DLOG_SELF;
       [[self scrollView] setContentSize:CGSizeMake(1920, _totalHeight)];
-      DLog(@"insets : %@", NSStringFromUIEdgeInsets(self.scrollView.contentInset));
-  //  DLog(@"total height: %f", _totalHeight);
-    
-    [self.view printRecursiveDescription];
+
+   // [self.view printRecursiveDescription];
 
 }
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
 {
-    LOG_SELF;
+   
     CGPoint offset = self.scrollView.contentOffset;
     CGFloat height = self.view.bounds.size.height;
-    DLog(@"offset: %@", NSStringFromCGPoint(offset));
     UICollectionView *collectionView = (UICollectionView*)[[context nextFocusedView] superview];
     if (collectionView.frame.origin.y > height)
     {
@@ -278,6 +305,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)fetchUserDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock
 {
+    DLOG_SELF;
     NSMutableDictionary *playlists = [NSMutableDictionary new];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
     NSString *channelID = userDetails[@"channelID"];
@@ -354,16 +382,18 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
+    DLOG_SELF;
     if (collectionView == self.channelVideosCollectionView)
     {
         return 1;
     } else {
-        return [_backingSectionLabels count];
+        return 1;
     }
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    DLOG_SELF;
     NSInteger count = 0;
     if (collectionView == self.channelVideosCollectionView)
     {
@@ -371,16 +401,32 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
     } else
     {
-        NSString *titleForSection = [_backingSectionLabels objectAtIndex:section];
+        NSInteger viewTag = collectionView.tag - tagOffset;
+        NSString *titleForSection = [_backingSectionLabels objectAtIndex:viewTag];
         NSArray *arrayForSection = self.playlistDictionary[titleForSection];
+        DLog(@"tag: %lu arrayForSectionCount: %@ %lu section: %lu", viewTag, titleForSection, [arrayForSection count], section);
+        //return 3;
+       // if (viewTag == 3) return 1;
         return [arrayForSection count];
     }
     
     return count;
 }
 
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    DLOG_SELF;
+    DLog(@"indexPath: %@, tag: %lu",indexPath, collectionView.tag - tagOffset);
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    DLOG_SELF;
+    DLog(@"indexPath: %@, tag: %lu",indexPath, collectionView.tag - tagOffset);
+}
+
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
+    DLOG_SELF;
     if (collectionView == self.channelVideosCollectionView) {
         
         YTTVFeaturedCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:featuredReuseIdentifier forIndexPath:indexPath];
@@ -400,8 +446,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     {
         YTTVStandardCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:standardReuseIdentifier forIndexPath:indexPath];
     
-        NSString *titleForSection = [_backingSectionLabels objectAtIndex:indexPath.section];
+        NSInteger viewTag = collectionView.tag - tagOffset;
         
+      
+        NSString *titleForSection = [_backingSectionLabels objectAtIndex:viewTag];
+          DLog(@"viewTag: %lu %@", viewTag, titleForSection);
         NSArray *arrayForSection = self.playlistDictionary[titleForSection];
         
         KBYTSearchResult *currentItem = [arrayForSection objectAtIndex:indexPath.row];
@@ -425,7 +474,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [self playFirstStreamForResult:currentItem];
     } else {
         
-        NSString *titleForSection = [_backingSectionLabels objectAtIndex:indexPath.section];
+        NSInteger viewTag = collectionView.tag - tagOffset;
+        NSString *titleForSection = [_backingSectionLabels objectAtIndex:viewTag];
         NSArray *arrayForSection = self.playlistDictionary[titleForSection];
         
         NSArray *subarray = [arrayForSection subarrayWithRange:NSMakeRange(indexPath.row, arrayForSection.count - indexPath.row)];

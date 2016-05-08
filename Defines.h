@@ -15,6 +15,7 @@
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 #define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))
+#define DLOG_SELF DLog(@"%@ %@", self, NSStringFromSelector(_cmd))
 
 static NSString *const KBYTMessageIdentifier   =  @"org.nito.importscience";
 static NSString *const KBYTDownloadIdentifier  =  @"org.nito.dllistener";
