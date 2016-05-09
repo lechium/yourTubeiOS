@@ -78,7 +78,8 @@
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
             
           //  UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-            TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];//baseGridController
+           // TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];
+            TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
             //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];
@@ -143,8 +144,8 @@
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
             
            // UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-           // TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
-           TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];
+            TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
+           //TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];
             //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];

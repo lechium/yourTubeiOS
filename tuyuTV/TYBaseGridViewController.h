@@ -14,7 +14,7 @@
     NSMutableArray *_backingSectionLabels;
 }
 @property (nonatomic, strong) UICollectionView *channelVideosCollectionView;
-@property (nonatomic, weak) IBOutlet UIScrollView *scrollView;
+@property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) UICollectionView *playlistVideosCollectionView;
 @property (nonatomic, strong) NSArray *channelVideos;
 @property (nonatomic, strong) NSDictionary *playlistDictionary;

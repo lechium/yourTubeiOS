@@ -142,27 +142,23 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)setupViews
 {
-    ;
-    /*
     self.scrollView = [[UIScrollView alloc] initForAutoLayout];
     self.scrollView.translatesAutoresizingMaskIntoConstraints = false;
-    [self.mainView addSubview:self.scrollView];
-   // [self.scrollView autoSetDimension:ALDimensionHeight toSize:940];
-  //  [self.scrollView auto]
-    [self.scrollView autoMatchDimension:ALDimensionHeight toDimension:ALDimensionHeight ofView:self.view];
-    [self.scrollView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self.view];
-    //[self.scrollView autoPinEdgesToSuperviewEdges];
+    [self.view addSubview:self.scrollView];
+
+    //left here for posterity, this is why they were not working, do NOT pin the size of a UIScrollView, just
+    //its edges!!!
+    
+    //[self.scrollView autoMatchDimension:ALDimensionHeight toDimension:ALDimensionHeight ofView:self.view];
+    //[self.scrollView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self.view];
     [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
     [self.scrollView autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [self.scrollView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
-    // [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     self.scrollView.userInteractionEnabled = true;
-    //self.scrollView.panGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
     self.scrollView.scrollEnabled = true;
     self.scrollView.directionalLockEnabled = false;
-     */
-   
+    
     CollectionViewLayout *layout = [CollectionViewLayout new];
     layout.minimumInteritemSpacing = 50;
     layout.minimumLineSpacing = 50;
