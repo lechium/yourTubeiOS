@@ -536,6 +536,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 NSInteger channelVideoCount = [self videoCountForUserName:userName];
                 //NSArray *playlists = [self playlistArrayFromUserName:userName];
                 NSMutableArray *itemArray = [[NSMutableArray alloc] initWithArray:[self playlistArrayFromUserName:userName]];
+                NSArray *channels = [self channelArrayFromUserName:userName];
                 KBYTSearchResult *userChannel = [KBYTSearchResult new];
                 userChannel.title = @"Your channel";
                 userChannel.author = userName;
@@ -558,7 +559,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 
                 //NSArray *channelVideos = [self videoChannelsList:channelID][@"results"];
                 
-                returnDict = @{@"channelID": channelID, @"userName": userName, @"results": itemArray};
+                if (channels != nil)
+                {
+                    returnDict = @{@"channelID": channelID, @"userName": userName, @"results": itemArray, @"channels": channels};
+                    
+                } else {
+                    returnDict = @{@"channelID": channelID, @"userName": userName, @"results": itemArray};
+                }
+                
+                
             } else {
                 errorString = @"Not signed in";
             }
@@ -1385,6 +1394,45 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     });
 }
 
+- (NSArray *)channelArrayFromUserName:(NSString *)userName
+{
+    ONOXMLDocument *xmlDoct = [self documentFromURL:[NSString stringWithFormat:@"https://m.youtube.com/%@/channels?view=56&shelf_id=0", userName]];
+    ONOXMLElement *root = [xmlDoct rootElement];
+    // NSLog(@"root: %@", root);
+    ONOXMLElement *playlistGroup = [root firstChildWithXPath:@"//ul[contains(@id, 'channels-browse-content-grid')]"];
+    id playlistEnum = [playlistGroup XPath:@".//li[contains(@class, 'channels-content-item')]"];
+    ONOXMLElement *playlistElement = nil;
+    NSMutableArray *finalArray = [NSMutableArray new];
+    while (playlistElement = [playlistEnum  nextObject])
+    {
+        ONOXMLElement *thumbElement = [[[playlistElement firstChildWithXPath:@".//span[contains(@class, 'yt-thumb-clip')]"] children ] firstObject];
+        ONOXMLElement *playlistTitleElement = [[[playlistElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"]children ] firstObject] ;
+        NSString *thumbPath = [thumbElement valueForAttribute:@"src"];
+        NSString *playlistTitle = [playlistTitleElement valueForAttribute:@"title"];
+        NSString *playlistURL = [[playlistTitleElement valueForAttribute:@"href"] lastPathComponent];
+       // NSDictionary *playlistItem = @{@"thumbURL": thumbPath, @"title": playlistTitle, @"URL": playlistURL};
+        KBYTSearchResult *result = [KBYTSearchResult new];
+        if ([thumbPath containsString:@"https"])
+        {
+            result.imagePath = thumbPath;
+        } else {
+            result.imagePath = [NSString stringWithFormat:@"https:%@", thumbPath];
+        }
+        
+        result.title = playlistTitle;
+        result.author = userName;
+        result.videoId = playlistURL;
+        result.resultType = kYTSearchResultTypeChannel;
+        //NSDictionary *playlistItem = @{@"thumbURL": [NSString stringWithFormat:@"https:%@", thumbPath], @"title": playlistTitle, @"URL": playlistURL, @"videoCount": videoCount};
+        [finalArray addObject:result];
+        //[finalArray addObject:playlistItem];
+        
+    }
+    return finalArray;
+}
+
+
+
 - (void)getChannelVideos:(NSString *)channelID
          completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
             failureBlock:(void(^)(NSString *error))failureBlock
@@ -1514,6 +1562,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             {
                 NSArray *channelPlaylists = [self playlistArrayFromUserName:outputDict[@"name"]];
                 outputDict[@"playlists"] = channelPlaylists;
+            
             }
             if ([finalArray count] > 0)
             {

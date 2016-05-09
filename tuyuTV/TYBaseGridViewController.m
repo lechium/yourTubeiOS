@@ -16,6 +16,7 @@
 #import "MarqueeLabel.h"
 #import "CollectionViewLayout.h"
 #import "YTTVFeaturedCollectionViewCell.h"
+#import "KBYTChannelViewController.h"
 
 static int tagOffset = 60;
 
@@ -107,6 +108,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             [_backingSectionLabels addObject:result.title];
         }
     }
+    
+    if (userDetails[@"channels"] != nil)
+    {
+        [_backingSectionLabels addObject:@"Channels"];
+    }
+    
     
    // [self fetchUserDetails];
     [self setupViews];
@@ -289,6 +296,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     NSMutableDictionary *playlists = [NSMutableDictionary new];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
     NSString *channelID = userDetails[@"channelID"];
+    NSInteger adjustment = 0;
+    if (userDetails[@"channels"] != nil)
+    {
+        playlists[@"Channels"] = userDetails[@"channels"];
+        adjustment = 1;
+    }
     [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(NSDictionary *searchDetails) {
         
         //self.featuredVideosDict = searchDetails;
@@ -311,7 +324,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         }
     }
      */
-    playlistCount = [_backingSectionLabels count];
+    playlistCount = [_backingSectionLabels count]-adjustment;
+    
     __block NSInteger currentIndex = 0;
     for (KBYTSearchResult *result in results)
     {
@@ -439,17 +453,53 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     return cell;
     
 }
+
+- (void)showChannel:(KBYTSearchResult *)searchResult
+{
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    KBYTChannelViewController *cv = [sb instantiateViewControllerWithIdentifier:@"channelViewController"];
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD show];
+    [[KBYourTube sharedInstance] getChannelVideos:searchResult.videoId completionBlock:^(NSDictionary *searchDetails) {
+        
+        [SVProgressHUD dismiss];
+        
+        cv.searchResults = searchDetails[@"results"];
+        cv.pageCount = 1;
+        cv.nextHREF = searchDetails[@"loadMoreREF"];
+        cv.bannerURL = searchDetails[@"banner"];
+        cv.channelTitle = searchDetails[@"name"];
+        cv.subscribers = searchDetails[@"subscribers"];
+        
+        [self presentViewController:cv animated:true completion:nil];
+        //[self.navigationController pushViewController:cv animated:true];
+        
+    } failureBlock:^(NSString *error) {
+        
+    }];
+}
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+
     if (collectionView == self.channelVideosCollectionView)
     {
         KBYTSearchResult *currentItem = [self.channelVideos objectAtIndex:indexPath.row];
+        
         [self playFirstStreamForResult:currentItem];
     } else {
         
         NSInteger viewTag = collectionView.tag - tagOffset;
         NSString *titleForSection = [_backingSectionLabels objectAtIndex:viewTag];
         NSArray *arrayForSection = self.playlistDictionary[titleForSection];
+        
+        KBYTSearchResult *firstItem = [arrayForSection firstObject];
+        if (firstItem.resultType == kYTSearchResultTypeChannel)
+        {
+            [self showChannel:firstItem];
+            return;
+        }
+        
         
         NSArray *subarray = [arrayForSection subarrayWithRange:NSMakeRange(indexPath.row, arrayForSection.count - indexPath.row)];
         [self playAllSearchResults:subarray];
