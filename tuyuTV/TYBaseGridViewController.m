@@ -56,7 +56,7 @@ for(NSInteger i=0 ; i < self.numberOfSections; i++) {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self.title = [[UILabel alloc] initWithFrame:CGRectMake(100, 20, 400, 40)];
+        self.title = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 400, 40)];
         self.title.textColor = [UIColor whiteColor];
         self.title.font = [UIFont systemFontOfSize:40];
         [self addSubview:self.title];
@@ -170,7 +170,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     layout.minimumInteritemSpacing = 50;
     layout.minimumLineSpacing = 50;
     layout.itemSize = CGSizeMake(640, 480);
-    layout.sectionInset = UIEdgeInsetsMake(-5, 50, 0, 50);
+    layout.sectionInset = UIEdgeInsetsMake(-5, 0, 0, 0);
 
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     //layout.sectionInset = UIEdgeInsetsZero;
@@ -183,12 +183,14 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     [self.channelVideosCollectionView setDataSource:self];
     [self.scrollView addSubview:self.channelVideosCollectionView];
     
+    [self.channelVideosCollectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.scrollView withOffset:50];
+ //   [self.channelVideosCollectionView autoPinToTopLayoutGuideOfViewController:self withInset:50];
+    
     [self.channelVideosCollectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:50];
-    [self.channelVideosCollectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.scrollView];
     
     [self.channelVideosCollectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:50];
     
-    [self.channelVideosCollectionView autoSetDimension:ALDimensionHeight toSize:640];
+    [self.channelVideosCollectionView autoSetDimension:ALDimensionHeight toSize:480];
     
     [self.channelVideosCollectionView autoSetDimension:ALDimensionWidth toSize:1920];
     
@@ -207,7 +209,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         layoutTwo.minimumLineSpacing = 50;
         layoutTwo.itemSize = CGSizeMake(320, 420);
         layoutTwo.sectionInset = UIEdgeInsetsMake(35, 0, 20, 0);
-        layoutTwo.headerReferenceSize = CGSizeMake(100, 100);
+        layoutTwo.headerReferenceSize = CGSizeMake(100, 150);
         UICollectionView *collectionView  = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layoutTwo];
         //collectionView.scrollEnabled = true;
         collectionView.tag = tagOffset + i;
@@ -223,10 +225,15 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
         if (i == 0) //first one
         {
-            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.channelVideosCollectionView withOffset:-50];
+         //   [self.channelVideosCollectionView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:collectionView];
+           // [self.channelVideosCollectionView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:collectionView];
+            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.channelVideosCollectionView withOffset:30];
         } else {
             UIView *previousView = [self.view viewWithTag:collectionView.tag-1];
             [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousView withOffset:20];
+            [collectionView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:previousView];
+            [collectionView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:previousView];
+            
             
         }
         
@@ -238,8 +245,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
           [collectionView autoSetDimension:ALDimensionHeight toSize:530];
         if (i == [_backingSectionLabels count]-1)
         {
-        
-           // [collectionView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+            if ([[KBYourTube sharedInstance] userDetails][@"channels"] != nil)
+            {
+                DLog(@"started from the bottom now were... here?");
+                //layoutTwo.headerReferenceSize = CGSizeMake(100, 100);
+            }
+                // [collectionView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
         }
     }
@@ -493,10 +504,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         NSString *titleForSection = [_backingSectionLabels objectAtIndex:viewTag];
         NSArray *arrayForSection = self.playlistDictionary[titleForSection];
         
-        KBYTSearchResult *firstItem = [arrayForSection firstObject];
-        if (firstItem.resultType == kYTSearchResultTypeChannel)
+        KBYTSearchResult *selectedItem = [arrayForSection objectAtIndex:indexPath.row];
+        if (selectedItem.resultType == kYTSearchResultTypeChannel)
         {
-            [self showChannel:firstItem];
+            
+            [self showChannel:selectedItem];
             return;
         }
         

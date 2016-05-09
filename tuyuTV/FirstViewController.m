@@ -72,22 +72,11 @@
         
     }];
     
-    
-   
-    [self.scrollView addObserver:self
-                      forKeyPath:@"contentInset"
-                         options:NSKeyValueObservingOptionNew
-                         context:NULL];
+
     // Do any additional setup after loading the view, typically from a nib.
 }
 
-- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
-{
-    
-    NSLog(@"keyPath: %@", keyPath);
-    id newValue = change[@"new"];
-    NSLog(@"newValue: %@", newValue);
-}
+
 
 - (void)itemDidFinishPlaying:(NSNotification *)n
 {

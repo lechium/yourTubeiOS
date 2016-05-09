@@ -149,10 +149,12 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     {
         _gettingPage = true;
         self.currentPage = nextPage;
+        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+        [SVProgressHUD show];
          [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
             
-              NSLog(@"search details: %@", outputResults);
-            if (self.currentPage == 1)
+          //    NSLog(@"search details: %@", outputResults);
+          //  if (self.currentPage == 1)
                 [SVProgressHUD dismiss];
             
             self.nextHREF = outputResults[@"loadMoreREF"];;
