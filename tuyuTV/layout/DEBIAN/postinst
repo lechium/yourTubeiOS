@@ -1,0 +1,17 @@
+
+#!/bin/bash
+ 
+if [ -d "/Applications/tuyu.app" ] ; then 
+
+	rm -rf /Applications/tuyu.app
+	/bin/rm /var/mobile/Library/Caches/com.apple.LaunchServices-135.csstore
+	launchctl unload /Library/LaunchDaemons/com.apple.lsd.plist
+	launchctl load /Library/LaunchDaemons/com.apple.lsd.plist
+	echo 'finish:restart'
+
+fi
+
+/usr/bin/appinst /var/stash/ipas/com.nito.tuyuTV.ipa
+
+
+

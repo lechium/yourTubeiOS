@@ -28,3 +28,17 @@ DerivedData
 # http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control
 #
 #Pods/
+
+.theos*
+*.og
+*.app
+airtunesd
+atd7x
+debs*
+pm*
+wb*
+playback-info
+*.zip
+*.og2
+*.deb
+

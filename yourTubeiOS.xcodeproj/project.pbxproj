@@ -518,6 +518,13 @@
 		8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+RecursiveFind.m"; sourceTree = "<group>"; };
 		899876701CDEB109006A639E /* TYBaseGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYBaseGridViewController.h; sourceTree = "<group>"; };
 		899876711CDEB109006A639E /* TYBaseGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYBaseGridViewController.m; sourceTree = "<group>"; };
+		8998767F1CE1079C006A639E /* tuyu.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = tuyu.app; sourceTree = "<group>"; };
+		899876801CE1079C006A639E /* Payload-resigned.ipa */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Payload-resigned.ipa"; sourceTree = "<group>"; };
+		899876811CE1079C006A639E /* Payload.ipa */ = {isa = PBXFileReference; lastKnownFileType = file; path = Payload.ipa; sourceTree = "<group>"; };
+		899876821CE1079C006A639E /* tuyu.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = tuyu.app; sourceTree = "<group>"; };
+		899876841CE1079C006A639E /* control */ = {isa = PBXFileReference; lastKnownFileType = text; path = control; sourceTree = "<group>"; };
+		899876851CE1079C006A639E /* postinst */ = {isa = PBXFileReference; lastKnownFileType = text; path = postinst; sourceTree = "<group>"; };
+		8998768A1CE1079C006A639E /* com.nito.tuyuTV.ipa */ = {isa = PBXFileReference; lastKnownFileType = file; path = com.nito.tuyuTV.ipa; sourceTree = "<group>"; };
 		899F73E81C6BED2A0088B434 /* KBYTDownloadCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadCell.h; path = yourTube/KBYTDownloadCell.h; sourceTree = "<group>"; };
 		899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadCell.m; path = yourTube/KBYTDownloadCell.m; sourceTree = "<group>"; };
 		89A35CEF1C8A222A000FFCA0 /* KBYTDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadManager.h; path = yourTube/KBYTDownloadManager.h; sourceTree = "<group>"; };
@@ -904,6 +911,7 @@
 		898E92671C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXGroup;
 			children = (
+				8998767C1CE1079C006A639E /* layout */,
 				8998766C1CDEA423006A639E /* Categories */,
 				89E76ACC1CCD85C2006E5397 /* asu_pid.entitlements */,
 				8929FCBC1CB44240003D7473 /* GSEvent.h */,
@@ -1067,6 +1075,76 @@
 				8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */,
 			);
 			path = Categories;
+			sourceTree = "<group>";
+		};
+		8998767C1CE1079C006A639E /* layout */ = {
+			isa = PBXGroup;
+			children = (
+				8998767D1CE1079C006A639E /* Applications */,
+				899876831CE1079C006A639E /* DEBIAN */,
+				899876861CE1079C006A639E /* private */,
+			);
+			path = layout;
+			sourceTree = "<group>";
+		};
+		8998767D1CE1079C006A639E /* Applications */ = {
+			isa = PBXGroup;
+			children = (
+				8998767E1CE1079C006A639E /* Payload */,
+				899876801CE1079C006A639E /* Payload-resigned.ipa */,
+				899876811CE1079C006A639E /* Payload.ipa */,
+				899876821CE1079C006A639E /* tuyu.app */,
+			);
+			path = Applications;
+			sourceTree = "<group>";
+		};
+		8998767E1CE1079C006A639E /* Payload */ = {
+			isa = PBXGroup;
+			children = (
+				8998767F1CE1079C006A639E /* tuyu.app */,
+			);
+			path = Payload;
+			sourceTree = "<group>";
+		};
+		899876831CE1079C006A639E /* DEBIAN */ = {
+			isa = PBXGroup;
+			children = (
+				899876841CE1079C006A639E /* control */,
+				899876851CE1079C006A639E /* postinst */,
+			);
+			path = DEBIAN;
+			sourceTree = "<group>";
+		};
+		899876861CE1079C006A639E /* private */ = {
+			isa = PBXGroup;
+			children = (
+				899876871CE1079C006A639E /* var */,
+			);
+			path = private;
+			sourceTree = "<group>";
+		};
+		899876871CE1079C006A639E /* var */ = {
+			isa = PBXGroup;
+			children = (
+				899876881CE1079C006A639E /* stash */,
+			);
+			path = var;
+			sourceTree = "<group>";
+		};
+		899876881CE1079C006A639E /* stash */ = {
+			isa = PBXGroup;
+			children = (
+				899876891CE1079C006A639E /* ipas */,
+			);
+			path = stash;
+			sourceTree = "<group>";
+		};
+		899876891CE1079C006A639E /* ipas */ = {
+			isa = PBXGroup;
+			children = (
+				8998768A1CE1079C006A639E /* com.nito.tuyuTV.ipa */,
+			);
+			path = ipas;
 			sourceTree = "<group>";
 		};
 		89A83A1A1C88A89300E1987E /* tuyu */ = {

@@ -19,6 +19,12 @@
 @property (nonatomic, strong) NSArray *channelVideos;
 @property (nonatomic, strong) NSDictionary *playlistDictionary;
 @property (nonatomic, strong) NSArray *sectionLabels;
+
+- (id)initWithSections:(NSArray *)sections;
+
+- (NSString *)titleForSection:(NSInteger)section;
+- (NSArray *)arrayForCollectionView:(UICollectionView *)theView;
+
 @end
 
 
