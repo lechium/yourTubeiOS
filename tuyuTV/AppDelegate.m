@@ -32,6 +32,7 @@
 #import "AboutViewController.h"
 #import "TYUserViewController.h"
 #import "TYBaseGridViewController.h"
+#import "TYGridUserViewController.h"
 
 
 @interface AppDelegate ()
@@ -79,7 +80,28 @@
             
             //UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
            // TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];
-            TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
+            
+            NSArray *results = outputResults[@"results"];
+            NSMutableArray *_backingSectionLabels = [NSMutableArray new];
+            
+            for (KBYTSearchResult *result in results)
+            {
+                if (result.resultType == kYTSearchResultTypePlaylist)
+                {
+                    [_backingSectionLabels addObject:result.title];
+                }
+            }
+            
+            //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
+            
+            if (outputResults[@"channels"] != nil)
+            {
+                [_backingSectionLabels addObject:@"Channels"];
+            }
+            
+            TYGridUserViewController *uvc = [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
+            
+            //TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
             //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];
@@ -143,8 +165,28 @@
            // NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
             
+            NSArray *results = outputResults[@"results"];
+            NSMutableArray *_backingSectionLabels = [NSMutableArray new];
+            
+            for (KBYTSearchResult *result in results)
+            {
+                if (result.resultType == kYTSearchResultTypePlaylist)
+                {
+                    [_backingSectionLabels addObject:result.title];
+                }
+            }
+            
+            //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
+            
+            if (outputResults[@"channels"] != nil)
+            {
+                [_backingSectionLabels addObject:@"Channels"];
+            }
+            
+            TYGridUserViewController *uvc = [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
+            
             //UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-            TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
+           // TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
            //TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];
             //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];

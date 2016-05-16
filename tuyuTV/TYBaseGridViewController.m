@@ -7,16 +7,7 @@
 //
 
 #import "TYBaseGridViewController.h"
-#import "YTTVStandardCollectionViewCell.h"
-#import "KBYourTube.h"
-#import "UIImageView+WebCache.h"
-#import "SVProgressHUD.h"
-#import "YTKBPlayerViewController.h"
-#import "KBYTQueuePlayer.h"
-#import "MarqueeLabel.h"
-#import "CollectionViewLayout.h"
-#import "YTTVFeaturedCollectionViewCell.h"
-#import "KBYTChannelViewController.h"
+
 
 /*
  
@@ -124,6 +115,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 {
     self = [super init];
     self.sectionLabels = sections;
+    _backingSectionLabels = [sections mutableCopy];
+     [self setupViews];
     return self;
 }
 
@@ -138,38 +131,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
-    NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
-    NSArray *results = userDetails[@"results"];
-    _backingSectionLabels = [NSMutableArray new];
-    
-    for (KBYTSearchResult *result in results)
-    {
-        if (result.resultType == kYTSearchResultTypePlaylist)
-        {
-            [_backingSectionLabels addObject:result.title];
-        }
-    }
-    
-    //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
-    
-    if (userDetails[@"channels"] != nil)
-    {
-        [_backingSectionLabels addObject:@"Channels"];
-    }
-    
-    self.sectionLabels = _backingSectionLabels;
-    
+  
     //initially set up the views based on section labels
-    
-    [self setupViews];
-    
-    //get the user details to populate these views with
-    [self fetchUserDetailsWithCompletionBlock:^(NSDictionary *finishedDetails) {
-        
-        self.playlistDictionary = finishedDetails;
-        
-        [self reloadCollectionViews];
-    }];
+   
     // Do any additional setup after loading the view.
 }
 
@@ -222,26 +186,26 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     //layout.sectionInset = UIEdgeInsetsZero;
-    self.channelVideosCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    self.channelVideosCollectionView.tag = 666; //give it a tag other than 0 just in case
-    self.channelVideosCollectionView.translatesAutoresizingMaskIntoConstraints = false;
-    [self.channelVideosCollectionView registerNib:[UINib nibWithNibName:@"YTTVFeaturedCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:featuredReuseIdentifier];
+    self.featuredVideosCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    self.featuredVideosCollectionView.tag = 666; //give it a tag other than 0 just in case
+    self.featuredVideosCollectionView.translatesAutoresizingMaskIntoConstraints = false;
+    [self.featuredVideosCollectionView registerNib:[UINib nibWithNibName:@"YTTVFeaturedCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:featuredReuseIdentifier];
     
-    [self.channelVideosCollectionView registerClass:[TYBaseGridCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
-    [self.channelVideosCollectionView setDelegate:self];
-    [self.channelVideosCollectionView setDataSource:self];
-    [self.scrollView addSubview:self.channelVideosCollectionView];
+    [self.featuredVideosCollectionView registerClass:[TYBaseGridCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView"];
+    [self.featuredVideosCollectionView setDelegate:self];
+    [self.featuredVideosCollectionView setDataSource:self];
+    [self.scrollView addSubview:self.featuredVideosCollectionView];
     
-    [self.channelVideosCollectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.scrollView withOffset:50];
-    //   [self.channelVideosCollectionView autoPinToTopLayoutGuideOfViewController:self withInset:50];
+    [self.featuredVideosCollectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.scrollView withOffset:50];
+    //   [self.featuredVideosCollectionView autoPinToTopLayoutGuideOfViewController:self withInset:50];
     
-    [self.channelVideosCollectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:20];
+    [self.featuredVideosCollectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:20];
     
-    [self.channelVideosCollectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:20];
+    [self.featuredVideosCollectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:20];
     
-    [self.channelVideosCollectionView autoSetDimension:ALDimensionHeight toSize:480];
+    [self.featuredVideosCollectionView autoSetDimension:ALDimensionHeight toSize:480];
     
-    [self.channelVideosCollectionView autoSetDimension:ALDimensionWidth toSize:1920];
+    [self.featuredVideosCollectionView autoSetDimension:ALDimensionWidth toSize:1920];
     
     
     //now that the 'featured' collectionView at the top is set up, create all the ones below.
@@ -278,7 +242,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         if (i == 0) //first one
         {
             //pin to the top collection view just for the first one
-            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.channelVideosCollectionView withOffset:30];
+            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.featuredVideosCollectionView withOffset:30];
             //[collectionView setBackgroundColor:[UIColor redColor]];
         } else {
             
@@ -320,7 +284,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 {
     UICollectionReusableView *reusableview = nil;
     NSString *theTitle = nil;
-    if (collectionView == self.channelVideosCollectionView)
+    if (collectionView == self.featuredVideosCollectionView)
     {
         theTitle = @"Your Videos"; //was trying to set top header, doesnt actually work.
     } else {
@@ -369,13 +333,13 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 {
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
     //if it isnt a collectionView or it IS the top collection view we dont do any adjustments
-    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.channelVideosCollectionView )
+    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView )
     {
         return;
     }
     NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
     TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
-    [header updateTopOffset:-40];
+    [header updateTopOffset:-40]; //always shift it back up
      [header.title setTextColor:[UIColor lightTextColor]];
 }
 
@@ -384,7 +348,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     //the superview of a CollectionViewCell is its respective collectionView
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
     //if it isnt a collectionView or it IS the top collection view we dont do any adjustments
-    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.channelVideosCollectionView )
+    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView )
     {
         return;
     }
@@ -394,6 +358,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
     //actually get the header
     TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
+    //always changed the focused headers text color to white
     [header.title setTextColor:[UIColor whiteColor]];
     //if we are the first object we want to shift the header up to prevent overlapping
     if (indexPath.row == 0)
@@ -406,68 +371,6 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 }
 
 
-- (void)fetchUserDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock
-{
-    NSMutableDictionary *playlists = [NSMutableDictionary new];
-    NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
-    NSString *channelID = userDetails[@"channelID"];
-    NSInteger adjustment = 0; //a ghetto kludge to shoehorn channels in
-    if (userDetails[@"channels"] != nil)
-    {
-        playlists[@"Channels"] = userDetails[@"channels"];
-        adjustment = 1;
-    }
-    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(NSDictionary *searchDetails) {
-        
-        self.channelVideos = searchDetails[@"results"];
-        [[self channelVideosCollectionView] reloadData];
-        
-        
-    } failureBlock:^(NSString *error) {
-        
-    }];
-    
-    NSArray *results = userDetails[@"results"];
-    NSInteger playlistCount = 0;
-    
-    /*
-     
-     the section labels will include "Channels" if we have channels, but we dont want to loop
-     through there to get its "playlist" details because it doesnt have any. so if we 
-     changed adjustment to 1, we only cycle through the sections minus the last object
-     
-     */
-    
-    playlistCount = [_backingSectionLabels count]-adjustment;
-    
-    //since blocks are being used to fetch the data need to keep track of indices so we know
-    //when to call completionBlock
-    
-    __block NSInteger currentIndex = 0;
-    for (KBYTSearchResult *result in results)
-    {
-        if (result.resultType == kYTSearchResultTypePlaylist)
-        {
-            [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(NSDictionary *searchDetails) {
-                
-                playlists[result.title] = searchDetails[@"results"];
-                currentIndex++;
-                if (currentIndex == playlistCount)
-                {
-                    completionBlock(playlists);
-                }
-                
-            } failureBlock:^(NSString *error) {
-                
-                
-                
-            }];
-        }
-    }
-    
-    
-    
-}
 
 
 - (void)didReceiveMemoryWarning {
@@ -484,9 +387,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     NSInteger count = 0;
-    if (collectionView == self.channelVideosCollectionView)
+    if (collectionView == self.featuredVideosCollectionView)
     {
-        count = self.channelVideos.count;
+        count = self.featuredVideos.count;
         
     } else
     {
@@ -508,12 +411,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 
     //cell for the top featured section
-    if (collectionView == self.channelVideosCollectionView) {
+    if (collectionView == self.featuredVideosCollectionView) {
         
         YTTVFeaturedCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:featuredReuseIdentifier forIndexPath:indexPath];
-        if ([self.channelVideos count] > 0)
+        if ([self.featuredVideos count] > 0)
         {
-            KBYTSearchResult *currentItem = [self.channelVideos objectAtIndex:indexPath.row];
+            KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
             NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
             UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
             [cell.featuredImage sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
@@ -584,9 +487,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    if (collectionView == self.channelVideosCollectionView)
+    if (collectionView == self.featuredVideosCollectionView)
     {
-        KBYTSearchResult *currentItem = [self.channelVideos objectAtIndex:indexPath.row];
+        KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
         
         [self playFirstStreamForResult:currentItem];
     } else {
