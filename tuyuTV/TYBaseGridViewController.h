@@ -18,6 +18,7 @@
 #import "CollectionViewLayout.h"
 #import "YTTVFeaturedCollectionViewCell.h"
 #import "KBYTChannelViewController.h"
+#import "TYTVHistoryManager.h"
 
 @interface TYBaseGridViewController : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 {

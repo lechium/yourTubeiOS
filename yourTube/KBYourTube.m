@@ -1466,7 +1466,28 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             ONOXMLElement *channelSubscribersElement = [root firstChildWithXPath:@"//span[contains(@class, 'yt-subscription-button-subscriber-count-branded-horizontal')]"];
         
             ONOXMLElement *channelKeywordsElement = [root firstChildWithXPath:@"//meta[contains(@name, 'keywords')]"];
+            ONOXMLElement *channelThumbNailElement = [[[root firstChildWithXPath:@".//*[contains(@class, 'channel-header-profile-image-container')]"] children] firstObject];
             
+            DLog(@"channelThumbNailElement: %@", channelThumbNailElement);
+            
+            NSString *headerThumb = nil;
+            
+            if (channelThumbNailElement != nil)
+            {
+                headerThumb = [channelThumbNailElement valueForAttribute:@"src"];
+                if (![headerThumb containsString:@"https"])
+                {
+                    outputDict[@"thumbnail"] = [@"https:" stringByAppendingString:headerThumb];
+                    
+                    // NSLog(@"headerThumb: %@", headerThumb);
+                } else {
+                    
+                    outputDict[@"thumbnail"] = headerThumb;
+                    
+                }
+            }
+            
+              outputDict[@"channelID"] = channelID;
             
             if (channelSubscribersElement != nil)
             {

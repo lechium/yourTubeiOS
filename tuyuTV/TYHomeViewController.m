@@ -16,14 +16,13 @@
 
 - (id)initWithSections:(NSArray *)sections andChannelIDs:(NSArray *)channelIds
 {
-     DLOG_SELF;
+    
     self = [super initWithSections:sections];
     self.channelIDs = channelIds;
     return self;
 }
 
 - (void)viewDidLoad {
-    DLOG_SELF;
     [super viewDidLoad];
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
@@ -56,8 +55,6 @@
     
     //NSArray *results = userDetails[@"results"];
     NSInteger channelCount = [self.sectionLabels count];
-    
-    NSLog(@"channels: %@ labels: %@", self.channelIDs, self.sectionLabels);
     
     //since blocks are being used to fetch the data need to keep track of indices so we know
     //when to call completionBlock

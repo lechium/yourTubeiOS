@@ -34,6 +34,7 @@
 #import "TYBaseGridViewController.h"
 #import "TYGridUserViewController.h"
 #import "TYHomeViewController.h"
+#import "TYTVHistoryManager.h"
 
 @interface AppDelegate ()
 
@@ -99,6 +100,14 @@
                 [_backingSectionLabels addObject:@"Channels"];
             }
             
+            NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
+            
+            if ([historyObjects count] > 0)
+            {
+                [_backingSectionLabels addObject:@"Channel History"];
+              //  playlists[@"Channel History"] = historyObjects;
+            }
+            
             TYGridUserViewController *uvc = [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
             
             //TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
@@ -148,11 +157,17 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
+   // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
+    
+    TYTVHistoryManager *historyMan = [TYTVHistoryManager sharedInstance];
+    NSArray *objects = [historyMan channelHistoryObjects];
+    DLog(@"history objects: %@", objects);
+    
     self.tabBar = (UITabBarController *)self.window.rootViewController;
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming"];
-    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID];
+    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"360° Videos"];
+    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYT360ChannelID];
     TYHomeViewController *hvc = [[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
    // hvc.channelIDs = idArray;
     hvc.title = @"tuyu";
@@ -188,6 +203,14 @@
             if (outputResults[@"channels"] != nil)
             {
                 [_backingSectionLabels addObject:@"Channels"];
+            }
+            
+            NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
+            
+            if ([historyObjects count] > 0)
+            {
+                [_backingSectionLabels addObject:@"Channel History"];
+                //  playlists[@"Channel History"] = historyObjects;
             }
             
             

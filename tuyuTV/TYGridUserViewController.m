@@ -42,6 +42,16 @@
         playlists[@"Channels"] = userDetails[@"channels"];
         adjustment = 1;
     }
+    
+    NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
+    
+    if ([historyObjects count] > 0)
+    {
+        playlists[@"Channel History"] = historyObjects;
+        adjustment++;
+    }
+    
+    
     [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(NSDictionary *searchDetails) {
         
         self.featuredVideos = searchDetails[@"results"];

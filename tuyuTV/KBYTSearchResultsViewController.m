@@ -14,6 +14,7 @@
 #import "KBYTChannelViewController.h"
 #import "SVProgressHUD.h"
 #import "YTTVPlaylistViewController.h"
+#import "TYTVHistoryManager.h"
 
 @interface KBYTSearchResultsViewController ()
 
@@ -311,6 +312,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             
             [SVProgressHUD dismiss];
             
+            [[TYTVHistoryManager sharedInstance] addChannelToHistory:searchDetails];
+            
           //  NSLog(@"searchDeets: %@", searchDetails);
             
             cv.searchResults = searchDetails[@"results"];
@@ -321,6 +324,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             cv.subscribers = searchDetails[@"subscribers"];
           
             [[self.presentingViewController navigationController] pushViewController:cv animated:true];
+            
             
         } failureBlock:^(NSString *error) {
             //

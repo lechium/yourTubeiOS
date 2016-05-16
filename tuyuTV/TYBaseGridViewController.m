@@ -128,9 +128,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
  */
 
 - (void)viewDidLoad {
-    
-        [self setupViews];
     [super viewDidLoad];
+    
+    [self setupViews];
     self.view.backgroundColor = [UIColor blackColor];
   
     //initially set up the views based on section labels
@@ -455,6 +455,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
         [SVProgressHUD dismiss];
         
+        [[TYTVHistoryManager sharedInstance] addChannelToHistory:searchDetails];
         cv.searchResults = searchDetails[@"results"];
         cv.pageCount = 1;
         cv.nextHREF = searchDetails[@"loadMoreREF"];
