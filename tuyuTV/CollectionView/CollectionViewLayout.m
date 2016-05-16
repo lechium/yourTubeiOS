@@ -15,10 +15,11 @@
     //NSLog(@"init");
     self = [super init];
     if (self) {
-        self.itemSize = CGSizeMake(150, 150);
+        self.itemSize = CGSizeMake(320, 420);
         self.scrollDirection = UICollectionViewScrollDirectionVertical;
-        self.sectionInset = UIEdgeInsetsMake(10, 4.0, 0.0, 4.0);
-        self.minimumLineSpacing = 0.0;
+        self.sectionInset = UIEdgeInsetsMake(35, 0, 20.0, 0.0);
+        self.minimumInteritemSpacing = 10;
+        self.minimumLineSpacing = 50;
     }
     return self;
 }
@@ -38,6 +39,7 @@
     return array;
 }
 
+/*
 
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity
 {
@@ -70,5 +72,5 @@
     return CGPointMake(proposedContentOffset.x + offsetAdjustment, proposedContentOffset.y);
 }
 
-
+*/
 @end

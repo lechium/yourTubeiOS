@@ -7,20 +7,20 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="StandardCell" id="yAb-OF-xlr" customClass="YTTVStandardCollectionViewCell">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="420"/>
+        <collectionViewCell opaque="NO" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="StandardCell" id="Uka-Jh-8rD" customClass="YTTVStandardCollectionViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="420"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="340"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ueK-FZ-9cL">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xfG-WM-mdZ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Oc-hh-w30" customClass="MarqueeLabel">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qHN-Pp-9lK" customClass="MarqueeLabel">
                         <rect key="frame" x="0.0" y="380" width="226" height="40"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="40" id="Hmn-9Z-0KO"/>
+                            <constraint firstAttribute="height" constant="40" id="Od0-jM-16t"/>
                         </constraints>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -30,20 +30,18 @@
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
-                <constraint firstItem="9Oc-hh-w30" firstAttribute="top" secondItem="ueK-FZ-9cL" secondAttribute="bottom" constant="30" id="0WU-rZ-9Fl"/>
-                <constraint firstItem="9Oc-hh-w30" firstAttribute="trailing" secondItem="ueK-FZ-9cL" secondAttribute="trailing" id="Hwx-1K-a2f"/>
-                <constraint firstItem="ueK-FZ-9cL" firstAttribute="top" secondItem="yAb-OF-xlr" secondAttribute="top" id="LIC-iY-o4C"/>
-                <constraint firstAttribute="trailingMargin" secondItem="ueK-FZ-9cL" secondAttribute="trailing" id="RcR-7y-nBc"/>
-                <constraint firstItem="ueK-FZ-9cL" firstAttribute="leading" secondItem="9Oc-hh-w30" secondAttribute="leading" id="U4N-rB-Y0O"/>
-                <constraint firstItem="9Oc-hh-w30" firstAttribute="leading" secondItem="yAb-OF-xlr" secondAttribute="leadingMargin" id="Zeg-fm-C4h"/>
-                <constraint firstAttribute="bottomMargin" secondItem="9Oc-hh-w30" secondAttribute="bottom" id="b8q-Wo-0xX"/>
+                <constraint firstItem="qHN-Pp-9lK" firstAttribute="top" secondItem="xfG-WM-mdZ" secondAttribute="bottom" constant="40" id="1zO-pZ-3LC"/>
+                <constraint firstItem="qHN-Pp-9lK" firstAttribute="leading" secondItem="Uka-Jh-8rD" secondAttribute="leadingMargin" id="C8E-mE-tpV"/>
+                <constraint firstItem="qHN-Pp-9lK" firstAttribute="trailing" secondItem="xfG-WM-mdZ" secondAttribute="trailing" id="TLJ-9V-wd0"/>
+                <constraint firstAttribute="trailingMargin" secondItem="xfG-WM-mdZ" secondAttribute="trailing" id="lOC-m5-qRK"/>
+                <constraint firstItem="xfG-WM-mdZ" firstAttribute="leading" secondItem="qHN-Pp-9lK" secondAttribute="leading" id="qN3-3L-2ie"/>
+                <constraint firstAttribute="bottomMargin" secondItem="qHN-Pp-9lK" secondAttribute="bottom" id="xql-wb-fZ2"/>
+                <constraint firstItem="xfG-WM-mdZ" firstAttribute="top" secondItem="Uka-Jh-8rD" secondAttribute="top" id="zS1-hq-PTP"/>
             </constraints>
-            <size key="customSize" width="320" height="420"/>
             <connections>
-                <outlet property="image" destination="ueK-FZ-9cL" id="4g6-b6-Dcj"/>
-                <outlet property="title" destination="9Oc-hh-w30" id="Rn3-ih-Gyn"/>
+                <outlet property="image" destination="xfG-WM-mdZ" id="3qf-Ft-sKl"/>
+                <outlet property="title" destination="qHN-Pp-9lK" id="XCV-Hc-S7M"/>
             </connections>
-            <point key="canvasLocation" x="296" y="280"/>
         </collectionViewCell>
     </objects>
 </document>
