@@ -257,9 +257,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         if (i == 0) //first one
         {
             [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.channelVideosCollectionView withOffset:30];
+            //[collectionView setBackgroundColor:[UIColor redColor]];
         } else {
             UIView *previousView = [self.view viewWithTag:collectionView.tag-1];
-            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousView withOffset:20];
+            [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousView withOffset:-80];
             
         }
         [collectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:-50];
@@ -267,7 +268,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
      
         [collectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:0];
 
-        _totalHeight+=540;
+        _totalHeight+=520;
         
           [collectionView autoSetDimension:ALDimensionHeight toSize:520];
         if (i == [_backingSectionLabels count]-1)
