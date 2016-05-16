@@ -19,6 +19,7 @@
 #import "KBYTChannelViewController.h"
 
 static int tagOffset = 60;
+static int headerTagOffset = 70;
 
 @interface KBCollectionView: UICollectionView
 
@@ -46,20 +47,43 @@ for(NSInteger i=0 ; i < self.numberOfSections; i++) {
     
 }
 @property (strong, nonatomic) UILabel *title;
+@property (readwrite, assign) CGFloat topOffset;
+@property (nonatomic, strong) NSLayoutConstraint *topConstraint;
+- (void)updateTopOffset:(CGFloat)offset;
 
 @end
 
+
+
 @implementation TYBaseGridCollectionHeaderView
+
+- (void)updateTopOffset:(CGFloat)offset
+{
+    self.topOffset = offset;
+    [self.topConstraint setConstant:-offset];
+    if (offset > 0)
+    {
+     //   self.backgroundColor = [UIColor redColor];
+    }
+    [self layoutIfNeeded];
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self.title = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 400, 40)];
+       // self.title = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 400, 40)];
+        self.title = [[UILabel alloc] initForAutoLayout];
+        [self addSubview:self.title];
+        self.topOffset = self.topOffset;
+        //self.topConstraint = [self.title autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self withOffset:-self.topOffset];
+        self.topOffset = -40;
+        self.topConstraint = [self.title autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-self.topOffset];
+        [self.title autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:100];
         self.title.textColor = [UIColor whiteColor];
         self.title.font = [UIFont systemFontOfSize:40];
-        [self addSubview:self.title];
+        [self autoSetDimension:ALDimensionHeight toSize:200];
     }
     return self;
 }
@@ -215,7 +239,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         layoutTwo.minimumLineSpacing = 50;
         layoutTwo.itemSize = CGSizeMake(320, 420);
         layoutTwo.sectionInset = UIEdgeInsetsMake(35, 0, 20, 0);
-        layoutTwo.headerReferenceSize = CGSizeMake(100, 150);
+        layoutTwo.headerReferenceSize = CGSizeMake(100, 200);
         UICollectionView *collectionView  = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layoutTwo];
         //collectionView.scrollEnabled = true;
         collectionView.tag = tagOffset + i;
@@ -232,6 +256,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         if (i == 0) //first one
         {
             [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.channelVideosCollectionView withOffset:30];
+         //   [collectionView setBackgroundColor:[UIColor redColor]];
         } else {
             UIView *previousView = [self.view viewWithTag:collectionView.tag-1];
             [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousView withOffset:20];
@@ -244,9 +269,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [collectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:0];
         [collectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:0];
 
-        _totalHeight+=600;
+        _totalHeight+=640;
         
-          [collectionView autoSetDimension:ALDimensionHeight toSize:530];
+          [collectionView autoSetDimension:ALDimensionHeight toSize:600];
         if (i == [_backingSectionLabels count]-1)
         {
             if ([[KBYourTube sharedInstance] userDetails][@"channels"] != nil)
@@ -264,7 +289,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    ;
+    DLog(@"viewForSupplementaryElementOfKind indexPath: %@", indexPath);
     UICollectionReusableView *reusableview = nil;
     NSString *theTitle = nil;
     if (collectionView == self.channelVideosCollectionView)
@@ -281,6 +306,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
         headerView.title.text = theTitle;
         reusableview = headerView;
+        reusableview.tag = (collectionView.tag - tagOffset)+ headerTagOffset;
     }
     
     return reusableview;
@@ -299,7 +325,46 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
 {
  
+    [self previouslyFocusedCell:(YTTVStandardCollectionViewCell*)context.previouslyFocusedView];
+    [self focusedCell:(YTTVStandardCollectionViewCell*)context.nextFocusedView];
+}
+
+- (void)previouslyFocusedCell:(YTTVStandardCollectionViewCell *)focusedCell
+{
+    UICollectionView *cv = (UICollectionView*)[focusedCell superview];
+    if (![cv isKindOfClass:[UICollectionView class]])
+    {
+        return;
+    }
+    if (cv == self.channelVideosCollectionView)
+    {
+        return;
+    }
+    NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
+    TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
+    [header updateTopOffset:-40];
+}
+
+- (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell
+{
+    UICollectionView *cv = (UICollectionView*)[focusedCell superview];
+    //[cv printRecursiveDescription];
     
+    if (cv == self.channelVideosCollectionView)
+    {
+        DLog(@"##BAIL");
+        return;
+    }
+    NSIndexPath *indexPath = [cv indexPathForCell:focusedCell];
+    NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
+    TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
+    
+    if (indexPath.row == 0)
+    {
+        [header updateTopOffset:-20];
+    } else {
+        [header updateTopOffset:-40];
+    }
 }
 
 

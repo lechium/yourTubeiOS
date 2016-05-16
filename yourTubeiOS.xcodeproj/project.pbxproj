@@ -519,8 +519,6 @@
 		899876701CDEB109006A639E /* TYBaseGridViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYBaseGridViewController.h; sourceTree = "<group>"; };
 		899876711CDEB109006A639E /* TYBaseGridViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYBaseGridViewController.m; sourceTree = "<group>"; };
 		8998767F1CE1079C006A639E /* tuyu.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = tuyu.app; sourceTree = "<group>"; };
-		899876801CE1079C006A639E /* Payload-resigned.ipa */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Payload-resigned.ipa"; sourceTree = "<group>"; };
-		899876811CE1079C006A639E /* Payload.ipa */ = {isa = PBXFileReference; lastKnownFileType = file; path = Payload.ipa; sourceTree = "<group>"; };
 		899876821CE1079C006A639E /* tuyu.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = tuyu.app; sourceTree = "<group>"; };
 		899876841CE1079C006A639E /* control */ = {isa = PBXFileReference; lastKnownFileType = text; path = control; sourceTree = "<group>"; };
 		899876851CE1079C006A639E /* postinst */ = {isa = PBXFileReference; lastKnownFileType = text; path = postinst; sourceTree = "<group>"; };
@@ -1091,8 +1089,6 @@
 			isa = PBXGroup;
 			children = (
 				8998767E1CE1079C006A639E /* Payload */,
-				899876801CE1079C006A639E /* Payload-resigned.ipa */,
-				899876811CE1079C006A639E /* Payload.ipa */,
 				899876821CE1079C006A639E /* tuyu.app */,
 			);
 			path = Applications;
