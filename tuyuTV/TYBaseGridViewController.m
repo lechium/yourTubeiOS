@@ -312,7 +312,6 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)viewDidLayoutSubviews
 {
-    ;
       [[self scrollView] setContentSize:CGSizeMake(1920, _totalHeight)];
 
    // [self.view printRecursiveDescription];
@@ -329,11 +328,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (void)previouslyFocusedCell:(YTTVStandardCollectionViewCell *)focusedCell
 {
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
-    if (![cv isKindOfClass:[UICollectionView class]])
-    {
-        return;
-    }
-    if (cv == self.channelVideosCollectionView)
+    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.channelVideosCollectionView )
     {
         return;
     }
@@ -345,11 +340,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell
 {
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
-    if (![cv isKindOfClass:[UICollectionView class]])
-    {
-        return;
-    }
-    if (cv == self.channelVideosCollectionView)
+    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.channelVideosCollectionView )
     {
         return;
     }
@@ -449,7 +440,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    ;
+
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
@@ -468,7 +459,6 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
             [cell.featuredImage sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
         } else {
-            //  NSString *imageFileName = [NSString stringWithFormat:@"feature-%li.jpg", indexPath.row];
             cell.featuredImage.image = [UIImage imageNamed:@"YTPlaceholder"];
         }
         
@@ -477,7 +467,6 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     {
         YTTVStandardCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:standardReuseIdentifier forIndexPath:indexPath];
     
-        //NSInteger viewTag = collectionView.tag - tagOffset;
         NSArray *detailsArray = [self arrayForCollectionView:collectionView];
 
         KBYTSearchResult *currentItem = [detailsArray objectAtIndex:indexPath.row];
