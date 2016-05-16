@@ -39,6 +39,8 @@
     
     }];
     
+    
+    
     [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(NSDictionary *searchDetails) {
     
         self.popularVideosDict = searchDetails;

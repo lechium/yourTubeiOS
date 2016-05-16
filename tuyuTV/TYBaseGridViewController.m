@@ -116,7 +116,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     self = [super init];
     self.sectionLabels = sections;
     _backingSectionLabels = [sections mutableCopy];
-     [self setupViews];
+ 
     return self;
 }
 
@@ -129,6 +129,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)viewDidLoad {
     
+        [self setupViews];
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
   

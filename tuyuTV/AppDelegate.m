@@ -33,7 +33,7 @@
 #import "TYUserViewController.h"
 #import "TYBaseGridViewController.h"
 #import "TYGridUserViewController.h"
-
+#import "TYHomeViewController.h"
 
 @interface AppDelegate ()
 
@@ -150,8 +150,15 @@
     
     self.tabBar = (UITabBarController *)self.window.rootViewController;
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming"];
+    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID];
+    TYHomeViewController *hvc = [[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
+   // hvc.channelIDs = idArray;
+    hvc.title = @"tuyu";
     UIViewController *vc = [self packagedSearchController];
+    [viewControllers removeObjectAtIndex:0];
+    [viewControllers insertObject:hvc atIndex:0];
     [viewControllers insertObject:vc atIndex:1];
     AboutViewController *avc = [AboutViewController new];
     avc.title = @"about";
@@ -182,6 +189,7 @@
             {
                 [_backingSectionLabels addObject:@"Channels"];
             }
+            
             
             TYGridUserViewController *uvc = [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
             
