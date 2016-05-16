@@ -93,7 +93,7 @@ static int headerTagOffset = 70;
         self.topConstraint = [self.title autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-self.topOffset];
         //100 seems to be a good sweet spot
         [self.title autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:100];
-        self.title.textColor = [UIColor whiteColor];
+        self.title.textColor = [UIColor lightTextColor];
         self.title.font = [UIFont systemFontOfSize:40];
         
     }
@@ -376,6 +376,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
     TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
     [header updateTopOffset:-40];
+     [header.title setTextColor:[UIColor lightTextColor]];
 }
 
 - (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell
@@ -393,11 +394,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
     //actually get the header
     TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
-    
+    [header.title setTextColor:[UIColor whiteColor]];
     //if we are the first object we want to shift the header up to prevent overlapping
     if (indexPath.row == 0)
     {
         [header updateTopOffset:-20];
+        
     } else {
         [header updateTopOffset:-40];
     }
