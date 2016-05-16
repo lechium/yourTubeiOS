@@ -18,6 +18,19 @@
 #import "YTTVFeaturedCollectionViewCell.h"
 #import "KBYTChannelViewController.h"
 
+/*
+ 
+ Tag offsets are used for both the collection views and their header views to be able to query them easily
+ 
+ when creating the dynamic collection views below the "featured" one each view is tagged with its actual
+ index + its respective offset value (everything being 0 indexed this is extremely helpful)
+ 
+ then [x viewWithTag:index+tagOffets or headerTagOffset] can be used to find each collection view or each header view
+ 
+ 
+ 
+ */
+
 static int tagOffset = 60;
 static int headerTagOffset = 70;
 
@@ -28,15 +41,15 @@ static int headerTagOffset = 70;
 @implementation KBCollectionView
 
 /*
--(NSArray*)layoutAttributesForElementsInRect:(CGRect)rect
-{
-for(NSInteger i=0 ; i < self.numberOfSections; i++) {
-    for (NSInteger j=0 ; j < [self numberOfItemsInSection:i]; j++) {
-        NSIndexPath* indexPath = [NSIndexPath indexPathForItem:j inSection:i];
-        [attributes addObject:[self layoutAttributesForItemAtIndexPath:indexPath]];
-    }
-}
-}
+ -(NSArray*)layoutAttributesForElementsInRect:(CGRect)rect
+ {
+ for(NSInteger i=0 ; i < self.numberOfSections; i++) {
+ for (NSInteger j=0 ; j < [self numberOfItemsInSection:i]; j++) {
+ NSIndexPath* indexPath = [NSIndexPath indexPathForItem:j inSection:i];
+ [attributes addObject:[self layoutAttributesForItemAtIndexPath:indexPath]];
+ }
+ }
+ }
  
  */
 
@@ -47,7 +60,7 @@ for(NSInteger i=0 ; i < self.numberOfSections; i++) {
     
 }
 @property (strong, nonatomic) UILabel *title;
-@property (readwrite, assign) CGFloat topOffset;
+@property (readwrite, assign) CGFloat topOffset; //when 0,0 is selected, change this offset to shift the header up
 @property (nonatomic, strong) NSLayoutConstraint *topConstraint;
 - (void)updateTopOffset:(CGFloat)offset;
 
@@ -57,14 +70,12 @@ for(NSInteger i=0 ; i < self.numberOfSections; i++) {
 
 @implementation TYBaseGridCollectionHeaderView
 
+//yeh KVO or even custom getters/setters could work, but so does this ;-P
+
 - (void)updateTopOffset:(CGFloat)offset
 {
     self.topOffset = offset;
     [self.topConstraint setConstant:-offset];
-    if (offset > 0)
-    {
-     //   self.backgroundColor = [UIColor redColor];
-    }
     [self layoutIfNeeded];
 }
 
@@ -73,36 +84,29 @@ for(NSInteger i=0 ; i < self.numberOfSections; i++) {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-       // self.title = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 400, 40)];
+        
         self.title = [[UILabel alloc] initForAutoLayout];
         [self addSubview:self.title];
         self.topOffset = self.topOffset;
-        //self.topConstraint = [self.title autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self withOffset:-self.topOffset];
-        self.topOffset = -40;
+        self.topOffset = -40; //the negative value thing is probably unnessesary..
+        //create the top constraint whose constant we re-adjust as ncessary
         self.topConstraint = [self.title autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-self.topOffset];
+        //100 seems to be a good sweet spot
         [self.title autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:100];
         self.title.textColor = [UIColor whiteColor];
         self.title.font = [UIFont systemFontOfSize:40];
-     //   [self autoSetDimension:ALDimensionHeight toSize:200];
+        
     }
     return self;
 }
 
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect
- {
- // Drawing code
- }
- */
 
 @end
 
 
 @interface TYBaseGridViewController ()
 {
-    CGFloat _totalHeight;
+    CGFloat _totalHeight; //keep track of the total height of the scrollViews content view based on collection views
 }
 
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
@@ -123,8 +127,15 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     return self;
 }
 
-- (void)viewDidLoad {
+/*
+ 
+ The fundamental way this view works is there is a list of sectionLabels that we cycle through for
+ every view below the featured view to figure out how many collection views to add
+ 
+ */
 
+- (void)viewDidLoad {
+    
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
@@ -139,14 +150,20 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         }
     }
     
+    //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
+    
     if (userDetails[@"channels"] != nil)
     {
         [_backingSectionLabels addObject:@"Channels"];
     }
     
     self.sectionLabels = _backingSectionLabels;
-
+    
+    //initially set up the views based on section labels
+    
     [self setupViews];
+    
+    //get the user details to populate these views with
     [self fetchUserDetailsWithCompletionBlock:^(NSDictionary *finishedDetails) {
         
         self.playlistDictionary = finishedDetails;
@@ -156,14 +173,15 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     // Do any additional setup after loading the view.
 }
 
+//use the tag offset for collectionViews to cycle through and reload them based on section count
+
 - (void)reloadCollectionViews
 {
-    ;
     NSInteger i = 0;
     for (i = 0; i < [_backingSectionLabels count]; i++)
     {
         UICollectionView *collectionView = (UICollectionView*)[self.view viewWithTag:tagOffset+i];
-       // NSLog(@"collectionView: %@", collectionView);
+        // NSLog(@"collectionView: %@", collectionView);
         if ([collectionView isKindOfClass:[UICollectionView class]])
         {
             [collectionView reloadData];
@@ -173,8 +191,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
- 
-
+    
+    
 }
 
 - (void)setupViews
@@ -182,7 +200,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     self.scrollView = [[UIScrollView alloc] initForAutoLayout];
     self.scrollView.translatesAutoresizingMaskIntoConstraints = false;
     [self.view addSubview:self.scrollView];
-
+    
     //left here for posterity, this is why they were not working, do NOT pin the size of a UIScrollView, just
     //its edges!!!
     
@@ -201,11 +219,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     layout.minimumLineSpacing = 50;
     layout.itemSize = CGSizeMake(640, 480);
     layout.sectionInset = UIEdgeInsetsMake(-5, 0, 0, 0);
-
+    
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     //layout.sectionInset = UIEdgeInsetsZero;
     self.channelVideosCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    self.channelVideosCollectionView.tag = 666;
+    self.channelVideosCollectionView.tag = 666; //give it a tag other than 0 just in case
     self.channelVideosCollectionView.translatesAutoresizingMaskIntoConstraints = false;
     [self.channelVideosCollectionView registerNib:[UINib nibWithNibName:@"YTTVFeaturedCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:featuredReuseIdentifier];
     
@@ -215,7 +233,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     [self.scrollView addSubview:self.channelVideosCollectionView];
     
     [self.channelVideosCollectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.scrollView withOffset:50];
- //   [self.channelVideosCollectionView autoPinToTopLayoutGuideOfViewController:self withInset:50];
+    //   [self.channelVideosCollectionView autoPinToTopLayoutGuideOfViewController:self withInset:50];
     
     [self.channelVideosCollectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:20];
     
@@ -226,13 +244,16 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     [self.channelVideosCollectionView autoSetDimension:ALDimensionWidth toSize:1920];
     
     
+    //now that the 'featured' collectionView at the top is set up, create all the ones below.
     
     
     NSInteger i = 0;
     _totalHeight = 640;
     for (i = 0; i < [_backingSectionLabels count]; i++)
     {
-
+        
+        //it is INCREDIBLY important to create a new CollectionViewLayout individually for EVERY collection view
+        //if you re-use them you will have crashes galore
         CollectionViewLayout *layoutTwo = [CollectionViewLayout new];
         
         layoutTwo.scrollDirection = UICollectionViewScrollDirectionHorizontal;
@@ -250,38 +271,47 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [collectionView setDelegate:self];
         [collectionView setDataSource:self];
         
-       
+        //add the view before setting constraints
         [self.scrollView addSubview:collectionView];
- 
+        
         
         if (i == 0) //first one
         {
+            //pin to the top collection view just for the first one
             [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.channelVideosCollectionView withOffset:30];
             //[collectionView setBackgroundColor:[UIColor redColor]];
         } else {
+            
+            //find the previous view using our tags to pin to -80 on the previous view
+            //-80 because we make the views bigger than they need to be because of weird header sizing stuff
             UIView *previousView = [self.view viewWithTag:collectionView.tag-1];
             [collectionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousView withOffset:-80];
             
         }
-        [collectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:-50];
         
-     
+        //if its not a big negative value their are inset way too far
+        [collectionView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.scrollView withOffset:-50];
         [collectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:0];
-
+        
+        //add the total height of a table view to the overall height so we can set the contentView height when
+        //necessary
         _totalHeight+=520;
         
-          [collectionView autoSetDimension:ALDimensionHeight toSize:520];
+        [collectionView autoSetDimension:ALDimensionHeight toSize:520];
+        
+        /*
         if (i == [_backingSectionLabels count]-1)
         {
             if ([[KBYourTube sharedInstance] userDetails][@"channels"] != nil)
             {
                 //may need to adjust offset of header title cuz channel pics are bigger
             }
-        
+            
         }
+         */
     }
     
-  
+    
 }
 
 
@@ -292,36 +322,45 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     NSString *theTitle = nil;
     if (collectionView == self.channelVideosCollectionView)
     {
-        theTitle = @"Your Videos";
+        theTitle = @"Your Videos"; //was trying to set top header, doesnt actually work.
     } else {
+        
+        //we are any other collection view below the top 'featured' one, get our section
+        //title
         
         NSInteger viewTag = collectionView.tag - tagOffset;
         theTitle = _backingSectionLabels[viewTag];
     }
     
-    if (kind == UICollectionElementKindSectionHeader) {
+    if (kind == UICollectionElementKindSectionHeader) { //safety...
         TYBaseGridCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
         
         headerView.title.text = theTitle;
         reusableview = headerView;
+        //use this tag later to re-adjust the top offset when we need to
+        //i dont like this, but it works
         reusableview.tag = (collectionView.tag - tagOffset)+ headerTagOffset;
     }
     
     return reusableview;
 }
 
+//use that _totalHeight value to let the scrollView know its content size
 
 - (void)viewDidLayoutSubviews
 {
-      [[self scrollView] setContentSize:CGSizeMake(1920, _totalHeight)];
-
-   // [self.view printRecursiveDescription];
-
+    [[self scrollView] setContentSize:CGSizeMake(1920, _totalHeight)];
+    
+    // [self.view printRecursiveDescription];
+    
 }
+
+//this is where the header offset magic happens
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
 {
- 
+    //we always shift the previous views header back down just in case, if needed it will
+    //be shifted back up in the focusedCell call below.
     [self previouslyFocusedCell:(YTTVStandardCollectionViewCell*)context.previouslyFocusedView];
     [self focusedCell:(YTTVStandardCollectionViewCell*)context.nextFocusedView];
 }
@@ -329,6 +368,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (void)previouslyFocusedCell:(YTTVStandardCollectionViewCell *)focusedCell
 {
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
+    //if it isnt a collectionView or it IS the top collection view we dont do any adjustments
     if (![cv isKindOfClass:[UICollectionView class]] || cv == self.channelVideosCollectionView )
     {
         return;
@@ -340,15 +380,21 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell
 {
+    //the superview of a CollectionViewCell is its respective collectionView
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
+    //if it isnt a collectionView or it IS the top collection view we dont do any adjustments
     if (![cv isKindOfClass:[UICollectionView class]] || cv == self.channelVideosCollectionView )
     {
         return;
     }
+    //get the indexPath for the row to make sure its row 0 to shift upwards
     NSIndexPath *indexPath = [cv indexPathForCell:focusedCell];
+    //get our headerTag by re-adjusting the offsets from the collectionView tag
     NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
+    //actually get the header
     TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
     
+    //if we are the first object we want to shift the header up to prevent overlapping
     if (indexPath.row == 0)
     {
         [header updateTopOffset:-20];
@@ -360,20 +406,19 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)fetchUserDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock
 {
-    ;
     NSMutableDictionary *playlists = [NSMutableDictionary new];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
     NSString *channelID = userDetails[@"channelID"];
-    NSInteger adjustment = 0;
+    NSInteger adjustment = 0; //a ghetto kludge to shoehorn channels in
     if (userDetails[@"channels"] != nil)
     {
         playlists[@"Channels"] = userDetails[@"channels"];
         adjustment = 1;
     }
     [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(NSDictionary *searchDetails) {
-
+        
         self.channelVideos = searchDetails[@"results"];
-          [[self channelVideosCollectionView] reloadData];
+        [[self channelVideosCollectionView] reloadData];
         
         
     } failureBlock:^(NSString *error) {
@@ -382,8 +427,19 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     NSArray *results = userDetails[@"results"];
     NSInteger playlistCount = 0;
-
+    
+    /*
+     
+     the section labels will include "Channels" if we have channels, but we dont want to loop
+     through there to get its "playlist" details because it doesnt have any. so if we 
+     changed adjustment to 1, we only cycle through the sections minus the last object
+     
+     */
+    
     playlistCount = [_backingSectionLabels count]-adjustment;
+    
+    //since blocks are being used to fetch the data need to keep track of indices so we know
+    //when to call completionBlock
     
     __block NSInteger currentIndex = 0;
     for (KBYTSearchResult *result in results)
@@ -398,7 +454,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
                 {
                     completionBlock(playlists);
                 }
-               
+                
             } failureBlock:^(NSString *error) {
                 
                 
@@ -406,7 +462,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             }];
         }
     }
- 
+    
     
     
 }
@@ -425,7 +481,6 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    ;
     NSInteger count = 0;
     if (collectionView == self.channelVideosCollectionView)
     {
@@ -441,7 +496,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-
+    
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
@@ -449,7 +504,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    ;
+
+    //cell for the top featured section
     if (collectionView == self.channelVideosCollectionView) {
         
         YTTVFeaturedCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:featuredReuseIdentifier forIndexPath:indexPath];
@@ -464,12 +520,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         }
         
         return cell;
-    } else 
+    } else //cell for any of the collection views below the top one.
     {
         YTTVStandardCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:standardReuseIdentifier forIndexPath:indexPath];
-    
+        
         NSArray *detailsArray = [self arrayForCollectionView:collectionView];
-
+        
         KBYTSearchResult *currentItem = [detailsArray objectAtIndex:indexPath.row];
         NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
         UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
@@ -480,6 +536,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     }
     
 }
+
+//used to show a channel instead if a channel was selected
 
 - (void)showChannel:(KBYTSearchResult *)searchResult
 {
@@ -506,10 +564,14 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     }];
 }
 
+//datasoure method that will return a title for the respective section
+
 - (NSString *)titleForSection:(NSInteger)section
 {
     return [_backingSectionLabels objectAtIndex:section];
 }
+
+//datasource method to return the collection based on the view
 
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView
 {
@@ -519,7 +581,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-
+    
     if (collectionView == self.channelVideosCollectionView)
     {
         KBYTSearchResult *currentItem = [self.channelVideos objectAtIndex:indexPath.row];
@@ -527,16 +589,18 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [self playFirstStreamForResult:currentItem];
     } else {
         
+        //get our detail array based on collectionView
         NSArray *detailsArray = [self arrayForCollectionView:collectionView];
         KBYTSearchResult *selectedItem = [detailsArray objectAtIndex:indexPath.row];
+        //if its a channel then show a channel instead of trying to playback a playlist
         if (selectedItem.resultType == kYTSearchResultTypeChannel)
         {
-            
             [self showChannel:selectedItem];
             return;
         }
         
-        
+        //create a subarray starting at the index selected of the respective playlist to play all of the tracks
+        //in that range
         NSArray *subarray = [detailsArray subarrayWithRange:NSMakeRange(indexPath.row, detailsArray.count - indexPath.row)];
         [self playAllSearchResults:subarray];
         
