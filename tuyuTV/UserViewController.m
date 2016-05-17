@@ -15,6 +15,7 @@
 #import "YTKBPlayerViewController.h"
 #import "KBYTQueuePlayer.h"
 #import "MarqueeLabel.h"
+#import "TYTVHistoryManager.h"
 
 @interface UserViewController ()
 
@@ -238,6 +239,7 @@
     [[KBYourTube sharedInstance] getVideoDetailsForID:searchResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
         
         [SVProgressHUD dismiss];
+          [[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
         NSURL *playURL = [[videoDetails.streams firstObject] url];
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
         AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];

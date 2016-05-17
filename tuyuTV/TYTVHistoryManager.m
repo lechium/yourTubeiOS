@@ -25,6 +25,28 @@
     
 }
 
+- (NSArray *)videoHistoryObjects
+{
+    NSArray *vidHistory = [self videoHistory];
+    if (vidHistory != nil)
+    {
+        NSMutableArray *convertedArray = [NSMutableArray new];
+        for (NSDictionary *videoDict in vidHistory)
+        {
+            KBYTSearchResult *result = [KBYTSearchResult new];
+            result.videoId = videoDict[@"videoID"];
+            result.title = videoDict[@"title"];
+            result.author = videoDict[@"author"];
+            result.resultType = kYTSearchResultTypeVideo;
+            result.imagePath = videoDict[@"images"][@"high"];
+            [convertedArray addObject:result];
+        }
+        return convertedArray;
+    }
+    
+    return nil;
+}
+
 - (NSArray *)channelHistoryObjects
 {
     NSArray *prefHistory = [self channelHistory];
@@ -36,6 +58,7 @@
             KBYTSearchResult *result = [KBYTSearchResult new];
             result.videoId = channelDict[@"channelID"];
             result.title = channelDict[@"name"];
+            result.duration = channelDict[@"duration"];
             result.author = channelDict[@"author"];
             result.resultType = kYTSearchResultTypeChannel;
             result.imagePath = channelDict[@"thumbnail"];
@@ -62,7 +85,6 @@
 
     [channel removeObjectForKey:@"results"];
     [channel removeObjectForKey:@"playlists"];
-    DLog(@"channel: %@", channel);
     NSArray *history = [self channelHistory];
     if (history == nil)
     {

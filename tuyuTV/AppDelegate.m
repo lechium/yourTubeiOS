@@ -108,6 +108,14 @@
               //  playlists[@"Channel History"] = historyObjects;
             }
             
+            NSArray *videoHistory = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
+            
+            if ([videoHistory count] > 0)
+            {
+                [_backingSectionLabels addObject:@"Video History"];
+                //  playlists[@"Channel History"] = historyObjects;
+            }
+            
             TYGridUserViewController *uvc = [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
             
             //TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
@@ -160,7 +168,7 @@
    // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
     
     TYTVHistoryManager *historyMan = [TYTVHistoryManager sharedInstance];
-    NSArray *objects = [historyMan channelHistoryObjects];
+    NSArray *objects = [historyMan videoHistoryObjects];
     DLog(@"history objects: %@", objects);
     
     self.tabBar = (UITabBarController *)self.window.rootViewController;
@@ -210,6 +218,14 @@
             if ([historyObjects count] > 0)
             {
                 [_backingSectionLabels addObject:@"Channel History"];
+                //  playlists[@"Channel History"] = historyObjects;
+            }
+            
+            NSArray *videoHistory = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
+            
+            if ([videoHistory count] > 0)
+            {
+                [_backingSectionLabels addObject:@"Video History"];
                 //  playlists[@"Channel History"] = historyObjects;
             }
             

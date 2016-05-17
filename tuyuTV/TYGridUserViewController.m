@@ -65,6 +65,13 @@
         adjustment++;
     }
     
+    NSArray *videoObjects = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
+    
+    if ([videoObjects count] > 0)
+    {
+        playlists[@"Video History"] = videoObjects;
+        adjustment++;
+    }
     
     [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(NSDictionary *searchDetails) {
         

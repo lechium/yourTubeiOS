@@ -98,7 +98,7 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 @property (readwrite, assign) NSInteger expireTime;
 
 - (BOOL)isExpired;
-
+- (NSDictionary *)dictionaryRepresentation;
 @end
 
 

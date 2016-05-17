@@ -16,7 +16,7 @@
 - (void)addVideoToHistory:(NSDictionary *)videoDetails;
 
 - (NSArray *)channelHistoryObjects;
-
+- (NSArray *)videoHistoryObjects;
 - (NSArray *)channelHistory;
 - (NSArray *)videoHistory;
 

@@ -11,6 +11,7 @@
 #import "KBYourTube.h"
 #import "UIImageView+WebCache.h"
 #import "SVProgressHUD.h"
+#import "TYTVHistoryManager.h"
 
 @interface KBYTChannelViewController ()
 
@@ -195,6 +196,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     [[KBYourTube sharedInstance] getVideoDetailsForID:searchResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
         
         [SVProgressHUD dismiss];
+        [[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
         NSURL *playURL = [[videoDetails.streams firstObject] url];
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
         AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
