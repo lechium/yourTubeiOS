@@ -406,7 +406,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 {
     if ([self arrayForCollectionView:collectionView] == 0)
     {
-        [[(TYBaseGridCollectionHeaderView *)view title] setTextColor:[UIColor blackColor]];
+        [[(TYBaseGridCollectionHeaderView *)view title] setTextColor:self.view.backgroundColor];
     } else {
         if (_focusedCollectionView == collectionView.tag)
         {
