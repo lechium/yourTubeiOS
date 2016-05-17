@@ -402,6 +402,16 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     return count;
 }
 
+/*
+ 
+ if the collectionView is empty we want the header to be invisible, not super elegant, but it works :)
+ 
+ setting the colors here AND in the focusedCell stuff is obviously a bit redudant, this was 
+ done afterwards as a defensive measure to make sure they are updated to the proper color once
+ we have content.
+ 
+ */
+
 - (void)collectionView:(UICollectionView *)collectionView willDisplaySupplementaryView:(UICollectionReusableView *)view forElementKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath NS_AVAILABLE_IOS(8_0);
 {
     if ([self arrayForCollectionView:collectionView] == 0)
