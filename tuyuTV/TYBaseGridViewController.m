@@ -98,6 +98,7 @@ static int headerTagOffset = 70;
 @interface TYBaseGridViewController ()
 {
     CGFloat _totalHeight; //keep track of the total height of the scrollViews content view based on collection views
+    NSInteger _focusedCollectionView;
 }
 
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
@@ -357,6 +358,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     NSIndexPath *indexPath = [cv indexPathForCell:focusedCell];
     //get our headerTag by re-adjusting the offsets from the collectionView tag
     NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
+    _focusedCollectionView = cv.tag;
     //actually get the header
     TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
     //always changed the focused headers text color to white
@@ -398,6 +400,22 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     }
     
     return count;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView willDisplaySupplementaryView:(UICollectionReusableView *)view forElementKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath NS_AVAILABLE_IOS(8_0);
+{
+    if ([self arrayForCollectionView:collectionView] == 0)
+    {
+        [[(TYBaseGridCollectionHeaderView *)view title] setTextColor:[UIColor blackColor]];
+    } else {
+        if (_focusedCollectionView == collectionView.tag)
+        {
+            [[(TYBaseGridCollectionHeaderView *)view title] setTextColor:[UIColor whiteColor]];
+        } else {
+            
+            [[(TYBaseGridCollectionHeaderView *)view title] setTextColor:[UIColor lightTextColor]];
+        }
+    }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
