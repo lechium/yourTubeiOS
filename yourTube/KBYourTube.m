@@ -1468,7 +1468,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             ONOXMLElement *channelKeywordsElement = [root firstChildWithXPath:@"//meta[contains(@name, 'keywords')]"];
             ONOXMLElement *channelThumbNailElement = [[[root firstChildWithXPath:@".//*[contains(@class, 'channel-header-profile-image-container')]"] children] firstObject];
             
-            DLog(@"channelThumbNailElement: %@", channelThumbNailElement);
             
             NSString *headerThumb = nil;
             

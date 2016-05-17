@@ -17,18 +17,21 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    [self refreshData];
+    [self refreshDataWithProgress:true];
 }
 
-- (void)refreshData
+- (void)refreshDataWithProgress:(BOOL)progress
 {
-    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
-    [SVProgressHUD show];
-    
+    if (progress == true){
+        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+        [SVProgressHUD show];
+    }
     //get the user details to populate these views with
     [self fetchUserDetailsWithCompletionBlock:^(NSDictionary *finishedDetails) {
         
-        [SVProgressHUD dismiss];
+        if (progress == true){
+            [SVProgressHUD dismiss];
+        }
         self.playlistDictionary = finishedDetails;
         
         
@@ -39,7 +42,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self refreshData];
+    [self refreshDataWithProgress:false];
 }
 
 - (void)fetchUserDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock

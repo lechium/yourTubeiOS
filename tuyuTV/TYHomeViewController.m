@@ -24,7 +24,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self refreshData];
+    [self refreshDataWithProgress:true];
     
     
     // Do any additional setup after loading the view.
@@ -33,19 +33,22 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self refreshData];
+    [self refreshDataWithProgress:false];
 }
 
 
-- (void)refreshData
+- (void)refreshDataWithProgress:(BOOL)progress
 {
-    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
-    [SVProgressHUD show];
-    
+    if (progress == true)
+    {
+        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+        [SVProgressHUD show];
+    }
     //get the user details to populate these views with
     [self fetchChannelDetailsWithCompletionBlock:^(NSDictionary *finishedDetails) {
         
-        [SVProgressHUD dismiss];
+          if (progress == true)
+          {      [SVProgressHUD dismiss]; }
         self.playlistDictionary = finishedDetails;
         [super reloadCollectionViews];
     }];
