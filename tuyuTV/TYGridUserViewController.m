@@ -17,6 +17,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [self refreshData];
+}
+
+- (void)refreshData
+{
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     
@@ -29,6 +34,12 @@
         
         [super reloadCollectionViews];
     }];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self refreshData];
 }
 
 - (void)fetchUserDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock

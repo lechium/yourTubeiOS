@@ -24,6 +24,21 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self refreshData];
+    
+    
+    // Do any additional setup after loading the view.
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self refreshData];
+}
+
+
+- (void)refreshData
+{
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     
@@ -34,9 +49,6 @@
         self.playlistDictionary = finishedDetails;
         [super reloadCollectionViews];
     }];
-    
-    
-    // Do any additional setup after loading the view.
 }
 
 
