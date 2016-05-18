@@ -202,7 +202,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 {
     self.currentPage = 1; //reset for new search
     
-    if ([_lastSearchResult isEqualToString:searchController.searchBar.text])
+    if ([_lastSearchResult isEqualToString:searchController.searchBar.text] || searchController.searchBar.text.length == 0)
     {
         //no need to refresh a search with an old string...
         return;

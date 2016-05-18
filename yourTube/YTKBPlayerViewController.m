@@ -6,7 +6,14 @@
 //
 //
 
+#if TARGET_OS_TV
+
+#import "TYTVHistoryManager.h"
+
+#endif
+
 #import "YTKBPlayerViewController.h"
+
 
 
 @implementation YTKBPlayerViewController
@@ -187,6 +194,13 @@
 //    LOG_SELF;
 #if TARGET_OS_IOS
     [self setNowPlayingInfo];
+#elif TARGET_OS_TV
+    
+    KBYTMedia *theMedia = [(YTPlayerItem *)item associatedMedia];
+    NSLog(@"theMedia: %@", theMedia);
+    [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
+    
+    
 #endif
     /*
     if ([[(KBYTQueuePlayer *)self.player items] count] == 0)
