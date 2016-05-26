@@ -13,5 +13,9 @@
 @interface WebViewController : GCEventViewController  <UIWebViewDelegate>
 
 
+@property (nonatomic, strong) NSString *initialURL;
+
+- (id)initWithURL:(NSString *)theURLString;
+
 @end
 

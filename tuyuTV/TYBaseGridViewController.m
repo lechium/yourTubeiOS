@@ -182,6 +182,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     CollectionViewLayout *layout = [CollectionViewLayout new];
     layout.minimumInteritemSpacing = 50;
+    layout.sectionHeadersPinToVisibleBounds = true;
     layout.minimumLineSpacing = 50;
     layout.itemSize = CGSizeMake(640, 480);
     layout.sectionInset = UIEdgeInsetsMake(-5, 0, 0, 0);
@@ -221,7 +222,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         //it is INCREDIBLY important to create a new CollectionViewLayout individually for EVERY collection view
         //if you re-use them you will have crashes galore
         CollectionViewLayout *layoutTwo = [CollectionViewLayout new];
-        
+        layoutTwo.sectionHeadersPinToVisibleBounds = true;
         layoutTwo.scrollDirection = UICollectionViewScrollDirectionHorizontal;
         layoutTwo.minimumInteritemSpacing = 10;
         layoutTwo.minimumLineSpacing = 50;

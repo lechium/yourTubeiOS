@@ -64,6 +64,9 @@
 		8929758C1CB026B3003D7473 /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8929758B1CB026B3003D7473 /* AboutViewController.m */; };
 		8929758E1CB026D8003D7473 /* About.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8929758D1CB026D8003D7473 /* About.txt */; };
 		8929FCBF1CB44540003D7473 /* tuyuApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 8929FCBE1CB44540003D7473 /* tuyuApplication.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		892A3F431CF7471100EA0247 /* MetadataPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F401CF7471100EA0247 /* MetadataPreviewView.m */; };
+		892A3F441CF7471100EA0247 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F421CF7471100EA0247 /* SettingsViewController.m */; };
+		892A3F471CF7483800EA0247 /* TYSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F461CF7483800EA0247 /* TYSettingsViewController.m */; };
 		898E926A1C8D056700B34DAA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E92691C8D056700B34DAA /* main.m */; };
 		898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E926C1C8D056700B34DAA /* AppDelegate.m */; };
 		898E92701C8D056700B34DAA /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E926F1C8D056700B34DAA /* FirstViewController.m */; };
@@ -310,7 +313,6 @@
 		89A83AD41C88AB6B00E1987E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A83AD31C88AB6B00E1987E /* AVFoundation.framework */; };
 		89A83AD61C88AB7100E1987E /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A83AD51C88AB7100E1987E /* AVKit.framework */; };
 		89E76ACD1CCD85C2006E5397 /* asu_pid.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 89E76ACC1CCD85C2006E5397 /* asu_pid.entitlements */; };
-		89EEC1001C921421006B1944 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89EEC0FF1C921421006B1944 /* SettingsViewController.m */; };
 		89EEC1031C9214B0006B1944 /* YTTVPlaylistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -337,6 +339,12 @@
 		892A2C381C6A8400003724D6 /* yourTubeApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = yourTubeApplication.h; path = yourTube/yourTubeApplication.h; sourceTree = "<group>"; };
 		892A2C3A1C6A8CB1003724D6 /* JGProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JGProgressView.h; sourceTree = "<group>"; };
 		892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JGProgressView.m; sourceTree = "<group>"; };
+		892A3F3F1CF7471100EA0247 /* MetadataPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetadataPreviewView.h; sourceTree = "<group>"; };
+		892A3F401CF7471100EA0247 /* MetadataPreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetadataPreviewView.m; sourceTree = "<group>"; };
+		892A3F411CF7471100EA0247 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		892A3F421CF7471100EA0247 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		892A3F451CF7483800EA0247 /* TYSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYSettingsViewController.h; sourceTree = "<group>"; };
+		892A3F461CF7483800EA0247 /* TYSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYSettingsViewController.m; sourceTree = "<group>"; };
 		895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTSearchTableViewController.h; path = yourTube/KBYTSearchTableViewController.h; sourceTree = "<group>"; };
 		895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTSearchTableViewController.m; path = yourTube/KBYTSearchTableViewController.m; sourceTree = "<group>"; };
 		895F67841C62B9BD00AE33FA /* KBYTSearchItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTSearchItemViewController.h; path = yourTube/KBYTSearchItemViewController.h; sourceTree = "<group>"; };
@@ -663,8 +671,6 @@
 		89E06C061C4CA1DC00B8D1C4 /* KBYTPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTPreferences.h; path = yourTube/KBYTPreferences.h; sourceTree = "<group>"; };
 		89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTPreferences.m; path = yourTube/KBYTPreferences.m; sourceTree = "<group>"; };
 		89E76ACC1CCD85C2006E5397 /* asu_pid.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = asu_pid.entitlements; path = ../../../Downloads/asu_pid.entitlements; sourceTree = "<group>"; };
-		89EEC0FE1C921421006B1944 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
-		89EEC0FF1C921421006B1944 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		89EEC1011C9214B0006B1944 /* YTTVPlaylistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTTVPlaylistViewController.h; sourceTree = "<group>"; };
 		89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTTVPlaylistViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -753,6 +759,17 @@
 			);
 			name = JGProgressView;
 			path = yourTube/JGProgressView;
+			sourceTree = "<group>";
+		};
+		892A3F3E1CF7471100EA0247 /* SettingsViewController */ = {
+			isa = PBXGroup;
+			children = (
+				892A3F3F1CF7471100EA0247 /* MetadataPreviewView.h */,
+				892A3F401CF7471100EA0247 /* MetadataPreviewView.m */,
+				892A3F411CF7471100EA0247 /* SettingsViewController.h */,
+				892A3F421CF7471100EA0247 /* SettingsViewController.m */,
+			);
+			path = SettingsViewController;
 			sourceTree = "<group>";
 		};
 		895F67881C6520D500AE33FA /* SVProgressHUD */ = {
@@ -934,8 +951,7 @@
 				8929FCBE1CB44540003D7473 /* tuyuApplication.m */,
 				89EEC1011C9214B0006B1944 /* YTTVPlaylistViewController.h */,
 				89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */,
-				89EEC0FE1C921421006B1944 /* SettingsViewController.h */,
-				89EEC0FF1C921421006B1944 /* SettingsViewController.m */,
+				892A3F3E1CF7471100EA0247 /* SettingsViewController */,
 				898E936B1C8E15A300B34DAA /* Collection View Cells */,
 				899877AA1CE9A006006A639E /* TYHomeViewController.h */,
 				899877AB1CE9A006006A639E /* TYHomeViewController.m */,
@@ -961,6 +977,8 @@
 				898E93781C90B0A000B34DAA /* KBYTChannelViewController.m */,
 				899877AD1CEA43DE006A639E /* TYTVHistoryManager.h */,
 				899877AE1CEA43DE006A639E /* TYTVHistoryManager.m */,
+				892A3F451CF7483800EA0247 /* TYSettingsViewController.h */,
+				892A3F461CF7483800EA0247 /* TYSettingsViewController.m */,
 				898E92741C8D056700B34DAA /* Main.storyboard */,
 				898E92771C8D056700B34DAA /* Assets.xcassets */,
 				898E92791C8D056700B34DAA /* Info.plist */,
@@ -1649,7 +1667,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=atvjb.local\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/tuyuTV/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$SRCROOT\"/Payload\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\ncp \"$FULL_IPA_PATH\" \"$IPA_BACKUP\"\n\nrm \"$FULL_IPA_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\ncodesign -fs \"$CODESIGN_ID\" --no-strict --entitlements=\"$SRCROOT/asu_pid.entitlements\" \"$APPLETV_APP_FOLDER\"\n\necho \"zip -r Payload $IPA_TMP\"\n\nzip -r $IPA_TMP Payload \n\nmv \"$IPA_TMP_FILE\" \"$FULL_IPA_PATH\"\n\n/usr/bin/scp \"$FULL_IPA_PATH\" root@$ATV_DEVICE_IP:~\n/usr/bin/ssh root@$ATV_DEVICE_IP \"/usr/bin/appinst ~/$IPA_NAME\"\n\n\n#ldid -S \"$FINAL_APP_PATH\"/\"$EXECUTABLE_NAME\"\n\nexit 0\n";
+			shellScript = "\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=atvjb.local\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/tuyuTV/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$SRCROOT\"/Payload\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\ncp \"$FULL_IPA_PATH\" \"$IPA_BACKUP\"\n\nrm \"$FULL_IPA_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n#codesign -fs \"$CODESIGN_ID\" --no-strict --entitlements=\"$SRCROOT/asu_pid.entitlements\" \"$APPLETV_APP_FOLDER\"\n\ncodesign -fs \"$CODESIGN_ID\" --no-strict \"$FINAL_APP_PATH\"\n\necho \"zip -r Payload $IPA_TMP\"\n\nzip -r $IPA_TMP Payload \n\nmv \"$IPA_TMP_FILE\" \"$FULL_IPA_PATH\"\n\n/usr/bin/scp \"$FULL_IPA_PATH\" root@$ATV_DEVICE_IP:~\n/usr/bin/ssh root@$ATV_DEVICE_IP \"/usr/bin/appinst ~/$IPA_NAME\"\n\n\n#ldid -S \"$FINAL_APP_PATH\"/\"$EXECUTABLE_NAME\"\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1684,13 +1702,15 @@
 				898E930A1C8D566000B34DAA /* KBYTDownloadStream.m in Sources */,
 				899876671CDE78BA006A639E /* CollectionViewLayout.m in Sources */,
 				898E927F1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.m in Sources */,
+				892A3F431CF7471100EA0247 /* MetadataPreviewView.m in Sources */,
+				892A3F471CF7483800EA0247 /* TYSettingsViewController.m in Sources */,
+				892A3F441CF7471100EA0247 /* SettingsViewController.m in Sources */,
 				898E93521C8D56D100B34DAA /* UIButton+WebCache.m in Sources */,
 				898E93531C8D56D100B34DAA /* UIImage+GIF.m in Sources */,
 				898E93131C8D569C00B34DAA /* URLCredential.m in Sources */,
 				898E93141C8D569E00B34DAA /* URLDownloader.m in Sources */,
 				898E92701C8D056700B34DAA /* FirstViewController.m in Sources */,
 				898E93121C8D569800B34DAA /* UIImage+Scale.m in Sources */,
-				89EEC1001C921421006B1944 /* SettingsViewController.m in Sources */,
 				89EEC1031C9214B0006B1944 /* YTTVPlaylistViewController.m in Sources */,
 				898E926A1C8D056700B34DAA /* main.m in Sources */,
 				898E93741C8F65F200B34DAA /* SignOutViewController.m in Sources */,

@@ -35,6 +35,7 @@
 #import "TYGridUserViewController.h"
 #import "TYHomeViewController.h"
 #import "TYTVHistoryManager.h"
+#import "TYSettingsViewController.h"
 
 @interface AppDelegate ()
 
@@ -53,21 +54,69 @@
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     KBYTSearchResultsViewController *svc = [sb instantiateViewControllerWithIdentifier:@"SearchResultsViewController"];
     UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:svc];
+    searchController.obscuresBackgroundDuringPresentation = true;
+    searchController.hidesNavigationBarDuringPresentation = true;
     searchController.searchResultsUpdater = svc;
+    searchController.searchBar.barStyle = UISearchBarStyleMinimal;
     searchController.searchBar.placeholder = @"YouTube search";
+    searchController.edgesForExtendedLayout = UIRectEdgeNone;
+    searchController.automaticallyAdjustsScrollViewInsets = false;
+     searchController.extendedLayoutIncludesOpaqueBars = true;
     searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
     UISearchContainerViewController *searchContainer = [[UISearchContainerViewController alloc] initWithSearchController:searchController];
+    searchContainer.edgesForExtendedLayout = UIRectEdgeNone;
+    searchContainer.automaticallyAdjustsScrollViewInsets = false;
+    searchContainer.extendedLayoutIncludesOpaqueBars = true;
     searchContainer.title = @"search";
     searchContainer.view.backgroundColor = [UIColor blackColor];
     UINavigationController *searchNavigationController = [[UINavigationController alloc] initWithRootViewController:searchContainer];
     return searchNavigationController;
 }
 
+- (TYGridUserViewController *)loggedInUserGridViewFromResults:(NSDictionary *)outputResults
+{
+    NSArray *results = outputResults[@"results"];
+    NSMutableArray *_backingSectionLabels = [NSMutableArray new];
+    
+    for (KBYTSearchResult *result in results)
+    {
+        if (result.resultType == kYTSearchResultTypePlaylist)
+        {
+            [_backingSectionLabels addObject:result.title];
+        }
+    }
+    
+    //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
+    
+    if (outputResults[@"channels"] != nil)
+    {
+        [_backingSectionLabels addObject:@"Channels"];
+    }
+    
+    NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
+    
+    if ([historyObjects count] > 0)
+    {
+        [_backingSectionLabels addObject:@"Channel History"];
+        //  playlists[@"Channel History"] = historyObjects;
+    }
+    
+    NSArray *videoHistory = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
+    
+    if ([videoHistory count] > 0)
+    {
+        [_backingSectionLabels addObject:@"Video History"];
+        //  playlists[@"Channel History"] = historyObjects;
+    }
+    
+    return [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
+}
+
 - (void)updateForSignedIn
 {
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     if ([viewControllers count] == 5) { return; }
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+  //  UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     [self.tabBar setSelectedIndex:0];
     [viewControllers removeObjectAtIndex:1];
     UIViewController *pvc = [self packagedSearchController];
@@ -78,50 +127,11 @@
             
             // NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
+            TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
             
-            //UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-           // TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];
-            
-            NSArray *results = outputResults[@"results"];
-            NSMutableArray *_backingSectionLabels = [NSMutableArray new];
-            
-            for (KBYTSearchResult *result in results)
-            {
-                if (result.resultType == kYTSearchResultTypePlaylist)
-                {
-                    [_backingSectionLabels addObject:result.title];
-                }
-            }
-            
-            //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
-            
-            if (outputResults[@"channels"] != nil)
-            {
-                [_backingSectionLabels addObject:@"Channels"];
-            }
-            
-            NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
-            
-            if ([historyObjects count] > 0)
-            {
-                [_backingSectionLabels addObject:@"Channel History"];
-              //  playlists[@"Channel History"] = historyObjects;
-            }
-            
-            NSArray *videoHistory = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
-            
-            if ([videoHistory count] > 0)
-            {
-                [_backingSectionLabels addObject:@"Video History"];
-                //  playlists[@"Channel History"] = historyObjects;
-            }
-            
-            TYGridUserViewController *uvc = [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
-            
-            //TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
-            //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];
+          /*
             [viewControllers removeLastObject];
             [viewControllers removeLastObject];
             SignOutViewController *svc = [SignOutViewController new];
@@ -130,6 +140,9 @@
             AboutViewController *avc = [AboutViewController new];
             avc.title = @"about";
             [viewControllers addObject:avc];
+            TYSettingsViewController *settingsView = [TYSettingsViewController settingsView];
+            [viewControllers addObject:settingsView];
+           */
             self.tabBar.viewControllers = viewControllers;
             
             
@@ -143,11 +156,11 @@
 {
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     [self.tabBar setSelectedIndex:0];
-    if ([viewControllers count] == 4)
+    if ([viewControllers count] == 5)
     {
         [viewControllers removeObjectAtIndex:1];
     }
-    
+   /*
     [viewControllers removeLastObject];
     [viewControllers removeLastObject];
     WebViewController *wvc = [[WebViewController alloc] init];
@@ -156,6 +169,7 @@
     AboutViewController *avc = [AboutViewController new];
     avc.title = @"about";
     [viewControllers addObject:avc];
+    */
     self.tabBar.viewControllers = viewControllers;
     [[KBYourTube sharedInstance] setUserDetails:nil];
 }
@@ -166,11 +180,7 @@
     // Override point for customization after application launch.
     
    // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
-    
-    TYTVHistoryManager *historyMan = [TYTVHistoryManager sharedInstance];
-    NSArray *objects = [historyMan videoHistoryObjects];
-    DLog(@"history objects: %@", objects);
-    
+ 
     self.tabBar = (UITabBarController *)self.window.rootViewController;
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -183,6 +193,8 @@
     [viewControllers removeObjectAtIndex:0];
     [viewControllers insertObject:hvc atIndex:0];
     [viewControllers insertObject:vc atIndex:1];
+    TYSettingsViewController *settingsView = [TYSettingsViewController settingsView];
+    [viewControllers addObject:settingsView];
     AboutViewController *avc = [AboutViewController new];
     avc.title = @"about";
     [viewControllers addObject:avc];
@@ -195,50 +207,12 @@
            // NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
             
-            NSArray *results = outputResults[@"results"];
-            NSMutableArray *_backingSectionLabels = [NSMutableArray new];
+            TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
             
-            for (KBYTSearchResult *result in results)
-            {
-                if (result.resultType == kYTSearchResultTypePlaylist)
-                {
-                    [_backingSectionLabels addObject:result.title];
-                }
-            }
-            
-            //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
-            
-            if (outputResults[@"channels"] != nil)
-            {
-                [_backingSectionLabels addObject:@"Channels"];
-            }
-            
-            NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
-            
-            if ([historyObjects count] > 0)
-            {
-                [_backingSectionLabels addObject:@"Channel History"];
-                //  playlists[@"Channel History"] = historyObjects;
-            }
-            
-            NSArray *videoHistory = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
-            
-            if ([videoHistory count] > 0)
-            {
-                [_backingSectionLabels addObject:@"Video History"];
-                //  playlists[@"Channel History"] = historyObjects;
-            }
-            
-            
-            TYGridUserViewController *uvc = [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
-            
-            //UserViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"userViewController"];
-           // TYBaseGridViewController *uvc = [[TYBaseGridViewController alloc] init];
-           //TYBaseGridViewController *uvc = [sb instantiateViewControllerWithIdentifier:@"baseGridController"];
-            //NSLog(@"uvc: %@", uvc);
             uvc.title = outputResults[@"userName"];
             [viewControllers insertObject:uvc atIndex:1];
             //[vc addObject:uvc];
+            /*
             [viewControllers removeLastObject];
             [viewControllers removeLastObject];
             SignOutViewController *svc = [SignOutViewController new];
@@ -246,7 +220,10 @@
             [viewControllers addObject:svc];
             AboutViewController *avc = [AboutViewController new];
             avc.title = @"about";
+            TYSettingsViewController *settingsView = [TYSettingsViewController settingsView];
+            [viewControllers addObject:settingsView];
             [viewControllers addObject:avc];
+           */
             self.tabBar.viewControllers = viewControllers;
             
             
@@ -276,6 +253,9 @@
   
     return YES;
 }
+
+
+
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

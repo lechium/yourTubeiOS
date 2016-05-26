@@ -45,7 +45,31 @@ typedef struct _Input
     UITapGestureRecognizer *touchSurfaceDoubleTapRecognizer;
     UITapGestureRecognizer *playPauseOrMenuDoubleTapRecognizer;
 }
+
+/*
+ 
+ Manage your YouTube account:
+ (View and manage your videos and playlists
+ 
+ View and manage your YouTube activity, including posting public comments)
+ 
+ 
+ View and manage your assets and associated content on YouTube:
+ (View and manage your assets and associated content
+ 
+ View and manage your policies and rights for video content on YouTube
+ 
+ View and manage your references used in content claiming as well as uploading new references
+ 
+ View and manage the set of users within your organisation who can manage content on your behalf)
+ 
+ 
+ 
+ 
+ */
+
 -(void) webViewDidStartLoad:(UIWebView *)webView {
+    
     //[self.view bringSubviewToFront:loadingSpinner];
     if (![previousURL isEqualToString:requestURL]) {
         [loadingSpinner startAnimating];
@@ -53,6 +77,7 @@ typedef struct _Input
     previousURL = requestURL;
 }
 -(void) webViewDidFinishLoad:(UIWebView *)webView {
+    
     [loadingSpinner stopAnimating];
     //[self.view bringSubviewToFront:loadingSpinner];
     NSString *theTitle=[webView stringByEvaluatingJavaScriptFromString:@"document.title"];
@@ -75,13 +100,38 @@ typedef struct _Input
     [[NSUserDefaults standardUserDefaults] setObject:toStoreArray forKey:@"HISTORY"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
+    if (self.initialURL.length > 0)
+    {
+        if ([self elementWithIDExists:@"submit_approve_access"])
+        {
+           [self clickApproveWithDelay];
+        }
+        
+       // [self clickApproveWithDelay];
+        NSString *title=[webView stringByEvaluatingJavaScriptFromString:@"document.title"];
+        NSLog(@"title: %@", title);
+        
+        if ([title rangeOfString:@"Success"].location != NSNotFound)
+        {
+            NSString *token = [[title componentsSeparatedByString:@"code="] lastObject];
+            //  NSLog(@"token: %@", token);
+            //[self postOAuth2CodeToGoogle:token];
+        }
+        
+       // [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"submit_approve_access\").click();"];
+        //submit_approve_access
+        return;
+    }
+    
     if ([[KBYourTube sharedInstance] isSignedIn])
     {
         AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
         if ([[KBYourTube sharedInstance] userDetails] == nil)
         {
+            [self.navigationController popViewControllerAnimated:true];
             [ad updateForSignedIn];
+            
         }
         return;
     }
@@ -118,8 +168,54 @@ typedef struct _Input
      [_webview stringByEvaluatingJavaScriptFromString:javascript];
  
  */
+    NSLog(@"down here?");
 }
 
+- (BOOL)elementWithIDExists:(NSString *)elementID
+{
+    NSString *jsString = [NSString stringWithFormat:@"document.getElementById(\"%@\").type;",elementID];
+    NSString *returnString = [self.webview stringByEvaluatingJavaScriptFromString:jsString];
+    if (returnString != nil)
+    {
+        return true;
+    }
+    return false;
+}
+
+- (void)clickApproveWithDelay
+{
+    [self performSelector:@selector(clickApprove) withObject:nil afterDelay:2.0];
+}
+
+//submit_approve_access
+- (void)clickElementWithID:(NSString *)elementID
+{
+    
+    NSString *jsString = [NSString stringWithFormat:@"document.getElementById(\"%@\").click();",elementID];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.webview stringByEvaluatingJavaScriptFromString:jsString];
+        
+        
+    });
+    
+}
+
+//<button id="submit_deny_access" type="submit" tabindex="2">Deny</button>
+
+- (void)clickDeny
+{
+    [self clickElementWithID:@"submit_deny_access"];
+    
+}
+
+- (void)clickApprove
+{
+    
+    [self clickElementWithID:@"submit_approve_access"];
+
+}
+
+//submit_approve_access
 - (void)promptForEmail
 {
     LOG_SELF;
@@ -231,7 +327,17 @@ typedef struct _Input
         [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString: @"http://www.google.com"]]];
     }
 }
+
+- (id)initWithURL:(NSString *)theURLString
+{
+    
+    self = [super init];
+    self.initialURL = theURLString;
+    return self;
+}
+
 -(void)viewDidLoad {
+    
     _scrollViewAllowBounces = NO;
     [super viewDidLoad];
     touchSurfaceDoubleTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTouchSurfaceDoubleTap:)];
@@ -259,12 +365,18 @@ typedef struct _Input
     
     NSString *authString = @"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3#identifier";
     
-    
+    /*
     if ([[KBYourTube sharedInstance] isSignedIn])
     {
         authString = @"https://www.youtube.com/logout";
         AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [ad updateForSignedOut];
+    }
+     */
+    
+    if (self.initialURL.length > 0)
+    {
+        authString = self.initialURL;
     }
     
     
