@@ -2,6 +2,11 @@
 
 #import <UIKit/UIKit.h>
 
+@interface UIApplication (PrintRecursion)
+
+- (void)printWindow;
+
+@end
 
 @interface UIView (RecursiveFind)
 

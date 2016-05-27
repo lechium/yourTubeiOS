@@ -67,6 +67,7 @@
 		892A3F431CF7471100EA0247 /* MetadataPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F401CF7471100EA0247 /* MetadataPreviewView.m */; };
 		892A3F441CF7471100EA0247 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F421CF7471100EA0247 /* SettingsViewController.m */; };
 		892A3F471CF7483800EA0247 /* TYSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F461CF7483800EA0247 /* TYSettingsViewController.m */; };
+		892A3F4A1CF7AD3F00EA0247 /* TYAuthUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */; };
 		898E926A1C8D056700B34DAA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E92691C8D056700B34DAA /* main.m */; };
 		898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E926C1C8D056700B34DAA /* AppDelegate.m */; };
 		898E92701C8D056700B34DAA /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E926F1C8D056700B34DAA /* FirstViewController.m */; };
@@ -345,6 +346,8 @@
 		892A3F421CF7471100EA0247 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		892A3F451CF7483800EA0247 /* TYSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYSettingsViewController.h; sourceTree = "<group>"; };
 		892A3F461CF7483800EA0247 /* TYSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYSettingsViewController.m; sourceTree = "<group>"; };
+		892A3F481CF7AD3F00EA0247 /* TYAuthUserManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TYAuthUserManager.h; sourceTree = "<group>"; };
+		892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TYAuthUserManager.m; sourceTree = "<group>"; };
 		895F67011C60125600AE33FA /* KBYTSearchTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTSearchTableViewController.h; path = yourTube/KBYTSearchTableViewController.h; sourceTree = "<group>"; };
 		895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTSearchTableViewController.m; path = yourTube/KBYTSearchTableViewController.m; sourceTree = "<group>"; };
 		895F67841C62B9BD00AE33FA /* KBYTSearchItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTSearchItemViewController.h; path = yourTube/KBYTSearchItemViewController.h; sourceTree = "<group>"; };
@@ -955,6 +958,8 @@
 				898E936B1C8E15A300B34DAA /* Collection View Cells */,
 				899877AA1CE9A006006A639E /* TYHomeViewController.h */,
 				899877AB1CE9A006006A639E /* TYHomeViewController.m */,
+				892A3F481CF7AD3F00EA0247 /* TYAuthUserManager.h */,
+				892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */,
 				898E93721C8F65F200B34DAA /* SignOutViewController.h */,
 				898E93731C8F65F200B34DAA /* SignOutViewController.m */,
 				898E93601C8D74B300B34DAA /* WebViewController.h */,
@@ -1723,6 +1728,7 @@
 				898E93791C90B0A000B34DAA /* KBYTChannelViewController.m in Sources */,
 				898E93501C8D56D100B34DAA /* SDWebImageManager.m in Sources */,
 				898E93551C8D56D100B34DAA /* UIImage+WebP.m in Sources */,
+				892A3F4A1CF7AD3F00EA0247 /* TYAuthUserManager.m in Sources */,
 				898E93621C8D74B300B34DAA /* WebViewController.m in Sources */,
 				898E930F1C8D568B00B34DAA /* APDeviceController.m in Sources */,
 				898E93661C8D8FA900B34DAA /* KBYTSearchTableViewController.m in Sources */,

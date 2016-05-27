@@ -2,8 +2,17 @@
 
 #import "UIView+RecursiveFind.h"
 
+@implementation UIApplication (PrintRecursion)
+
+- (void)printWindow
+{
+    [self.keyWindow.rootViewController.view printRecursiveDescription];
+}
+
+@end
 
 @implementation UIView (RecursiveFind)
+
 
 
 - (UIView *)findFirstSubviewWithClass:(Class)theClass {

@@ -547,6 +547,7 @@
                             <outlet property="delegate" destination="F0B-uA-TDw" id="GrO-1Q-Us1"/>
                         </connections>
                     </collectionView>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                 </collectionViewController>
                 <navigationItem title="Title" id="RWW-j2-rGZ"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8OK-3y-b64" userLabel="First Responder" sceneMemberID="firstResponder"/>

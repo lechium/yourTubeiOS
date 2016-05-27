@@ -15,6 +15,7 @@
 #import "SVProgressHUD.h"
 #import "YTTVPlaylistViewController.h"
 #import "TYTVHistoryManager.h"
+#import "UIView+RecursiveFind.h"
 
 @interface KBYTSearchResultsViewController ()
 
@@ -63,9 +64,20 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
     [sc.searchBar becomeFirstResponder];
     
-    //NSString *recurse = [sc.searchBar performSelector:@selector(recursiveDescription)];
-    //NSLog(@"recurse: %@", recurse);
+    [sc.view printRecursiveDescription];
+    
+  //  [[UIApplication sharedApplication] printWindow];
+    
 }
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
+    sc.searchBar.frame = CGRectMake(0, 100, 600, 60);
+}
+
+
 
 
 - (void)viewWillDisappear:(BOOL)animated

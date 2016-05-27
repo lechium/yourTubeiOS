@@ -11,6 +11,7 @@
 #import "KBYourTube+Categories.h"
 #import "WebViewController.h"
 #import "AppDelegate.h"
+#import "TYAuthUserManager.h"
 
 @implementation TYSettingsViewController
 
@@ -58,7 +59,7 @@
     {
         [self showSignOutAlert];
     } else {
-        WebViewController *wvc = [[WebViewController alloc] init];
+        WebViewController *wvc = [TYAuthUserManager OAuthWebViewController];
         [self.navigationController pushViewController:wvc animated:true];
     }
 }

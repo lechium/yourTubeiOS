@@ -47,7 +47,11 @@
 
 @implementation AppDelegate
 
-
+- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
+{
+    DLOG_SELF;
+    return UIBarPositionAny;
+}
 
 - (UIViewController *)packagedSearchController
 {
@@ -63,13 +67,19 @@
     searchController.automaticallyAdjustsScrollViewInsets = false;
      searchController.extendedLayoutIncludesOpaqueBars = true;
     searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    searchController.searchBar.delegate = self;
+    CGRect searchBarFrame = CGRectMake(0, 60, 600, 60);
+    searchController.searchBar.frame = searchBarFrame;
     UISearchContainerViewController *searchContainer = [[UISearchContainerViewController alloc] initWithSearchController:searchController];
     searchContainer.edgesForExtendedLayout = UIRectEdgeNone;
     searchContainer.automaticallyAdjustsScrollViewInsets = false;
     searchContainer.extendedLayoutIncludesOpaqueBars = true;
     searchContainer.title = @"search";
+    
     searchContainer.view.backgroundColor = [UIColor blackColor];
     UINavigationController *searchNavigationController = [[UINavigationController alloc] initWithRootViewController:searchContainer];
+    searchNavigationController.edgesForExtendedLayout = UIRectEdgeNone;
+
     return searchNavigationController;
 }
 
@@ -182,6 +192,7 @@
    // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
  
     self.tabBar = (UITabBarController *)self.window.rootViewController;
+   // self.tabBar.tabBar.translucent = false;
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"360° Videos"];
