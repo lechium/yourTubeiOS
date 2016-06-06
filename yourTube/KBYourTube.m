@@ -1539,6 +1539,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         result.imagePath = [@"https:" stringByAppendingString:imagePath];
                     }
                 }
+                
+                result.resultType = kYTSearchResultTypeVideo;
+                
                 if (lengthElement != nil)
                     result.duration = lengthElement.stringValue;
                 

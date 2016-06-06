@@ -8,7 +8,7 @@
 
 #import "TYAuthUserManager.h"
 #import "YTCreds.h"
-
+#import "KBYourTube.h"
 
 
 @implementation TYAuthUserManager
@@ -332,6 +332,80 @@
     return jsonDict;
     
 }
+
+- (NSArray *)playlists
+{
+    NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
+    NSMutableArray *finalArray = [NSMutableArray new];
+    NSArray *results = userDetails[@"results"];
+    for (KBYTSearchResult *result in results)
+    {
+        if (result.resultType == kYTSearchResultTypePlaylist)
+        {
+            [finalArray addObject:result];
+        }
+    }
+    return finalArray;
+}
+
+- (id)addVideo:(NSString *)videoID toPlaylistWithID:(NSString *)playlistID {
+    
+    [self refreshAuthToken];
+    NSLog(@"adding a video: %@ to favorites: %@", videoID, playlistID);
+    
+    NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
+    NSDictionary *resourceId = [NSDictionary dictionaryWithObjectsAndKeys:@"youtube#video", @"kind", videoID, @"videoId", nil];
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:playlistID, @"playlistId",resourceId , @"resourceId", nil];
+    [finalDict setObject:dict forKey:@"snippet"];
+    
+    
+    NSError* error;
+    
+    // Encode post string
+    NSData* postData = [NSJSONSerialization dataWithJSONObject:finalDict options:NSJSONWritingPrettyPrinted error:nil];
+    
+    // Calculate length of post data
+    NSString* postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
+    //https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key={YOUR_API_KEY}
+
+    
+    NSString *urlString = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=%@", ytClientID];
+    
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
+                                                                cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
+    
+    
+    NSString *authorization = [NSString stringWithFormat:@"Bearer %@",[UD valueForKey: @"access_token"]];
+    [request setValue:authorization forHTTPHeaderField:@"Authorization"];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:postData];
+    
+    
+    NSHTTPURLResponse *theResponse = nil;
+    
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
+    
+    NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+    
+    //NSLog(@"datString: %@", datString);
+    
+    NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
+    NSLog(@"status string: %@", returnString);
+    
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
+    
+    // NSLog(@"jsonDict: %@", jsonDict);
+    if ([jsonDict valueForKey:@"error"] != nil)
+    {
+        return datString;
+        
+    }
+
+    return jsonDict;
+}
+
 
 - (id)postOAuth2CodeToGoogle:(NSString *)code{
     

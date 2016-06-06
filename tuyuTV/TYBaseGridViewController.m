@@ -7,7 +7,7 @@
 //
 
 #import "TYBaseGridViewController.h"
-
+#import "TYAuthUserManager.h"
 
 /*
  
@@ -186,10 +186,17 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     layout.minimumLineSpacing = 50;
     layout.itemSize = CGSizeMake(640, 480);
     layout.sectionInset = UIEdgeInsetsMake(-5, 0, 0, 0);
-    
+    UILongPressGestureRecognizer *longpress
+    = [[UILongPressGestureRecognizer alloc]
+       initWithTarget:self action:@selector(handleLongpressMethod:)];
+    longpress.minimumPressDuration = .5; //seconds
+    longpress.delegate = self;
+    longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
+    //[self.collectionView addGestureRecognizer: longpress];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     //layout.sectionInset = UIEdgeInsetsZero;
     self.featuredVideosCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    [self.featuredVideosCollectionView addGestureRecognizer:longpress];
     self.featuredVideosCollectionView.tag = 666; //give it a tag other than 0 just in case
     self.featuredVideosCollectionView.translatesAutoresizingMaskIntoConstraints = false;
     [self.featuredVideosCollectionView registerNib:[UINib nibWithNibName:@"YTTVFeaturedCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:featuredReuseIdentifier];
@@ -218,7 +225,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     _totalHeight = 640;
     for (i = 0; i < [_backingSectionLabels count]; i++)
     {
-        
+        UILongPressGestureRecognizer *longpress
+        = [[UILongPressGestureRecognizer alloc]
+           initWithTarget:self action:@selector(handleLongpressMethod:)];
+        longpress.minimumPressDuration = .5; //seconds
+        longpress.delegate = self;
+        longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
         //it is INCREDIBLY important to create a new CollectionViewLayout individually for EVERY collection view
         //if you re-use them you will have crashes galore
         CollectionViewLayout *layoutTwo = [CollectionViewLayout new];
@@ -230,6 +242,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         layoutTwo.sectionInset = UIEdgeInsetsMake(35, 0, 20, 0);
         layoutTwo.headerReferenceSize = CGSizeMake(100, 150);
         UICollectionView *collectionView  = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layoutTwo];
+        [collectionView addGestureRecognizer:longpress];
         //collectionView.scrollEnabled = true;
         collectionView.tag = tagOffset + i;
         collectionView.translatesAutoresizingMaskIntoConstraints = false;
@@ -281,7 +294,128 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
 }
 
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    LOG_SELF;
+    return true;
+}
 
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    LOG_SELF;
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    if ([UD valueForKey:@"access_token"] == nil)
+    {
+        return;
+    }
+
+    KBYTSearchResult *searchResult = [self searchResultFromFocusedCell];
+    
+    NSLog(@"searchResult: %@", searchResult);
+    
+    switch (searchResult.resultType)
+    {
+        case kYTSearchResultTypeVideo:
+            
+            [self showPlaylistAlertForSearchResult:searchResult];
+            break;
+            
+        case kYTSearchResultTypeChannel:
+            
+            [self showChannelAlertForSearchResult:searchResult];
+            break;
+            
+        case kYTSearchResultTypePlaylist:
+            
+            break;
+            
+        case kYTSearchResultTypeUnknown:
+            
+            break;
+    }
+
+}
+
+
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
+{
+    DLog(@"add video: %@ to playlistID: %@", video, playlist);
+    [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
+}
+
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Video Options"
+                                          message: @"Choose playlist to add video to"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+     NSArray *playlistArray = [[TYAuthUserManager sharedInstance] playlists];
+    
+
+    __weak typeof(self) weakSelf = self;
+    self.alertHandler = ^(UIAlertAction *action)
+    {
+        NSString *playlistID = nil;
+        
+        for (KBYTSearchResult *result in playlistArray)
+        {
+            if ([result.title isEqualToString:action.title])
+            {
+                playlistID = result.videoId;
+            }
+        }
+        
+        [weakSelf addVideo:result toPlaylist:playlistID];
+    };
+    
+    for (KBYTSearchResult *result in playlistArray)
+    {
+        UIAlertAction *plAction = [UIAlertAction actionWithTitle:result.title style:UIAlertActionStyleDefault handler:self.alertHandler];
+        [alertController addAction:plAction];
+    }
+    
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+   
+   
+    
+    [alertController addAction:cancelAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+
+    
+}
+
+- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Channel Options"
+                                          message: @"Subscribe to this channel?"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+        
+    }];
+    [alertController addAction:yesAction];
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    [alertController addAction:yesAction];
+    [alertController addAction:cancelAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
@@ -330,6 +464,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     //be shifted back up in the focusedCell call below.
     [self previouslyFocusedCell:(YTTVStandardCollectionViewCell*)context.previouslyFocusedView];
     [self focusedCell:(YTTVStandardCollectionViewCell*)context.nextFocusedView];
+    self.focusedCollectionCell = (UICollectionViewCell *)context.nextFocusedView;
 }
 
 - (void)previouslyFocusedCell:(YTTVStandardCollectionViewCell *)focusedCell
@@ -515,9 +650,28 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     return self.playlistDictionary[[self titleForSection:section]];
 }
 
+- (KBYTSearchResult *)searchResultFromFocusedCell
+{
+    if (self.focusedCollectionCell != nil)
+    {
+        UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
+        NSIndexPath *indexPath = [cv indexPathForCell:self.focusedCollectionCell];
+        
+        if (cv == self.featuredVideosCollectionView)
+        {
+            KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
+            return currentItem;
+        }
+        
+       // NSLog(@"cv: %@ indexPath row: %lu", cv, indexPath.row);
+        KBYTSearchResult *searchResult = [[self arrayForCollectionView:cv] objectAtIndex:indexPath.row];
+        return searchResult;
+    }
+    return nil;
+}
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    
     if (collectionView == self.featuredVideosCollectionView)
     {
         KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];

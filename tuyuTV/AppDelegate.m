@@ -49,7 +49,7 @@
 
 - (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
 {
-    DLOG_SELF;
+   // DLOG_SELF;
     return UIBarPositionAny;
 }
 

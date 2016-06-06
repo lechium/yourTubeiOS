@@ -11,6 +11,7 @@
 #import <GameController/GameController.h>
 #import "KBYourTube.h"
 #import "AppDelegate.h"
+#import "TYAuthUserManager.h"
 
 typedef struct _Input
 {
@@ -116,6 +117,9 @@ typedef struct _Input
             NSString *token = [[title componentsSeparatedByString:@"code="] lastObject];
             //  NSLog(@"token: %@", token);
             //[self postOAuth2CodeToGoogle:token];
+            
+            [[TYAuthUserManager sharedInstance] postOAuth2CodeToGoogle:token];
+            
         }
         
        // [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"submit_approve_access\").click();"];

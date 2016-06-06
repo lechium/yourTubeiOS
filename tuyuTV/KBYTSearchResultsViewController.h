@@ -15,5 +15,6 @@
 }
 
 @property (nonatomic, strong) NSIndexPath *selectedItem;
-
+@property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
+@property (nonatomic, weak) UICollectionViewCell *focusedCollectionCell;
 @end

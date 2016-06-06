@@ -16,6 +16,7 @@
 #import "YTTVPlaylistViewController.h"
 #import "TYTVHistoryManager.h"
 #import "UIView+RecursiveFind.h"
+#import "TYAuthUserManager.h"
 
 @interface KBYTSearchResultsViewController ()
 
@@ -38,9 +39,134 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
+    UILongPressGestureRecognizer *longpress
+    = [[UILongPressGestureRecognizer alloc]
+       initWithTarget:self action:@selector(handleLongpressMethod:)];
+    longpress.minimumPressDuration = .5; //seconds
+    longpress.delegate = self;
+    longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
+    [self.collectionView addGestureRecognizer:longpress];
     // Do any additional setup after loading the view.
 }
+
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    LOG_SELF;
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    if ([UD valueForKey:@"access_token"] == nil)
+    {
+        return;
+    }
+    
+    KBYTSearchResult *searchResult = [self searchResultFromFocusedCell];
+    
+    NSLog(@"searchResult: %@", searchResult);
+    
+    switch (searchResult.resultType)
+    {
+        case kYTSearchResultTypeVideo:
+            
+            [self showPlaylistAlertForSearchResult:searchResult];
+            break;
+            
+        case kYTSearchResultTypeChannel:
+            
+            [self showChannelAlertForSearchResult:searchResult];
+            break;
+            
+        case kYTSearchResultTypePlaylist:
+            
+            break;
+            
+        case kYTSearchResultTypeUnknown:
+            
+            break;
+    }
+    
+}
+
+
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
+{
+    DLog(@"add video: %@ to playlistID: %@", video, playlist);
+    [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
+}
+
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Video Options"
+                                          message: @"Choose playlist to add video to"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    NSArray *playlistArray = [[TYAuthUserManager sharedInstance] playlists];
+    
+    
+    __weak typeof(self) weakSelf = self;
+    self.alertHandler = ^(UIAlertAction *action)
+    {
+        NSString *playlistID = nil;
+        
+        for (KBYTSearchResult *result in playlistArray)
+        {
+            if ([result.title isEqualToString:action.title])
+            {
+                playlistID = result.videoId;
+            }
+        }
+        
+        [weakSelf addVideo:result toPlaylist:playlistID];
+    };
+    
+    for (KBYTSearchResult *result in playlistArray)
+    {
+        UIAlertAction *plAction = [UIAlertAction actionWithTitle:result.title style:UIAlertActionStyleDefault handler:self.alertHandler];
+        [alertController addAction:plAction];
+    }
+    
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    
+    
+    
+    [alertController addAction:cancelAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+    
+    
+}
+
+- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Channel Options"
+                                          message: @"Subscribe to this channel?"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+        
+    }];
+    [alertController addAction:yesAction];
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    [alertController addAction:yesAction];
+    [alertController addAction:cancelAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -64,7 +190,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
     [sc.searchBar becomeFirstResponder];
     
-    [sc.view printRecursiveDescription];
+  //  [sc.view printRecursiveDescription];
     
   //  [[UIApplication sharedApplication] printWindow];
     
@@ -240,9 +366,23 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }];
 }
 
+- (KBYTSearchResult *)searchResultFromFocusedCell
+{
+    if (self.focusedCollectionCell != nil)
+    {
+        UICollectionView *cv = self.collectionView;
+        NSIndexPath *indexPath = [cv indexPathForCell:self.focusedCollectionCell];
+        KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
+        return searchResult;
+    }
+    return nil;
+}
+
+
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
 {
 
+    self.focusedCollectionCell = (UICollectionViewCell *)context.nextFocusedView;
     //YTTVStandardCollectionViewCell *selectedCell = (YTTVStandardCollectionViewCell*)context.nextFocusedView;
     //self.selectedItem=  [[self collectionView] indexPathForCell:selectedCell];
 }
