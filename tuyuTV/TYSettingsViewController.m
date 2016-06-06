@@ -32,8 +32,13 @@
     } else {
         mainMenuItem = @{@"name": @"Sign In", @"imagePath": @"YTPlaceholder.png", @"detail": @"", @"detailOptions": @[], @"description": @"Sign in to your YouTube account."};
     }
+    
     MetaDataAsset *asset = [[MetaDataAsset alloc] initWithDictionary:mainMenuItem];
-    svc.items = @[asset];
+    MetaDataAsset *updatePermissions = [MetaDataAsset new];
+    updatePermissions.name = @"Update permissions";
+    updatePermissions.imagePath = @"YTPlaceholder.png";
+    updatePermissions.assetDescription = @"Update authentication permissions so it's possible to add videos to playlists and subscribe to channels";
+    svc.items = @[asset, updatePermissions];
     svc.title = @"settings";
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:svc];
     return navController;
@@ -106,13 +111,23 @@
         case 0:
             
             [self toggleSignedIn];
-            
-            
             break;
             
+        case 1:
+            
+            [self updatePermissions];
+            
+            break;
         default:
             break;
     }
 }
+
+- (void)updatePermissions
+{
+    WebViewController *wvc = [TYAuthUserManager OAuthWebViewController];
+    [self.navigationController pushViewController:wvc animated:true];
+}
+
 
 @end
