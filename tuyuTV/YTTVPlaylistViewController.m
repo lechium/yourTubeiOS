@@ -33,6 +33,7 @@
 #import "KBYourTube.h"
 #import "UIImageView+WebCache.h"
 #import "SVProgressHUD.h"
+#import "TYAuthUserManager.h"
 
 @implementation PlaylistTableViewCell
 
@@ -102,13 +103,13 @@
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     self.imageView.image = [UIImage imageNamed:@"YTPlaceholder"];
     /*
-    if (imageURLs.count > 0)
-    {
-         UIImage *theImage = [UIImage imageNamed:imageURLs[0]];
-        [self.imageView setImage:theImage];
-    }*/
+     if (imageURLs.count > 0)
+     {
+     UIImage *theImage = [UIImage imageNamed:imageURLs[0]];
+     [self.imageView setImage:theImage];
+     }*/
     [[self view]addSubview:self.imageView];
-
+    
 }
 
 - (void)addImageURLs:(NSArray *)urls
@@ -168,6 +169,15 @@
     self.tableView.contentInset = UIEdgeInsetsMake(30, 0, 20, 0);
     //self.view.backgroundColor = [UIColor blackColor];
     [self.tableView registerClass:[PlaylistTableViewCell class] forCellReuseIdentifier:@"Science"];
+    
+    UILongPressGestureRecognizer *longpress
+    = [[UILongPressGestureRecognizer alloc]
+       initWithTarget:self action:@selector(handleLongpressMethod:)];
+    longpress.minimumPressDuration = .5; //seconds
+    longpress.delegate = self;
+    longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
+    [self.tableView addGestureRecognizer:longpress];
+    
     //self.tableView.maskView = nil;
     
     // Uncomment the following line to preserve selection between presentations.
@@ -175,6 +185,93 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (KBYTSearchResult *)searchResultFromFocusedCell
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    KBYTSearchResult *searchResult = [self.itemNames objectAtIndex:indexPath.row];
+    return searchResult;
+}
+
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
+{
+    DLog(@"add video: %@ to playlistID: %@", video, playlist);
+    [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
+}
+
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Video Options"
+                                          message: @"Choose playlist to add video to"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    NSArray *playlistArray = [[TYAuthUserManager sharedInstance] playlists];
+    
+    
+    __weak typeof(self) weakSelf = self;
+    self.alertHandler = ^(UIAlertAction *action)
+    {
+        NSString *playlistID = nil;
+        
+        for (KBYTSearchResult *result in playlistArray)
+        {
+            if ([result.title isEqualToString:action.title])
+            {
+                playlistID = result.videoId;
+            }
+        }
+        
+        [weakSelf addVideo:result toPlaylist:playlistID];
+    };
+    
+    for (KBYTSearchResult *result in playlistArray)
+    {
+        UIAlertAction *plAction = [UIAlertAction actionWithTitle:result.title style:UIAlertActionStyleDefault handler:self.alertHandler];
+        [alertController addAction:plAction];
+    }
+    
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    
+    
+    
+    [alertController addAction:cancelAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+    
+    
+}
+
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    LOG_SELF;
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    if ([UD valueForKey:@"access_token"] == nil)
+    {
+        return;
+    }
+    
+    KBYTSearchResult *searchResult = [self searchResultFromFocusedCell];
+    
+    NSLog(@"searchResult: %@", searchResult);
+    
+    switch (searchResult.resultType)
+    {
+        case kYTSearchResultTypeVideo:
+            
+            [self showPlaylistAlertForSearchResult:searchResult];
+            break;
+            
+    }
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -481,7 +578,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+    // Do any additional setup after loading the view.
     //self.view.backgroundColor = [UIColor blackColor];
     [self layoutViewControllers];
     
@@ -506,7 +603,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-	return YES;
+    return YES;
 }
 
 #pragma mark - Property Accessor Overrides

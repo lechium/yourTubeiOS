@@ -65,6 +65,8 @@
 @property (nonatomic, weak) id<PLDetailViewSelectionDelegate> delegate;
 @property (nonatomic, strong) NSMutableArray *itemNames;
 @property (nonatomic, weak) NSString *nextHREF;
+@property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
+@property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 
 - (void)focusedCell:(UITableViewCell *)focusedCell;
 
@@ -93,6 +95,7 @@
 @property (nonatomic, strong) NSString *viewTitle;
 @property (nonatomic, strong) UIColor *backgroundColor;
 @property (nonatomic, strong) NSString *loadMoreHREF;
+
 
 @property (copy, nonatomic) NSArray *viewControllers;
 @property (weak, nonatomic) id delegate;        // Not used yet

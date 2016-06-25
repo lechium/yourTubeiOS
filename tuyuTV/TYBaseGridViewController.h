@@ -23,6 +23,7 @@
 @interface TYBaseGridViewController : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
 {
     NSMutableArray *_backingSectionLabels;
+    
 }
 @property (nonatomic, strong) UICollectionView *featuredVideosCollectionView;
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
@@ -41,7 +42,7 @@
 - (void)reloadCollectionViews;
 - (NSString *)titleForSection:(NSInteger)section;
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView;
-
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer;
 @end
 
 

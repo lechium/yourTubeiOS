@@ -161,6 +161,14 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
 }
 
+- (void)swipeMethod:(UISwipeGestureRecognizer *)gestureRecognizer
+{
+    
+    NSLog(@"direction: %lu", (unsigned long)gestureRecognizer.direction);
+    CGPoint location = [gestureRecognizer locationInView:gestureRecognizer.view];
+    NSLog(@"location: %@", NSStringFromCGPoint(location));
+}
+
 - (void)setupViews
 {
     self.scrollView = [[UIScrollView alloc] initForAutoLayout];
@@ -186,6 +194,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     layout.minimumLineSpacing = 50;
     layout.itemSize = CGSizeMake(640, 480);
     layout.sectionInset = UIEdgeInsetsMake(-5, 0, 0, 0);
+    UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeMethod:)];
     UILongPressGestureRecognizer *longpress
     = [[UILongPressGestureRecognizer alloc]
        initWithTarget:self action:@selector(handleLongpressMethod:)];
@@ -197,6 +206,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     //layout.sectionInset = UIEdgeInsetsZero;
     self.featuredVideosCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
     [self.featuredVideosCollectionView addGestureRecognizer:longpress];
+    [self.featuredVideosCollectionView addGestureRecognizer:swipeGesture];
     self.featuredVideosCollectionView.tag = 666; //give it a tag other than 0 just in case
     self.featuredVideosCollectionView.translatesAutoresizingMaskIntoConstraints = false;
     [self.featuredVideosCollectionView registerNib:[UINib nibWithNibName:@"YTTVFeaturedCollectionViewCell" bundle:nil] forCellWithReuseIdentifier:featuredReuseIdentifier];
@@ -228,6 +238,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         UILongPressGestureRecognizer *longpress
         = [[UILongPressGestureRecognizer alloc]
            initWithTarget:self action:@selector(handleLongpressMethod:)];
+        UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeMethod:)];
         longpress.minimumPressDuration = .5; //seconds
         longpress.delegate = self;
         longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
@@ -243,6 +254,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         layoutTwo.headerReferenceSize = CGSizeMake(100, 150);
         UICollectionView *collectionView  = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layoutTwo];
         [collectionView addGestureRecognizer:longpress];
+        [collectionView addGestureRecognizer:swipeGesture];
         //collectionView.scrollEnabled = true;
         collectionView.tag = tagOffset + i;
         collectionView.translatesAutoresizingMaskIntoConstraints = false;

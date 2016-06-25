@@ -9,5 +9,8 @@
 #import "TYBaseGridViewController.h"
 
 @interface TYGridUserViewController : TYBaseGridViewController
-
+{
+    BOOL _jiggling;
+    UITapGestureRecognizer *menuTapRecognizer;
+}
 @end

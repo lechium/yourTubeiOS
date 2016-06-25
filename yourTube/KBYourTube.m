@@ -1085,6 +1085,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     result.title = title;
                 }
                 
+                result.resultType = kYTSearchResultTypeVideo;
                 
                 ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-clip')]"] children] firstObject];
                 ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
@@ -2760,6 +2761,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     //#### IGNORE THE WARNING, if the extra escape is added as expected the regex doesnt work!
     
     NSString *keyMatch = [[self matchesForString:jsBody withRegex:@"function[ $_A-Za-z0-9]*\\(a\\)\\{a=a(?:\.split|\\[[$_A-Za-z0-9]+\\])\\(\"\"\\);\\s*([^\"]*)"] lastObject];
+    
+    
+    if ([keyMatch rangeOfString:@"function"].location != NSNotFound)
+    {
+        //find first ; and make substring from there.
+        NSUInteger loc = [keyMatch rangeOfString:@";"].location;
+        DLog(@"loc: %lu", loc);
+        keyMatch = [keyMatch substringFromIndex:loc+1];
+    }
     
     //the jsbody is trimmed down to a smaller section to optimize the search to deobfuscate the signature function names
     

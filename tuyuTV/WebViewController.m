@@ -79,6 +79,7 @@ typedef struct _Input
 }
 -(void) webViewDidFinishLoad:(UIWebView *)webView {
     
+    DLOG_SELF;
     [loadingSpinner stopAnimating];
     //[self.view bringSubviewToFront:loadingSpinner];
     NSString *theTitle=[webView stringByEvaluatingJavaScriptFromString:@"document.title"];
@@ -105,7 +106,9 @@ typedef struct _Input
     {
         if ([self elementWithIDExists:@"submit_approve_access"])
         {
+            DLog(@"submit approve?");
            [self clickApproveWithDelay];
+        //    return;
         }
         
        // [self clickApproveWithDelay];
@@ -119,16 +122,18 @@ typedef struct _Input
             //[self postOAuth2CodeToGoogle:token];
             
             [[TYAuthUserManager sharedInstance] postOAuth2CodeToGoogle:token];
-            
+            [self.navigationController popViewControllerAnimated:true];
+            return;
         }
         
        // [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"submit_approve_access\").click();"];
         //submit_approve_access
-        return;
+        
     }
     
     if ([[KBYourTube sharedInstance] isSignedIn])
     {
+        DLog(@"is signed in??");
         AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
         if ([[KBYourTube sharedInstance] userDetails] == nil)
@@ -142,6 +147,7 @@ typedef struct _Input
     
     if (currentURL == _currentURL)
     {
+        DLog(@"return??");
         return;
     }
     
@@ -150,7 +156,8 @@ typedef struct _Input
     
     NSString * email = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"Email\").placeholder;"];
     
-    if ([email isEqualToString:@"Enter your email"] && ![currentURL isEqualToString:@"https://accounts.google.com/ServiceLoginAuth"])
+    
+    if ([email isEqualToString:@"Enter your email"] && ![currentURL isEqualToString:@"https://accounts.google.com/ServiceLoginAuth"] && emailEntered == NO)
     {
         [self promptForEmail];
         return;
@@ -253,6 +260,7 @@ typedef struct _Input
                                                                        "textField.form.submit();",inputViewTextField.text];
                                                [_webview stringByEvaluatingJavaScriptFromString:javaScript];
                                                _alertShowing = false;
+                                               emailEntered = YES;
                                            }];
     
     [alertController addAction:inputAndSubmitAction];
@@ -342,6 +350,7 @@ typedef struct _Input
 
 -(void)viewDidLoad {
     
+    emailEntered = NO;
     _scrollViewAllowBounces = NO;
     [super viewDidLoad];
     touchSurfaceDoubleTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTouchSurfaceDoubleTap:)];

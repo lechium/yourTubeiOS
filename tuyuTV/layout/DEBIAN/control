@@ -1,7 +1,7 @@
 Architecture: tvos-arm
 Name: tuyu
 Package: com.nito.tuyu
-Version: 0.3.2
+Version: 0.3.6
 Maintainer: Kevin Bradley
 Author: Kevin Bradley
 Description: tvOS port of tuyu for iOS. View featured videos, sign in to your account, view all account playlists and channels subscriptions, extremely powerful search with channel and playlist support.

@@ -11,7 +11,12 @@
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import "KBYourTube+Categories.h"
-#import "PureLayout.h"
+#import "../PureLayout/PureLayout.h"
+
+#define degreesToRadians(x) (M_PI * (x) / 180.0)
+#define kAnimationRotateDeg 0.5
+#define kAnimationTranslateX 1.0
+#define kAnimationTranslateY 1.0
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 #define LOG_SELF        NSLog(@"%@ %@", self, NSStringFromSelector(_cmd))

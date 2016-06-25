@@ -11,7 +11,9 @@
 #import <GameKit/GameKit.h>
 
 @interface WebViewController : GCEventViewController  <UIWebViewDelegate>
-
+{
+    BOOL emailEntered; //hacky bool to keep track of if email was already entered.
+}
 
 @property (nonatomic, strong) NSString *initialURL;
 

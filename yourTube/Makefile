@@ -37,7 +37,7 @@ yourTube_CXXFLAGS += -fobjc-arc -I/Applications/Xcode7.app/Contents/Developer/Pl
 yourTube_CFLAGS += -fobjc-arc -I/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/include/libxml2
 yourTube_LDFLAGS = -ObjC -undefined dynamic_lookup -I/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/include/libxml2 -lxml2 -F/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/System/Library/PrivateFrameworks -Wl,-segalign,4000
 
-include $(THEOS_MAKE_PATH)/application.mk
+include theos/makefiles/application.mk
 
 after-install::
 	install.exec "su -c uicache mobile"

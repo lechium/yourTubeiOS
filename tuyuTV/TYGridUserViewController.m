@@ -39,10 +39,83 @@
     }];
 }
 
+
+- (void)swipeMethod:(UISwipeGestureRecognizer *)gestureRecognizer
+{
+    if (_jiggling)
+    {
+        NSLog(@"direction: %lu", (unsigned long)gestureRecognizer.direction);
+        CGPoint location = [gestureRecognizer locationInView:gestureRecognizer.view];
+        NSLog(@"location: %@", NSStringFromCGPoint(location));
+        UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
+        [cv updateInteractiveMovementTargetPosition:location];
+    }
+    
+}
+
+
+- (void)handleMenuTap:(id)sender
+{
+    LOG_SELF;
+    [self.focusedCollectionCell performSelector:@selector(stopJiggling) withObject:nil afterDelay:0];
+    _jiggling = false;
+    menuTapRecognizer.enabled = false;
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self refreshDataWithProgress:false];
+    _jiggling = false;
+    menuTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleMenuTap:)];
+    menuTapRecognizer.numberOfTapsRequired = 1;
+    menuTapRecognizer.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeMenu]];
+    [self.view addGestureRecognizer:menuTapRecognizer];
+    menuTapRecognizer.enabled = false;
+}
+
+- (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event
+{
+    UIPressType type = presses.allObjects.firstObject.type;
+    if ((_jiggling == true) && (type == UIPressTypeMenu))
+    {
+        [self.focusedCollectionCell performSelector:@selector(stopJiggling) withObject:nil afterDelay:0];
+        UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
+        [cv endInteractiveMovement];
+        _jiggling = false;
+    } else {
+        [super pressesBegan:presses withEvent:event];
+    }
+    
+}
+
+
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    if (self.focusedCollectionCell != nil)
+    {
+        
+        UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
+        if (_jiggling == false)
+        {
+            [self.focusedCollectionCell performSelector:@selector(startJiggling) withObject:nil afterDelay:0];
+            NSIndexPath *path = [cv indexPathForCell:self.focusedCollectionCell];
+            [cv beginInteractiveMovementForItemAtIndexPath:path];
+         //   [cv.visibleCells  makeObjectsPerformSelector:@selector(startJiggling)];
+            _jiggling = true;
+            menuTapRecognizer.enabled = true;
+        } else {
+         
+            [self.focusedCollectionCell performSelector:@selector(stopJiggling) withObject:nil afterDelay:0];
+           // [cv.visibleCells makeObjectsPerformSelector:@selector(stopJiggling)];
+            _jiggling = false;
+              menuTapRecognizer.enabled = false;
+        }
+    }
+    
 }
 
 - (void)fetchUserDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock

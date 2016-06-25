@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface KBYTChannelViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface KBYTChannelViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
 {
     BOOL _gettingPage;
 }
@@ -24,4 +24,7 @@
 @property (nonatomic, strong) NSString *subscribers;
 @property (nonatomic, strong) NSString *bannerURL;
 @property (nonatomic, strong) NSString *nextHREF;
+@property (nonatomic, weak) UICollectionViewCell *focusedCollectionCell;
+@property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
+@property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 @end
