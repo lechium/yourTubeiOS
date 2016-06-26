@@ -1,4 +1,4 @@
-ARCHS = armv7 armv7s arm64
+ARCHS = armv7s arm64
 TARGET = iphone:8.4
 include theos/makefiles/common.mk
 #THEOS_DEVICE_IP=other-ipod.local
@@ -58,6 +58,7 @@ after-install::
 	install.exec "killall -9 yourTube"
 
 SUBPROJECTS += yourTube
+SUBPROJECTS += sciences
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
 

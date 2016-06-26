@@ -1,9 +1,11 @@
-include theos/makefiles/common.mk
 ARCHS = armv7 armv7s arm64
 TARGET = iphone:8.4
 export GO_EASY_ON_ME=1
+include theos/makefiles/common.mk
 export SDKVERSION=8.4
+export DEBUG=1
 export ARCHS = armv7 armv7s arm64
+
 
 APPLICATION_NAME = yourTube
 yourTube_FILES = main.m yourTubeApplication.m KBYourTube.m KBYTDownloadStream.m Download/URLCredential.m Download/URLDownloader.m KBYTDownloadsTableViewController.m KBYTDownloadCell.m KBYTWebViewController.mm
@@ -37,7 +39,7 @@ yourTube_CXXFLAGS += -fobjc-arc -I/Applications/Xcode7.app/Contents/Developer/Pl
 yourTube_CFLAGS += -fobjc-arc -I/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/include/libxml2
 yourTube_LDFLAGS = -ObjC -undefined dynamic_lookup -I/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/usr/include/libxml2 -lxml2 -F/Applications/Xcode7.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.4.sdk/System/Library/PrivateFrameworks -Wl,-segalign,4000
 
-include theos/makefiles/application.mk
+include $(THEOS_MAKE_PATH)/application.mk
 
 after-install::
 	install.exec "su -c uicache mobile"
