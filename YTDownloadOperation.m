@@ -81,11 +81,19 @@
 - (void)urlDownloader:(URLDownloader *)urlDownloader didFinishWithData:(NSData *)data
 {
     LOG_SELF;
-    [data writeToFile:[self downloadLocation] atomically:TRUE];
     
+    NSError *error = nil;
+    [@"science" writeToFile:@"/var/mobile/Library/Application Support/tuyu/Downloads/test" atomically:NO encoding:NSUTF8StringEncoding error:&error];
+    NSLog(@"error: %@",error);
+    //[@"science" writeToFile:@"/var/mobile/Documents/test" atomically:NO];
+    NSLog(@"download location: %@", [self downloadLocation]);
+    
+    [data writeToFile:[self downloadLocation] atomically:NO];
+    NSLog(@"downloadLocation.pathExtension: %@", downloadLocation.pathExtension);
     //if we are dealing with an audio file we need to re-encode it in ffmpeg to get a playable file. (and to bump volume)
     if ([downloadLocation.pathExtension isEqualToString:@"aac"])
     {
+        NSLog(@"in here???");
         
         //for now the audio is bumped to a static 256 increase, this may change later to be customizable.
         NSInteger volumeInt = 256;
@@ -128,7 +136,7 @@
 {
     //
     float percentComplete = [urlDownloader downloadCompleteProcent];
-    // NSLog(@"percentComplete: %f", percentComplete);
+     NSLog(@"percentComplete: %f", percentComplete);
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
     

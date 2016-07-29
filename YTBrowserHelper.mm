@@ -132,6 +132,13 @@ kAHAirplayStatusPaused= 2;
 
 @end
 
+@interface JOiTunesImporter : NSObject
+
++ (void)import:(id)import server:(id)server;
+
+@end
+
+
 @implementation YTBrowserHelper
 
 @synthesize airplaying, airplayTimer, deviceIP, sessionID, airplayDictionary, operations;
@@ -178,7 +185,7 @@ kAHAirplayStatusPaused= 2;
 
 - (void)fixAudio:(NSString *)theFile volume:(NSInteger)volume completionBlock:(void(^)(NSString *newFile))completionBlock
 {
-    //NSLog(@"fix audio: %@", theFile);
+    NSLog(@"fix audio: %@", theFile);
     NSString *importOutputFile = [NSString stringWithFormat:@"/var/mobile/Media/Downloads/%@", [[[theFile lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"]];
     NSString *outputFile = [[theFile stringByDeletingPathExtension] stringByAppendingPathExtension:@"m4a"];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -202,14 +209,16 @@ kAHAirplayStatusPaused= 2;
             }
             [args addObject:outputFile];
             [afcTask setArguments:args];
-            //NSLog(@"mux %@", [args componentsJoinedByString:@" "]);
+            NSLog(@"mux %@", [args componentsJoinedByString:@" "]);
             [afcTask launch];
             [afcTask waitUntilExit];
             
         }
         
+        NSLog(@"importOutputFile: %@", importOutputFile);
+        
         [[NSFileManager defaultManager] copyItemAtPath:outputFile toPath:importOutputFile error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:theFile error:nil];
+       // [[NSFileManager defaultManager] removeItemAtPath:theFile error:nil];
         completionBlock(importOutputFile);
     });
     
@@ -772,9 +781,14 @@ kAHAirplayStatusPaused= 2;
         imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
     }
     //NSData *imageData = [NSData dataWithContentsOfFile:@"/Applications/yourTube.app/GenericArtwork.png"];
-    NSDictionary *theDict = @{@"albumName": @"tuyu downloads", @"artist": @"Unknown Artist", @"duration": [NSNumber numberWithInteger:duration], @"imageData":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
-    Class joitih = NSClassFromString(@"JOiTunesImportHelper");
-    [joitih importAudioFileAtPath:theFile mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];
+    NSDictionary *theDict = @{@"albumName": @"tuyu downloads", @"artist": @"Unknown Artist", @"duration": [NSNumber numberWithInteger:duration], @"artwork":imageData, @"type": @"Music", @"software": @"Lavf56.40.101", @"title": [[theFile lastPathComponent] stringByDeletingPathExtension], @"year": @2016};
+    NSDictionary *mainDict = @{@"mediaKind": @"song", @"metadata": theDict, @"path": theFile};
+    
+    Class joii = NSClassFromString(@"JOiTunesImporter");
+    [joii import:@[mainDict] server:@"http://localhost:52387/Media/Downloads"];
+    
+    //Class joitih = NSClassFromString(@"JOiTunesImportHelper");
+    //[joitih importAudioFileAtPath:theFile mediaKind:@"song" withMetadata:theDict serverURL:@"http://localhost:52387/Media/Downloads"];
     
     //[self importFile:theFile withData:theDict serverURL:@"http://localhost:57287/Media/Downloads"];
 }

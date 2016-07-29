@@ -7,8 +7,19 @@ typedef void (^CDUnknownBlockType)(void); // return type and parameters are unkn
 	%log;
 	%orig;
 }
-
+/*
++ (void)import:(id)import server:(id)server
+{
+    %log;
+    NSDictionary *imd = (NSDictionary*)import;
+    NSString *file = @"/var/mobile/Documents/import.plist";
+    [imd writeToFile:file atomically:NO];
+    NSLog(@"server: %@", server);
+    %orig;
+}
+*/
 %end 
+
 
 %hook JOiTunesImportHelper
 + (_Bool)importAudioFileAtPath:(id)arg1 mediaKind:(id)arg2 withMetadata:(id)arg3 serverURL:(id)arg4

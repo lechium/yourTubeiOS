@@ -292,6 +292,7 @@
     {
         return [self vanillaAppSupport];
     }
+   
     NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu";
     if (![FM fileExistsAtPath:outputFolder])
     {

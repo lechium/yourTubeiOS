@@ -104,6 +104,11 @@ typedef struct _Input
     
     if (self.initialURL.length > 0)
     {
+        if ([self elementWithNameExists:@"signIn"])
+        {
+            DLog(@"SIGN IN EXISTS");
+        }
+        
         if ([self elementWithIDExists:@"submit_approve_access"])
         {
             DLog(@"submit approve?");
@@ -180,6 +185,29 @@ typedef struct _Input
  
  */
     NSLog(@"down here?");
+}
+
+
+- (void)clickElementWithName:(NSString *)elementID
+{
+    
+    NSString *jsString = [NSString stringWithFormat:@"document.getElementsByName(\"%@\").click();",elementID];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.webview stringByEvaluatingJavaScriptFromString:jsString];
+        
+        
+    });
+    
+}
+- (BOOL)elementWithNameExists:(NSString *)elementID
+{
+    NSString *jsString = [NSString stringWithFormat:@"document.getElementsByName(\"%@\").type;",elementID];
+    NSString *returnString = [self.webview stringByEvaluatingJavaScriptFromString:jsString];
+    if (returnString != nil)
+    {
+        return true;
+    }
+    return false;
 }
 
 - (BOOL)elementWithIDExists:(NSString *)elementID
