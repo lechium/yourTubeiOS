@@ -26,19 +26,31 @@
                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="shadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N13-XR-YSy">
+                        <rect key="frame" x="268" y="219" width="42" height="21"/>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.17754181338028169" colorSpace="custom" customColorSpace="sRGB"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
                 <constraint firstItem="qHN-Pp-9lK" firstAttribute="top" secondItem="xfG-WM-mdZ" secondAttribute="bottom" constant="40" id="1zO-pZ-3LC"/>
+                <constraint firstItem="N13-XR-YSy" firstAttribute="top" secondItem="xfG-WM-mdZ" secondAttribute="bottom" constant="-33" id="AE2-PP-5T5"/>
                 <constraint firstItem="qHN-Pp-9lK" firstAttribute="leading" secondItem="Uka-Jh-8rD" secondAttribute="leadingMargin" id="C8E-mE-tpV"/>
                 <constraint firstItem="qHN-Pp-9lK" firstAttribute="trailing" secondItem="xfG-WM-mdZ" secondAttribute="trailing" id="TLJ-9V-wd0"/>
+                <constraint firstAttribute="trailing" secondItem="N13-XR-YSy" secondAttribute="trailing" constant="10" id="fJL-BY-B7Y"/>
                 <constraint firstAttribute="trailingMargin" secondItem="xfG-WM-mdZ" secondAttribute="trailing" id="lOC-m5-qRK"/>
                 <constraint firstItem="xfG-WM-mdZ" firstAttribute="leading" secondItem="qHN-Pp-9lK" secondAttribute="leading" id="qN3-3L-2ie"/>
                 <constraint firstAttribute="bottomMargin" secondItem="qHN-Pp-9lK" secondAttribute="bottom" id="xql-wb-fZ2"/>
                 <constraint firstItem="xfG-WM-mdZ" firstAttribute="top" secondItem="Uka-Jh-8rD" secondAttribute="top" id="zS1-hq-PTP"/>
             </constraints>
             <connections>
+                <outlet property="durationBottomConstraint" destination="AE2-PP-5T5" id="dIb-KD-mhj"/>
+                <outlet property="durationLabel" destination="N13-XR-YSy" id="oro-9d-fmk"/>
+                <outlet property="durationTrailingConstraint" destination="fJL-BY-B7Y" id="o5y-8o-WOH"/>
                 <outlet property="image" destination="xfG-WM-mdZ" id="3qf-Ft-sKl"/>
                 <outlet property="title" destination="qHN-Pp-9lK" id="XCV-Hc-S7M"/>
             </connections>

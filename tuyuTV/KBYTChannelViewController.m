@@ -93,6 +93,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
     [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
     cell.title.text = currentItem.title;
+    cell.durationLabel.text = currentItem.duration;
     // Configure the cell
     
     return cell;

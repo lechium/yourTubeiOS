@@ -16,4 +16,6 @@
 @property (nonatomic, weak) IBOutlet UIView *overlayView;
 @property (nonatomic, weak) IBOutlet UILabel *overlayInfo;
 @property (nonatomic, weak) IBOutlet UILabel *durationLabel;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *durationTrailingConstraint;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *durationBottomConstraint;
 @end

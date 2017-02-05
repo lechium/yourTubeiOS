@@ -45,6 +45,8 @@
         frame.size.width = 250;
         self.overlayView.frame = frame;
         self.title.alpha = 1;
+        self.durationTrailingConstraint.constant = 0;
+        self.durationBottomConstraint.constant = -10;
     } else {
         CGRect frame = self.overlayView.frame;
         frame.size.height = 240;
@@ -53,6 +55,8 @@
         self.overlayView.frame = frame;
         self.image.adjustsImageWhenAncestorFocused = false;
         self.title.alpha = 1;
+         self.durationTrailingConstraint.constant = 10;
+        self.durationBottomConstraint.constant = -33;
     }
 }
 

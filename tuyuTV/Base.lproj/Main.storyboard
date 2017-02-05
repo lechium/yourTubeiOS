@@ -13,7 +13,7 @@
                         <viewControllerLayoutGuide type="top" id="Ia1-K6-d13"/>
                         <viewControllerLayoutGuide type="bottom" id="4ug-Mw-9AY"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" verticalCompressionResistancePriority="751" misplaced="YES" id="tsR-hK-woN">
+                    <view key="view" contentMode="scaleToFill" verticalCompressionResistancePriority="751" id="tsR-hK-woN">
                         <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -408,6 +408,13 @@
                                                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d2s-wa-MI3">
+                                                    <rect key="frame" x="257" y="222" width="42" height="21"/>
+                                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.17754181338028169" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -416,10 +423,15 @@
                                             <constraint firstItem="DjC-aQ-uDL" firstAttribute="top" secondItem="Hbu-as-1Im" secondAttribute="bottom" constant="40" id="7cv-U8-cwo"/>
                                             <constraint firstItem="Hbu-as-1Im" firstAttribute="top" secondItem="duu-XG-icN" secondAttribute="topMargin" constant="22" id="EWV-ZE-Yq4"/>
                                             <constraint firstAttribute="trailing" secondItem="Hbu-as-1Im" secondAttribute="trailing" id="NeZ-lE-iow"/>
+                                            <constraint firstAttribute="trailingMargin" secondItem="d2s-wa-MI3" secondAttribute="trailing" constant="10" id="eww-FP-zby"/>
+                                            <constraint firstItem="d2s-wa-MI3" firstAttribute="top" secondItem="Hbu-as-1Im" secondAttribute="bottom" constant="-33" id="k8C-AV-Plx"/>
                                             <constraint firstAttribute="bottomMargin" secondItem="DjC-aQ-uDL" secondAttribute="bottom" constant="22" id="qAo-2g-7uF"/>
                                             <constraint firstItem="DjC-aQ-uDL" firstAttribute="leading" secondItem="duu-XG-icN" secondAttribute="leadingMargin" id="xGY-tQ-9md"/>
                                         </constraints>
                                         <connections>
+                                            <outlet property="durationBottomConstraint" destination="k8C-AV-Plx" id="l45-hX-pt3"/>
+                                            <outlet property="durationLabel" destination="d2s-wa-MI3" id="phh-Au-VYU"/>
+                                            <outlet property="durationTrailingConstraint" destination="eww-FP-zby" id="Atk-jw-Sh0"/>
                                             <outlet property="image" destination="Hbu-as-1Im" id="t7y-fO-juc"/>
                                             <outlet property="title" destination="DjC-aQ-uDL" id="G2P-db-110"/>
                                         </connections>
@@ -518,14 +530,23 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MW8-tQ-zh0">
+                                            <rect key="frame" x="259" y="223" width="42" height="21"/>
+                                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.17754181338028169" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <constraints>
                                     <constraint firstItem="o6d-DX-Qul" firstAttribute="height" secondItem="eIf-nL-IxE" secondAttribute="height" id="1U1-tJ-UXb"/>
+                                    <constraint firstItem="MW8-tQ-zh0" firstAttribute="top" secondItem="eIf-nL-IxE" secondAttribute="bottom" constant="-33" id="7Dc-D2-dTb"/>
                                     <constraint firstItem="w8E-Cj-6tO" firstAttribute="leading" secondItem="8mr-Yk-evk" secondAttribute="leadingMargin" id="7Ge-YU-Di7"/>
                                     <constraint firstItem="eIf-nL-IxE" firstAttribute="top" secondItem="8mr-Yk-evk" secondAttribute="topMargin" constant="22" id="7sP-U4-3P0"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="C5j-Yn-spu" secondAttribute="trailing" constant="35" id="9cb-9D-AKW"/>
+                                    <constraint firstAttribute="trailing" secondItem="MW8-tQ-zh0" secondAttribute="trailing" constant="10" id="ABW-Jk-FbV"/>
                                     <constraint firstItem="w8E-Cj-6tO" firstAttribute="top" secondItem="C5j-Yn-spu" secondAttribute="bottom" constant="105" id="K0h-9t-VNS"/>
                                     <constraint firstAttribute="bottomMargin" secondItem="w8E-Cj-6tO" secondAttribute="bottom" id="N1b-er-eq4"/>
                                     <constraint firstItem="w8E-Cj-6tO" firstAttribute="leading" secondItem="eIf-nL-IxE" secondAttribute="leading" id="Sv9-fm-0R6"/>
@@ -535,6 +556,9 @@
                                     <constraint firstItem="w8E-Cj-6tO" firstAttribute="top" secondItem="eIf-nL-IxE" secondAttribute="bottom" constant="40" id="r8C-dF-crS"/>
                                 </constraints>
                                 <connections>
+                                    <outlet property="durationBottomConstraint" destination="7Dc-D2-dTb" id="zmt-mg-Qu5"/>
+                                    <outlet property="durationLabel" destination="MW8-tQ-zh0" id="3r6-nk-fCJ"/>
+                                    <outlet property="durationTrailingConstraint" destination="ABW-Jk-FbV" id="wDy-bC-Xmu"/>
                                     <outlet property="image" destination="eIf-nL-IxE" id="uF8-jK-BoJ"/>
                                     <outlet property="overlayInfo" destination="C5j-Yn-spu" id="7AA-Xp-INk"/>
                                     <outlet property="overlayView" destination="o6d-DX-Qul" id="cJq-M1-cy1"/>
