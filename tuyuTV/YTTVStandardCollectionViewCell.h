@@ -15,4 +15,5 @@
 @property (nonatomic, weak) IBOutlet MarqueeLabel *title;
 @property (nonatomic, weak) IBOutlet UIView *overlayView;
 @property (nonatomic, weak) IBOutlet UILabel *overlayInfo;
+@property (nonatomic, weak) IBOutlet UILabel *durationLabel;
 @end

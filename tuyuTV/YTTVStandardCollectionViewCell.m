@@ -10,7 +10,7 @@
 
 @implementation YTTVStandardCollectionViewCell
 
-@synthesize title, image;
+@synthesize title, image, durationLabel;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -26,6 +26,7 @@
     [self layoutSubviews];
     [self setNeedsDisplay];
     self.title.alpha = 1;
+    DLog(@"dl: %@", self.durationLabel);
 }
 
 
@@ -58,6 +59,7 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+  
 }
 
 - (void)prepareForReuse

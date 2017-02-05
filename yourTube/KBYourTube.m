@@ -561,10 +561,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 
                 if (channels != nil)
                 {
-                    returnDict = @{@"channelID": channelID, @"userName": userName, @"results": itemArray, @"channels": channels};
+                    returnDict = @{@"channelID": channelID, @"userName": userName, @"results": itemArray, @"channels": channels, @"profileImage": ourUserDetails[@"profileImage"]};
                     
                 } else {
-                    returnDict = @{@"channelID": channelID, @"userName": userName, @"results": itemArray};
+                    returnDict = @{@"channelID": channelID, @"userName": userName, @"results": itemArray, @"profileImage": ourUserDetails[@"profileImage"]};
                 }
                 
                 
@@ -632,9 +632,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     //<img class="channel-header-profile-image" src="//i.ytimg.com/i/iuFEQ2-YiaW97Uzu00bOZQ/mq1.jpg?v=564b8e92" title="nito" alt="nito">
     NSString *profileImage = [[root firstChildWithXPath:@"//img[contains(@class, 'channel-header-profile-image')]"] valueForAttribute:@"src"];
     
+    //get the high quality version instead of the mq crappy one.
+    profileImage = [profileImage stringByReplacingOccurrencesOfString:@"/mq" withString:@"/hq"];
+    
+    
     if (canon != nil & profileImage != nil)
     {
-    return @{@"username": [[canon valueForAttribute:@"href"] lastPathComponent], @"profileImage": [NSString stringWithFormat:@"http:%@", profileImage] } ;
+    return @{@"username": [[canon valueForAttribute:@"href"] lastPathComponent], @"profileImage": [NSString stringWithFormat:@"https:%@", profileImage] } ;
     }
     
     return nil;

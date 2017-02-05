@@ -26,8 +26,11 @@
     TYSettingsViewController *svc = [TYSettingsViewController new];
     NSDictionary *mainMenuItem = nil;
     svc.view.backgroundColor = [UIColor blackColor];
+    
+    
     if ([svc signedIn] == true)
     {
+        
         mainMenuItem = @{@"name": @"Sign Out", @"imagePath": @"YTPlaceholder.png", @"detail": @"", @"detailOptions": @[],  @"description": @"Sign out of your YouTube account."};
     } else {
         mainMenuItem = @{@"name": @"Sign In", @"imagePath": @"YTPlaceholder.png", @"detail": @"", @"detailOptions": @[], @"description": @"Sign in to your YouTube account."};
@@ -46,9 +49,17 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    DLog(@"dt: %@", [[KBYourTube sharedInstance] userDetails]);
+    
+    
     MetaDataAsset *theAsset = self.items[0];
     if ([self signedIn] == true)
     {
+        NSString *ourProfileImage = [[KBYourTube sharedInstance]userDetails][@"profileImage"];
+        if (ourProfileImage != nil)
+        {
+            theAsset.imagePath = ourProfileImage;
+        }
         theAsset.name = @"Sign Out";
         theAsset.assetDescription = @"Sign out of your YouTube account.";
     } else {

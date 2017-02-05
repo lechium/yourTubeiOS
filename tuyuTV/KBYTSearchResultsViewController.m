@@ -260,10 +260,14 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     {
         cell.overlayView.hidden = false;
         cell.overlayInfo.text = currentItem.details;
+        cell.durationLabel.text = @"";
+        cell.durationLabel.hidden = YES;
  
     } else {
         cell.overlayView.hidden = true;
         cell.overlayInfo.text = @"";
+        cell.durationLabel.text = currentItem.duration;
+        cell.durationLabel.hidden = NO;
     }
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
@@ -351,7 +355,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
     [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
         
-        //  NSLog(@"search details: %@", searchDetails);
+          //NSLog(@"search details: %@", searchDetails);
         
         self.totalResults = [searchDetails[@"resultCount"] integerValue];
         self.pageCount = [searchDetails[@"pageCount"] integerValue];
