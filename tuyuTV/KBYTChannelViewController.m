@@ -16,6 +16,9 @@
 
 @interface KBYTChannelViewController ()
 
+@property (nonatomic, strong) YTKBPlayerViewController *playerView;
+@property (nonatomic, strong) KBYTQueuePlayer *player;
+
 @property (nonatomic, weak) IBOutlet UICollectionView * channelCollectionView;
 
 
@@ -332,8 +335,39 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
-    [self playFirstStreamForResult:searchResult];
+    //KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
+    //[self playFirstStreamForResult:searchResult];
+    NSArray *subarray = [[self searchResults] subarrayWithRange:NSMakeRange(indexPath.row, [[self searchResults] count] - indexPath.row)];
+    [self playAllSearchResults:subarray];
+}
+
+- (void)playAllSearchResults:(NSArray *)searchResults
+{
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD show];
+    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
+        
+        [SVProgressHUD dismiss];
+        self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
+        
+        [self presentViewController:self.playerView animated:YES completion:nil];
+        [[self.playerView player] play];
+        NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(1, searchResults.count-1)];
+        
+        NSDate *myStart = [NSDate date];
+        [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
+            
+            NSLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            [self.playerView addObjectsToPlayerQueue:videoArray];
+            
+        } failureBlock:^(NSString *error) {
+            
+        }];
+        
+        
+    } failureBlock:^(NSString *error) {
+        
+    }];
 }
 
 - (void)playFirstStreamForResult:(KBYTSearchResult *)searchResult

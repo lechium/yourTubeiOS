@@ -673,7 +673,7 @@
 		89E06BED1C49F59100B8D1C4 /* theos */ = {isa = PBXFileReference; lastKnownFileType = folder; path = theos; sourceTree = "<group>"; };
 		89E06C061C4CA1DC00B8D1C4 /* KBYTPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTPreferences.h; path = yourTube/KBYTPreferences.h; sourceTree = "<group>"; };
 		89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTPreferences.m; path = yourTube/KBYTPreferences.m; sourceTree = "<group>"; };
-		89E76ACC1CCD85C2006E5397 /* asu_pid.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = asu_pid.entitlements; path = ../../../Downloads/asu_pid.entitlements; sourceTree = "<group>"; };
+		89E76ACC1CCD85C2006E5397 /* asu_pid.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = asu_pid.entitlements; sourceTree = "<group>"; };
 		89EEC1011C9214B0006B1944 /* YTTVPlaylistViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTTVPlaylistViewController.h; sourceTree = "<group>"; };
 		89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTTVPlaylistViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1672,7 +1672,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=atvjb.local\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/tuyuTV/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$SRCROOT\"/Payload\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\ncp \"$FULL_IPA_PATH\" \"$IPA_BACKUP\"\n\nrm \"$FULL_IPA_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n#codesign -fs \"$CODESIGN_ID\" --no-strict --entitlements=\"$SRCROOT/asu_pid.entitlements\" \"$APPLETV_APP_FOLDER\"\n\ncodesign -fs \"$CODESIGN_ID\" --no-strict \"$FINAL_APP_PATH\"\n\necho \"zip -r Payload $IPA_TMP\"\n\nzip -r $IPA_TMP Payload \n\nmv \"$IPA_TMP_FILE\" \"$FULL_IPA_PATH\"\n\n/usr/bin/scp \"$FULL_IPA_PATH\" root@$ATV_DEVICE_IP:~\n/usr/bin/ssh root@$ATV_DEVICE_IP \"/usr/bin/appinst ~/$IPA_NAME\"\n\n\n#ldid -S \"$FINAL_APP_PATH\"/\"$EXECUTABLE_NAME\"\n\nexit 0\n";
+			shellScript = "\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=192.168.0.48\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/tuyuTV/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$SRCROOT\"/Payload\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\ncp \"$FULL_IPA_PATH\" \"$IPA_BACKUP\"\n\nrm \"$FULL_IPA_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n#codesign -fs \"$CODESIGN_ID\" --no-strict --entitlements=\"$SRCROOT/asu_pid.entitlements\" \"$APPLETV_APP_FOLDER\"\n\ncodesign -fs \"$CODESIGN_ID\" --no-strict \"$FINAL_APP_PATH\"\n\necho \"zip -r Payload $IPA_TMP\"\n\nzip -r $IPA_TMP Payload \n\nmv \"$IPA_TMP_FILE\" \"$FULL_IPA_PATH\"\n\n/usr/bin/scp \"$FULL_IPA_PATH\" root@$ATV_DEVICE_IP:~\n/usr/bin/ssh root@$ATV_DEVICE_IP \"/usr/bin/appinst ~/$IPA_NAME\"\n\n\n#ldid -S \"$FINAL_APP_PATH\"/\"$EXECUTABLE_NAME\"\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1854,7 +1854,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = $SRCROOT/tuyuTV/asu_pid.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1896,7 +1896,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
 				PRODUCT_NAME = tuyu;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "8045e548-f879-41c6-bd56-28b48da873f1";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -1923,7 +1923,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = $SRCROOT/tuyuTV/asu_pid.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1958,7 +1958,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
 				PRODUCT_NAME = tuyu;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "8045e548-f879-41c6-bd56-28b48da873f1";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -1984,6 +1984,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -2030,7 +2031,8 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos8.4;
+				PROVISIONING_PROFILE = "8045e548-f879-41c6-bd56-28b48da873f1";
+				SDKROOT = iphoneos9.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -2053,6 +2055,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2092,7 +2095,8 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos8.4;
+				PROVISIONING_PROFILE = "8045e548-f879-41c6-bd56-28b48da873f1";
+				SDKROOT = iphoneos9.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

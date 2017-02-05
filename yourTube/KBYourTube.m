@@ -2749,9 +2749,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     
     //isolate the base.js file that we need to extract the signature from
     
-    NSString *baseJS = [NSString stringWithFormat:@"https:%@", [[[[[self matchesForString:body withRegex:@"\"js\":\"([^\"]*)\""] lastObject] componentsSeparatedByString:@":"] lastObject] stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"]];
+    NSString *baseJS = [NSString stringWithFormat:@"https://youtube.com%@", [[[[[self matchesForString:body withRegex:@"\"js\":\"([^\"]*)\""] lastObject] componentsSeparatedByString:@":"] lastObject] stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"]];
     
     //get the raw js source of the decoder file that we need to get the signature cipher from
+    
     
     NSString *jsBody = [self stringFromRequest:[baseJS stringByReplacingOccurrencesOfString:@"\"" withString:@""]];
     
@@ -2852,6 +2853,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     //take the final key array and make it into something like 13,0,-3,2,0,-3,36
     
     self.ytkey = [keys componentsJoinedByString:@","];
+    
+    DLog(@"timestamp: %@", self.yttimestamp);
+    DLog(@"selfytkey: %@", self.ytkey);
     
 }
 

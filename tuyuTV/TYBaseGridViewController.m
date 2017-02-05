@@ -232,7 +232,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     
     NSInteger i = 0;
-    _totalHeight = 640;
+    _totalHeight = 0;
     for (i = 0; i < [_backingSectionLabels count]; i++)
     {
         UILongPressGestureRecognizer *longpress
