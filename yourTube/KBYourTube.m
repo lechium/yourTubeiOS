@@ -1417,6 +1417,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         NSString *playlistURL = [[playlistTitleElement valueForAttribute:@"href"] lastPathComponent];
        // NSDictionary *playlistItem = @{@"thumbURL": thumbPath, @"title": playlistTitle, @"URL": playlistURL};
         KBYTSearchResult *result = [KBYTSearchResult new];
+        DLog(@"thumbPath: %@", thumbPath);
         if ([thumbPath containsString:@"https"])
         {
             result.imagePath = thumbPath;

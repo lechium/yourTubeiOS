@@ -1,4 +1,4 @@
-tuyu 0.3.6 for AppleTV 4
+tuyu 0.3.6-2 for AppleTV 4
 
 By: Kevin Bradley
 
@@ -7,6 +7,12 @@ tuyu is tvOS port of tuyu for iOS. View featured videos, sign in to your account
 
 
 Changelog:
+
+0,3.6-2:
+
+* Fixed playback crash
+* Playback all videos in current channel from index selected
+* Added duration labels where applicable.
 
 0.3.6:
 
