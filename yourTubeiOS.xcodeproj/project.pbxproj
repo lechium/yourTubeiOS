@@ -143,7 +143,7 @@
 		898E93031C8D564100B34DAA /* APDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A261C5E8B3D00F50BC2 /* APDocument.m */; };
 		898E93041C8D564300B34DAA /* APElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A281C5E8B3D00F50BC2 /* APElement.m */; };
 		898E93051C8D564600B34DAA /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA561C6EE29400FB6D67 /* ONOXMLDocument.m */; };
-		898E93061C8D565300B34DAA /* kBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* kBYTDownloadOperation.m */; };
+		898E93061C8D565300B34DAA /* KBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* KBYTDownloadOperation.m */; };
 		898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */; };
 		898E93081C8D565800B34DAA /* KBYTQueuePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A83A121C8781DA00E1987E /* KBYTQueuePlayer.m */; };
 		898E93091C8D565B00B34DAA /* KBYourTube.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */; };
@@ -254,7 +254,7 @@
 		899877AC1CE9A006006A639E /* TYHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899877AB1CE9A006006A639E /* TYHomeViewController.m */; };
 		899877AF1CEA43DE006A639E /* TYTVHistoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 899877AE1CEA43DE006A639E /* TYTVHistoryManager.m */; };
 		89A35CF11C8A222A000FFCA0 /* KBYTDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */; };
-		89A35CF41C8A27ED000FFCA0 /* kBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* kBYTDownloadOperation.m */; };
+		89A35CF41C8A27ED000FFCA0 /* KBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* KBYTDownloadOperation.m */; };
 		89A83A281C88A89300E1987E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A271C88A89300E1987E /* Assets.xcassets */; };
 		89A83A961C88A93000E1987E /* yourTubeApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */; };
 		89A83A971C88A93600E1987E /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F678A1C6520D500AE33FA /* SVIndefiniteAnimatedView.m */; };
@@ -548,7 +548,7 @@
 		89A35CEF1C8A222A000FFCA0 /* KBYTDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadManager.h; path = yourTube/KBYTDownloadManager.h; sourceTree = "<group>"; };
 		89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadManager.m; path = yourTube/KBYTDownloadManager.m; sourceTree = "<group>"; };
 		89A35CF21C8A27ED000FFCA0 /* KBYTDownloadOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadOperation.h; path = yourTube/KBYTDownloadOperation.h; sourceTree = "<group>"; };
-		89A35CF31C8A27ED000FFCA0 /* kBYTDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = kBYTDownloadOperation.m; path = yourTube/kBYTDownloadOperation.m; sourceTree = "<group>"; };
+		89A35CF31C8A27ED000FFCA0 /* KBYTDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadOperation.m; path = yourTube/KBYTDownloadOperation.m; sourceTree = "<group>"; };
 		89A83A0D1C877B6900E1987E /* YTKBPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = YTKBPlayerViewController.h; path = yourTube/YTKBPlayerViewController.h; sourceTree = "<group>"; };
 		89A83A0E1C877B6900E1987E /* YTKBPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = YTKBPlayerViewController.m; path = yourTube/YTKBPlayerViewController.m; sourceTree = "<group>"; };
 		89A83A111C8781DA00E1987E /* KBYTQueuePlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTQueuePlayer.h; path = yourTube/KBYTQueuePlayer.h; sourceTree = "<group>"; };
@@ -884,7 +884,7 @@
 				89A83A0D1C877B6900E1987E /* YTKBPlayerViewController.h */,
 				89A83A0E1C877B6900E1987E /* YTKBPlayerViewController.m */,
 				89A35CF21C8A27ED000FFCA0 /* KBYTDownloadOperation.h */,
-				89A35CF31C8A27ED000FFCA0 /* kBYTDownloadOperation.m */,
+				89A35CF31C8A27ED000FFCA0 /* KBYTDownloadOperation.m */,
 				89A35CEF1C8A222A000FFCA0 /* KBYTDownloadManager.h */,
 				89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */,
 				89A83A111C8781DA00E1987E /* KBYTQueuePlayer.h */,
@@ -1698,7 +1698,7 @@
 				898E934F1C8D56D100B34DAA /* SDWebImageDownloaderOperation.m in Sources */,
 				899876621CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,
 				898E93511C8D56D100B34DAA /* SDWebImagePrefetcher.m in Sources */,
-				898E93061C8D565300B34DAA /* kBYTDownloadOperation.m in Sources */,
+				898E93061C8D565300B34DAA /* KBYTDownloadOperation.m in Sources */,
 				8998766F1CDEA423006A639E /* UIView+RecursiveFind.m in Sources */,
 				898E93591C8D56D400B34DAA /* KBYTPreferences.m in Sources */,
 				898E93471C8D56BD00B34DAA /* SVProgressHUD.m in Sources */,
@@ -1761,7 +1761,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				89A83AC01C88AAF200E1987E /* KBYTSearchItemViewController.m in Sources */,
-				89A35CF41C8A27ED000FFCA0 /* kBYTDownloadOperation.m in Sources */,
+				89A35CF41C8A27ED000FFCA0 /* KBYTDownloadOperation.m in Sources */,
 				89A83AAF1C88A97700E1987E /* KBYTQueuePlayer.m in Sources */,
 				89A83AA91C88A95C00E1987E /* UIImageView+HighlightedWebCache.m in Sources */,
 				89A83AA01C88A95C00E1987E /* SDWebImageDecoder.m in Sources */,

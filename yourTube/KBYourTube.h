@@ -62,6 +62,7 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
     kYTSearchResultTypeVideo,
     kYTSearchResultTypePlaylist,
     kYTSearchResultTypeChannel,
+    kYTSearchResultTypeChannelList,
 };
 
 @interface KBYTLocalMedia : NSObject <YTPlayerItemProtocol>
@@ -121,6 +122,7 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 @property (nonatomic, strong) NSString *details;
 @property (nonatomic, strong) KBYTMedia *media;
 @property (readwrite, assign) kYTSearchResultType resultType;
+@property (nonatomic, strong) NSArray *items; //only relevant for channel list
 
 - (id)initWithDictionary:(NSDictionary *)resultDict;
 

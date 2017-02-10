@@ -237,11 +237,23 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             self.currentPage = 1;
             [SVProgressHUD dismiss];
             
-            if ([[KBYourTube sharedInstance] userDetails] != nil)
+            NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
+            
+            if (userDetails != nil)
             {
                 NSLog(@"include user details!");
-                NSArray *userDetailsArray = [[KBYourTube sharedInstance]userDetails][@"results"];
-                NSMutableArray *fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
+                NSArray *userDetailsArray = userDetails[@"results"];
+                NSArray *channels = userDetails[@"channels"];
+                NSMutableArray *fullArray = nil;
+                
+                if (channels != nil)
+                {
+                    fullArray = [[NSMutableArray alloc] initWithArray:channels];
+                    [fullArray addObjectsFromArray:userDetailsArray];
+                } else {
+                    fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
+                }
+                
                 [fullArray addObjectsFromArray:searchDetails[@"results"]];
                 [self updateSearchResults:fullArray];
                 self.totalResults = [fullArray count];
@@ -582,6 +594,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     cell.textLabel.text = currentItem.title;
     cell.duration = currentItem.duration;
+    
+    if (currentItem.resultType == kYTSearchResultTypeChannel)
+    {
+        //DLog(@"currentItem: %@", currentItem);
+    }
     
     if (currentItem.resultType != kYTSearchResultTypeVideo)
     {

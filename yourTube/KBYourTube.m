@@ -97,6 +97,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         case kYTSearchResultTypeVideo: return @"Video";
         case kYTSearchResultTypePlaylist: return @"Playlist";
         case kYTSearchResultTypeChannel: return @"Channel";
+        case kYTSearchResultTypeChannelList: return @"Channel List";
         default:
             return @"Unknown";
     }
@@ -782,7 +783,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         NSString *playlistURL = [[[playlistTitleElement valueForAttribute:@"href"] componentsSeparatedByString:@"="] lastObject];
         NSString *videoCount = [videoCountElement stringValue];
         KBYTSearchResult *result = [KBYTSearchResult new];
-        result.imagePath = [NSString stringWithFormat:@"https:%@", thumbPath];
+        if ([thumbPath rangeOfString:@"https"].location == NSNotFound)
+        {
+            result.imagePath = [NSString stringWithFormat:@"https:%@", thumbPath];
+        } else {
+            result.imagePath = thumbPath;
+        }
+        //DLog(@"ip: %@", result.imagePath);
         result.title = playlistTitle;
         result.author = userName;
         result.details = videoCount;
@@ -1417,7 +1424,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         NSString *playlistURL = [[playlistTitleElement valueForAttribute:@"href"] lastPathComponent];
        // NSDictionary *playlistItem = @{@"thumbURL": thumbPath, @"title": playlistTitle, @"URL": playlistURL};
         KBYTSearchResult *result = [KBYTSearchResult new];
-        DLog(@"thumbPath: %@", thumbPath);
+        //DLog(@"thumbPath: %@", thumbPath);
         if ([thumbPath containsString:@"https"])
         {
             result.imagePath = thumbPath;
