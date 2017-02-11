@@ -40,6 +40,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     longpress.delegate = self;
     longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
     [self.channelCollectionView addGestureRecognizer:longpress];
+    [self.authorLabel shadowify];
+    [self.subscribersLabel shadowify];
     // Do any additional setup after loading the view.
 }
 

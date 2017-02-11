@@ -151,11 +151,14 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 
 @end
 
+#import "Ono/ONOXMLDocument.h"
 
 @interface KBYourTube : NSObject
 {
     NSInteger bestTag;
 }
+
+
 
 @property (nonatomic, strong) APDeviceController *deviceController;
 @property (nonatomic, strong) NSString *yttimestamp;
@@ -166,7 +169,8 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 
 + (id)sharedInstance;
 - (BOOL)isSignedIn;
-
+- (ONOXMLDocument *)documentFromURL:(NSString *)theURL;
+- (NSDictionary *)channelIDAndWatchLaterCount;
 - (NSString *)videoDescription:(NSString *)videoID;
 - (NSDictionary *)videoDetailsFromID:(NSString *)videoID;
 

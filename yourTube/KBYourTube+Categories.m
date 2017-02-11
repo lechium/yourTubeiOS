@@ -311,6 +311,30 @@
     return dlF;
 }
 
+- (void)addCookies:(NSArray *)cookies forRequest:(NSMutableURLRequest *)request
+{
+    if ([cookies count] > 0)
+    {
+        NSHTTPCookie *cookie;
+        NSString *cookieHeader = nil;
+        for (cookie in cookies)
+        {
+            if (!cookieHeader)
+            {
+                cookieHeader = [NSString stringWithFormat: @"%@=%@",[cookie name],[cookie value]];
+            }
+            else
+            {
+                cookieHeader = [NSString stringWithFormat: @"%@; %@=%@",cookieHeader,[cookie name],[cookie value]];
+            }
+        }
+        if (cookieHeader)
+        {
+            [request setValue:cookieHeader forHTTPHeaderField:@"Cookie"];
+        }
+    }
+}
+
 //take a url and get its raw body, then return in string format
 
 - (NSString *)stringFromRequest:(NSString *)url
@@ -320,10 +344,18 @@
                                                            cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                        timeoutInterval:10];
     
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+    //DLog(@"cookies: %@", cookies);
+    if (cookies != nil){
+        [request setHTTPShouldHandleCookies:YES];
+        [self addCookies:cookies forRequest:request];
+    }
+    
     NSURLResponse *response = nil;
     
     [request setHTTPMethod:@"GET"];
     NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+    //DLog(@"response: %@", response);
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     
 }
@@ -351,6 +383,22 @@
     return array;
 }
 
+
+@end
+
+@implementation UILabel (Additions)
+//TODO: since this particular shadow is ALWAYS the same, can probably cache/reuse a static version
+- (void)shadowify
+{
+    NSShadow* shadow = [[NSShadow alloc] init];
+    shadow.shadowColor = [UIColor blackColor];
+    shadow.shadowOffset = CGSizeMake(0.0f, 0.0f);
+    shadow.shadowBlurRadius = 3;
+    NSDictionary *attrs = @{NSFontAttributeName: self.font, NSForegroundColorAttributeName: self.textColor, NSShadowAttributeName: shadow};
+    NSAttributedString *theString = [[NSAttributedString alloc] initWithString:self.text attributes:attrs];
+    
+    self.attributedText = theString;
+}
 
 @end
 

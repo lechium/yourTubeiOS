@@ -2,22 +2,48 @@
 
 #import "yourTubeApplication.h"
 
+
 @implementation yourTubeApplication
 @synthesize window = _window;
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     [[KBYTMessagingCenter sharedInstance] stopDownloadListener];
+    NSData *cookieData = [NSKeyedArchiver archivedDataWithRootObject:[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
+    [[NSUserDefaults standardUserDefaults] setObject:cookieData forKey:@"ApplicationCookie"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
+    NSData *cookieData = [NSKeyedArchiver archivedDataWithRootObject:[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
+    [[NSUserDefaults standardUserDefaults] setObject:cookieData forKey:@"ApplicationCookie"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     [[KBYTMessagingCenter sharedInstance] startDownloadListener];
+    NSData *cookieData = [[NSUserDefaults standardUserDefaults] objectForKey:@"ApplicationCookie"];
+    if ([cookieData length] > 0) {
+        NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
+        for (NSHTTPCookie *cookie in cookies) {
+            [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+        }
+    }
 }
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    NSData *cookieData = [[NSUserDefaults standardUserDefaults] objectForKey:@"ApplicationCookie"];
+    if ([cookieData length] > 0) {
+        NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
+        for (NSHTTPCookie *cookie in cookies) {
+            [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+        }
+    }
+}
+
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
     
@@ -31,7 +57,14 @@
     [_window setRootViewController:  self.nav];
 	[_window makeKeyAndVisible];
   
-    
+    NSData *cookieData = [[NSUserDefaults standardUserDefaults] objectForKey:@"ApplicationCookie"];
+   // DLog(@"cookieData: %@", cookieData);
+    if ([cookieData length] > 0) {
+        NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
+        for (NSHTTPCookie *cookie in cookies) {
+            [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+        }
+    }
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     
     NSError *error = nil;
@@ -40,11 +73,14 @@
         [audioSession setActive:YES error:&error];
     }
     
+  
+    
     NSLog(@"app support: %@", [self appSupportFolder]);
     
+   
     [[KBYTMessagingCenter sharedInstance] startDownloadListener];
     [[KBYTMessagingCenter sharedInstance] registerDownloadListener];
-
+    //[[NSURLCache sharedURLCache] removeAllCachedResponses];
     if ([[KBYourTube sharedInstance] isSignedIn] == true)
     {
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {

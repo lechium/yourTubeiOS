@@ -6,6 +6,8 @@
 //  Copyright © 2016 nito. All rights reserved.
 //
 
+
+
 #define MessageHandler @"didGetPosts"
 #import "KBYTWebViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
@@ -13,6 +15,9 @@
 #import "KBYTDownloadsTableViewController.h"
 #import "KBYTSearchItemViewController.h"
 #import "SVProgressHUD/SVProgressHUD.h"
+#import <objc/runtime.h>
+
+
 
 static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 
@@ -44,6 +49,8 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 
 @interface KBYTWebViewController ()
 
+@property (nonatomic, strong) UIWebView *basicWebView;
+
 @end
 
 @implementation KBYTWebViewController
@@ -57,7 +64,7 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 
 - (void)reloadStock
 {
-    NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:@"http://m.youtube.com"] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
+    NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:@"http://m.youtube.com"] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60];
     [[self webView] loadRequest:request];
 }
 
@@ -72,6 +79,14 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     [super viewDidAppear:animated];
     [self checkAirplay];
     
+}
+
+- (void)pauseBasicVideos
+{
+    NSString *script = @"var videos = document.querySelectorAll(\"video\"); for (var i = videos.length - 1; i >= 0; i--) { videos[i].pause(); };";
+  NSString *returns =  [self.basicWebView stringByEvaluatingJavaScriptFromString:script];
+    DLog(@"returns: %@", returns);
+  
 }
 
 - (void)pauseVideos
@@ -103,6 +118,20 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     CGFloat height = 64; //self.navigationController.navigationBar.frame.size.height;
     mainFrame.origin.y = height;
     mainFrame.size.height-= height;
+    
+    
+    self.basicWebView = [[UIWebView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    
+    NSString *authString = @"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3";
+    //@"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3#identifier";
+    
+    [self.basicWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:authString]]];
+    
+    [self.view addSubview:self.basicWebView];
+    
+    self.basicWebView.delegate = self;
+    self.basicWebView.scrollView.bounces = YES;
+    
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc]
                                       init];
     
@@ -120,7 +149,8 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     }
     config.mediaPlaybackRequiresUserAction = true;
     config.allowsInlineMediaPlayback = false;
-    
+   
+    return;
     self.webView = [[WKWebView alloc] initWithFrame:mainFrame configuration:config];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [[self view] addSubview:self.webView];
@@ -150,7 +180,7 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
         lastVisited = @"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3";
     }
     
-    NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:lastVisited] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
+    NSURLRequest * request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:lastVisited] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60];
     
     //these observers are a hacky way to know a good time to check URL to see if we land on a page that has a video URL
     
@@ -163,6 +193,89 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     
 }
 
+
+-(void) webViewDidStartLoad:(UIWebView *)webView {
+    
+}
+-(void) webViewDidFinishLoad:(UIWebView *)webView {
+    
+    [self pauseBasicVideos];
+    NSString *theTitle=[webView stringByEvaluatingJavaScriptFromString:@"document.title"];
+    self.title = theTitle;
+    [self updateBackButtonState];
+    //among the initial hacks, since title gets changed a lot during a load cycle we dont want to fetch
+    //the info twice, if we did then the action sheet would appear twice and we are wasting network calls.
+    if (self.gettingDetails == true)
+    {
+        NSLog(@"already getting details, dont try again...");
+        return;
+    }
+    
+    //when we go back a page the video url may show up twice, and the name of page tends to be a generic "youtube"
+    //return in this case.
+    if ([theTitle isEqualToString:@"YouTube"]) {
+        return;
+    }
+    
+    //check the parameters of the URL to see if it has an associated video link in "v"
+    
+    NSDictionary *paramDict = [self.basicWebView.request.URL parameterDictionary];
+    if ( [[paramDict allKeys] containsObject:@"v"])
+    {
+        NSString *videoID = paramDict[@"v"];
+        NSLog(@"videoID: %@", videoID);
+        //another hack to prevent us from fetching details for the same video twice in a row.
+        if (self.currentMedia != nil)
+        {
+            if ([self.previousVideoID isEqualToString:videoID])
+            {
+                return;
+            }
+        }
+        
+        /**
+         
+         The biggest hack yet, if we just stopLoading and goBack google still finds a way to force
+         ads down our throat / autoplay after the page has been left. So we get the URL from the last
+         back item, store that, load a completely blank page after stopping and going back, then
+         reload this saved URL from the previous link to go back to a page where we are safe from autoplaying
+         ads and videos.
+         
+         */
+        
+        id webview111      = [[self basicWebView] valueForKey:@"_documentView"];    /// self - uiwebview subclass
+        id coreWebV           = [webview111 webView];
+        WKBackForwardList *backForwardList    = [coreWebV backForwardList];
+        
+        NSURL *backURL = [[backForwardList backItem] URL];
+        
+        [[KBYTPreferences preferences] setObject:[backURL absoluteString] forKey:@"lastVisitedURL"];
+        //we have the URL we need stop the loading AND go back
+        [[self basicWebView] stopLoading];
+        [[self basicWebView] goBack];
+        
+        //load a blank page, helps prevent ads / videos from autoplaying.
+        [[self basicWebView] loadHTMLString:@"<html/>" baseURL:nil];
+        
+        //now time to reload the previous page requests so we can successfully go "back" without
+        //autoplaying garbage.
+        
+        NSURLRequest * request = [[NSURLRequest alloc]initWithURL:backURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60];
+        [[self basicWebView] loadRequest:request];
+        
+        //now we can finally fetch the video details so we can show the action sheet for the user to make
+        //a decision on their next action.
+        [self getVideoIDDetails:videoID];
+        self.gettingDetails = true;
+    } else {
+        
+        [[KBYTPreferences preferences] setObject:[self.webView.URL absoluteString] forKey:@"lastVisitedURL"];
+    }
+    
+    
+}
+
+
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     //  LOG_SELF;
@@ -174,6 +287,7 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
         CGFloat height = 64; //self.navigationController.navigationBar.frame.size.height;
         mainFrame.origin.y = height;
         mainFrame.size.height-= height;
+        self.basicWebView.frame = mainFrame;
         self.webView.frame = mainFrame;
         CGRect progressFrame = self.progressView.frame;
         progressFrame.origin.y = height;
@@ -185,6 +299,7 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
         mainFrame.origin.y = height;
         mainFrame.size.height-= height;
         self.webView.frame = mainFrame;
+        self.basicWebView.frame = mainFrame;
         CGRect progressFrame = self.progressView.frame;
         progressFrame.origin.y = height;
         self.progressView.frame = progressFrame;
@@ -225,6 +340,47 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
  
  */
 
+- (void)classDumpObject:(id)obj
+{
+    Class clazz = [obj class];
+    u_int count;
+    Ivar* ivars = class_copyIvarList(clazz, &count);
+    NSMutableArray* ivarArray = [NSMutableArray arrayWithCapacity:count];
+    for (int i = 0; i < count ; i++)
+    {
+        const char* ivarName = ivar_getName(ivars[i]);
+        [ivarArray addObject:[NSString  stringWithCString:ivarName encoding:NSUTF8StringEncoding]];
+    }
+    free(ivars);
+    
+    objc_property_t* properties = class_copyPropertyList(clazz, &count);
+    NSMutableArray* propertyArray = [NSMutableArray arrayWithCapacity:count];
+    for (int i = 0; i < count ; i++)
+    {
+        const char* propertyName = property_getName(properties[i]);
+        [propertyArray addObject:[NSString  stringWithCString:propertyName encoding:NSUTF8StringEncoding]];
+    }
+    free(properties);
+    
+    Method* methods = class_copyMethodList(clazz, &count);
+    NSMutableArray* methodArray = [NSMutableArray arrayWithCapacity:count];
+    for (int i = 0; i < count ; i++)
+    {
+        SEL selector = method_getName(methods[i]);
+        const char* methodName = sel_getName(selector);
+        [methodArray addObject:[NSString  stringWithCString:methodName encoding:NSUTF8StringEncoding]];
+    }
+    free(methods);
+    
+    NSDictionary* classDump = [NSDictionary dictionaryWithObjectsAndKeys:
+                               ivarArray, @"ivars",
+                               propertyArray, @"properties",
+                               methodArray, @"methods",
+                               nil];
+    
+    NSLog(@"%@", classDump);
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"loading"]) {
@@ -235,6 +391,46 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
         self.progressView.hidden = self.webView.estimatedProgress == 1;
         [self.progressView setProgress:self.webView.estimatedProgress animated:YES];
     }
+    
+    //
+    
+    NSSet *types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
+    WKWebsiteDataStore *store = self.webView.configuration.websiteDataStore;
+    //NSSet *types = [WKWebsiteDataStore allWebsiteDataTypes];
+  
+    //DLog(@"types: %@ store: %@", types, store);
+    [store fetchDataRecordsOfTypes:types completionHandler:^(NSArray<WKWebsiteDataRecord *> * _Nonnull records) {
+        
+       // DLog(@"records: %@", records);
+        
+        [records enumerateObjectsUsingBlock:^(WKWebsiteDataRecord * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+           
+            if ([obj.displayName isEqualToString:@"youtube.com"])
+            {
+                //DLog(@"youtube record: %@", obj);
+              //  [self classDumpObject:obj];
+                
+             //NSObject *obj = MSHookIvar<NSObject *>(obj, "_apiObject");
+               // NSValue *thing = [obj valueForKey:@"_websiteDataRecord"];
+              // __strong NSObject *object = [obj performSelector:@selector(_apiObject)];
+               //__strong NSObject **object;
+                //[thing getValue:&object];
+                
+               // DLog(@"thing: %@, object: %@", thing, object);
+                //[self classDumpObject:object];
+                
+                // DLog(@"objCType     : %s", [thing objCType]);
+                //NSString *file = [[self downloadFolder] stringByAppendingPathComponent:@"cookie"];
+                //[thing writeToFile:file atomically:YES];
+                //DLog(@"### file: %@", file);
+            }
+            
+            
+        }];
+        
+        
+    }];
+    
     if ([keyPath isEqualToString:@"title"]) {
         self.title = self.webView.title;
         [self updateBackButtonState];
@@ -291,7 +487,7 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
             //now time to reload the previous page requests so we can successfully go "back" without
             //autoplaying garbage.
             
-            NSURLRequest * request = [[NSURLRequest alloc]initWithURL:backURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:60];
+            NSURLRequest * request = [[NSURLRequest alloc]initWithURL:backURL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60];
             [[self webView] loadRequest:request];
             
             //now we can finally fetch the video details so we can show the action sheet for the user to make
@@ -477,7 +673,23 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler
 
 {
+   
+    
+    // let response = navigationResponse.response as! NSHTTPURLResponse
+   // let headFields = response.allHeaderFields as! [String:String]
+    
+    //let cookies = NSHTTPCookie.cookiesWithResponseHeaderFields(headFields, forURL: response.URL!)
+    
     decisionHandler(WKNavigationResponsePolicyAllow);
+    NSHTTPURLResponse *response = navigationResponse.response;
+    NSDictionary *headFields = response.allHeaderFields;
+    //DLog(@"response: %@: headFields: %@", response, headFields);
+    
+    NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:headFields forURL:response.URL];
+    for (NSHTTPCookie *cookie in cookies) {
+        [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+    }
+    DLog(@"decidePolicyForNavigationResponse: %@", cookies);
 }
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(null_unspecified WKNavigation *)navigation
 {

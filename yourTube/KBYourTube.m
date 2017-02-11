@@ -559,7 +559,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 
                 
                 //NSArray *channelVideos = [self videoChannelsList:channelID][@"results"];
-                
+                //DLog(@"channels: %@", channels);
                 if (channels != nil)
                 {
                     returnDict = @{@"channelID": channelID, @"userName": userName, @"results": itemArray, @"channels": channels, @"profileImage": ourUserDetails[@"profileImage"]};

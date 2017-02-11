@@ -191,6 +191,7 @@
     
    // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
  
+     NSLog(@"app support: %@", [self appSupportFolder]);
     self.tabBar = (UITabBarController *)self.window.rootViewController;
    // self.tabBar.tabBar.translucent = false;
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];

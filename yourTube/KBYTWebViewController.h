@@ -11,7 +11,7 @@
 #import "KBYourTube.h"
 #import "KBYTPreferences.h"
 
-@interface KBYTWebViewController : UIViewController <WKNavigationDelegate, UIActionSheetDelegate, WKScriptMessageHandler>
+@interface KBYTWebViewController : UIViewController <WKNavigationDelegate, UIActionSheetDelegate, WKScriptMessageHandler, UIWebViewDelegate >
 
 @property (strong, nonatomic) IBOutlet WKWebView *webView;
 @property (nonatomic, strong) KBYTMedia *currentMedia;

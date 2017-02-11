@@ -203,7 +203,19 @@
 forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (cell.tag == kGenericLoadingCellTag) {
         [self getNextPage];
+    } else {
+    
+        KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
+        if (currentItem.resultType == kYTSearchResultTypeVideo)
+        {
+            [[(KBYTDownloadCell*)cell durationLabel] setHidden:NO];
+        } else {
+            [[(KBYTDownloadCell*)cell durationLabel] setHidden:YES];
+            
+        }
     }
+    
+    
 }
 
 - (UITableViewCell *)loadingCell {
@@ -265,8 +277,23 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                          [SVProgressHUD dismiss];
                         [[KBYourTube sharedInstance] setUserDetails:outputResults];
                         NSLog(@"signed in since launch, add user details!");
-                        NSArray *userDetailsArray = [[KBYourTube sharedInstance]userDetails][@"results"];
-                        NSMutableArray *fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
+                       // NSArray *userDetailsArray = [[KBYourTube sharedInstance]userDetails][@"results"];
+                        //NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
+                        
+                        NSArray *userDetailsArray = outputResults[@"results"];
+                        NSArray *channels = outputResults[@"channels"];
+                        NSMutableArray *fullArray = nil;
+                        
+                        if (channels != nil)
+                        {
+                            fullArray = [[NSMutableArray alloc] initWithArray:channels];
+                            [fullArray addObjectsFromArray:userDetailsArray];
+                        } else {
+                            fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
+                        }
+                        
+                        
+                       // NSMutableArray *fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
                         [fullArray addObjectsFromArray:searchDetails[@"results"]];
                         [self updateSearchResults:fullArray];
                         self.totalResults = [fullArray count];
@@ -571,6 +598,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
     
@@ -593,17 +621,15 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         
     }
     cell.textLabel.text = currentItem.title;
-    cell.duration = currentItem.duration;
     
-    if (currentItem.resultType == kYTSearchResultTypeChannel)
-    {
-        //DLog(@"currentItem: %@", currentItem);
-    }
+    
     
     if (currentItem.resultType != kYTSearchResultTypeVideo)
     {
         cell.views = currentItem.details;
+        cell.duration = nil;
     } else {
+        cell.duration = currentItem.duration;
         
         NSNumberFormatter *numFormatter = [NSNumberFormatter new];
         numFormatter.numberStyle = NSNumberFormatterDecimalStyle;
@@ -612,6 +638,13 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         
         cell.views = [[numFormatter stringFromNumber:view_count] stringByAppendingString:@" Views"];
     }
+    
+    if (currentItem.resultType == kYTSearchResultTypeChannel)
+    {
+        cell.views = @"";
+    }
+    
+    
     cell.downloading = false;
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceHolderImage"];

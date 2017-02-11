@@ -73,11 +73,13 @@
         self.marqueeTextLabel.textColor = self.textLabel.textColor;
         self.marqueeTextLabel.text = self.textLabel.text;
         self.textLabel.hidden = true;
+      
+        UIFont *theFont = [UIFont systemFontOfSize:14];
         
+        if (self.duration.length > 0){
         CGRect durationFrame = CGRectMake(100, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height+2, 25, self.detailTextLabel.frame.size.height);
         self.durationLabel = [[UILabel alloc] initWithFrame:durationFrame];
         //NSLog(@"font: %@", self.detailTextLabel.font);
-        UIFont *theFont = [UIFont systemFontOfSize:14];
         self.durationLabel.font = self.detailTextLabel.font;
         self.durationLabel.textColor = [UIColor whiteColor];
         self.durationLabel.backgroundColor = [UIColor blackColor];
@@ -87,7 +89,7 @@
         durationFrame.origin.x = 133 - durationFrame.size.width - 5;
         self.durationLabel.frame = durationFrame;
         [[self contentView] addSubview:self.durationLabel];
-      
+        }
         CGRect viewsFrame = CGRectMake(148, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height+2, 100, self.detailTextLabel.frame.size.height);
         self.viewsLabel = [[UILabel alloc] initWithFrame:viewsFrame];
         self.viewsLabel.font = self.detailTextLabel.font;
