@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		320400001E4F8CA100D3B8B0 /* APDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A261C5E8B3D00F50BC2 /* APDocument.m */; };
+		320400011E4F8CA400D3B8B0 /* APElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A281C5E8B3D00F50BC2 /* APElement.m */; };
+		320400021E4F8CA600D3B8B0 /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA561C6EE29400FB6D67 /* ONOXMLDocument.m */; };
+		320400051E4F8DDD00D3B8B0 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 898E92F41C8D55EF00B34DAA /* libxml2.tbd */; };
+		320400061E4F8E4800D3B8B0 /* APDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */; };
+		320400071E4F8E5700D3B8B0 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA501C6E731D00FB6D67 /* Reachability.m */; };
+		3204FFFD1E4F8C8200D3B8B0 /* KBYourTube.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */; };
+		3204FFFE1E4F8C8400D3B8B0 /* KBYourTube+Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */; };
+		3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A241C5E8B3D00F50BC2 /* APAttribute.m */; };
+		328E33801E4F868C00C544ED /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328E337F1E4F868C00C544ED /* TVServices.framework */; };
+		328E33841E4F868C00C544ED /* ServiceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 328E33831E4F868C00C544ED /* ServiceProvider.m */; };
+		328E33881E4F868C00C544ED /* tuyuShelf.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 328E337E1E4F868C00C544ED /* tuyuShelf.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		892669151C88AD5200082B31 /* libxml2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 892669141C88AD5200082B31 /* libxml2.2.dylib */; };
 		8926691D1C88B1A900082B31 /* MarqueeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8926691A1C88B1A900082B31 /* MarqueeLabel.m */; };
 		8926691E1C88B1BB00082B31 /* KBYTPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */; };
@@ -317,7 +329,38 @@
 		89EEC1031C9214B0006B1944 /* YTTVPlaylistViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		328E33861E4F868C00C544ED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 89B9D3B21C44F41300740BF1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 328E337D1E4F868C00C544ED;
+			remoteInfo = tuyuShelf;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		328E338C1E4F868C00C544ED /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				328E33881E4F868C00C544ED /* tuyuShelf.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		320400031E4F8DA000D3B8B0 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
+		320400041E4F8DA000D3B8B0 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		328E337E1E4F868C00C544ED /* tuyuShelf.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = tuyuShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		328E337F1E4F868C00C544ED /* TVServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TVServices.framework; path = Library/Frameworks/TVServices.framework; sourceTree = DEVELOPER_DIR; };
+		328E33821E4F868C00C544ED /* ServiceProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ServiceProvider.h; sourceTree = "<group>"; };
+		328E33831E4F868C00C544ED /* ServiceProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ServiceProvider.m; sourceTree = "<group>"; };
+		328E33851E4F868C00C544ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8912FA4F1C6E731D00FB6D67 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8912FA501C6E731D00FB6D67 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8912FA551C6EE29400FB6D67 /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
@@ -679,6 +722,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		328E337B1E4F868C00C544ED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				320400051E4F8DDD00D3B8B0 /* libxml2.tbd in Frameworks */,
+				328E33801E4F868C00C544ED /* TVServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		898E92631C8D056700B34DAA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -713,6 +765,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		328E33811E4F868C00C544ED /* tuyuShelf */ = {
+			isa = PBXGroup;
+			children = (
+				320400031E4F8DA000D3B8B0 /* Defines.h */,
+				320400041E4F8DA000D3B8B0 /* Prefix.pch */,
+				328E33821E4F868C00C544ED /* ServiceProvider.h */,
+				328E33831E4F868C00C544ED /* ServiceProvider.m */,
+				328E33851E4F868C00C544ED /* Info.plist */,
+			);
+			path = tuyuShelf;
+			sourceTree = "<group>";
+		};
 		8912FA4E1C6E731D00FB6D67 /* Reachability */ = {
 			isa = PBXGroup;
 			children = (
@@ -1271,6 +1335,7 @@
 				89E06BC41C499E2300B8D1C4 /* ytiOSBundle */,
 				89A83A1A1C88A89300E1987E /* tuyu */,
 				898E92671C8D056700B34DAA /* tuyuTV */,
+				328E33811E4F868C00C544ED /* tuyuShelf */,
 				89B9D4211C44F49F00740BF1 /* Frameworks */,
 				89B9D4241C44F49F00740BF1 /* GCDWebServer */,
 				89B9D4411C44F49F00740BF1 /* InspCWrapper.m */,
@@ -1313,6 +1378,7 @@
 				89A83AC71C88AB2E00E1987E /* UIKit.framework */,
 				89B9D4221C44F49F00740BF1 /* GCDWebServers.framework */,
 				89B9D4231C44F49F00740BF1 /* Gremlin.framework */,
+				328E337F1E4F868C00C544ED /* TVServices.framework */,
 			);
 			path = Frameworks;
 			sourceTree = "<group>";
@@ -1357,6 +1423,7 @@
 			children = (
 				89A83A191C88A89300E1987E /* tuyu.app */,
 				898E92661C8D056700B34DAA /* tuyu.app */,
+				328E337E1E4F868C00C544ED /* tuyuShelf.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1411,6 +1478,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		328E337D1E4F868C00C544ED /* tuyuShelf */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 328E338B1E4F868C00C544ED /* Build configuration list for PBXNativeTarget "tuyuShelf" */;
+			buildPhases = (
+				328E337A1E4F868C00C544ED /* Sources */,
+				328E337B1E4F868C00C544ED /* Frameworks */,
+				328E337C1E4F868C00C544ED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = tuyuShelf;
+			productName = tuyuShelf;
+			productReference = 328E337E1E4F868C00C544ED /* tuyuShelf.appex */;
+			productType = "com.apple.product-type.tv-app-extension";
+		};
 		898E92651C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 898E927C1C8D056700B34DAA /* Build configuration list for PBXNativeTarget "tuyuTV" */;
@@ -1419,10 +1503,12 @@
 				898E92631C8D056700B34DAA /* Frameworks */,
 				898E92641C8D056700B34DAA /* Resources */,
 				8929758F1CB02987003D7473 /* ShellScript */,
+				328E338C1E4F868C00C544ED /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				328E33871E4F868C00C544ED /* PBXTargetDependency */,
 			);
 			name = tuyuTV;
 			productName = tuyuTV;
@@ -1454,6 +1540,9 @@
 			attributes = {
 				LastUpgradeCheck = 0710;
 				TargetAttributes = {
+					328E337D1E4F868C00C544ED = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
 					898E92651C8D056700B34DAA = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
@@ -1477,11 +1566,19 @@
 			targets = (
 				89A83A181C88A89300E1987E /* tuyu */,
 				898E92651C8D056700B34DAA /* tuyuTV */,
+				328E337D1E4F868C00C544ED /* tuyuShelf */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		328E337C1E4F868C00C544ED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		898E92641C8D056700B34DAA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1677,6 +1774,22 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		328E337A1E4F868C00C544ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3204FFFE1E4F8C8400D3B8B0 /* KBYourTube+Categories.m in Sources */,
+				320400011E4F8CA400D3B8B0 /* APElement.m in Sources */,
+				3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */,
+				328E33841E4F868C00C544ED /* ServiceProvider.m in Sources */,
+				320400061E4F8E4800D3B8B0 /* APDeviceController.m in Sources */,
+				3204FFFD1E4F8C8200D3B8B0 /* KBYourTube.m in Sources */,
+				320400021E4F8CA600D3B8B0 /* ONOXMLDocument.m in Sources */,
+				320400071E4F8E5700D3B8B0 /* Reachability.m in Sources */,
+				320400001E4F8CA100D3B8B0 /* APDocument.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		898E92621C8D056700B34DAA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1822,6 +1935,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		328E33871E4F868C00C544ED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 328E337D1E4F868C00C544ED /* tuyuShelf */;
+			targetProxy = 328E33861E4F868C00C544ED /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		898E92741C8D056700B34DAA /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -1834,6 +1955,100 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		328E33891E4F868C00C544ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREFIX_HEADER = $SRCROOT/tuyuShelf/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				INFOPLIST_FILE = tuyuShelf/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV.tuyuShelf;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		328E338A1E4F868C00C544ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = $SRCROOT/tuyuShelf/Prefix.pch;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
+				INFOPLIST_FILE = tuyuShelf/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV.tuyuShelf;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		898E927A1C8D056700B34DAA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2117,6 +2332,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		328E338B1E4F868C00C544ED /* Build configuration list for PBXNativeTarget "tuyuShelf" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				328E33891E4F868C00C544ED /* Debug */,
+				328E338A1E4F868C00C544ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		898E927C1C8D056700B34DAA /* Build configuration list for PBXNativeTarget "tuyuTV" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

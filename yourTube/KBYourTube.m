@@ -1491,7 +1491,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 {
                     outputDict[@"thumbnail"] = [@"https:" stringByAppendingString:headerThumb];
                     
-                    // NSLog(@"headerThumb: %@", headerThumb);
+                     //NSLog(@"headerThumb: %@", headerThumb);
                 } else {
                     
                     outputDict[@"thumbnail"] = headerThumb;
@@ -2780,7 +2780,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     {
         //find first ; and make substring from there.
         NSUInteger loc = [keyMatch rangeOfString:@";"].location;
-        DLog(@"loc: %lu", loc);
+        //DLog(@"loc: %lu", loc);
         keyMatch = [keyMatch substringFromIndex:loc+1];
     }
     

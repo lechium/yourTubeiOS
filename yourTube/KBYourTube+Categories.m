@@ -392,8 +392,8 @@
 {
     NSShadow* shadow = [[NSShadow alloc] init];
     shadow.shadowColor = [UIColor blackColor];
-    shadow.shadowOffset = CGSizeMake(0.0f, 0.0f);
-    shadow.shadowBlurRadius = 3;
+    shadow.shadowOffset = CGSizeMake(1.0f, 1.0f);
+    shadow.shadowBlurRadius = 4;
     NSDictionary *attrs = @{NSFontAttributeName: self.font, NSForegroundColorAttributeName: self.textColor, NSShadowAttributeName: shadow};
     NSAttributedString *theString = [[NSAttributedString alloc] initWithString:self.text attributes:attrs];
     

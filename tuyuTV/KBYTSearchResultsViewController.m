@@ -55,6 +55,9 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
         return;
     }
+    
+   // DLog(@"at: %@", [UD valueForKey:@"access_token"]);
+    
     if ([UD valueForKey:@"access_token"] == nil)
     {
         return;

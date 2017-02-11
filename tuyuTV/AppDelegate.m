@@ -184,7 +184,40 @@
     [[KBYourTube sharedInstance] setUserDetails:nil];
 }
 
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
+{
+    DLog(@"url: %@ options: %@", url.host, options);
+    
+    [[KBYourTube sharedInstance] getVideoDetailsForID:url.host completionBlock:^(KBYTMedia *videoDetails) {
+        
+        
+        
+        UIViewController *rvc = app.keyWindow.rootViewController;
+        
+        NSURL *playURL = [[videoDetails.streams firstObject] url];
+        AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
+        AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
+        
+        playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
+        [rvc presentViewController:playerView animated:YES completion:nil];
+        [playerView.player play];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
+        
+        
+    } failureBlock:^(NSString *error) {
+        //
+    }];
+    
+    return YES;
+}
 
+- (void)itemDidFinishPlaying:(NSNotification *)n
+{
+    UIViewController *rvc = [[UIApplication sharedApplication]keyWindow].rootViewController;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
+    [rvc dismissViewControllerAnimated:true completion:nil];
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
