@@ -47,13 +47,13 @@
 
 - (void)testGetYTScience
 {
-   // DLog(@"appCookies: %@", [[ServiceProvider sharedUserDefaults] valueForKey:@"ApplicationCookie"]);
+   // NSLog(@"appCookies: %@", [[ServiceProvider sharedUserDefaults] valueForKey:@"ApplicationCookie"]);
     NSData *cookieData = [[ServiceProvider sharedUserDefaults] objectForKey:@"ApplicationCookie"];
     if ([cookieData length] > 0) {
         NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
         for (NSHTTPCookie *cookie in cookies) {
             [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
-            //DLog(@"cookie: %@", cookie);
+     //       NSLog(@"cookie: %@", cookie);
         }
     }
     [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {

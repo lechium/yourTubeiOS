@@ -1115,12 +1115,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         imagePath = [[imagePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"hqdefault.jpg"];
                     }
                     
-                    if ([imagePath rangeOfString:@"w=120&h=90"].location != NSNotFound)
-                    {
-                        imagePath = [imagePath stringByReplacingOccurrencesOfString:@"w=120&h=90" withString:@"w=640&h=480"];
-                        // DLog(@"imagePath: %@", imagePath);
-                        
-                    }
+                    imagePath = [self attemptConvertImagePathToHiRes:imagePath];
+                    
                     
                     //w=120&h=90
                     if ([imagePath containsString:@"https:"])
@@ -1562,12 +1558,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 if (imagePath != nil)
                 {
                     
-                    if ([imagePath rangeOfString:@"w=196&h=110"].location != NSNotFound)
-                    {
-                        imagePath = [imagePath stringByReplacingOccurrencesOfString:@"w=196&h=110" withString:@"w=640&h=480"];
-                        // DLog(@"imagePath: %@", imagePath);
-                        
-                    }
+                    imagePath = [self attemptConvertImagePathToHiRes:imagePath];
+                    
                     
                     if ([imagePath containsString:@"https:"])
                     {
@@ -1702,12 +1694,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 
                 if (imagePath != nil)
                 {
-                    if ([imagePath rangeOfString:@"w=196&h=110"].location != NSNotFound)
-                    {
-                        imagePath = [imagePath stringByReplacingOccurrencesOfString:@"w=196&h=110" withString:@"w=640&h=480"];
-                       // DLog(@"imagePath: %@", imagePath);
-                        
-                    }
+                    imagePath = [self attemptConvertImagePathToHiRes:imagePath];
+                    
                     
                     if ([imagePath containsString:@"https:"])
                     {
@@ -1779,6 +1767,33 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         }
     });
     
+}
+
+- (NSString *)attemptConvertImagePathToHiRes:(NSString *)imagePath
+{
+    if ([imagePath rangeOfString:@"custom=true"].location == NSNotFound)
+    {
+        return imagePath;
+    }
+    NSURLComponents *comp = [[NSURLComponents alloc] initWithString:imagePath];
+    
+    NSMutableArray <NSURLQueryItem*> *newQuery = [[comp queryItems] mutableCopy];
+    [[comp queryItems] enumerateObjectsUsingBlock:^(NSURLQueryItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        NSString *key = [obj name];
+        if ([key isEqualToString:@"w"])
+        {
+            NSURLQueryItem *new = [NSURLQueryItem queryItemWithName:key value:@"640"];
+            [newQuery replaceObjectAtIndex:idx withObject:new];
+        } else if ([key isEqualToString:@"h"])
+        {
+            NSURLQueryItem *new = [NSURLQueryItem queryItemWithName:key value:@"480"];
+            [newQuery replaceObjectAtIndex:idx withObject:new];
+        }
+        
+    }];
+    comp.queryItems = newQuery;
+    return comp.URL.absoluteString;
 }
 
 /**
@@ -1884,10 +1899,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     
                     //DLog(@"youTubeSearch: %@", imagePath);
                     
-                    if ([imagePath rangeOfString:@"&w=246&h=138&"].location != NSNotFound)
-                    {
-                        imagePath = [imagePath stringByReplacingOccurrencesOfString:@"&w=246&h=138&" withString:@"&w=640&h=480&"];
-                    }
+                    imagePath = [self attemptConvertImagePathToHiRes:imagePath];
                     
                     if (![imagePath containsString:@"https:"])
                         result.imagePath = [@"https:" stringByAppendingString:imagePath];
@@ -1975,10 +1987,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     if (imagePath != nil)
                     {
                         
-                        if ([imagePath rangeOfString:@"&w=246&h=138&"].location != NSNotFound)
-                        {
-                            imagePath = [imagePath stringByReplacingOccurrencesOfString:@"&w=246&h=138&" withString:@"&w=640&h=480&"];
-                        }
+                        imagePath = [self attemptConvertImagePathToHiRes:imagePath];
+                        
                         
                         if ([imagePath containsString:@"https:"])
                         {
@@ -2043,12 +2053,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     if (imagePath != nil)
                     {
                         
-                        if ([imagePath rangeOfString:@"w=196&h=110"].location != NSNotFound)
-                        {
-                            imagePath = [imagePath stringByReplacingOccurrencesOfString:@"w=196&h=110" withString:@"w=640&h=480"];
-                            // DLog(@"imagePath: %@", imagePath);
-                            
-                        }
+                        imagePath = [self attemptConvertImagePathToHiRes:imagePath];
+                        
                         
                         if ([imagePath containsString:@"https:"])
                         {

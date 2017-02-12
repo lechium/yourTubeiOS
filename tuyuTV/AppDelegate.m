@@ -202,9 +202,10 @@
 {
     DLog(@"url: %@ options: %@", url.host, options);
     
+    [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForID:url.host completionBlock:^(KBYTMedia *videoDetails) {
         
-        
+        [SVProgressHUD dismiss];
         
         UIViewController *rvc = app.keyWindow.rootViewController;
         
@@ -228,9 +229,13 @@
 - (void)itemDidFinishPlaying:(NSNotification *)n
 {
     UIViewController *rvc = [[UIApplication sharedApplication]keyWindow].rootViewController;
-    
+    if ([rvc isKindOfClass:AVPlayerViewController.class])
+    {
+        [rvc dismissViewControllerAnimated:true completion:nil];
+
+    }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
-    [rvc dismissViewControllerAnimated:true completion:nil];
+
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
