@@ -3,7 +3,11 @@ yourTube for iOS
 
 iOS / tvOS YouTube client with advanced functionality without any need for API keys. With a combination of web scraping using ONO and some magic ported over from javascript this is a lean and fast wrapper for basic YouTube search, channel / playlist listing, video download and playback.
 
-The tvOS version is much newer and isn't nearly as full featured. In conjunction it uses the browser view controller from http://github.com/jvanakker/tvOSBrowser. These availability notes were taken for that README.
+The tvOS version is very full featured now, but im too lazy to update what you can do with it.
+
+if you want to build this yourself and still have the auth part work (adding to playlists and such) you will need to sign up for a google/youtube developer account and put your client id and key into YTCreds.h file otherwise that stuff wont work.
+
+In conjunction it uses the browser view controller from http://github.com/jvanakker/tvOSBrowser. These availability notes were taken for that README.
 
 You'll need to redefine the following in Availability.h to build the tvOS target successfully.
 ```
