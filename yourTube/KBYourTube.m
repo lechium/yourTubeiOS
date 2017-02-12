@@ -93,11 +93,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (NSString *)readableSearchType
 {
     switch (self.resultType) {
-        case kYTSearchResultTypeUnknown: return @"Unknown";
-        case kYTSearchResultTypeVideo: return @"Video";
-        case kYTSearchResultTypePlaylist: return @"Playlist";
-        case kYTSearchResultTypeChannel: return @"Channel";
-        case kYTSearchResultTypeChannelList: return @"Channel List";
+        case YTSearchResultTypeUnknown: return @"Unknown";
+        case YTSearchResultTypeVideo: return @"Video";
+        case YTSearchResultTypePlaylist: return @"Playlist";
+        case YTSearchResultTypeChannel: return @"Channel";
+        case YTSearchResultTypeChannelList: return @"Channel List";
         default:
             return @"Unknown";
     }
@@ -463,6 +463,16 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 #pragma mark convenience methods
 
++ (YTSearchResultType)resultTypeForString:(NSString *)string
+{
+    if ([string isEqualToString:@"Channel"]) return YTSearchResultTypeChannel;
+    else if ([string isEqualToString:@"Playlist"]) return YTSearchResultTypePlaylist;
+    else if ([string isEqualToString:@"Channel List"]) return YTSearchResultTypeChannelList;
+    else if ([string isEqualToString:@"Video"]) return YTSearchResultTypeVideo;
+     else if ([string isEqualToString:@"Unknown"]) return YTSearchResultTypeUnknown;
+     else return YTSearchResultTypeUnknown;
+}
+
 + (id)sharedInstance {
     
     static dispatch_once_t onceToken;
@@ -544,7 +554,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 userChannel.videoId = channelID;
                 userChannel.details = [NSString stringWithFormat:@"%lu videos", channelVideoCount];
                 userChannel.imagePath = ourUserDetails[@"profileImage"];
-                userChannel.resultType = kYTSearchResultTypeChannel;
+                userChannel.resultType = YTSearchResultTypeChannel;
                 [itemArray addObject:userChannel];
                 
                 KBYTSearchResult *wlPl = [KBYTSearchResult new];
@@ -553,7 +563,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 wlPl.details = [NSString stringWithFormat:@"%@ videos", channelDict[@"wlCount"]];
                 wlPl.title = @"Watch later";
                 wlPl.imagePath = ourUserDetails[@"profileImage"];
-                wlPl.resultType = kYTSearchResultTypePlaylist;
+                wlPl.resultType = YTSearchResultTypePlaylist;
                 
                 [itemArray addObject:wlPl];
                 
@@ -794,7 +804,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         result.author = userName;
         result.details = videoCount;
         result.videoId = playlistURL;
-        result.resultType = kYTSearchResultTypePlaylist;
+        result.resultType = YTSearchResultTypePlaylist;
         //NSDictionary *playlistItem = @{@"thumbURL": [NSString stringWithFormat:@"https:%@", thumbPath], @"title": playlistTitle, @"URL": playlistURL, @"videoCount": videoCount};
         [finalArray addObject:result];
         
@@ -1096,7 +1106,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     result.title = title;
                 }
                 
-                result.resultType = kYTSearchResultTypeVideo;
+                result.resultType = YTSearchResultTypeVideo;
                 
                 ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-clip')]"] children] firstObject];
                 ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
@@ -1207,7 +1217,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             {
                 //NSMutableDictionary *scienceDict = [NSMutableDictionary new];
                 KBYTSearchResult *result = [KBYTSearchResult new];
-                result.resultType = kYTSearchResultTypeVideo;
+                result.resultType = YTSearchResultTypeVideo;
                 NSString *videoID = [currentElement valueForAttribute:@"data-video-id"];
                 if (videoID != nil)
                 {
@@ -1316,7 +1326,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             while (currentElement = [videoEnum nextObject])
             {
                 KBYTSearchResult *result = [KBYTSearchResult new];
-                result.resultType = kYTSearchResultTypeVideo;
+                result.resultType = YTSearchResultTypeVideo;
                 NSString *videoID = [currentElement valueForAttribute:@"data-context-item-id"];
                 if (videoID != nil)
                 {
@@ -1431,7 +1441,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         NSString *playlistURL = [[playlistTitleElement valueForAttribute:@"href"] lastPathComponent];
        // NSDictionary *playlistItem = @{@"thumbURL": thumbPath, @"title": playlistTitle, @"URL": playlistURL};
         KBYTSearchResult *result = [KBYTSearchResult new];
-        //DLog(@"thumbPath: %@", thumbPath);
+        DLog(@"thumbPath: %@", thumbPath);
         if ([thumbPath rangeOfString:@"&w=246&h=138&"].location != NSNotFound)
         {
             thumbPath = [thumbPath stringByReplacingOccurrencesOfString:@"&w=246&h=138&" withString:@"&w=640&h=480&"];
@@ -1446,7 +1456,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         result.title = playlistTitle;
         result.author = userName;
         result.videoId = playlistURL;
-        result.resultType = kYTSearchResultTypeChannel;
+        result.resultType = YTSearchResultTypeChannel;
         //NSDictionary *playlistItem = @{@"thumbURL": [NSString stringWithFormat:@"https:%@", thumbPath], @"title": playlistTitle, @"URL": playlistURL, @"videoCount": videoCount};
         [finalArray addObject:result];
         //[finalArray addObject:playlistItem];
@@ -1569,7 +1579,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                 }
                 
-                result.resultType = kYTSearchResultTypeVideo;
+                result.resultType = YTSearchResultTypeVideo;
                 
                 if (lengthElement != nil)
                     result.duration = lengthElement.stringValue;
@@ -1678,7 +1688,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 {
                     result.videoId = videoID;
                 }
-                result.resultType = kYTSearchResultTypeVideo;
+                result.resultType = YTSearchResultTypeVideo;
                 ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
                 ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                 ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"];
@@ -1886,7 +1896,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 ONOXMLElement *authorElement = [[[videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
                 ONOXMLElement *ageAndViewsElement = [videoDetailXMLRepresentation firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"];
                 
-                result.resultType = kYTSearchResultTypeVideo;
+                result.resultType = YTSearchResultTypeVideo;
                 
                 NSString *imagePath = [thumbNailElement valueForAttribute:@"data-thumb"];
                 if (imagePath == nil)
@@ -1972,7 +1982,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     
                     ONOXMLElement *plIdElement = [currentElement firstChildWithXPath:@".//li[contains(@role, 'menuitem')]"];
                     
-                    result.resultType = kYTSearchResultTypePlaylist;
+                    result.resultType = YTSearchResultTypePlaylist;
                     
                     NSString *videoID = [plIdElement valueForAttribute:@"data-list-id"];
                     if (videoID != nil)
@@ -2043,7 +2053,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     ONOXMLElement *authorElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
                     ONOXMLElement *descElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"] children] lastObject];//yt-lockup-meta-info
                     
-                    result.resultType = kYTSearchResultTypeChannel;
+                    result.resultType = YTSearchResultTypeChannel;
                     
                     NSString *imagePath = [thumbNailElement valueForAttribute:@"data-thumb"];
                     if (imagePath == nil)

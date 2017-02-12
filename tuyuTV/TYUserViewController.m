@@ -184,7 +184,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     NSInteger playlistCount = 0;
     for (KBYTSearchResult *result in results)
     {
-        if (result.resultType == kYTSearchResultTypePlaylist)
+        if (result.resultType == YTSearchResultTypePlaylist)
         {
             [_backingSectionLabels addObject:result.title];
         }
@@ -193,7 +193,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     __block NSInteger currentIndex = 0;
     for (KBYTSearchResult *result in results)
     {
-        if (result.resultType == kYTSearchResultTypePlaylist)
+        if (result.resultType == YTSearchResultTypePlaylist)
         {
             [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(NSDictionary *searchDetails) {
                 

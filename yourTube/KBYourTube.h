@@ -56,13 +56,13 @@ static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 
 @end
 
-typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
+typedef NS_ENUM(NSUInteger, YTSearchResultType) {
     
-    kYTSearchResultTypeUnknown,
-    kYTSearchResultTypeVideo,
-    kYTSearchResultTypePlaylist,
-    kYTSearchResultTypeChannel,
-    kYTSearchResultTypeChannelList,
+    YTSearchResultTypeUnknown,
+    YTSearchResultTypeVideo,
+    YTSearchResultTypePlaylist,
+    YTSearchResultTypeChannel,
+    YTSearchResultTypeChannelList,
 };
 
 @interface KBYTLocalMedia : NSObject <YTPlayerItemProtocol>
@@ -121,11 +121,11 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 @property (nonatomic, strong) NSString *views;
 @property (nonatomic, strong) NSString *details;
 @property (nonatomic, strong) KBYTMedia *media;
-@property (readwrite, assign) kYTSearchResultType resultType;
+@property (readwrite, assign) YTSearchResultType resultType;
 @property (nonatomic, strong) NSArray *items; //only relevant for channel list
 
 - (id)initWithDictionary:(NSDictionary *)resultDict;
-
+- (NSString *)readableSearchType;
 @end
 
 @interface KBYTStream : NSObject
@@ -167,6 +167,7 @@ typedef NS_ENUM(NSUInteger, kYTSearchResultType) {
 @property (nonatomic, strong) NSString *lastSearch;
 @property (nonatomic, strong) NSDictionary *userDetails; 
 
++ (YTSearchResultType)resultTypeForString:(NSString *)string;
 + (id)sharedInstance;
 - (BOOL)isSignedIn;
 - (ONOXMLDocument *)documentFromURL:(NSString *)theURL;

@@ -36,6 +36,7 @@
 #import "TYHomeViewController.h"
 #import "TYTVHistoryManager.h"
 #import "TYSettingsViewController.h"
+#import "YTTVPlaylistViewController.h"
 
 @interface AppDelegate ()
 
@@ -102,7 +103,7 @@
     
     for (KBYTSearchResult *result in results)
     {
-        if (result.resultType == kYTSearchResultTypePlaylist)
+        if (result.resultType == YTSearchResultTypePlaylist)
         {
             [_backingSectionLabels addObject:result.title];
         }
@@ -200,30 +201,101 @@
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
-    DLog(@"url: %@ options: %@", url.host, options);
+    DLog(@"url: %@ path: %@", url.host, url.path.lastPathComponent);
     
+    YTSearchResultType type = [KBYourTube resultTypeForString:url.host];
+    
+    if (type == YTSearchResultTypeVideo)
+    {
+        [SVProgressHUD show];
+        [[KBYourTube sharedInstance] getVideoDetailsForID:url.path.lastPathComponent completionBlock:^(KBYTMedia *videoDetails) {
+            
+            [SVProgressHUD dismiss];
+            
+            UIViewController *rvc = app.keyWindow.rootViewController;
+            
+            NSURL *playURL = [[videoDetails.streams firstObject] url];
+            AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
+            AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
+            
+            playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
+            [rvc presentViewController:playerView animated:YES completion:nil];
+            [playerView.player play];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
+            
+            
+        } failureBlock:^(NSString *error) {
+            //
+        }];
+    } else if (type == YTSearchResultTypeChannel)
+    {
+        [self showChannel:url.path.lastPathComponent];
+    } else if (type == YTSearchResultTypePlaylist)
+    {
+        
+        NSString *path = url.path.lastPathComponent;
+        NSArray *comp = [url.query componentsSeparatedByString:@"="];
+        
+        
+        [self showPlaylist:path named:comp[1]];
+    }
+    
+   
+    
+    return YES;
+}
+
+- (void)presentViewController:(UIViewController *)vc animated:(BOOL)isAnimated completion:(void (^ __nullable)(void))completion
+{
+    UIViewController *rvc = UIApplication.sharedApplication.keyWindow.rootViewController;
+    [rvc presentViewController:vc animated:isAnimated completion:completion];
+    
+    
+}
+
+- (void)showPlaylist:(NSString *)videoID named:(NSString *)name
+{
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
-    [[KBYourTube sharedInstance] getVideoDetailsForID:url.host completionBlock:^(KBYTMedia *videoDetails) {
+    [[KBYourTube sharedInstance] getPlaylistVideos:videoID completionBlock:^(NSDictionary *searchDetails) {
         
         [SVProgressHUD dismiss];
         
-        UIViewController *rvc = app.keyWindow.rootViewController;
-        
-        NSURL *playURL = [[videoDetails.streams firstObject] url];
-        AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
-        AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
-        
-        playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-        [rvc presentViewController:playerView animated:YES completion:nil];
-        [playerView.player play];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
-        
+        NSString *nextHREF = searchDetails[@"loadMoreREF"];
+        YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:name backgroundColor:[UIColor blackColor] withPlaylistItems:searchDetails[@"results"]];
+        playlistViewController.loadMoreHREF = nextHREF;
+        [self presentViewController:playlistViewController animated:YES completion:nil];
+        // [[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
         
     } failureBlock:^(NSString *error) {
         //
     }];
-    
-    return YES;
+}
+
+- (void)showChannel:(NSString *)videoId
+{
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    KBYTChannelViewController *cv = [sb instantiateViewControllerWithIdentifier:@"channelViewController"];
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD show];
+    [[KBYourTube sharedInstance] getChannelVideos:videoId completionBlock:^(NSDictionary *searchDetails) {
+        
+        [SVProgressHUD dismiss];
+        
+        [[TYTVHistoryManager sharedInstance] addChannelToHistory:searchDetails];
+        cv.searchResults = searchDetails[@"results"];
+        cv.pageCount = 1;
+        cv.nextHREF = searchDetails[@"loadMoreREF"];
+        cv.bannerURL = searchDetails[@"banner"];
+        cv.channelTitle = searchDetails[@"name"];
+        cv.subscribers = searchDetails[@"subscribers"];
+        
+        [self presentViewController:cv animated:true completion:nil];
+        //[self.navigationController pushViewController:cv animated:true];
+        
+    } failureBlock:^(NSString *error) {
+        
+    }];
 }
 
 - (void)itemDidFinishPlaying:(NSNotification *)n

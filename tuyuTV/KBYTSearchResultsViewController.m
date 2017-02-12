@@ -69,21 +69,21 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
     switch (searchResult.resultType)
     {
-        case kYTSearchResultTypeVideo:
+        case YTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:searchResult];
             break;
             
-        case kYTSearchResultTypeChannel:
+        case YTSearchResultTypeChannel:
             
             [self showChannelAlertForSearchResult:searchResult];
             break;
             
-        case kYTSearchResultTypePlaylist:
+        case YTSearchResultTypePlaylist:
             
             break;
             
-        case kYTSearchResultTypeUnknown:
+        case YTSearchResultTypeUnknown:
             
             break;
     }
@@ -259,7 +259,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     YTTVStandardCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
-    if (currentItem.resultType != kYTSearchResultTypeVideo)
+    if (currentItem.resultType != YTSearchResultTypeVideo)
     {
         cell.overlayView.hidden = false;
         cell.overlayInfo.text = currentItem.details;
@@ -460,10 +460,10 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
-    if (searchResult.resultType == kYTSearchResultTypeVideo)
+    if (searchResult.resultType == YTSearchResultTypeVideo)
     {
         [self playFirstStreamForResult:searchResult];
-    } else if (searchResult.resultType == kYTSearchResultTypeChannel)
+    } else if (searchResult.resultType == YTSearchResultTypeChannel)
     {
         UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         KBYTChannelViewController *cv = [sb instantiateViewControllerWithIdentifier:@"channelViewController"];
@@ -490,7 +490,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         } failureBlock:^(NSString *error) {
             //
         }];
-    } else if (searchResult.resultType == kYTSearchResultTypePlaylist)
+    } else if (searchResult.resultType == YTSearchResultTypePlaylist)
     {
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];

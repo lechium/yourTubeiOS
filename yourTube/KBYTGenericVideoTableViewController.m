@@ -211,7 +211,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     } else {
     
         KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
-        if (currentItem.resultType == kYTSearchResultTypeVideo)
+        if (currentItem.resultType == YTSearchResultTypeVideo)
         {
             [[(KBYTDownloadCell*)cell durationLabel] setHidden:NO];
         } else {
@@ -637,7 +637,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     
     
-    if (currentItem.resultType != kYTSearchResultTypeVideo)
+    if (currentItem.resultType != YTSearchResultTypeVideo)
     {
         cell.views = currentItem.details;
         cell.duration = nil;
@@ -652,7 +652,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         cell.views = [[numFormatter stringFromNumber:view_count] stringByAppendingString:@" Views"];
     }
     
-    if (currentItem.resultType == kYTSearchResultTypeChannel)
+    if (currentItem.resultType == YTSearchResultTypeChannel)
     {
         cell.views = @"";
     }
@@ -677,13 +677,13 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     KBYTSearchResult *currentResult = [self.searchResults objectAtIndex:indexPath.row];
     
-    if (currentResult.resultType == kYTSearchResultTypeChannel)
+    if (currentResult.resultType == YTSearchResultTypeChannel)
     {
         
         KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:5 withTitle:currentResult.title withId:currentResult.videoId];
         [[self navigationController] pushViewController:genericTableView animated:true];
         return;
-    } else if (currentResult.resultType == kYTSearchResultTypePlaylist)
+    } else if (currentResult.resultType == YTSearchResultTypePlaylist)
     {
         
         KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:6 withTitle:currentResult.title withId:currentResult.videoId];

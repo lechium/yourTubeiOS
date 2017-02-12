@@ -329,21 +329,21 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     switch (searchResult.resultType)
     {
-        case kYTSearchResultTypeVideo:
+        case YTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:searchResult];
             break;
             
-        case kYTSearchResultTypeChannel:
+        case YTSearchResultTypeChannel:
             
             [self showChannelAlertForSearchResult:searchResult];
             break;
             
-        case kYTSearchResultTypePlaylist:
+        case YTSearchResultTypePlaylist:
             
             break;
             
-        case kYTSearchResultTypeUnknown:
+        case YTSearchResultTypeUnknown:
             
             break;
     }
@@ -695,7 +695,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         NSArray *detailsArray = [self arrayForCollectionView:collectionView];
         KBYTSearchResult *selectedItem = [detailsArray objectAtIndex:indexPath.row];
         //if its a channel then show a channel instead of trying to playback a playlist
-        if (selectedItem.resultType == kYTSearchResultTypeChannel)
+        if (selectedItem.resultType == YTSearchResultTypeChannel)
         {
             [self showChannel:selectedItem];
             return;

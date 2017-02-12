@@ -340,7 +340,7 @@
     NSArray *results = userDetails[@"results"];
     for (KBYTSearchResult *result in results)
     {
-        if (result.resultType == kYTSearchResultTypePlaylist)
+        if (result.resultType == YTSearchResultTypePlaylist)
         {
             [finalArray addObject:result];
         }

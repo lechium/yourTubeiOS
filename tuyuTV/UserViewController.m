@@ -50,7 +50,7 @@
     if ([results count] > 0)
     {
         KBYTSearchResult *firstResult = results[0];
-        if (firstResult.resultType == kYTSearchResultTypePlaylist)
+        if (firstResult.resultType == YTSearchResultTypePlaylist)
         {
             self.firstLabel.text = firstResult.title;
             [[KBYourTube sharedInstance] getPlaylistVideos:firstResult.videoId completionBlock:^(NSDictionary *searchDetails) {

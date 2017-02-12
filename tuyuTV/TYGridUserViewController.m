@@ -175,7 +175,7 @@
     __block NSInteger currentIndex = 0;
     for (KBYTSearchResult *result in results)
     {
-        if (result.resultType == kYTSearchResultTypePlaylist)
+        if (result.resultType == YTSearchResultTypePlaylist)
         {
             [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(NSDictionary *searchDetails) {
                 
