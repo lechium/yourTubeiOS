@@ -1106,12 +1106,23 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 {
                     imagePath = [thumbNailElement valueForAttribute:@"src"];
                 }
+                //imagePath
+                
                 if (imagePath != nil)
                 {
                     if ([[imagePath lastPathComponent]isEqualToString:@"default.jpg"])
                     {
                         imagePath = [[imagePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"hqdefault.jpg"];
                     }
+                    
+                    if ([imagePath rangeOfString:@"w=120&h=90"].location != NSNotFound)
+                    {
+                        imagePath = [imagePath stringByReplacingOccurrencesOfString:@"w=120&h=90" withString:@"w=640&h=480"];
+                        // DLog(@"imagePath: %@", imagePath);
+                        
+                    }
+                    
+                    //w=120&h=90
                     if ([imagePath containsString:@"https:"])
                     {
                         result.imagePath = imagePath;
@@ -1425,6 +1436,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
        // NSDictionary *playlistItem = @{@"thumbURL": thumbPath, @"title": playlistTitle, @"URL": playlistURL};
         KBYTSearchResult *result = [KBYTSearchResult new];
         //DLog(@"thumbPath: %@", thumbPath);
+        if ([thumbPath rangeOfString:@"&w=246&h=138&"].location != NSNotFound)
+        {
+            thumbPath = [thumbPath stringByReplacingOccurrencesOfString:@"&w=246&h=138&" withString:@"&w=640&h=480&"];
+        }
         if ([thumbPath containsString:@"https"])
         {
             result.imagePath = thumbPath;
@@ -1491,7 +1506,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 {
                     outputDict[@"thumbnail"] = [@"https:" stringByAppendingString:headerThumb];
                     
-                     //NSLog(@"headerThumb: %@", headerThumb);
+                     //NSLog(@"hop  %@", headerThumb);
                 } else {
                     
                     outputDict[@"thumbnail"] = headerThumb;
@@ -1543,8 +1558,17 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 {
                     imagePath = [thumbNailElement valueForAttribute:@"src"];
                 }
+                //w=196&h=110
                 if (imagePath != nil)
                 {
+                    
+                    if ([imagePath rangeOfString:@"w=196&h=110"].location != NSNotFound)
+                    {
+                        imagePath = [imagePath stringByReplacingOccurrencesOfString:@"w=196&h=110" withString:@"w=640&h=480"];
+                        // DLog(@"imagePath: %@", imagePath);
+                        
+                    }
+                    
                     if ([imagePath containsString:@"https:"])
                     {
                         result.imagePath = imagePath;
@@ -1675,14 +1699,23 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 {
                     imagePath = [thumbNailElement valueForAttribute:@"src"];
                 }
+                
                 if (imagePath != nil)
                 {
+                    if ([imagePath rangeOfString:@"w=196&h=110"].location != NSNotFound)
+                    {
+                        imagePath = [imagePath stringByReplacingOccurrencesOfString:@"w=196&h=110" withString:@"w=640&h=480"];
+                       // DLog(@"imagePath: %@", imagePath);
+                        
+                    }
+                    
                     if ([imagePath containsString:@"https:"])
                     {
                         result.imagePath = imagePath;
                     } else {
                         result.imagePath = [@"https:" stringByAppendingString:imagePath];
                     }
+                    
                 }
                 if (lengthElement != nil)
                     result.duration = lengthElement.stringValue;
@@ -1848,6 +1881,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 
                 if (imagePath != nil)
                 {
+                    
+                    //DLog(@"youTubeSearch: %@", imagePath);
+                    
+                    if ([imagePath rangeOfString:@"&w=246&h=138&"].location != NSNotFound)
+                    {
+                        imagePath = [imagePath stringByReplacingOccurrencesOfString:@"&w=246&h=138&" withString:@"&w=640&h=480&"];
+                    }
+                    
                     if (![imagePath containsString:@"https:"])
                         result.imagePath = [@"https:" stringByAppendingString:imagePath];
                     else
@@ -1933,6 +1974,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                     if (imagePath != nil)
                     {
+                        
+                        if ([imagePath rangeOfString:@"&w=246&h=138&"].location != NSNotFound)
+                        {
+                            imagePath = [imagePath stringByReplacingOccurrencesOfString:@"&w=246&h=138&" withString:@"&w=640&h=480&"];
+                        }
+                        
                         if ([imagePath containsString:@"https:"])
                         {
                             result.imagePath = imagePath;
@@ -1995,6 +2042,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                     if (imagePath != nil)
                     {
+                        
+                        if ([imagePath rangeOfString:@"w=196&h=110"].location != NSNotFound)
+                        {
+                            imagePath = [imagePath stringByReplacingOccurrencesOfString:@"w=196&h=110" withString:@"w=640&h=480"];
+                            // DLog(@"imagePath: %@", imagePath);
+                            
+                        }
+                        
                         if ([imagePath containsString:@"https:"])
                         {
                             result.imagePath = imagePath;
