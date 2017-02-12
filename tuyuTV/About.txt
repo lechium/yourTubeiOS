@@ -1,4 +1,4 @@
-tuyu 0.3.6-2 for AppleTV 4
+tuyu 0.4 for AppleTV 4
 
 By: Kevin Bradley
 
@@ -7,6 +7,12 @@ tuyu is tvOS port of tuyu for iOS. View featured videos, sign in to your account
 
 
 Changelog:
+
+0.4:
+
+* Added suggested / channel / playlist shelf if tuyu is in the top row.
+* Made thumbnails high res any where possible
+* Bug fixes
 
 0,3.6-2:
 
