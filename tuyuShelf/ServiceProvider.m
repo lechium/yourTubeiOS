@@ -16,13 +16,24 @@
 
 @implementation ServiceProvider
 
++ (NSUserDefaults *)sharedUserDefaults
+{
+    static dispatch_once_t pred;
+    static NSUserDefaults* shared = nil;
+    
+    dispatch_once(&pred, ^{
+        shared = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.tuyu"];
+    });
+    
+    return shared;
+}
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         //[self testGetYTScience];
         self.menuItems = [NSMutableArray new];
-        [self testGetYTScience];
+        //[self testGetYTScience];
     }
     return self;
 }
@@ -36,7 +47,15 @@
 
 - (void)testGetYTScience
 {
-    
+   // DLog(@"appCookies: %@", [[ServiceProvider sharedUserDefaults] valueForKey:@"ApplicationCookie"]);
+    NSData *cookieData = [[ServiceProvider sharedUserDefaults] objectForKey:@"ApplicationCookie"];
+    if ([cookieData length] > 0) {
+        NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
+        for (NSHTTPCookie *cookie in cookies) {
+            [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+            //DLog(@"cookie: %@", cookie);
+        }
+    }
     [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
         
         //DLog(@"searchDeets: %@", searchDetails);

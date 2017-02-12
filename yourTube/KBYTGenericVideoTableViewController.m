@@ -75,6 +75,11 @@
 
 - (void)getNextPage {
     
+    if (self.currentPage == 1 && self.searchResults.count == 0)
+    {
+        return;
+    }
+    
     self.currentPage++;
     if (tableType == 0) //featured
     {
@@ -297,12 +302,17 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                         [fullArray addObjectsFromArray:searchDetails[@"results"]];
                         [self updateSearchResults:fullArray];
                         self.totalResults = [fullArray count];
-                        
+                        self.pageCount = [searchDetails[@"pageCount"] integerValue];
+                        self.nextHREF = searchDetails[@"loadMoreREF"];
+                        [self.tableView reloadData];
                     } failureBlock:^(NSString *error) {
                         
                          [SVProgressHUD dismiss];
                         [self updateSearchResults:searchDetails[@"results"]];
                         self.totalResults = [searchDetails[@"resultCount"] integerValue];
+                        self.pageCount = [searchDetails[@"pageCount"] integerValue];
+                        self.nextHREF = searchDetails[@"loadMoreREF"];
+                        [self.tableView reloadData];
                     }];
                 } else {
                     [self updateSearchResults:searchDetails[@"results"]];
@@ -591,6 +601,9 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 {
     if (self.currentPage > 1)
     {
+        if (self.searchResults == nil) {
+            self.searchResults = [NSMutableArray new];
+        }
         [[self searchResults] addObjectsFromArray:newResults];
     } else {
         self.searchResults = [newResults mutableCopy];
