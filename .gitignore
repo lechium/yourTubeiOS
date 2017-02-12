@@ -4,6 +4,7 @@ _/
 build/
 obj/
 com.*
+tuyuTV/YTCreds.h
 *.DS_Store
 *.pbxuser
 !default.pbxuser
