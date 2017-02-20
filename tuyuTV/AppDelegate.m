@@ -155,6 +155,10 @@
             TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
             
             uvc.title = outputResults[@"userName"];
+            if ([[outputResults allKeys]containsObject:@"altUserName"])
+            {
+                uvc.title = outputResults[@"altUserName"];
+            }
             [viewControllers insertObject:uvc atIndex:1];
           /*
             [viewControllers removeLastObject];
@@ -346,6 +350,10 @@
             TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
             
             uvc.title = outputResults[@"userName"];
+            if ([[outputResults allKeys]containsObject:@"altUserName"])
+            {
+                uvc.title = outputResults[@"altUserName"];
+            }
             [viewControllers insertObject:uvc atIndex:1];
             //[vc addObject:uvc];
             /*

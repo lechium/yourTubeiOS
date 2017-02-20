@@ -9,7 +9,9 @@
 #import "TYGridUserViewController.h"
 
 @interface TYGridUserViewController ()
-
+{
+    BOOL _didAdjustTotalHeight;
+}
 @end
 
 @implementation TYGridUserViewController
@@ -104,15 +106,15 @@
             [self.focusedCollectionCell performSelector:@selector(startJiggling) withObject:nil afterDelay:0];
             NSIndexPath *path = [cv indexPathForCell:self.focusedCollectionCell];
             [cv beginInteractiveMovementForItemAtIndexPath:path];
-         //   [cv.visibleCells  makeObjectsPerformSelector:@selector(startJiggling)];
+            //   [cv.visibleCells  makeObjectsPerformSelector:@selector(startJiggling)];
             _jiggling = true;
             menuTapRecognizer.enabled = true;
         } else {
-         
+            
             [self.focusedCollectionCell performSelector:@selector(stopJiggling) withObject:nil afterDelay:0];
-           // [cv.visibleCells makeObjectsPerformSelector:@selector(stopJiggling)];
+            // [cv.visibleCells makeObjectsPerformSelector:@selector(stopJiggling)];
             _jiggling = false;
-              menuTapRecognizer.enabled = false;
+            menuTapRecognizer.enabled = false;
         }
     }
     
@@ -127,7 +129,7 @@
     if (userDetails[@"channels"] != nil)
     {
         playlists[@"Channels"] = userDetails[@"channels"];
-        adjustment = 1;
+        adjustment = 0;
     }
     
     NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
@@ -151,8 +153,25 @@
         self.featuredVideos = searchDetails[@"results"];
         [[self featuredVideosCollectionView] reloadData];
         
+       
+        
         
     } failureBlock:^(NSString *error) {
+        
+        
+        //if (_didAdjustTotalHeight == false){
+            UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.featuredVideosCollectionView.collectionViewLayout;
+            [layout invalidateLayout];
+            layout.itemSize = CGSizeMake(0, 0);
+            //[self.featuredVideosCollectionView removeFromSuperview];
+            //self.totalHeight -= 520;
+            
+            self.featuredHeightConstraint.constant = 0;
+            [self.view setNeedsUpdateConstraints];
+            [self.view layoutIfNeeded];
+            
+          //  _didAdjustTotalHeight = true;
+        
         
     }];
     
@@ -168,13 +187,13 @@
      */
     
     playlistCount = [_backingSectionLabels count]-adjustment;
-    
-    //since blocks are being used to fetch the data need to keep track of indices so we know
+   //since blocks are being used to fetch the data need to keep track of indices so we know
     //when to call completionBlock
     
     __block NSInteger currentIndex = 0;
     for (KBYTSearchResult *result in results)
     {
+        
         if (result.resultType == YTSearchResultTypePlaylist)
         {
             [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(NSDictionary *searchDetails) {
@@ -191,10 +210,25 @@
                 
                 
             }];
+        } else {
+            currentIndex++;
+            if (currentIndex == playlistCount)
+            {
+                completionBlock(playlists);
+            }
+            
         }
     }
     
     
+    
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [[self scrollView] setContentSize:CGSizeMake(1920, self.totalHeight)];
+    
+    // [self.view printRecursiveDescription];
     
 }
 
@@ -204,13 +238,13 @@
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 @end

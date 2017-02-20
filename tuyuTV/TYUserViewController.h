@@ -18,6 +18,7 @@
 @property (nonatomic, strong) NSArray *channelVideos;
 @property (nonatomic, strong) NSDictionary *playlistDictionary;
 @property (nonatomic, strong) NSArray *sectionLabels;
+
 @end
 
 

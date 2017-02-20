@@ -31,9 +31,10 @@
 @property (nonatomic, strong) NSDictionary *playlistDictionary;
 @property (nonatomic, strong) NSArray *sectionLabels;
 @property (nonatomic, weak) UICollectionViewCell *focusedCollectionCell;
-
+@property (readwrite, assign) CGFloat totalHeight;
 @property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
 @property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
+@property (nonatomic, strong) NSLayoutConstraint *featuredHeightConstraint;
 
 - (void)showChannel:(KBYTSearchResult *)searchResult;
 - (void)playAllSearchResults:(NSArray *)searchResults;

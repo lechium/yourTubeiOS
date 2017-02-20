@@ -97,7 +97,7 @@ static int headerTagOffset = 70;
 
 @interface TYBaseGridViewController ()
 {
-    CGFloat _totalHeight; //keep track of the total height of the scrollViews content view based on collection views
+    //CGFloat _totalHeight; //keep track of the total height of the scrollViews content view based on collection views
     NSInteger _focusedCollectionView;
 }
 
@@ -223,7 +223,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     [self.featuredVideosCollectionView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.scrollView withOffset:20];
     
-    [self.featuredVideosCollectionView autoSetDimension:ALDimensionHeight toSize:480];
+    self.featuredHeightConstraint =  [self.featuredVideosCollectionView autoSetDimension:ALDimensionHeight toSize:480];
     
     [self.featuredVideosCollectionView autoSetDimension:ALDimensionWidth toSize:1920];
     

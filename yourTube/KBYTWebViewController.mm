@@ -340,6 +340,49 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
  
  */
 
+- (void)tryPrintIvars:(id)inputObj
+{
+    Class clazz = [inputObj class];
+    u_int count;
+    Ivar* ivars = class_copyIvarList(clazz, &count);
+    NSMutableArray* ivarArray = [NSMutableArray arrayWithCapacity:count];
+    for (int i = 0; i < count ; i++)
+    {
+        const char* ivarName = ivar_getName(ivars[i]);
+        [ivarArray addObject:[NSString  stringWithCString:ivarName encoding:NSUTF8StringEncoding]];
+    }
+    free(ivars);
+    __block NSMutableDictionary *dict = [NSMutableDictionary new];
+    [ivarArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+       
+        id theObj = nil;
+        
+        @try {
+        
+            theObj = [inputObj valueForKey:obj];
+            
+        }
+        @catch (NSException *exception) {
+      
+        }
+        
+        if (theObj != nil)
+        {
+            @try {
+                
+                [dict setValue:theObj forKey:obj];
+                
+            }
+            @catch (NSException *exception) {
+                
+            }
+            
+        }
+        
+    }];
+    DLog(@"ivars: %@", dict);
+}
+
 - (void)classDumpObject:(id)obj
 {
     Class clazz = [obj class];
