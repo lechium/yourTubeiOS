@@ -84,6 +84,11 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
 
 @end
 
+@interface YTPlayerItem: AVPlayerItem
+
+@property (nonatomic, weak) NSObject <YTPlayerItemProtocol> *associatedMedia;
+
+@end
 
 @interface KBYTMedia : NSObject <YTPlayerItemProtocol>
 
@@ -100,15 +105,12 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
 
 - (BOOL)isExpired;
 - (NSDictionary *)dictionaryRepresentation;
+- (YTPlayerItem *)playerItemRepresentation;
 @end
 
 
 
-@interface YTPlayerItem: AVPlayerItem
 
-@property (nonatomic, weak) NSObject <YTPlayerItemProtocol> *associatedMedia;
-
-@end
 
 @interface KBYTSearchResult: NSObject
 

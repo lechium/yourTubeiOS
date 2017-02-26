@@ -294,6 +294,59 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 @implementation KBYTMedia
 
+- (AVMetadataItem *)metadataItemWithIdentifier:(NSString *)identifier value:(id<NSObject, NSCopying>) value
+{
+    AVMutableMetadataItem *item = [[AVMutableMetadataItem alloc]init];
+    item.value = value;
+    item.identifier = identifier;
+    item.extendedLanguageTag = @"und";
+    return [item copy];
+}
+
+#if TARGET_OS_TV
+- (AVMetadataItem *)metadataArtworkItemWithImage:(UIImage *)image
+{
+    AVMutableMetadataItem *item = [[AVMutableMetadataItem alloc]init];
+    item.value = UIImagePNGRepresentation(image);
+    item.dataType = (__bridge NSString * _Nullable)(kCMMetadataBaseDataType_PNG);
+    item.identifier = AVMetadataCommonIdentifierArtwork;
+    item.extendedLanguageTag = @"und";
+    return item.copy;
+}
+
+#endif
+
+
+
+- (YTPlayerItem *)playerItemRepresentation
+{
+    KBYTStream *firstStream = [self streams][0];
+    
+   
+    YTPlayerItem *mediaItem = [[YTPlayerItem alloc] initWithURL:firstStream.url];
+    mediaItem.associatedMedia = self;
+#if TARGET_OS_TV
+    NSMutableArray <AVMetadataItem *> *allItems = [NSMutableArray new];
+    [allItems addObject:[self metadataItemWithIdentifier:AVMetadataCommonIdentifierTitle value:self.title]];
+    [allItems addObject:[self metadataItemWithIdentifier:AVMetadataCommonIdentifierDescription value:self.details]];
+    [allItems addObject:[self metadataItemWithIdentifier:AVMetadataIdentifierQuickTimeMetadataArtist value:self.author]];
+  
+    
+   
+    NSString *artworkPath = self.images[@"medium"];
+    if (artworkPath == nil)
+        artworkPath = self.images[@"standard"];
+    if (artworkPath == nil)
+        artworkPath = self.images[@"high"];
+    NSData *imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:artworkPath]];
+    UIImage *theImage = [UIImage imageWithData:imageData];
+    [allItems addObject:[self metadataArtworkItemWithImage:theImage]];
+    
+    mediaItem.externalMetadata = allItems;
+#endif
+    return mediaItem;
+}
+
 - (BOOL)isExpired
 {
     if ([NSDate passedEpochDateInterval:self.expireTime])

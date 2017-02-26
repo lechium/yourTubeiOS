@@ -11,8 +11,7 @@ In conjunction it uses the browser view controller from http://github.com/jvanak
 
 You'll need to redefine the following in Availability.h to build the tvOS target successfully.
 ```
-Availability.h for the AppleTV is located in Xcode>Contents>Developer>Platforms>AppleTVOS.platform>Developer>SDKs>AppleTVOS.sdk>usr>include
-Availability.h for the AppleTV Simulator is located in Xcode>Contents>Developer>Platforms>AppleTVSimulator.platform>Developer>SDKs>AppleTVSimulator.sdk>usr>include
+Availability.h for the AppleTV is located in Xcode.app/Contents/Developer/Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS.sdk/usr/include/Availability.h for the AppleTV Simulator is located in Xcode.app/Contents/Developer/Platforms/AppleTVSimulator.platform/Developer/SDKs/AppleTVSimulator.sdk/usr/include
 ```
 Change:
 ```

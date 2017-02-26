@@ -100,7 +100,8 @@
     {
         if ([result media] != nil)
         {
-            YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:[[[[result media]streams] firstObject]url]];
+            YTPlayerItem *playerItem = [[result media] playerItemRepresentation];
+            //YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:[[[[result media]streams] firstObject]url]];
             playerItem.associatedMedia = [result media];
             if (playerItem != nil)
             {

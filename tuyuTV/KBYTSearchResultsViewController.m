@@ -328,9 +328,11 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         [SVProgressHUD dismiss];
 
         [[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
-        NSURL *playURL = [[videoDetails.streams firstObject] url];
+        //NSURL *playURL = [[videoDetails.streams firstObject] url];
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
-        AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
+        AVPlayerItem *singleItem = [videoDetails playerItemRepresentation];
+        DLog(@"singleItem meta: %@", singleItem.externalMetadata );
+        //AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
         playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
         [[self.presentingViewController navigationController] pushViewController:playerView animated:true];
         [playerView.player play];

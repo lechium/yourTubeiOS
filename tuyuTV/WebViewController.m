@@ -161,8 +161,8 @@ typedef struct _Input
     
     NSString * email = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"Email\").placeholder;"];
     
-    
-    if ([email isEqualToString:@"Enter your email"] && ![currentURL isEqualToString:@"https://accounts.google.com/ServiceLoginAuth"] && emailEntered == NO)
+    //[email isEqualToString:@"Enter your email"]
+    if ((email.length > 0) && ![currentURL isEqualToString:@"https://accounts.google.com/ServiceLoginAuth"] && emailEntered == NO)
     {
         [self promptForEmail];
         return;
@@ -170,7 +170,8 @@ typedef struct _Input
     
     NSString *password = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"Passwd\").placeholder;"];
     
-    if ([password isEqualToString:@"Password"])
+    //if ([password isEqualToString:@"Password"])
+    if(password.length > 0)
     {
         
         [self promptForPassword];
