@@ -319,6 +319,16 @@
     
    // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
  
+    
+    [[KBYourTube sharedInstance] getOrganizedChannelData:@"UC1vTH0ByVIcIOB83FbvHP7Q" completionBlock:^(NSDictionary *searchDetails) {
+        //
+        
+        DLog(@"search: %@", searchDetails);
+        
+    } failureBlock:^(NSString *error) {
+        //
+    }];
+    
      NSLog(@"app support: %@", [self appSupportFolder]);
     self.tabBar = (UITabBarController *)self.window.rootViewController;
    // self.tabBar.tabBar.translucent = false;
@@ -344,7 +354,7 @@
     {
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
            
-           // NSLog(@"userdeets : %@", outputResults);
+           //NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
             
             TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];

@@ -196,6 +196,10 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
  
  */
 
+- (void)getOrganizedChannelData:(NSString *)channelID
+                completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
+                   failureBlock:(void(^)(NSString* error))failureBlock;
+
 - (void)youTubeSearch:(NSString *)searchQuery
            pageNumber:(NSInteger)page
     includeAllResults:(BOOL)includeAl
@@ -206,9 +210,15 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
           completionBlock:(void(^)(NSDictionary * playlistDetails))completionBlock
              failureBlock:(void(^)(NSString *error))failureBlock;
 
+
+
 - (void)getChannelVideos:(NSString *)channelID
          completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
             failureBlock:(void(^)(NSString *error))failureBlock;
+
+- (void)getAllFeaturedVideosWithFilter:(NSString *)filter
+                       completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
+                          failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)getFeaturedVideosWithCompletionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
                                 failureBlock:(void(^)(NSString* error))failureBlock;
