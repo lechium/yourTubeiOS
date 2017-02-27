@@ -21,6 +21,7 @@
  
  */
 
+#import "KBYTGridChannelViewController.h"
 #import "AppDelegate.h"
 #import "KBYourTube.h"
 #import "KBYourTube+Categories.h"
@@ -276,8 +277,13 @@
     }];
 }
 
+
 - (void)showChannel:(NSString *)videoId
 {
+    
+    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:videoId];
+    [self presentViewController:cv animated:true completion:nil];
+  /*
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     KBYTChannelViewController *cv = [sb instantiateViewControllerWithIdentifier:@"channelViewController"];
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
@@ -300,6 +306,7 @@
     } failureBlock:^(NSString *error) {
         
     }];
+   */
 }
 
 - (void)itemDidFinishPlaying:(NSNotification *)n
@@ -319,15 +326,6 @@
     
    // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
  
-    
-    [[KBYourTube sharedInstance] getOrganizedChannelData:@"UC1vTH0ByVIcIOB83FbvHP7Q" completionBlock:^(NSDictionary *searchDetails) {
-        //
-        
-        DLog(@"search: %@", searchDetails);
-        
-    } failureBlock:^(NSString *error) {
-        //
-    }];
     
      NSLog(@"app support: %@", [self appSupportFolder]);
     self.tabBar = (UITabBarController *)self.window.rootViewController;

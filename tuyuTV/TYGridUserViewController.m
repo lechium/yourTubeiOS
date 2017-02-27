@@ -11,6 +11,7 @@
 @interface TYGridUserViewController ()
 {
     BOOL _didAdjustTotalHeight;
+    
 }
 @end
 
@@ -36,7 +37,6 @@
         }
         self.playlistDictionary = finishedDetails;
         
-        
         [super reloadCollectionViews];
     }];
 }
@@ -54,6 +54,7 @@
     }
     
 }
+
 
 
 - (void)handleMenuTap:(id)sender

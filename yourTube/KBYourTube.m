@@ -1878,6 +1878,78 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSString *rawRequestResult = [self stringFromRequest:requestString];
             ONOXMLDocument *xmlDoc = [ONOXMLDocument HTMLDocumentWithString:rawRequestResult encoding:NSUTF8StringEncoding error:nil];
             ONOXMLElement *root = [xmlDoc rootElement];
+            
+            //START NEW STUFFZ
+            
+            ONOXMLElement *headerSection = [root firstChildWithXPath:@"//div[contains(@id, 'gh-banner')]"];
+            NSString *headerString = [[[headerSection children] firstObject] stringValue];
+            // DLog(@"headerString: %@", headerString);
+            NSScanner *bannerScanner = [NSScanner scannerWithString:headerString];
+            NSString *headerBanner = nil;
+            [bannerScanner scanUpToString:@");" intoString:&headerBanner];
+            headerBanner = [[headerBanner componentsSeparatedByString:@"//"] lastObject];
+            if (headerBanner != nil){
+                headerBanner = [@"https://" stringByAppendingString:headerBanner];
+            }
+            NSMutableDictionary *finalDict = [NSMutableDictionary new];
+            NSMutableArray *sections = [NSMutableArray new];
+            ONOXMLElement *channelNameElement = [root firstChildWithXPath:@"//meta[contains(@name, 'title')]"];
+            ONOXMLElement *channelDescElement = [root firstChildWithXPath:@"//meta[contains(@name, 'description')]"];
+            
+            //<span class="yt-subscription-button-subscriber-count-branded-horizontal subscribed yt-uix-tooltip" title="10,323,793" tabindex="0" aria-label="10,323,793 subscribers" data-tooltip-text="10,323,793" aria-labelledby="yt-uix-tooltip88-arialabel">10,323,793</span>
+            
+            ONOXMLElement *channelSubscribersElement = [root firstChildWithXPath:@"//span[contains(@class, 'yt-subscription-button-subscriber-count-branded-horizontal')]"];
+            
+            ONOXMLElement *channelKeywordsElement = [root firstChildWithXPath:@"//meta[contains(@name, 'keywords')]"];
+            ONOXMLElement *channelThumbNailElement = [[[root firstChildWithXPath:@".//*[contains(@class, 'channel-header-profile-image-container')]"] children] firstObject];
+            
+            
+            NSString *headerThumb = nil;
+            
+            if (channelThumbNailElement != nil)
+            {
+                headerThumb = [channelThumbNailElement valueForAttribute:@"src"];
+                if (![headerThumb containsString:@"https"])
+                {
+                    finalDict[@"thumbnail"] = [@"https:" stringByAppendingString:headerThumb];
+                    
+                    //NSLog(@"hop  %@", headerThumb);
+                } else {
+                    
+                    finalDict[@"thumbnail"] = headerThumb;
+                    
+                }
+            }
+            
+            finalDict[@"channelID"] = channelID;
+            
+            if (channelSubscribersElement != nil)
+            {
+                finalDict[@"subscribers"] = [channelSubscribersElement valueForAttribute:@"aria-label"];
+            }
+            
+            if (channelNameElement != nil)
+            {
+                finalDict[@"name"] = [channelNameElement valueForAttribute:@"content"];
+            }
+            if (channelDescElement != nil)
+            {
+                finalDict[@"description"] = [channelDescElement valueForAttribute:@"content"];
+            }
+            if (channelKeywordsElement != nil)
+            {
+                finalDict[@"keywords"] = [channelKeywordsElement valueForAttribute:@"content"];
+            }
+            if (headerBanner != nil)
+            {
+                finalDict[@"banner"] = headerBanner;
+            }
+            
+            
+            
+            
+            //END NEW STUFFZ
+            
             //NSLog(@"root element: %@", root);
             //NSString *XPath = @"//ol[contains(@class, 'section-list')]";
             ONOXMLElement *sectionListElement = root;
@@ -1893,7 +1965,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             
             ONOXMLElement *videosElement = nil;
             //  NSMutableArray *videoArray = [NSMutableArray new];
-            NSMutableDictionary *finalDict = [NSMutableDictionary new];
             while (videosElement = [sectionEnum nextObject])
             {
                 NSMutableDictionary *channelDict = [NSMutableDictionary new];
@@ -2075,8 +2146,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         }
                     }
                     
-                    channelDict[@"videos"] = finalArray;
-                    finalDict[channelName] = channelDict;
+                    if (finalArray.count > 0){
+                        channelDict[@"videos"] = finalArray;
+                        finalDict[channelName] = channelDict;
+                        [sections addObject:channelName];
+                    }
                     
                 } else {
                     while (currentElement = [videoEnum nextObject])
@@ -2089,7 +2163,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             result.videoId = videoID;
                         }
                         result.resultType = YTSearchResultTypeVideo;
-                        ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
+                        ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-clip')]"] children] firstObject];
                         ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                         ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"];
                         ;
@@ -2151,9 +2225,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             result = nil;
                         }
                         
+                        
+                    }
+                    
+                    if (finalArray.count > 0){
                         channelDict[@"videos"] = finalArray;
                         finalDict[channelName] = channelDict;
+                        [sections addObject:channelName];
                     }
+                    
                 }
                 //NSMutableDictionary *outputDict = [NSMutableDictionary new];
 
@@ -2161,9 +2241,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             
             
             
-            
             if ([finalDict.allKeys count] > 0)
             {
+                finalDict[@"sections"] = sections;
+                
                 ONOXMLElement *loadMoreButton = [root firstChildWithXPath:@"//button[contains(@class, 'load-more-button')]"];
                 NSString *loadMoreHREF = [loadMoreButton valueForAttribute:@"data-uix-load-more-href"];
                 if (loadMoreHREF != nil){

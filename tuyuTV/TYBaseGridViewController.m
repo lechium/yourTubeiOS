@@ -8,7 +8,7 @@
 
 #import "TYBaseGridViewController.h"
 #import "TYAuthUserManager.h"
-
+#import "KBYTGridChannelViewController.h"
 /*
  
  Tag offsets are used for both the collection views and their header views to be able to query them easily
@@ -46,16 +46,6 @@ static int headerTagOffset = 70;
 
 @end
 
-@interface TYBaseGridCollectionHeaderView : UICollectionReusableView
-{
-    
-}
-@property (strong, nonatomic) UILabel *title;
-@property (readwrite, assign) CGFloat topOffset; //when 0,0 is selected, change this offset to shift the header up
-@property (nonatomic, strong) NSLayoutConstraint *topConstraint;
-- (void)updateTopOffset:(CGFloat)offset;
-
-@end
 
 
 
@@ -169,11 +159,30 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     NSLog(@"location: %@", NSStringFromCGPoint(location));
 }
 
+- (KBYTChannelHeaderView *)headerview
+{
+    return nil;
+}
+
 - (void)setupViews
 {
     self.scrollView = [[UIScrollView alloc] initForAutoLayout];
     self.scrollView.translatesAutoresizingMaskIntoConstraints = false;
     [self.view addSubview:self.scrollView];
+    KBYTChannelHeaderView *headerView = [self headerview];
+    if (headerView != nil)
+    {
+        [self.view addSubview:headerView];
+        //[headerView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+        [headerView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        [headerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+        [headerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+        [headerView setupView];
+        [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0];
+    } else {
+        
+        [self.scrollView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    }
     
     //left here for posterity, this is why they were not working, do NOT pin the size of a UIScrollView, just
     //its edges!!!
@@ -182,7 +191,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     //[self.scrollView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self.view];
     [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    [self.scrollView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    
     [self.scrollView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
     self.scrollView.userInteractionEnabled = true;
     self.scrollView.scrollEnabled = true;
@@ -623,6 +632,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)showChannel:(KBYTSearchResult *)searchResult
 {
+    
+    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
+    [self presentViewController:cv animated:true completion:nil];
+    /*
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     KBYTChannelViewController *cv = [sb instantiateViewControllerWithIdentifier:@"channelViewController"];
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
@@ -645,6 +658,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     } failureBlock:^(NSString *error) {
         
     }];
+     */
 }
 
 //datasoure method that will return a title for the respective section

@@ -13,6 +13,7 @@
 #import "SVProgressHUD.h"
 #import "TYTVHistoryManager.h"
 #import "TYAuthUserManager.h"
+#import "CollectionViewLayout.h"
 
 @interface KBYTChannelViewController ()
 
@@ -44,6 +45,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     [self.subscribersLabel shadowify];
     // Do any additional setup after loading the view.
 }
+
+
 
 - (void)viewWillAppear:(BOOL)animated
 {

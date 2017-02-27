@@ -19,6 +19,8 @@
 		328E33801E4F868C00C544ED /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328E337F1E4F868C00C544ED /* TVServices.framework */; };
 		328E33841E4F868C00C544ED /* ServiceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 328E33831E4F868C00C544ED /* ServiceProvider.m */; };
 		328E33881E4F868C00C544ED /* tuyuShelf.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 328E337E1E4F868C00C544ED /* tuyuShelf.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		32B022821E63EB2C002211C3 /* KBYTGridChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B022811E63EB2C002211C3 /* KBYTGridChannelViewController.m */; };
+		32B022851E63EB82002211C3 /* KBYTChannelHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B022841E63EB82002211C3 /* KBYTChannelHeaderView.m */; };
 		892669151C88AD5200082B31 /* libxml2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 892669141C88AD5200082B31 /* libxml2.2.dylib */; };
 		8926691D1C88B1A900082B31 /* MarqueeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8926691A1C88B1A900082B31 /* MarqueeLabel.m */; };
 		8926691E1C88B1BB00082B31 /* KBYTPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */; };
@@ -363,6 +365,10 @@
 		328E33821E4F868C00C544ED /* ServiceProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ServiceProvider.h; sourceTree = "<group>"; };
 		328E33831E4F868C00C544ED /* ServiceProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ServiceProvider.m; sourceTree = "<group>"; };
 		328E33851E4F868C00C544ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		32B022801E63EB2C002211C3 /* KBYTGridChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBYTGridChannelViewController.h; sourceTree = "<group>"; };
+		32B022811E63EB2C002211C3 /* KBYTGridChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTGridChannelViewController.m; sourceTree = "<group>"; };
+		32B022831E63EB82002211C3 /* KBYTChannelHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBYTChannelHeaderView.h; sourceTree = "<group>"; };
+		32B022841E63EB82002211C3 /* KBYTChannelHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTChannelHeaderView.m; sourceTree = "<group>"; };
 		8912FA4F1C6E731D00FB6D67 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8912FA501C6E731D00FB6D67 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8912FA551C6EE29400FB6D67 /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
@@ -1036,6 +1042,10 @@
 				898E926F1C8D056700B34DAA /* FirstViewController.m */,
 				898E93631C8D7ECE00B34DAA /* UserViewController.h */,
 				898E93641C8D7ECE00B34DAA /* UserViewController.m */,
+				32B022831E63EB82002211C3 /* KBYTChannelHeaderView.h */,
+				32B022841E63EB82002211C3 /* KBYTChannelHeaderView.m */,
+				32B022801E63EB2C002211C3 /* KBYTGridChannelViewController.h */,
+				32B022811E63EB2C002211C3 /* KBYTGridChannelViewController.m */,
 				899876701CDEB109006A639E /* TYBaseGridViewController.h */,
 				899876711CDEB109006A639E /* TYBaseGridViewController.m */,
 				899876501CDE7725006A639E /* TYUserViewController.h */,
@@ -1831,6 +1841,7 @@
 				898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */,
 				898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */,
 				898E934F1C8D56D100B34DAA /* SDWebImageDownloaderOperation.m in Sources */,
+				32B022851E63EB82002211C3 /* KBYTChannelHeaderView.m in Sources */,
 				899876621CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,
 				898E93511C8D56D100B34DAA /* SDWebImagePrefetcher.m in Sources */,
 				898E93061C8D565300B34DAA /* KBYTDownloadOperation.m in Sources */,
@@ -1869,6 +1880,7 @@
 				898E93661C8D8FA900B34DAA /* KBYTSearchTableViewController.m in Sources */,
 				898E93101C8D569100B34DAA /* Reachability.m in Sources */,
 				898E93031C8D564100B34DAA /* APDocument.m in Sources */,
+				32B022821E63EB2C002211C3 /* KBYTGridChannelViewController.m in Sources */,
 				898E936E1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m in Sources */,
 				898E93081C8D565800B34DAA /* KBYTQueuePlayer.m in Sources */,
 				898E93571C8D56D100B34DAA /* UIImageView+WebCache.m in Sources */,

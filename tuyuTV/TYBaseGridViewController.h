@@ -19,12 +19,28 @@
 #import "YTTVFeaturedCollectionViewCell.h"
 #import "KBYTChannelViewController.h"
 #import "TYTVHistoryManager.h"
+#import "KBYTChannelHeaderView.h"
+
+@interface TYBaseGridCollectionHeaderView : UICollectionReusableView
+{
+    
+}
+@property (strong, nonatomic) UILabel *title;
+@property (readwrite, assign) CGFloat topOffset; //when 0,0 is selected, change this offset to shift the header up
+@property (nonatomic, strong) NSLayoutConstraint *topConstraint;
+- (void)updateTopOffset:(CGFloat)offset;
+
+@end
+
 
 @interface TYBaseGridViewController : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
 {
     NSMutableArray *_backingSectionLabels;
     
 }
+
+
+@property (nonatomic, strong) UIView *headerView;
 @property (nonatomic, strong) UICollectionView *featuredVideosCollectionView;
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) NSArray *featuredVideos;
@@ -36,6 +52,8 @@
 @property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 @property (nonatomic, strong) NSLayoutConstraint *featuredHeightConstraint;
 
+
+- (KBYTChannelHeaderView *)headerview;
 - (void)showChannel:(KBYTSearchResult *)searchResult;
 - (void)playAllSearchResults:(NSArray *)searchResults;
 - (void)playFirstStreamForResult:(KBYTSearchResult *)searchResult;
