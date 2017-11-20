@@ -10,7 +10,7 @@
 #import "SVProgressHUD/SVProgressHUD.h"
 #import "SVProgressHUD/SVIndefiniteAnimatedView.h"
 #import "KBYTSearchItemViewController.h"
-
+//#import "TYAuthUserManager.h"
 
 @interface KBYTGenericVideoTableViewController ()
 
@@ -54,7 +54,150 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self updateTableForType:self.tableType];
+    
+    UILongPressGestureRecognizer *longpress
+    = [[UILongPressGestureRecognizer alloc]
+       initWithTarget:self action:@selector(handleLongpressMethod:)];
+    longpress.minimumPressDuration = .5; //seconds
+    longpress.delegate = self;
+    [self.tableView addGestureRecognizer:longpress];
+    
 }
+
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        
+        DLog(@"add video: %@ to playlistID: %@", video, playlist);
+       // [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
+        
+    });
+    
+}
+
+
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Video Options"
+                                          message: @"Choose playlist to add video to"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    //NSArray *playlistArray = [[TYAuthUserManager sharedInstance] playlists];
+    NSArray *playlistArray = @[];
+    
+   // __weak typeof(self) weakSelf = self;
+    self.alertHandler = ^(UIAlertAction *action)
+    {
+        NSString *playlistID = nil;
+        
+        for (KBYTSearchResult *result in playlistArray)
+        {
+            if ([result.title isEqualToString:action.title])
+            {
+                playlistID = result.videoId;
+            }
+        }
+        
+        [self addVideo:result toPlaylist:playlistID];
+    };
+    
+    for (KBYTSearchResult *result in playlistArray)
+    {
+        UIAlertAction *plAction = [UIAlertAction actionWithTitle:result.title style:UIAlertActionStyleDefault handler:self.alertHandler];
+        [alertController addAction:plAction];
+    }
+    
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    
+    
+    
+    [alertController addAction:cancelAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+    
+    
+}
+
+- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Channel Options"
+                                          message: @"Subscribe to this channel?"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+           // [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            
+            
+        });
+        
+        
+    }];
+    [alertController addAction:yesAction];
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    [alertController addAction:yesAction];
+    [alertController addAction:cancelAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    LOG_SELF;
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    
+    if ([UD valueForKey:@"access_token"] == nil)
+    {
+        DLog(@"NO ACCESS KEY");
+        return;
+    }
+    
+    CGPoint location = [gestureRecognizer locationInView:self.tableView];
+    //Get the corresponding index path within the table view
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    KBYTSearchResult *result = [self.searchResults objectAtIndex:indexPath.row];
+    DLog(@"result: %@", result);
+    
+    switch (result.resultType)
+    {
+        case YTSearchResultTypeVideo:
+            
+            [self showPlaylistAlertForSearchResult:result];
+            break;
+            
+        case YTSearchResultTypeChannel:
+            
+            [self showChannelAlertForSearchResult:result];
+            break;
+            
+        case YTSearchResultTypePlaylist:
+            
+            break;
+            
+        case YTSearchResultTypeUnknown:
+            
+            break;
+    }
+    
+}
+
 
 - (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier
 {
@@ -466,6 +609,43 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     self.navigationItem.rightBarButtonItem = playButton;
 }
 
+- (void)playFromIndex:(NSInteger)index
+{
+    DLOG_SELF;
+    NSArray *subarray = [self.searchResults subarrayWithRange:NSMakeRange(index, self.searchResults.count-index)];
+    [self playAllSearchResults:subarray];
+    
+}
+
+- (void)playAllSearchResults:(NSArray *)searchResults
+{
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD show];
+    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
+        
+        [SVProgressHUD dismiss];
+        self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
+        
+        [self presentViewController:self.playerView animated:YES completion:nil];
+        [[self.playerView player] play];
+        NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(1, searchResults.count-1)];
+        
+        NSDate *myStart = [NSDate date];
+        [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
+            
+            NSLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            [self.playerView addObjectsToPlayerQueue:videoArray];
+            
+        } failureBlock:^(NSString *error) {
+            
+        }];
+        
+        
+    } failureBlock:^(NSString *error) {
+        
+    }];
+}
+
 - (void)playAll
 {
     self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:self.searchResults];
@@ -659,7 +839,9 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     
     cell.downloading = false;
-    NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
+    NSString *secPath = [currentItem.imagePath stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
+    NSURL *imageURL = [NSURL URLWithString:secPath];
+    
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceHolderImage"];
     // UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"YTPlaceHolderImage" ofType:@"png"]];
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
@@ -694,6 +876,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     if ([currentResult media] != nil)
     {
         KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:[currentResult media]];
+        searchItem.delegate = self;
+        searchItem.index = indexPath.row;
         [[self navigationController] pushViewController:searchItem animated:true];
         return;
     }
@@ -701,9 +885,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForID:currentResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
         
-        //
+        
         [SVProgressHUD dismiss];
         KBYTSearchItemViewController *searchItem = [[KBYTSearchItemViewController alloc] initWithMedia:videoDetails];
+        searchItem.delegate = self;
+        searchItem.index = indexPath.row;
         [[self navigationController] pushViewController:searchItem animated:true];
         
     } failureBlock:^(NSString *error) {

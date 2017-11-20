@@ -16,11 +16,40 @@
 		3204FFFD1E4F8C8200D3B8B0 /* KBYourTube.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */; };
 		3204FFFE1E4F8C8400D3B8B0 /* KBYourTube+Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */; };
 		3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A241C5E8B3D00F50BC2 /* APAttribute.m */; };
+		324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */; };
+		324CDA4A1FC24B4F003B3A0F /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93611C8D74B300B34DAA /* WebViewController.m */; };
 		328E33801E4F868C00C544ED /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328E337F1E4F868C00C544ED /* TVServices.framework */; };
 		328E33841E4F868C00C544ED /* ServiceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 328E33831E4F868C00C544ED /* ServiceProvider.m */; };
 		328E33881E4F868C00C544ED /* tuyuShelf.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 328E337E1E4F868C00C544ED /* tuyuShelf.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		32B022821E63EB2C002211C3 /* KBYTGridChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B022811E63EB2C002211C3 /* KBYTGridChannelViewController.m */; };
 		32B022851E63EB82002211C3 /* KBYTChannelHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B022841E63EB82002211C3 /* KBYTChannelHeaderView.m */; };
+		32C35AC81F3B173D000D24C7 /* Original Run script in Resources */ = {isa = PBXBuildFile; fileRef = 32C35AC71F3B173D000D24C7 /* Original Run script */; };
+		32D2A1381F424805006F24B3 /* AFgzipRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1231F424805006F24B3 /* AFgzipRequestSerializer.m */; };
+		32D2A1391F424805006F24B3 /* AFgzipRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1231F424805006F24B3 /* AFgzipRequestSerializer.m */; };
+		32D2A13A1F424805006F24B3 /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1251F424805006F24B3 /* AFHTTPSessionManager.m */; };
+		32D2A13B1F424805006F24B3 /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1251F424805006F24B3 /* AFHTTPSessionManager.m */; };
+		32D2A13C1F424805006F24B3 /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1281F424805006F24B3 /* AFNetworkReachabilityManager.m */; };
+		32D2A13D1F424805006F24B3 /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1281F424805006F24B3 /* AFNetworkReachabilityManager.m */; };
+		32D2A13E1F424805006F24B3 /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12A1F424805006F24B3 /* AFSecurityPolicy.m */; };
+		32D2A13F1F424805006F24B3 /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12A1F424805006F24B3 /* AFSecurityPolicy.m */; };
+		32D2A1401F424805006F24B3 /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12C1F424805006F24B3 /* AFURLRequestSerialization.m */; };
+		32D2A1411F424805006F24B3 /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12C1F424805006F24B3 /* AFURLRequestSerialization.m */; };
+		32D2A1421F424805006F24B3 /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12E1F424805006F24B3 /* AFURLResponseSerialization.m */; };
+		32D2A1431F424805006F24B3 /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12E1F424805006F24B3 /* AFURLResponseSerialization.m */; };
+		32D2A1441F424805006F24B3 /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1301F424805006F24B3 /* AFURLSessionManager.m */; };
+		32D2A1451F424805006F24B3 /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1301F424805006F24B3 /* AFURLSessionManager.m */; };
+		32D2A1461F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1331F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m */; };
+		32D2A1471F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1331F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m */; };
+		32D2A1481F424805006F24B3 /* AFOAuth2Manager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1351F424805006F24B3 /* AFOAuth2Manager.m */; };
+		32D2A1491F424805006F24B3 /* AFOAuth2Manager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1351F424805006F24B3 /* AFOAuth2Manager.m */; };
+		32D2A14A1F424805006F24B3 /* AFOAuthCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1371F424805006F24B3 /* AFOAuthCredential.m */; };
+		32D2A14B1F424805006F24B3 /* AFOAuthCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1371F424805006F24B3 /* AFOAuthCredential.m */; };
+		32D2A1521F424F1C006F24B3 /* NSData+Godzippa.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A14F1F424F1C006F24B3 /* NSData+Godzippa.m */; };
+		32D2A1531F424F1C006F24B3 /* NSData+Godzippa.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A14F1F424F1C006F24B3 /* NSData+Godzippa.m */; };
+		32D2A1541F424F1C006F24B3 /* NSFileManager+Godzippa.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1511F424F1C006F24B3 /* NSFileManager+Godzippa.m */; };
+		32D2A1551F424F1C006F24B3 /* NSFileManager+Godzippa.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1511F424F1C006F24B3 /* NSFileManager+Godzippa.m */; };
+		32D2A1571F424F4E006F24B3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32D2A1561F424F4E006F24B3 /* libz.tbd */; };
+		32D2A1591F424F56006F24B3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32D2A1581F424F56006F24B3 /* libz.tbd */; };
 		892669151C88AD5200082B31 /* libxml2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 892669141C88AD5200082B31 /* libxml2.2.dylib */; };
 		8926691D1C88B1A900082B31 /* MarqueeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8926691A1C88B1A900082B31 /* MarqueeLabel.m */; };
 		8926691E1C88B1BB00082B31 /* KBYTPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */; };
@@ -369,6 +398,35 @@
 		32B022811E63EB2C002211C3 /* KBYTGridChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTGridChannelViewController.m; sourceTree = "<group>"; };
 		32B022831E63EB82002211C3 /* KBYTChannelHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBYTChannelHeaderView.h; sourceTree = "<group>"; };
 		32B022841E63EB82002211C3 /* KBYTChannelHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTChannelHeaderView.m; sourceTree = "<group>"; };
+		32C35AC71F3B173D000D24C7 /* Original Run script */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "Original Run script"; path = "tuyuTV/Original Run script"; sourceTree = "<group>"; };
+		32D2A1221F424805006F24B3 /* AFgzipRequestSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFgzipRequestSerializer.h; sourceTree = "<group>"; };
+		32D2A1231F424805006F24B3 /* AFgzipRequestSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFgzipRequestSerializer.m; sourceTree = "<group>"; };
+		32D2A1241F424805006F24B3 /* AFHTTPSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPSessionManager.h; sourceTree = "<group>"; };
+		32D2A1251F424805006F24B3 /* AFHTTPSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPSessionManager.m; sourceTree = "<group>"; };
+		32D2A1261F424805006F24B3 /* AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworking.h; sourceTree = "<group>"; };
+		32D2A1271F424805006F24B3 /* AFNetworkReachabilityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkReachabilityManager.h; sourceTree = "<group>"; };
+		32D2A1281F424805006F24B3 /* AFNetworkReachabilityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkReachabilityManager.m; sourceTree = "<group>"; };
+		32D2A1291F424805006F24B3 /* AFSecurityPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFSecurityPolicy.h; sourceTree = "<group>"; };
+		32D2A12A1F424805006F24B3 /* AFSecurityPolicy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFSecurityPolicy.m; sourceTree = "<group>"; };
+		32D2A12B1F424805006F24B3 /* AFURLRequestSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLRequestSerialization.h; sourceTree = "<group>"; };
+		32D2A12C1F424805006F24B3 /* AFURLRequestSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLRequestSerialization.m; sourceTree = "<group>"; };
+		32D2A12D1F424805006F24B3 /* AFURLResponseSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLResponseSerialization.h; sourceTree = "<group>"; };
+		32D2A12E1F424805006F24B3 /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLResponseSerialization.m; sourceTree = "<group>"; };
+		32D2A12F1F424805006F24B3 /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLSessionManager.h; sourceTree = "<group>"; };
+		32D2A1301F424805006F24B3 /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
+		32D2A1321F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AFHTTPRequestSerializer+OAuth2.h"; sourceTree = "<group>"; };
+		32D2A1331F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AFHTTPRequestSerializer+OAuth2.m"; sourceTree = "<group>"; };
+		32D2A1341F424805006F24B3 /* AFOAuth2Manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFOAuth2Manager.h; sourceTree = "<group>"; };
+		32D2A1351F424805006F24B3 /* AFOAuth2Manager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFOAuth2Manager.m; sourceTree = "<group>"; };
+		32D2A1361F424805006F24B3 /* AFOAuthCredential.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFOAuthCredential.h; sourceTree = "<group>"; };
+		32D2A1371F424805006F24B3 /* AFOAuthCredential.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFOAuthCredential.m; sourceTree = "<group>"; };
+		32D2A14D1F424F1C006F24B3 /* Godzippa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Godzippa.h; sourceTree = "<group>"; };
+		32D2A14E1F424F1C006F24B3 /* NSData+Godzippa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Godzippa.h"; sourceTree = "<group>"; };
+		32D2A14F1F424F1C006F24B3 /* NSData+Godzippa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Godzippa.m"; sourceTree = "<group>"; };
+		32D2A1501F424F1C006F24B3 /* NSFileManager+Godzippa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+Godzippa.h"; sourceTree = "<group>"; };
+		32D2A1511F424F1C006F24B3 /* NSFileManager+Godzippa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+Godzippa.m"; sourceTree = "<group>"; };
+		32D2A1561F424F4E006F24B3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.1.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
+		32D2A1581F424F56006F24B3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.2.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
 		8912FA4F1C6E731D00FB6D67 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8912FA501C6E731D00FB6D67 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8912FA551C6EE29400FB6D67 /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
@@ -743,6 +801,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32D2A1571F424F4E006F24B3 /* libz.tbd in Frameworks */,
 				898E93011C8D562400B34DAA /* AudioToolbox.framework in Frameworks */,
 				898E92FF1C8D561E00B34DAA /* QuartzCore.framework in Frameworks */,
 				898E92FD1C8D560F00B34DAA /* Foundation.framework in Frameworks */,
@@ -757,6 +816,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32D2A1591F424F56006F24B3 /* libz.tbd in Frameworks */,
 				892669531C88BCA000082B31 /* AppSupport.framework in Frameworks */,
 				892669151C88AD5200082B31 /* libxml2.2.dylib in Frameworks */,
 				89A83AD61C88AB7100E1987E /* AVKit.framework in Frameworks */,
@@ -784,6 +844,56 @@
 				328E33851E4F868C00C544ED /* Info.plist */,
 			);
 			path = tuyuShelf;
+			sourceTree = "<group>";
+		};
+		32D2A1211F424805006F24B3 /* AFNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				32D2A1221F424805006F24B3 /* AFgzipRequestSerializer.h */,
+				32D2A1231F424805006F24B3 /* AFgzipRequestSerializer.m */,
+				32D2A1241F424805006F24B3 /* AFHTTPSessionManager.h */,
+				32D2A1251F424805006F24B3 /* AFHTTPSessionManager.m */,
+				32D2A1261F424805006F24B3 /* AFNetworking.h */,
+				32D2A1271F424805006F24B3 /* AFNetworkReachabilityManager.h */,
+				32D2A1281F424805006F24B3 /* AFNetworkReachabilityManager.m */,
+				32D2A1291F424805006F24B3 /* AFSecurityPolicy.h */,
+				32D2A12A1F424805006F24B3 /* AFSecurityPolicy.m */,
+				32D2A12B1F424805006F24B3 /* AFURLRequestSerialization.h */,
+				32D2A12C1F424805006F24B3 /* AFURLRequestSerialization.m */,
+				32D2A12D1F424805006F24B3 /* AFURLResponseSerialization.h */,
+				32D2A12E1F424805006F24B3 /* AFURLResponseSerialization.m */,
+				32D2A12F1F424805006F24B3 /* AFURLSessionManager.h */,
+				32D2A1301F424805006F24B3 /* AFURLSessionManager.m */,
+			);
+			name = AFNetworking;
+			path = yourTube/AFNetworking;
+			sourceTree = "<group>";
+		};
+		32D2A1311F424805006F24B3 /* AFOAuth2Manager */ = {
+			isa = PBXGroup;
+			children = (
+				32D2A1321F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.h */,
+				32D2A1331F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m */,
+				32D2A1341F424805006F24B3 /* AFOAuth2Manager.h */,
+				32D2A1351F424805006F24B3 /* AFOAuth2Manager.m */,
+				32D2A1361F424805006F24B3 /* AFOAuthCredential.h */,
+				32D2A1371F424805006F24B3 /* AFOAuthCredential.m */,
+			);
+			name = AFOAuth2Manager;
+			path = yourTube/AFOAuth2Manager;
+			sourceTree = "<group>";
+		};
+		32D2A14C1F424F1B006F24B3 /* Godzippa */ = {
+			isa = PBXGroup;
+			children = (
+				32D2A14D1F424F1C006F24B3 /* Godzippa.h */,
+				32D2A14E1F424F1C006F24B3 /* NSData+Godzippa.h */,
+				32D2A14F1F424F1C006F24B3 /* NSData+Godzippa.m */,
+				32D2A1501F424F1C006F24B3 /* NSFileManager+Godzippa.h */,
+				32D2A1511F424F1C006F24B3 /* NSFileManager+Godzippa.m */,
+			);
+			name = Godzippa;
+			path = yourTube/Godzippa;
 			sourceTree = "<group>";
 		};
 		8912FA4E1C6E731D00FB6D67 /* Reachability */ = {
@@ -1346,6 +1456,7 @@
 		89B9D3B11C44F41300740BF1 = {
 			isa = PBXGroup;
 			children = (
+				32C35AC71F3B173D000D24C7 /* Original Run script */,
 				89E06BC41C499E2300B8D1C4 /* ytiOSBundle */,
 				89A83A1A1C88A89300E1987E /* tuyu */,
 				328E33811E4F868C00C544ED /* tuyuShelf */,
@@ -1373,6 +1484,8 @@
 		89B9D4211C44F49F00740BF1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				32D2A1581F424F56006F24B3 /* libz.tbd */,
+				32D2A1561F424F4E006F24B3 /* libz.tbd */,
 				898E93001C8D562400B34DAA /* AudioToolbox.framework */,
 				898E92FE1C8D561D00B34DAA /* QuartzCore.framework */,
 				898E92FC1C8D560F00B34DAA /* Foundation.framework */,
@@ -1456,6 +1569,9 @@
 			children = (
 				892A2C381C6A8400003724D6 /* yourTubeApplication.h */,
 				89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */,
+				32D2A14C1F424F1B006F24B3 /* Godzippa */,
+				32D2A1211F424805006F24B3 /* AFNetworking */,
+				32D2A1311F424805006F24B3 /* AFOAuth2Manager */,
 				895F67881C6520D500AE33FA /* SVProgressHUD */,
 				897B49C61C58A7B500F50BC2 /* SDWebImage */,
 				897B4A141C59750D00F50BC2 /* Preferences */,
@@ -1557,6 +1673,7 @@
 					328E337D1E4F868C00C544ED = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = 9EUFEA5U7G;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -1569,6 +1686,7 @@
 					898E92651C8D056700B34DAA = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = 9EUFEA5U7G;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -1752,6 +1870,7 @@
 				892669211C88B2F500082B31 /* activityAudio.png in Resources */,
 				8926694D1C88B2F500082B31 /* star@2x.png in Resources */,
 				892669411C88B2F500082B31 /* IndeterminateBar.png in Resources */,
+				32C35AC81F3B173D000D24C7 /* Original Run script in Resources */,
 				892669351C88B2F500082B31 /* globe.png in Resources */,
 				8926693E1C88B2F500082B31 /* Icon@2x.png in Resources */,
 				892669481C88B2F500082B31 /* popular.png in Resources */,
@@ -1801,7 +1920,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=192.168.0.118\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/tuyuTV/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$SRCROOT\"/Payload\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\ncp \"$FULL_IPA_PATH\" \"$IPA_BACKUP\"\n\nrm \"$FULL_IPA_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n#codesign -fs \"$CODESIGN_ID\" --no-strict --entitlements=\"$SRCROOT/asu_pid.entitlements\" \"$APPLETV_APP_FOLDER\"\n\necho \"$FINAL_APP_PATH\"\n\n#codesign -fs \"$CODESIGN_ID\" --no-strict \"$FINAL_APP_PATH\"\n\necho \"zip -r Payload $IPA_TMP\"\n\nzip -r $IPA_TMP Payload \n\nmv \"$IPA_TMP_FILE\" \"$FULL_IPA_PATH\"\n\n/usr/bin/scp \"$FULL_IPA_PATH\" root@$ATV_DEVICE_IP:~\n/usr/bin/ssh root@$ATV_DEVICE_IP \"/usr/bin/appinst ~/$IPA_NAME\"\n\n\n#ldid -S \"$FINAL_APP_PATH\"/\"$EXECUTABLE_NAME\"\n\nexit 0\n";
+			shellScript = "#exit 0\n# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)\n\nexport PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH\nexport SRCROOT=\"$SRCROOT\"\n\n# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed\n\nATV_DEVICE_IP=atv.local\nCODESIGN_ID=nitoTV\nIPA_TMP=com.nito.tuyuTV.zip\nIPA_NAME=com.nito.tuyuTV.ipa\n\n#say \"$SDKROOT\"\n\necho $SDKROOT\n\nBASE_SDK=`basename $SDKROOT`\n\nif [[ $BASE_SDK == *\"Simulator\"* ]]\nthen\nexit 0\nfi\n\n\n\n# xcodes path to the the full application\n\nTARGET_BUILD_APPLICATION=\"$TARGET_BUILD_DIR\"/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\necho $TARGET_BUILD_APPLICATION\n# build directory for theos, we're still following his format and style as closely as possible\n# this was taken from an example that was building through theos, still works tho..\n\nDPKG_BUILD_PATH=\"$SRCROOT\"/tuyuTV/layout\nFULL_IPA_PATH=\"$DPKG_BUILD_PATH\"/private/var/stash/ipas/$IPA_NAME\nIPA_BACKUP=\"$SRCROOT\"/$IPA_NAME\nIPA_TMP_FILE=\"$SRCROOT\"/$IPA_TMP\n\nAPPLETV_APP_FOLDER=\"$SRCROOT\"/Payload\n\n# final application location in the staging directory\n\nFINAL_APP_PATH=$APPLETV_APP_FOLDER/\"$PRODUCT_NAME\".$WRAPPER_EXTENSION\n\nrm -rf \"$FINAL_APP_PATH\"\n\ncp \"$FULL_IPA_PATH\" \"$IPA_BACKUP\"\n\nrm \"$FULL_IPA_PATH\"\n\nmkdir -p \"$APPLETV_APP_FOLDER\"\n\nmkdir -p \"$FINAL_APP_PATH\"\n\ncp -r \"$TARGET_BUILD_APPLICATION\" \"$APPLETV_APP_FOLDER\"\n\npushd \"$SRCROOT\"\n\nfind . -name \".DS_Store\" | xargs rm -f\n\n#codesign -fs \"$CODESIGN_ID\" --no-strict --entitlements=\"$SRCROOT/asu_pid.entitlements\" \"$APPLETV_APP_FOLDER\"\n\necho \"$FINAL_APP_PATH\"\n\n#codesign -fs \"$CODESIGN_ID\" --no-strict \"$FINAL_APP_PATH\"\n\necho \"zip -r Payload $IPA_TMP\"\n\nzip -r $IPA_TMP Payload\n\nmv \"$IPA_TMP_FILE\" \"$FULL_IPA_PATH\"\n\n/usr/bin/scp \"$FULL_IPA_PATH\" root@$ATV_DEVICE_IP:~\n/usr/bin/ssh root@$ATV_DEVICE_IP \"/usr/bin/appinst ~/$IPA_NAME\"\n\n\n#ldid -S \"$FINAL_APP_PATH\"/\"$EXECUTABLE_NAME\"\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1831,6 +1950,7 @@
 				899876721CDEB109006A639E /* TYBaseGridViewController.m in Sources */,
 				898E93461C8D56BB00B34DAA /* SVIndefiniteAnimatedView.m in Sources */,
 				898E93691C8D910500B34DAA /* KBYTDownloadCell.m in Sources */,
+				32D2A1391F424805006F24B3 /* AFgzipRequestSerializer.m in Sources */,
 				898E93711C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m in Sources */,
 				898E92821C8D162800B34DAA /* YTTVStandardCollectionViewCell.m in Sources */,
 				898E93041C8D564300B34DAA /* APElement.m in Sources */,
@@ -1839,14 +1959,18 @@
 				898E93051C8D564600B34DAA /* ONOXMLDocument.m in Sources */,
 				8929758C1CB026B3003D7473 /* AboutViewController.m in Sources */,
 				898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */,
+				32D2A1431F424805006F24B3 /* AFURLResponseSerialization.m in Sources */,
 				898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */,
 				898E934F1C8D56D100B34DAA /* SDWebImageDownloaderOperation.m in Sources */,
+				32D2A14B1F424805006F24B3 /* AFOAuthCredential.m in Sources */,
+				32D2A1531F424F1C006F24B3 /* NSData+Godzippa.m in Sources */,
 				32B022851E63EB82002211C3 /* KBYTChannelHeaderView.m in Sources */,
 				899876621CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,
 				898E93511C8D56D100B34DAA /* SDWebImagePrefetcher.m in Sources */,
 				898E93061C8D565300B34DAA /* KBYTDownloadOperation.m in Sources */,
 				8998766F1CDEA423006A639E /* UIView+RecursiveFind.m in Sources */,
 				898E93591C8D56D400B34DAA /* KBYTPreferences.m in Sources */,
+				32D2A13F1F424805006F24B3 /* AFSecurityPolicy.m in Sources */,
 				898E93471C8D56BD00B34DAA /* SVProgressHUD.m in Sources */,
 				898E93111C8D569600B34DAA /* UIColor+Additions.m in Sources */,
 				898E93541C8D56D100B34DAA /* UIImage+MultiFormat.m in Sources */,
@@ -1856,16 +1980,21 @@
 				892A3F431CF7471100EA0247 /* MetadataPreviewView.m in Sources */,
 				892A3F471CF7483800EA0247 /* TYSettingsViewController.m in Sources */,
 				892A3F441CF7471100EA0247 /* SettingsViewController.m in Sources */,
+				32D2A13D1F424805006F24B3 /* AFNetworkReachabilityManager.m in Sources */,
 				898E93521C8D56D100B34DAA /* UIButton+WebCache.m in Sources */,
 				898E93531C8D56D100B34DAA /* UIImage+GIF.m in Sources */,
 				898E93131C8D569C00B34DAA /* URLCredential.m in Sources */,
 				898E93141C8D569E00B34DAA /* URLDownloader.m in Sources */,
+				32D2A1551F424F1C006F24B3 /* NSFileManager+Godzippa.m in Sources */,
 				898E92701C8D056700B34DAA /* FirstViewController.m in Sources */,
+				32D2A1491F424805006F24B3 /* AFOAuth2Manager.m in Sources */,
 				898E93121C8D569800B34DAA /* UIImage+Scale.m in Sources */,
 				89EEC1031C9214B0006B1944 /* YTTVPlaylistViewController.m in Sources */,
 				898E926A1C8D056700B34DAA /* main.m in Sources */,
+				32D2A13B1F424805006F24B3 /* AFHTTPSessionManager.m in Sources */,
 				898E93741C8F65F200B34DAA /* SignOutViewController.m in Sources */,
 				898E93021C8D563E00B34DAA /* APAttribute.m in Sources */,
+				32D2A1451F424805006F24B3 /* AFURLSessionManager.m in Sources */,
 				898E935A1C8D56D800B34DAA /* RNFrostedSidebar.m in Sources */,
 				898E934B1C8D56D100B34DAA /* SDImageCache.m in Sources */,
 				899877A91CE99CB3006A639E /* TYGridUserViewController.m in Sources */,
@@ -1887,6 +2016,7 @@
 				899876521CDE7725006A639E /* TYUserViewController.m in Sources */,
 				898E934E1C8D56D100B34DAA /* SDWebImageDownloader.m in Sources */,
 				898E93671C8D8FEC00B34DAA /* KBYTSearchItemViewController.m in Sources */,
+				32D2A1411F424805006F24B3 /* AFURLRequestSerialization.m in Sources */,
 				8929FCBF1CB44540003D7473 /* tuyuApplication.m in Sources */,
 				899876601CDE77A5006A639E /* NSArray+PureLayout.m in Sources */,
 				898E93091C8D565B00B34DAA /* KBYourTube.m in Sources */,
@@ -1899,6 +2029,7 @@
 				898E934D1C8D56D100B34DAA /* SDWebImageDecoder.m in Sources */,
 				898E934C1C8D56D100B34DAA /* SDWebImageCompat.m in Sources */,
 				898E93561C8D56D100B34DAA /* UIImageView+HighlightedWebCache.m in Sources */,
+				32D2A1471F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m in Sources */,
 				898E934A1C8D56D100B34DAA /* NSData+ImageContentType.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1911,11 +2042,13 @@
 				89A35CF41C8A27ED000FFCA0 /* KBYTDownloadOperation.m in Sources */,
 				89A83AAF1C88A97700E1987E /* KBYTQueuePlayer.m in Sources */,
 				89A83AA91C88A95C00E1987E /* UIImageView+HighlightedWebCache.m in Sources */,
+				32D2A1541F424F1C006F24B3 /* NSFileManager+Godzippa.m in Sources */,
 				89A83AA01C88A95C00E1987E /* SDWebImageDecoder.m in Sources */,
 				89A83AC11C88AAF700E1987E /* APDeviceController.m in Sources */,
 				89A83AB01C88A97700E1987E /* KBYourTube.m in Sources */,
 				89A83AB71C88AADF00E1987E /* ModalAnimation.m in Sources */,
 				89A83ABD1C88AAF200E1987E /* KBYTDownloadsTableViewController.m in Sources */,
+				32D2A1441F424805006F24B3 /* AFURLSessionManager.m in Sources */,
 				89A83ABC1C88AAF200E1987E /* KBYTDownloadCell.m in Sources */,
 				89A83A991C88A93B00E1987E /* SVRadialGradientLayer.m in Sources */,
 				89A83AA21C88A95C00E1987E /* SDWebImageDownloaderOperation.m in Sources */,
@@ -1923,11 +2056,14 @@
 				89A83AB81C88AADF00E1987E /* ScaleAnimation.m in Sources */,
 				89A83AA31C88A95C00E1987E /* SDWebImageManager.m in Sources */,
 				89A83AC61C88AB0800E1987E /* URLDownloader.m in Sources */,
+				32D2A1381F424805006F24B3 /* AFgzipRequestSerializer.m in Sources */,
 				89A83A971C88A93600E1987E /* SVIndefiniteAnimatedView.m in Sources */,
 				89A83AC31C88AB0000E1987E /* UIColor+Additions.m in Sources */,
+				32D2A1421F424805006F24B3 /* AFURLResponseSerialization.m in Sources */,
 				89A83AC41C88AB0000E1987E /* UIImage+Scale.m in Sources */,
 				89A83A9A1C88A94F00E1987E /* UIImageView+WebCache.m in Sources */,
 				89A83AB41C88AACA00E1987E /* ONOXMLDocument.m in Sources */,
+				32D2A13C1F424805006F24B3 /* AFNetworkReachabilityManager.m in Sources */,
 				89A83ABF1C88AAF200E1987E /* KBYTGenericVideoTableViewController.m in Sources */,
 				89A83AA11C88A95C00E1987E /* SDWebImageDownloader.m in Sources */,
 				89A83AB61C88AADF00E1987E /* BaseAnimation.m in Sources */,
@@ -1936,7 +2072,10 @@
 				89A83AB51C88AAD800E1987E /* JGProgressView.m in Sources */,
 				89A83AB31C88A97700E1987E /* KBYTMessagingCenter.m in Sources */,
 				8926691F1C88B1CE00082B31 /* main.m in Sources */,
+				32D2A1401F424805006F24B3 /* AFURLRequestSerialization.m in Sources */,
+				32D2A13E1F424805006F24B3 /* AFSecurityPolicy.m in Sources */,
 				8926691D1C88B1A900082B31 /* MarqueeLabel.m in Sources */,
+				32D2A14A1F424805006F24B3 /* AFOAuthCredential.m in Sources */,
 				89A83A9C1C88A95C00E1987E /* MKAnnotationView+WebCache.m in Sources */,
 				89A83A9F1C88A95C00E1987E /* SDWebImageCompat.m in Sources */,
 				899876611CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,
@@ -1945,24 +2084,30 @@
 				89A83AB21C88A97700E1987E /* KBYourTube+Categories.m in Sources */,
 				89A83AA71C88A95C00E1987E /* UIImage+MultiFormat.m in Sources */,
 				89A83AAA1C88A96400E1987E /* RNFrostedSidebar.m in Sources */,
+				32D2A13A1F424805006F24B3 /* AFHTTPSessionManager.m in Sources */,
 				89A83AAC1C88A96D00E1987E /* APDocument.m in Sources */,
 				89A83ABB1C88AAEB00E1987E /* KBYTWebViewController.mm in Sources */,
 				89A83AA51C88A95C00E1987E /* UIButton+WebCache.m in Sources */,
 				89A83A9E1C88A95C00E1987E /* SDImageCache.m in Sources */,
 				89A83A961C88A93000E1987E /* yourTubeApplication.m in Sources */,
 				89A83AC21C88AAFC00E1987E /* Reachability.m in Sources */,
+				32D2A1521F424F1C006F24B3 /* NSData+Godzippa.m in Sources */,
 				8998765D1CDE77A5006A639E /* ALView+PureLayout.m in Sources */,
 				89A83AAB1C88A96D00E1987E /* APAttribute.m in Sources */,
 				89A83A9B1C88A94F00E1987E /* UIView+WebCacheOperation.m in Sources */,
 				89A83A981C88A93900E1987E /* SVProgressHUD.m in Sources */,
 				89A83AC51C88AB0800E1987E /* URLCredential.m in Sources */,
+				32D2A1461F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m in Sources */,
 				89A83ABE1C88AAF200E1987E /* KBYTSearchTableViewController.m in Sources */,
 				89A83ABA1C88AADF00E1987E /* SlideAnimation.m in Sources */,
 				89A83AA61C88A95C00E1987E /* UIImage+GIF.m in Sources */,
+				324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */,
 				89A83A9D1C88A95C00E1987E /* NSData+ImageContentType.m in Sources */,
+				32D2A1481F424805006F24B3 /* AFOAuth2Manager.m in Sources */,
 				8998765F1CDE77A5006A639E /* NSArray+PureLayout.m in Sources */,
 				89A83AA81C88A95C00E1987E /* UIImage+WebP.m in Sources */,
 				89A83AB91C88AADF00E1987E /* ShuffleAnimation.m in Sources */,
+				324CDA4A1FC24B4F003B3A0F /* WebViewController.m in Sources */,
 				89A83AAE1C88A97700E1987E /* YTKBPlayerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2007,10 +2152,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = tuyuShelf/tuyuShelf.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2035,7 +2181,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV.tuyuShelf;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "12348fec-51e2-4450-b38d-bc32f89df9dd";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -2060,10 +2207,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = tuyuShelf/tuyuShelf.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -2081,7 +2229,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV.tuyuShelf;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "12348fec-51e2-4450-b38d-bc32f89df9dd";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -2110,7 +2259,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = tuyuTV/tuyu.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -2152,7 +2301,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
 				PRODUCT_NAME = tuyu;
-				PROVISIONING_PROFILE = "d049c6e0-3d81-4b93-88db-9241ca97fe65";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
@@ -2180,7 +2329,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_ENTITLEMENTS = tuyuTV/tuyu.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution: Kevin Bradley (9EUFEA5U7G)";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -2215,7 +2364,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
 				PRODUCT_NAME = tuyu;
-				PROVISIONING_PROFILE = "d049c6e0-3d81-4b93-88db-9241ca97fe65";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;

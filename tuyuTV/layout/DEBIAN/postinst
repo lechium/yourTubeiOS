@@ -11,7 +11,10 @@ if [ -d "/Applications/tuyu.app" ] ; then
 
 fi
 
-/usr/bin/appinst /var/stash/ipas/com.nito.tuyuTV.ipa
+#/usr/bin/appinst /var/stash/ipas/com.nito.tuyuTV.ipa
+
+/usr/bin/uicache
+
 
 
 

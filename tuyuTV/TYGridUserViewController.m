@@ -125,6 +125,7 @@
 {
     NSMutableDictionary *playlists = [NSMutableDictionary new];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
+   // DLog(@"user details: %@", userDetails);
     NSString *channelID = userDetails[@"channelID"];
     NSInteger adjustment = 0; //a ghetto kludge to shoehorn channels in
     if (userDetails[@"channels"] != nil)
@@ -177,7 +178,7 @@
     }];
     
     NSArray *results = userDetails[@"results"];
-    NSInteger playlistCount = 0;
+    __block NSInteger playlistCount = 0;
     
     /*
      
@@ -197,9 +198,12 @@
         
         if (result.resultType == YTSearchResultTypePlaylist)
         {
+            NSLog(@"getting details for: %@ id: %@", result.title, result.videoId);
             [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(NSDictionary *searchDetails) {
                 
+                 NSLog(@"got details for: %@", result.title);
                 playlists[result.title] = searchDetails[@"results"];
+                DLog(@"currentIndex: %lu count: %lu", currentIndex, playlistCount);
                 currentIndex++;
                 if (currentIndex == playlistCount)
                 {
@@ -208,7 +212,13 @@
                 
             } failureBlock:^(NSString *error) {
                 
+                DLog(@"error: %@", error);
                 
+                playlistCount--;
+                if (currentIndex == playlistCount)
+                {
+                    completionBlock(playlists);
+                }
                 
             }];
         } else {

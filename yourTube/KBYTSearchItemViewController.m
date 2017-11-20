@@ -170,7 +170,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
 		case 0:
-			return 5;
+			return 6;
 		case 1:
 			return ([ytMedia.streams count] > 0) ? [ytMedia.streams count] : 1;
 		case 2:
@@ -196,6 +196,8 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             return @"Airplay";
         case 4:
             return @"Aircontrol";
+        case 5:
+            return @"Other";
 	}
 	return nil;
 }
@@ -274,6 +276,17 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 					cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
 					cell.selectionStyle = UITableViewCellSelectionStyleNone;
 					return cell;
+                case 5:
+                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+                    
+                    cell.textLabel.text = @"START PLAYLIST HERE";
+                    cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:13.0f];
+                    cell.textLabel.numberOfLines = 0;
+                    cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
+                    cell.textLabel.textAlignment = UITextAlignmentCenter;
+                    cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+                    return cell;
+                
 			}
 			break;
 		case 1:
@@ -439,6 +452,24 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     NSString *airdeviceName = nil;
     
     switch (indexPath.section) {
+            
+        case 0:
+            
+            DLog(@"indexpath: %@", indexPath);
+            
+            if (indexPath.row == 5)
+            {
+                [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                if ([self.delegate respondsToSelector:@selector(playFromIndex:)])
+                {
+                    [self.navigationController popViewControllerAnimated:true];
+                    [self.delegate playFromIndex:self.index];
+                }
+            }
+            
+            
+            break;
+            
 		case 1:
             currentStream = ytMedia.streams[indexPath.row];;
             [self playStream:currentStream];

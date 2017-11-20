@@ -2,7 +2,7 @@ ARCHS = armv7s arm64
 TARGET = iphone:9.3
 include theos/makefiles/common.mk
 #THEOS_DEVICE_IP=other-ipod.local
-THEOS_DEVICE_IP=192.168.0.5
+THEOS_DEVICE_IP=192.168.0.3
 export GO_EASY_ON_ME=1
 export DEBUG=1
 #export THEOS_DEVICE_IP=kbphone.local
@@ -49,7 +49,9 @@ YTBrowser_FILES += yourTube/KBYourTube+Categories.m
 YTBrowser_CXXFLAGS += -fobjc-arc
 YTBrowser_CFLAGS += -fobjc-arc
 
-YTBrowser_LDFLAGS = -undefined dynamic_lookup -framework Foundation -framework StoreServices -framework AppSupport -FFrameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/PrivateFrameworks -framework MusicLibrary -IFrameworks -I/Frameworks/GCDWebServers.framework/Headers -IGCDWebServer/Core -IGCDWebServer/Requests -IGCDWebServer/Responses -framework CFNetwork -framework AudioToolbox -Wl,-segalign,4000
+YTBrowser_LDFLAGS = -undefined dynamic_lookup -framework Foundation -framework AppSupport -FFrameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/PrivateFrameworks -framework MusicLibrary -IFrameworks -I/Frameworks/GCDWebServers.framework/Headers -IGCDWebServer/Core -IGCDWebServer/Requests -IGCDWebServer/Responses -framework CFNetwork -framework AudioToolbox -Wl,-segalign,4000
+
+#YTBrowser_LDFLAGS = -undefined dynamic_lookup -framework Foundation -framework StoreServices -framework AppSupport -FFrameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/PrivateFrameworks -framework MusicLibrary -IFrameworks -I/Frameworks/GCDWebServers.framework/Headers -IGCDWebServer/Core -IGCDWebServer/Requests -IGCDWebServer/Responses -framework CFNetwork -framework AudioToolbox -Wl,-segalign,4000
  
 include $(FW_MAKEDIR)/tweak.mk
 

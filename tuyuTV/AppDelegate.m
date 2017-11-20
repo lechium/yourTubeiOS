@@ -38,6 +38,8 @@
 #import "TYTVHistoryManager.h"
 #import "TYSettingsViewController.h"
 #import "YTTVPlaylistViewController.h"
+#import "AFOAuthCredential.h"
+#import "TYAuthUserManager.h"
 
 @interface AppDelegate ()
 
@@ -202,6 +204,7 @@
     */
     self.tabBar.viewControllers = viewControllers;
     [[KBYourTube sharedInstance] setUserDetails:nil];
+    [[NSHTTPCookieStorage sharedHTTPCookieStorage] clearAllCookies];
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
@@ -350,6 +353,9 @@
     
     if ([[KBYourTube sharedInstance] isSignedIn])
     {
+        DLog(@"%@", [TYAuthUserManager suastring]);
+        [[TYAuthUserManager sharedInstance] checkAndSetCredential];
+        
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
            
            //NSLog(@"userdeets : %@", outputResults);
@@ -403,6 +409,8 @@
         }
     }
   
+  
+    
     return YES;
 }
 

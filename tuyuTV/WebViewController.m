@@ -29,6 +29,8 @@ typedef struct _Input
     NSString *previousURL;
     NSString *_currentURL;
     BOOL _alertShowing;
+    BOOL _enteredPassword;
+    BOOL _enteredUsername;
 }
 
 @property UIWebView *webview;
@@ -79,7 +81,7 @@ typedef struct _Input
 }
 -(void) webViewDidFinishLoad:(UIWebView *)webView {
     
-    DLOG_SELF;
+    LOG_SELF;
     [loadingSpinner stopAnimating];
     //[self.view bringSubviewToFront:loadingSpinner];
     NSString *theTitle=[webView stringByEvaluatingJavaScriptFromString:@"document.title"];
@@ -123,11 +125,15 @@ typedef struct _Input
         if ([title rangeOfString:@"Success"].location != NSNotFound)
         {
             NSString *token = [[title componentsSeparatedByString:@"code="] lastObject];
-            //  NSLog(@"token: %@", token);
+              NSLog(@"token: %@", token);
             //[self postOAuth2CodeToGoogle:token];
             
             [[TYAuthUserManager sharedInstance] postOAuth2CodeToGoogle:token];
-            [self.navigationController popViewControllerAnimated:true];
+         
+            [self loadYTAuthPage];
+            //[self.webview load]
+            
+           // [self.navigationController popViewControllerAnimated:true];
             return;
         }
         
@@ -143,6 +149,7 @@ typedef struct _Input
         
         if ([[KBYourTube sharedInstance] userDetails] == nil)
         {
+            
             [self.navigationController popViewControllerAnimated:true];
             [ad updateForSignedIn];
             
@@ -159,24 +166,56 @@ typedef struct _Input
     _currentURL = currentURL;
     
     
-    NSString * email = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"Email\").placeholder;"];
+    NSString * email = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"identifierId\").placeholder;"];
+    
+    BOOL exists = [self elementWithIDExists:@"identifierId"];
+    
+    if (exists)
+    {
+        DLog(@"EXISTGS");
+    } else {
+        DLog(@"NOPE");
+    }
+    
+    if ([self elementWithIDExists:@"identifierLink"])
+    {
+        NSLog(@"#### this element exists!!");
+        [self clickElementWithID:@"identifierLink"];
+    }
+    
     
     //[email isEqualToString:@"Enter your email"]
-    if ((email.length > 0) && ![currentURL isEqualToString:@"https://accounts.google.com/ServiceLoginAuth"] && emailEntered == NO)
+    if ((exists) && ![currentURL isEqualToString:@"https://accounts.google.com/ServiceLoginAuth"] && emailEntered == NO)
     {
         [self promptForEmail];
         return;
     }
     
-    NSString *password = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"Passwd\").placeholder;"];
+    //NSString *password = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"Passwd\").placeholder;"];
+    /*
+    NSString *password = [self.webview stringByEvaluatingJavaScriptFromString:@"document.getElementsByName(\"password\").placeholder;"];
     
-    //if ([password isEqualToString:@"Password"])
     if(password.length > 0)
     {
         
         [self promptForPassword];
         return;
     }
+    */
+    if (!_enteredPassword && ![self invalidPasswordDetected])
+    {
+        if ([self elementWithNameExists:@"password"])
+        {
+            [self promptForPassword];
+            return;
+        }
+    }
+    
+    
+   
+    
+    //if ([password isEqualToString:@"Password"])
+    
     
     /*
     NSString *javascript = @"var textField = document.getElementById(\"Passwd\");"
@@ -188,6 +227,22 @@ typedef struct _Input
     NSLog(@"down here?");
 }
 
+- (BOOL)invalidPasswordDetected
+{
+    //doesnt work, revisit.
+    return NO;
+    
+    NSString *theString = [self.webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.innerHTML;"];
+    
+    //NSLog(@"theString: %@", theString);
+    
+    if ([theString rangeOfString:@"Wrong password"].location == NSNotFound)
+    {
+        return NO;
+    }
+    
+    return YES;
+}
 
 - (void)clickElementWithName:(NSString *)elementID
 {
@@ -242,6 +297,16 @@ typedef struct _Input
 
 //<button id="submit_deny_access" type="submit" tabindex="2">Deny</button>
 
+- (void)clickUsernameNext
+{
+    [self clickElementWithID:@"identifierNext"];
+}
+
+- (void)clickPasswordNext
+{
+    [self clickElementWithID:@"passwordNext"];
+}
+
 - (void)clickDeny
 {
     [self clickElementWithID:@"submit_deny_access"];
@@ -283,13 +348,15 @@ typedef struct _Input
                                            style:UIAlertActionStyleDefault
                                            handler:^(UIAlertAction *action)
                                            {
+                                               _enteredUsername = TRUE;
                                                UITextField *inputViewTextField = alertController.textFields[0];
-                                               NSString *javaScript = [NSString stringWithFormat:@"var textField = document.getElementById(\"Email\");"
-                                                                       "textField.value = '%@';"
-                                                                       "textField.form.submit();",inputViewTextField.text];
+                                               NSString *javaScript = [NSString stringWithFormat:@"var textField = document.getElementById(\"identifierId\");"
+                                                                       "textField.value = '%@';",
+                                                                       /*"textField.form.submit();",*/inputViewTextField.text];
                                                [_webview stringByEvaluatingJavaScriptFromString:javaScript];
                                                _alertShowing = false;
                                                emailEntered = YES;
+                                               [self clickUsernameNext];
                                            }];
     
     [alertController addAction:inputAndSubmitAction];
@@ -323,12 +390,14 @@ typedef struct _Input
                                            style:UIAlertActionStyleDefault
                                            handler:^(UIAlertAction *action)
                                            {
+                                               _enteredPassword = TRUE;
                                                UITextField *inputViewTextField = alertController.textFields[0];
-                                               NSString *javaScript = [NSString stringWithFormat:@"var textField = document.getElementById(\"Passwd\");"
+                                               NSString *javaScript = [NSString stringWithFormat:@"var textField = document.getElementsByName(\"password\")[0];"
                                                                        "textField.value = '%@';"
-                                                                       "textField.form.submit();",inputViewTextField.text];
+                                                                       /*"textField.form.submit();"*/,inputViewTextField.text];
                                                [_webview stringByEvaluatingJavaScriptFromString:javaScript];
                                                _alertShowing = false;
+                                               [self clickPasswordNext];
                                            }];
     
     [alertController addAction:inputAndSubmitAction];
@@ -365,9 +434,15 @@ typedef struct _Input
         [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[NSUserDefaults standardUserDefaults] stringForKey:@"homepage"]]]];
     }
     else {
-        [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString: @"http://www.google.com"]]];
+        [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString: @"https://www.google.com"]]];
     }
 }
+
+- (void)loadYTAuthPage
+{
+    [self.webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString: [TYAuthUserManager ytAuthURL]]]];
+}
+
 
 - (id)initWithURL:(NSString *)theURLString
 {
@@ -380,6 +455,8 @@ typedef struct _Input
 -(void)viewDidLoad {
     
     emailEntered = NO;
+    _enteredPassword = NO;
+    _enteredPassword = NO;
     _scrollViewAllowBounces = NO;
     [super viewDidLoad];
     touchSurfaceDoubleTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTouchSurfaceDoubleTap:)];

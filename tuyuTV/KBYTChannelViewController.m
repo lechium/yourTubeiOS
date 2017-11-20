@@ -123,6 +123,105 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     return nil;
 }
 
+- (void)promptForNewPlaylistForVideo:(KBYTSearchResult *)searchResult
+{
+    
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"New Playlist"
+                                          message: @"Enter the name for your new playlist"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        
+        textField.placeholder = @"Playlist Name";
+        textField.keyboardType = UIKeyboardTypeDefault;
+        textField.keyboardAppearance = UIKeyboardAppearanceDark;
+        
+    }];
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    UIAlertAction *createPrivatePlaylist = [UIAlertAction
+                                            actionWithTitle:@"Create private playlist"
+                                            style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action)
+                                            {
+                                                NSString *playlistName = alertController.textFields[0].text;
+                                                KBYTSearchResult *playlistItem =  [[TYAuthUserManager sharedInstance] createPlaylistWithTitle:playlistName andPrivacyStatus:@"private"];
+                                                NSLog(@"playlist created?: %@", playlistItem);
+                                                
+                                                /*
+                                                 
+                                                 etag = "\"m2yskBQFythfE4irbTIeOgYYfBU/vehTBMq9cEbTEevEChu3q4csUTk\"";
+                                                 id = PLnkIRfHufru8pR4pG2nDy2nQSHNxU3WFw;
+                                                 kind = "youtube#playlist";
+                                                 snippet =     {
+                                                 channelId = "UC-d63ZntP27p917VXU-VFiA";
+                                                 channelTitle = "Kevin Bradley";
+                                                 description = "";
+                                                 localized =         {
+                                                 description = "";
+                                                 title = "test 2";
+                                                 };
+                                                 publishedAt = "2017-08-15T16:19:38.000Z";
+                                                 thumbnails =         {
+                                                 default =             {
+                                                 height = 90;
+                                                 url = "http://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
+                                                 width = 120;
+                                                 };
+                                                 high =             {
+                                                 height = 360;
+                                                 url = "http://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
+                                                 width = 480;
+                                                 };
+                                                 medium =             {
+                                                 height = 180;
+                                                 url = "http://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
+                                                 width = 320;
+                                                 };
+                                                 };
+                                                 title = "test 2";
+                                                 };
+                                                 status =     {
+                                                 privacyStatus = public;
+                                                 };
+                                                 
+                                                 */
+                                                
+                                                NSString *plID = playlistItem.videoId;
+                                                
+                                                [self addVideo:searchResult toPlaylist:plID];
+                                            }];
+    
+    
+    UIAlertAction *createPublicPlaylist = [UIAlertAction
+                                           actionWithTitle:@"Create public playlist"
+                                           style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction *action)
+                                           {
+                                               NSString *playlistName = alertController.textFields[0].text;
+                                               NSDictionary *playlistItem =  [[TYAuthUserManager sharedInstance] createPlaylistWithTitle:playlistName andPrivacyStatus:@"public"];
+                                               if (playlistItem != nil)
+                                               {
+                                                   NSLog(@"playlist created?: %@", playlistItem);
+                                                   NSString *plID = playlistItem[@"id"];
+                                                   
+                                                   [self addVideo:searchResult toPlaylist:plID];
+                                               }
+                                           }];
+    
+    
+    [alertController addAction:createPrivatePlaylist];
+    [alertController addAction:createPublicPlaylist];
+    [alertController addAction:cancelAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+    
+}
+
 - (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
 {
     DLog(@"add video: %@ to playlistID: %@", video, playlist);
@@ -161,6 +260,14 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         UIAlertAction *plAction = [UIAlertAction actionWithTitle:result.title style:UIAlertActionStyleDefault handler:self.alertHandler];
         [alertController addAction:plAction];
     }
+    
+    UIAlertAction *newPlAction = [UIAlertAction actionWithTitle:@"Create new playlist" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        [self promptForNewPlaylistForVideo:result];
+        
+    }];
+    [alertController addAction:newPlAction];
+    
     
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"

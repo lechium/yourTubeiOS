@@ -9,6 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "KBYourTube+Categories.h"
 
+@implementation NSHTTPCookieStorage (ClearAllCookies)
+
+- (void)clearAllCookies
+{
+    [self.cookies enumerateObjectsUsingBlock:^(NSHTTPCookie * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        [self deleteCookie:obj];
+        
+    }];
+}
+
+@end
+
+
 @implementation UITableView (completion)
 
 - (void)reloadDataWithCompletion:(void(^)(void))completionBlock
@@ -50,6 +64,12 @@
     NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:NSPropertyListXMLFormat_v1_0 errorDescription:&error];
     NSString *s=[[NSString alloc] initWithData:xmlData encoding: NSUTF8StringEncoding];
     return s;
+}
+
+- (NSString *)JSONStringRepresentation
+{
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self options:NSJSONWritingPrettyPrinted error:nil];
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
 @end
@@ -343,6 +363,10 @@
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]
                                                            cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                        timeoutInterval:10];
+    
+    //[request setValue:@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8" forHTTPHeaderField:@"User-Agent"];
+    
+   // NSLog(@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8");
     
     NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
     //DLog(@"cookies: %@", cookies);

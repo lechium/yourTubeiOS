@@ -65,6 +65,12 @@
             [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
         }
     }
+    /*
+    NSString *macUserAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8";
+    
+    NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:macUserAgent, @"UserAgent", nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
+    */
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     
     NSError *error = nil;
@@ -76,7 +82,7 @@
   
     
     NSLog(@"app support: %@", [self appSupportFolder]);
-    
+    NSLog(@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8");
    
     [[KBYTMessagingCenter sharedInstance] startDownloadListener];
     [[KBYTMessagingCenter sharedInstance] registerDownloadListener];

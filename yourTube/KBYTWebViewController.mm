@@ -103,6 +103,17 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     [self updateRightButtons];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+  /*
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.7", @"UserAgent", nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+   */
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -118,15 +129,20 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     CGFloat height = 64; //self.navigationController.navigationBar.frame.size.height;
     mainFrame.origin.y = height;
     mainFrame.size.height-= height;
+    /*
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (iPhone; CPU iPhone OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4", @"UserAgent", nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"MobileMode"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     
-    
+    */
     self.basicWebView = [[UIWebView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     
     NSString *authString = @"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3";
     //@"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3#identifier";
     
-    [self.basicWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:authString]]];
     
+    [self.basicWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:authString]]];
     [self.view addSubview:self.basicWebView];
     
     self.basicWebView.delegate = self;
@@ -196,6 +212,11 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 
 -(void) webViewDidStartLoad:(UIWebView *)webView {
     
+    /*
+     
+     @"Mozilla/5.0 (iPhone; CPU iPhone OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4" forHTTPHeaderField:@"User-Agent"
+     
+     */
 }
 -(void) webViewDidFinishLoad:(UIWebView *)webView {
     

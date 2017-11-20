@@ -6,6 +6,12 @@
 //
 //
 
+@interface NSHTTPCookieStorage (ClearAllCookies)
+
+- (void)clearAllCookies;
+
+@end
+
 @interface UITableView (completion)
 
 - (void)reloadDataWithCompletion:(void(^)(void))completionBlock;
@@ -21,7 +27,7 @@
 @interface NSDictionary (strings)
 
 - (NSString *)stringValue;
-
+- (NSString *)JSONStringRepresentation;
 @end
 
 @interface NSArray (strings)
@@ -52,6 +58,7 @@
 
 @interface NSObject  (convenience)
 
+- (void)addCookies:(NSArray *)cookies forRequest:(NSMutableURLRequest *)request;
 - (BOOL)vanillaApp;
 - (NSString *)downloadFile;
 - (NSString *)appSupportFolder;

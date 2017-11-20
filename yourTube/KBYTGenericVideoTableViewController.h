@@ -11,10 +11,11 @@
 #import "KBYTDownloadCell.h"
 #import "KBYTPreferences.h"
 #import "KBYourTube.h"
+#import "KBYTSearchItemViewController.h"
 
 #define kGenericLoadingCellTag 600
 
-@interface KBYTGenericVideoTableViewController : UITableViewController
+@interface KBYTGenericVideoTableViewController : UITableViewController <KBYTSearchItemViewControllerDelegate>
 
 @property (readwrite, assign) NSInteger tableType;
 
@@ -36,7 +37,12 @@
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
 @property (nonatomic, strong) NSMutableArray *currentPlaybackArray;
 
+@property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
+@property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
+
+
 - (id)initForType:(NSInteger)detailsType;
 - (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier;
+- (void)playFromIndex:(NSInteger)index;
 
 @end

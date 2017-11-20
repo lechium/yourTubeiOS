@@ -15,7 +15,14 @@
     BOOL emailEntered; //hacky bool to keep track of if email was already entered.
 }
 
+typedef enum {
+    WebViewControllerAuthMode = 0,
+    WebViewControllerPermissionMode = 1,
+} WebViewMode;
+
 @property (nonatomic, strong) NSString *initialURL;
+@property (readwrite, assign) WebViewMode viewMode;
+
 
 - (id)initWithURL:(NSString *)theURLString;
 

@@ -541,6 +541,67 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     
 }
 
+- (void)documentFromURL:(NSString *)theURL completion:(void(^)(ONOXMLDocument *document))block
+{
+
+    //NSLog(@"dataString: %@", dataString);
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:theURL]];
+    //request.HTTPBody = [dataString dataUsingEncoding:NSUTF8StringEncoding];
+    request.HTTPMethod = @"GET";
+    
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+    
+    //NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:[NSURL URLWithString:@".youtube.com"]];
+    
+    //DLog(@"cookies: %@", cookies);
+    
+    NSDictionary *headers = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+    [request setAllHTTPHeaderFields:headers];
+    /*
+    //DLog(@"cookies: %@", cookies);
+    if (cookies != nil){
+        [request setHTTPShouldHandleCookies:YES];
+        
+        [self addCookies:cookies forRequest:request];
+    }
+    */
+    // Look for an existing account with this email
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    sessionConfiguration.HTTPAdditionalHeaders = @{@"Accept": @"application/json",
+                                                   @"Accept-Language": @"en"};
+    sessionConfiguration.HTTPShouldSetCookies = YES;
+    sessionConfiguration.HTTPCookieAcceptPolicy = NSHTTPCookieAcceptPolicyAlways;
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
+    
+    
+    
+    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData* _Nullable data, NSURLResponse* _Nullable response, NSError* _Nullable error) {
+        
+        
+        
+        if (data)
+        {
+            NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+            
+            NSString *rawRequestResult = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+            
+           ONOXMLDocument *xmlDocument =  [ONOXMLDocument HTMLDocumentWithString:rawRequestResult encoding:NSUTF8StringEncoding error:nil];
+            
+            block(xmlDocument);
+            
+        } else {
+            
+            block(nil);
+            
+            DLog(@"no data!");
+        }
+    }];
+    [postDataTask resume];
+    
+    
+}
+
 - (ONOXMLDocument *)documentFromURL:(NSString *)theURL
 {
     //<li><div class="display-message"
@@ -554,8 +615,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     ONOXMLElement *root = [xmlDoc rootElement];
     ONOXMLElement * displayMessage = [root firstChildWithXPath:@"//div[contains(@class, 'display-message')]"];
     NSString *displayMessageString = [displayMessage stringValue];
+    NSLog(@"dms: %@", displayMessageString);
     if (displayMessageString.length == 0 || displayMessageString == nil)
     {
+       // [TYAuthUserManager]
         return true;
     }
     return false;

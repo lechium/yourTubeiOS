@@ -172,6 +172,7 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
 + (YTSearchResultType)resultTypeForString:(NSString *)string;
 + (id)sharedInstance;
 - (BOOL)isSignedIn;
+- (void)documentFromURL:(NSString *)theURL completion:(void(^)(ONOXMLDocument *document))block;
 - (ONOXMLDocument *)documentFromURL:(NSString *)theURL;
 - (NSDictionary *)channelIDAndWatchLaterCount;
 - (NSString *)videoDescription:(NSString *)videoID;

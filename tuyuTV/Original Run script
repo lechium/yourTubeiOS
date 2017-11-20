@@ -1,0 +1,80 @@
+#exit 0
+# this script was only possible because of Dustin Howetts epic theos project, thanks Dustin :)
+
+export PATH=/usr/bin/opt/local/bin:/opt/local/sbin:/usr/local/git:$PATH
+export SRCROOT="$SRCROOT"
+
+# only used if we SCP the deb over, and this only happens if dpkg-deb and fauxsu are installed
+
+ATV_DEVICE_IP=atv.local
+CODESIGN_ID=nitoTV
+IPA_TMP=com.nito.tuyuTV.zip
+IPA_NAME=com.nito.tuyuTV.ipa
+
+#say "$SDKROOT"
+
+echo $SDKROOT
+
+BASE_SDK=`basename $SDKROOT`
+
+if [[ $BASE_SDK == *"Simulator"* ]]
+then
+exit 0
+fi
+
+
+
+# xcodes path to the the full application
+
+TARGET_BUILD_APPLICATION="$TARGET_BUILD_DIR"/"$PRODUCT_NAME".$WRAPPER_EXTENSION
+
+echo $TARGET_BUILD_APPLICATION
+# build directory for theos, we're still following his format and style as closely as possible
+# this was taken from an example that was building through theos, still works tho..
+
+DPKG_BUILD_PATH="$SRCROOT"/tuyuTV/layout
+FULL_IPA_PATH="$DPKG_BUILD_PATH"/private/var/stash/ipas/$IPA_NAME
+IPA_BACKUP="$SRCROOT"/$IPA_NAME
+IPA_TMP_FILE="$SRCROOT"/$IPA_TMP
+
+APPLETV_APP_FOLDER="$SRCROOT"/Payload
+
+# final application location in the staging directory
+
+FINAL_APP_PATH=$APPLETV_APP_FOLDER/"$PRODUCT_NAME".$WRAPPER_EXTENSION
+
+rm -rf "$FINAL_APP_PATH"
+
+cp "$FULL_IPA_PATH" "$IPA_BACKUP"
+
+rm "$FULL_IPA_PATH"
+
+mkdir -p "$APPLETV_APP_FOLDER"
+
+mkdir -p "$FINAL_APP_PATH"
+
+cp -r "$TARGET_BUILD_APPLICATION" "$APPLETV_APP_FOLDER"
+
+pushd "$SRCROOT"
+
+find . -name ".DS_Store" | xargs rm -f
+
+#codesign -fs "$CODESIGN_ID" --no-strict --entitlements="$SRCROOT/asu_pid.entitlements" "$APPLETV_APP_FOLDER"
+
+echo "$FINAL_APP_PATH"
+
+#codesign -fs "$CODESIGN_ID" --no-strict "$FINAL_APP_PATH"
+
+echo "zip -r Payload $IPA_TMP"
+
+zip -r $IPA_TMP Payload
+
+mv "$IPA_TMP_FILE" "$FULL_IPA_PATH"
+
+/usr/bin/scp "$FULL_IPA_PATH" root@$ATV_DEVICE_IP:~
+/usr/bin/ssh root@$ATV_DEVICE_IP "/usr/bin/appinst ~/$IPA_NAME"
+
+
+#ldid -S "$FINAL_APP_PATH"/"$EXECUTABLE_NAME"
+
+exit 0
