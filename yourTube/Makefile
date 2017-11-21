@@ -33,6 +33,11 @@ yourTube_FILES += KBYourTube+Categories.m KBYTMessagingCenter.m JGProgressView/J
 yourTube_FILES += Reachability/Reachability.m Ono/ONOXMLDocument.m RNFrostedSidebar/RNFrostedSidebar.m
 yourTube_FILES += KBYTGenericVideoTableViewController.m YTKBPlayerViewController.m KBYTQueuePlayer.m
 yourTube_FILES += KBYTDownloadManager.m KBYTDownloadOperation.m
+yourTube_FILES += ../tuyuTV/TYAuthUserManager.m
+yourTube_FILES += AFNetworking/AFgzipRequestSerializer.m AFNetworking/AFHTTPSessionManager.m AFNetworking/AFNetworkReachabilityManager.m
+yourTube_FILES += AFNetworking/AFSecurityPolicy.m AFNetworking/AFURLRequestSerialization.m AFNetworking/AFURLResponseSerialization.m AFNetworking/AFURLSessionManager.m
+yourTube_FILES += AFOAuth2Manager/AFHTTPRequestSerializer+OAuth2.m AFOAuth2Manager/AFOAuth2Manager.m AFOAuth2Manager/AFOAuthCredential.m
+
 
 yourTube_FRAMEWORKS = UIKit CoreGraphics WebKit AVFoundation AVKit AppSupport AudioToolbox MapKit QuartzCore Accelerate
 yourTube_CXXFLAGS += -fobjc-arc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/libxml2

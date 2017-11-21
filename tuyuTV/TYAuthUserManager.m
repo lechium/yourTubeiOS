@@ -13,12 +13,41 @@
 
 @implementation TYAuthUserManager
 
+#if TARGET_OS_TV
 + (WebViewController *)ytAuthWebViewController
 {
     WebViewController *webView = [[WebViewController alloc] initWithURL:[self ytAuthURL]];
     webView.viewMode = WebViewControllerAuthMode;
     return webView;
 }
+
++ (WebViewController *)OAuthWebViewController
+{
+    
+    WebViewController *webView = [[WebViewController alloc] initWithURL:[self suastring]];
+    webView.viewMode = WebViewControllerPermissionMode;
+    return webView;
+}
+
+#endif
+
+#if TARGET_OS_IOS
++ (KBYTWebViewController *)ytAuthWebViewController
+{
+    KBYTWebViewController *webView = [[KBYTWebViewController alloc] initWithURL:[self ytAuthURL] mode:TYWebViewControllerAuthMode ];
+    return webView;
+}
+
++ (KBYTWebViewController *)OAuthWebViewController
+{
+    
+    KBYTWebViewController *webView = [[KBYTWebViewController alloc] initWithURL:[self suastring] mode:TYWebViewControllerPermissionMode];
+   // webView.viewMode = TYWebViewControllerPermissionMode;
+    return webView;
+}
+
+
+#endif
 
 + (NSString *)ytAuthURL
 {
@@ -30,15 +59,6 @@
     return [NSString stringWithFormat:@"https://accounts.google.com/o/oauth2/auth?client_id=%@&redirect_uri=%@", ytClientID, @"urn:ietf:wg:oauth:2.0:oob:auto&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube.force-ssl+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutubepartner&response_type=code&access_type=offline&pageId=none"];
 }
 
-+ (WebViewController *)OAuthWebViewController
-{
-    
-    
-    
-    WebViewController *webView = [[WebViewController alloc] initWithURL:[self suastring]];
-    webView.viewMode = WebViewControllerPermissionMode;
-    return webView;
-}
 
 + (id)sharedInstance {
     
@@ -130,12 +150,44 @@
     
 }
 
+- (void)copyPlaylist:(KBYTSearchResult *)result completion:(void(^)(NSString *response))completion
+{
+    __block  KBYTSearchResult *plResult = [self createPlaylistWithTitle:result.title andPrivacyStatus:@"public"];
+    
+    [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(NSDictionary *playlistDetails) {
+        
+       // NSNumber *pageCount = playlistDetails[@"pageCount"];
+        
+        //DLog(@"details: %@", playlistDetails);
+        
+        
+        NSArray <KBYTSearchResult *>*results = playlistDetails[@"results"];
+        for (KBYTSearchResult *video in results)
+        {
+            [self addVideo:video.videoId toPlaylistWithID:plResult.videoId];
+        }
+        
+        completion(@"science");
+        
+        
+    } failureBlock:^(NSString *error) {
+        //
+    }];
+}
+
 - (id)subscribeToChannel:(NSString *)channelId
 {
     
     NSString *channel = [[channelId stringByDeletingLastPathComponent] lastPathComponent];
     
-    //NSLog(@"subscribe to channel: %@", channel);
+    
+    
+    if (channel.length == 0)
+    {
+        channel = channelId;
+    }
+    
+    NSLog(@"subscribe to channel: %@", channel);
     
     [self refreshAuthToken];
     
@@ -144,6 +196,7 @@
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:resourceId , @"resourceId", nil];
     [finalDict setObject:dict forKey:@"snippet"];
     
+    DLog(@"finalDict: %@", finalDict);
     
     NSError* error;
     
@@ -316,6 +369,8 @@
     
     NSDictionary *finalDict = [NSDictionary dictionaryWithObjectsAndKeys:dict, @"snippet", status, @"status", nil];
     NSError* error;
+    
+    NSLog(@"post: %@", finalDict);
     //NSLog(@"postString: %@", [finalDict JSONString]);
     
     // Encode post string
@@ -347,7 +402,7 @@
     
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     
-    //NSLog(@"datString: %@", datString);
+    NSLog(@"datString: %@", datString);
     
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
     NSLog(@"status string: %@", returnString);
@@ -535,8 +590,7 @@
 
 - (id)postOAuth2CodeToGoogle:(NSString *)code{
     
-    NSString* post = nil;
-    post = [NSString stringWithFormat:@"code=%@&client_id=%@&scope=&client_secret=%@&grant_type=authorization_code&redirect_uri=%@&", [code stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],ytClientID, ytSecretKey, [@"urn:ietf:wg:oauth:2.0:oob:auto" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSString* post = [NSString stringWithFormat:@"code=%@&client_id=%@&scope=&client_secret=%@&grant_type=authorization_code&redirect_uri=%@&", [code stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],ytClientID, ytSecretKey, [@"urn:ietf:wg:oauth:2.0:oob:auto" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     
     DLog(@"post: %@", post);
     

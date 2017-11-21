@@ -16,7 +16,7 @@
 #import "KBYTSearchItemViewController.h"
 #import "SVProgressHUD/SVProgressHUD.h"
 #import <objc/runtime.h>
-
+#import "TYAuthUserManager.h"
 
 
 static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
@@ -50,7 +50,7 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 @interface KBYTWebViewController ()
 
 @property (nonatomic, strong) UIWebView *basicWebView;
-
+@property (nonatomic, strong) NSURL *initialURL;
 @end
 
 @implementation KBYTWebViewController
@@ -107,11 +107,50 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
 {
     [super viewWillDisappear:animated];
   /*
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.7", @"UserAgent", nil];
-    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+   
    */
+}
+
+- (void)setUserAgentForMode:(TYWebViewMode)mode
+{
+    NSString *userAgent = nil;
+    
+    switch (mode)
+    {
+        case TYWebViewControllerDefaultMode:
+        case TYWebViewControllerAuthMode:
+            
+            userAgent = @"Mozilla/5.0 (iPhone; CPU iPhone OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4";
+            
+            break;
+            
+        case TYWebViewControllerPermissionMode:
+            
+            userAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.7";
+            break;
+    }
+    
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:userAgent, @"UserAgent", nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
+}
+
+- (id)initWithURL:(NSString*)theURL mode:(TYWebViewMode)mode
+{
+    self = [super init];
+    self.initialURL = [NSURL URLWithString:theURL];
+    [self setUserAgentForMode:mode];
+       return self;
+}
+
+- (id)initWithURL:(NSString*)theURL
+{
+    self = [self initWithURL:theURL mode:TYWebViewControllerDefaultMode];
+  
+  
+    return self;
+    
 }
 
 - (void)viewDidLoad {
@@ -142,7 +181,14 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     //@"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3#identifier";
     
     
-    [self.basicWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:authString]]];
+    if (self.initialURL != nil)
+    {
+           [self.basicWebView loadRequest:[NSURLRequest requestWithURL:self.initialURL]];
+    } else {
+           [self.basicWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:authString]]];
+    }
+    
+ 
     [self.view addSubview:self.basicWebView];
     
     self.basicWebView.delegate = self;
@@ -223,6 +269,27 @@ static NSString * const YTTestActivityType = @"com.nito.activity.TestActivity";
     [self pauseBasicVideos];
     NSString *theTitle=[webView stringByEvaluatingJavaScriptFromString:@"document.title"];
     self.title = theTitle;
+    
+    if ([theTitle rangeOfString:@"Success"].location != NSNotFound)
+    {
+        NSString *token = [[theTitle componentsSeparatedByString:@"code="] lastObject];
+        NSLog(@"token: %@", token);
+        //[self postOAuth2CodeToGoogle:token];
+        
+        [[TYAuthUserManager sharedInstance] postOAuth2CodeToGoogle:token];
+        
+        self.viewMode = TYWebViewControllerAuthMode;
+        [self setUserAgentForMode:self.viewMode];
+        
+        NSString *authString = @"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3";
+        [self.basicWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:authString]]];
+        
+        //[self.webview load]
+        
+         [self.navigationController popViewControllerAnimated:true];
+        return;
+    }
+    
     [self updateBackButtonState];
     //among the initial hacks, since title gets changed a lot during a load cycle we dont want to fetch
     //the info twice, if we did then the action sheet would appear twice and we are wasting network calls.

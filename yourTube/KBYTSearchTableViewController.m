@@ -11,6 +11,7 @@
 #import "SVProgressHUD/SVIndefiniteAnimatedView.h"
 #import "KBYTSearchItemViewController.h"
 #import "KBYTGenericVideoTableViewController.h"
+#import "TYAuthUserManager.h"
 
 #define kLoadingCellTag 500
 
@@ -211,7 +212,7 @@
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     
     //no longer do anything here because it would mess up paging functionality, revisit some day.
-    LOG_SELF;
+    //LOG_SELF;
 #if TARGET_OS_TV
     [self searchBarSearchButtonClicked:self.searchController.searchBar];
 #endif
@@ -288,6 +289,225 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         [self getNextPage];
     }
 }
+
+- (void)addLongPressToCell:(KBYTDownloadCell *)cell
+{
+    UILongPressGestureRecognizer *longpress
+    = [[UILongPressGestureRecognizer alloc]
+       initWithTarget:self action:@selector(handleLongpressMethod:)];
+    longpress.minimumPressDuration = .5; //seconds
+    longpress.delegate = self;
+    [cell addGestureRecognizer:longpress];
+}
+
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        
+        DLog(@"add video: %@ to playlistID: %@", video, playlist);
+        [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
+        
+    });
+    
+}
+
+
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Video Options"
+                                          message: @"Choose playlist to add video to"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    DLog(@"long press: %@", result);
+    
+    NSArray *playlistArray = [[TYAuthUserManager sharedInstance] playlists];
+    //NSArray *playlistArray = @[];
+    
+    // __weak typeof(self) weakSelf = self;
+    self.alertHandler = ^(UIAlertAction *action)
+    {
+        NSString *playlistID = nil;
+        
+        for (KBYTSearchResult *playlist in playlistArray)
+        {
+            if ([playlist.title isEqualToString:action.title])
+            {
+                playlistID = playlist.videoId;
+            }
+        }
+        
+        [self addVideo:result toPlaylist:playlistID];
+    };
+    
+    for (KBYTSearchResult *result in playlistArray)
+    {
+        UIAlertAction *plAction = [UIAlertAction actionWithTitle:result.title style:UIAlertActionStyleDefault handler:self.alertHandler];
+        [alertController addAction:plAction];
+    }
+    
+    UIAlertAction *subscribeToChannel = [UIAlertAction actionWithTitle:@"Subscribe to Video's channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+       
+        if ([result channelId] != nil && ![[result channelId] isEqualToString:@"Unavailable"])
+        {
+            DLog(@"subscribing to channel: %@", result.channelId);
+            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.channelId];
+        } else {
+            
+            [[KBYourTube sharedInstance] getUserVideos:result.channelPath.lastPathComponent completionBlock:^(NSDictionary *searchDetails) {
+                
+                
+                DLog(@"subscribing to channel: %@", searchDetails[@"channelID"]);
+                [[TYAuthUserManager sharedInstance] subscribeToChannel:searchDetails[@"channelID"]];
+            } failureBlock:^(NSString *error) {
+                //
+            }];
+            
+        }
+        
+    }];
+    
+    [alertController addAction:subscribeToChannel];
+    
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    
+    
+    
+    [alertController addAction:cancelAction];
+    if (self.presentedViewController != nil){
+        [self.presentedViewController presentViewController:alertController animated:YES completion:nil];
+    } else {
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+    
+    
+}
+
+- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Channel Options"
+                                          message: @"Subscribe to this channel?"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            
+            
+        });
+        
+        
+    }];
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    [alertController addAction:yesAction];
+    [alertController addAction:cancelAction];
+    if (self.presentedViewController != nil){
+        [self.presentedViewController presentViewController:alertController animated:YES completion:nil];
+    } else {
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
+
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+    LOG_SELF;
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    
+    if ([UD valueForKey:@"access_token"] == nil)
+    {
+        DLog(@"NO ACCESS KEY");
+        return;
+    }
+    
+    CGPoint location = [gestureRecognizer locationInView:self.tableView];
+    //Get the corresponding index path within the table view
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    KBYTSearchResult *result = [self.searchResults objectAtIndex:indexPath.row];
+    DLog(@"result: %@", result);
+    
+    switch (result.resultType)
+    {
+        case YTSearchResultTypeVideo:
+            
+            [self showPlaylistAlertForSearchResult:result];
+            break;
+            
+        case YTSearchResultTypeChannel:
+            
+            [self showChannelAlertForSearchResult:result];
+            break;
+            
+        case YTSearchResultTypePlaylist:
+            
+        
+            [self showPlaylistCopyAlertForSearchResult:result];
+            break;
+            
+        case YTSearchResultTypeUnknown:
+            
+            break;
+    }
+    
+}
+
+- (void)showPlaylistCopyAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Playlist Options"
+                                          message: @"Create a copy of this playlist to your channel?"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Copy" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            [[TYAuthUserManager sharedInstance] copyPlaylist:result completion:^(NSString *response) {
+                
+                
+                
+                
+            }];
+            
+            
+        });
+        
+        
+    }];
+    [alertController addAction:yesAction];
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    [alertController addAction:cancelAction];
+    if (self.presentedViewController != nil){
+        [self.presentedViewController presentViewController:alertController animated:YES completion:nil];
+    } else {
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
     if (indexPath.row >= self.searchResults.count){
@@ -298,6 +518,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (cell == nil) {
         cell = [[KBYTDownloadCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
+    
+    [self addLongPressToCell:cell];
     
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
     cell.selectionStyle = UITableViewCellSelectionStyleBlue;

@@ -10,7 +10,7 @@
 #import "SVProgressHUD/SVProgressHUD.h"
 #import "SVProgressHUD/SVIndefiniteAnimatedView.h"
 #import "KBYTSearchItemViewController.h"
-//#import "TYAuthUserManager.h"
+#import "TYAuthUserManager.h"
 
 @interface KBYTGenericVideoTableViewController ()
 
@@ -55,13 +55,18 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self updateTableForType:self.tableType];
     
+    
+    
+}
+
+- (void)addLongPressToCell:(KBYTDownloadCell *)cell
+{
     UILongPressGestureRecognizer *longpress
     = [[UILongPressGestureRecognizer alloc]
        initWithTarget:self action:@selector(handleLongpressMethod:)];
     longpress.minimumPressDuration = .5; //seconds
     longpress.delegate = self;
-    [self.tableView addGestureRecognizer:longpress];
-    
+    [cell addGestureRecognizer:longpress];
 }
 
 - (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
@@ -69,7 +74,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         
         DLog(@"add video: %@ to playlistID: %@", video, playlist);
-       // [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
+        [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
         
     });
     
@@ -84,8 +89,8 @@
                                           message: @"Choose playlist to add video to"
                                           preferredStyle:UIAlertControllerStyleAlert];
     
-    //NSArray *playlistArray = [[TYAuthUserManager sharedInstance] playlists];
-    NSArray *playlistArray = @[];
+    NSArray *playlistArray = [[TYAuthUserManager sharedInstance] playlists];
+    //NSArray *playlistArray = @[];
     
    // __weak typeof(self) weakSelf = self;
     self.alertHandler = ^(UIAlertAction *action)
@@ -136,7 +141,7 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-           // [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
             
             
         });
@@ -804,6 +809,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         cell = [[KBYTDownloadCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
+   
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
     cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     if ([currentItem.author length] == 0)
@@ -847,6 +853,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
     cell.imageView.autoresizingMask = ( UIViewAutoresizingNone );
     [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+     [self addLongPressToCell:cell];
     return cell;
 }
 

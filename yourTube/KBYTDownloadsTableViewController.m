@@ -11,7 +11,7 @@
 #import "KBYTSearchTableViewController.h"
 #import "Animations/ScaleAnimation.h"
 #import "KBYTDownloadManager.h"
-
+#import "TYAuthUserManager.h"
 
 @interface KBYTDownloadsTableViewController ()
 {
@@ -154,8 +154,46 @@
             }
             if (index == 5) //OG web search
             {
-                KBYTWebViewController *ovc = [[KBYTWebViewController alloc] init];
+                KBYTWebViewController *ovc  = nil;
+                if ([[KBYourTube sharedInstance] isSignedIn] && [UD valueForKey:@"access_token"] != nil )
+                {
+                    ovc = [[KBYTWebViewController alloc] init];
+
+                    
+                } else {
+                    ovc = [TYAuthUserManager OAuthWebViewController];
+                    
+                }
                 [self.navigationController pushViewController:ovc animated:true];
+                
+                /*
+                    UIAlertAction *authTwice = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                       
+                        ovc = [TYAuthUserManager OAuthWebViewController];
+                        [self.navigationController pushViewController:ovc animated:true];
+                    }];
+                    
+                    UIAlertAction *singleAuth = [UIAlertAction actionWithTitle:@"Browsing only" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        
+                        ovc = [TYAuthUserManager ytAuthWebViewController];
+                        [self.navigationController pushViewController:ovc animated:true];
+                    }];
+                    
+                    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+                    
+                    
+                    UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:@"Authentication" message:@"To enable browsing your authorized content AND to be able to create & edit playlist and channel subscriptions tuyu needs to authorize twice (once for browsing and once for auth token) Choose 'ok' if you agree, otherwise choose browsing only" preferredStyle:UIAlertControllerStyleAlert];
+                    
+                    [alertCon addAction:authTwice];
+                    [alertCon addAction:singleAuth];
+                    [alertCon addAction:cancel];
+                    
+                    
+                    [self presentViewController:alertCon animated:YES completion:nil];
+                    
+                    
+                */
+                
                 return;
             }
             

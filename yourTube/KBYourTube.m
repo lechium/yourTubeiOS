@@ -113,7 +113,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (self.imagePath == nil)self.imagePath = @"Unavailable";
     if (self.duration == nil)self.duration = @"Unavailable";
     if (self.videoId == nil)self.videoId = @"Unavailable";
-    return @{@"title": self.title, @"author": self.author, @"details": self.details, @"imagePath": self.imagePath, @"videoId": self.videoId, @"duration": self.duration, @"age": self.age, @"views": self.views, @"resultType": [self readableSearchType]};
+    if (self.channelId == nil)self.channelId = @"Unavailable";
+    if (self.channelPath == nil)self.channelPath = @"Unavailable";
+    return @{@"title": self.title, @"author": self.author, @"details": self.details, @"imagePath": self.imagePath, @"videoId": self.videoId, @"duration": self.duration, @"age": self.age, @"views": self.views, @"resultType": [self readableSearchType], @"channelId": self.channelId, @"channelPath": self.channelPath};
 }
 
 - (NSString *)description
@@ -920,6 +922,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         
         if (authorElement != nil)
         {
+            
             result.author = [authorElement stringValue];
         }
         for (ONOXMLElement *currentElement in [ageAndViewsElement children])
@@ -1607,6 +1610,16 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 
                 if (authorElement != nil)
                 {
+                    result.channelPath = [authorElement valueForAttribute:@"href"];
+                    NSArray *pathArray = [result.channelPath componentsSeparatedByString:@"/"];
+                    NSString *pathType = pathArray[1];
+                    DLog(@"cp: %@ pathType: %@", result.channelPath,pathType);
+                    if ([pathType isEqualToString:@"channel"])
+                    {
+                        result.channelId = pathArray[2];
+                        DLog(@"channelID: %@", result.channelId);
+                    }
+                    
                     result.author = [authorElement stringValue];
                 }
                 for (ONOXMLElement *currentElement in [ageAndViewsElement children])
@@ -1740,6 +1753,195 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 
+- (void)getUserVideos:(NSString *)channelID
+          completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
+             failureBlock:(void(^)(NSString *error))failureBlock
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        @autoreleasepool {
+            NSString *requestString = [NSString stringWithFormat:@"https://www.youtube.com/user/%@/videos", channelID];
+            NSString *rawRequestResult = [self stringFromRequest:requestString];
+            ONOXMLDocument *xmlDoc = [ONOXMLDocument HTMLDocumentWithString:rawRequestResult encoding:NSUTF8StringEncoding error:nil];
+            ONOXMLElement *root = [xmlDoc rootElement];
+            //NSLog(@"root element: %@", root);
+            ONOXMLElement *headerSection = [root firstChildWithXPath:@"//div[contains(@id, 'gh-banner')]"];
+            NSString *headerString = [[[headerSection children] firstObject] stringValue];
+            // DLog(@"headerString: %@", headerString);
+            NSScanner *bannerScanner = [NSScanner scannerWithString:headerString];
+            NSString *headerBanner = nil;
+            [bannerScanner scanUpToString:@");" intoString:&headerBanner];
+            headerBanner = [[headerBanner componentsSeparatedByString:@"//"] lastObject];
+            if (headerBanner != nil){
+                headerBanner = [@"https://" stringByAppendingString:headerBanner];
+            }
+            ONOXMLElement *videosElement = [root firstChildWithXPath:@"//*[contains(@class, 'channels-browse-content-grid')]"];
+            id videoEnum = [videosElement XPath:@"//div[contains(@class, 'yt-lockup-video')]"];
+            ONOXMLElement *currentElement = nil;
+            NSMutableArray *finalArray = [NSMutableArray new];
+            NSMutableDictionary *outputDict = [NSMutableDictionary new];
+            ONOXMLElement *channelNameElement = [root firstChildWithXPath:@"//meta[contains(@name, 'title')]"];
+            ONOXMLElement *channelDescElement = [root firstChildWithXPath:@"//meta[contains(@name, 'description')]"];
+            
+            //<span class="yt-subscription-button-subscriber-count-branded-horizontal subscribed yt-uix-tooltip" title="10,323,793" tabindex="0" aria-label="10,323,793 subscribers" data-tooltip-text="10,323,793" aria-labelledby="yt-uix-tooltip88-arialabel">10,323,793</span>
+            
+            ONOXMLElement *channelSubscribersElement = [root firstChildWithXPath:@"//span[contains(@class, 'yt-subscription-button-subscriber-count-branded-horizontal')]"];
+            
+            ONOXMLElement *channelKeywordsElement = [root firstChildWithXPath:@"//meta[contains(@name, 'keywords')]"];
+            ONOXMLElement *channelThumbNailElement = [[[root firstChildWithXPath:@".//*[contains(@class, 'channel-header-profile-image-container')]"] children] firstObject];
+            
+            
+            NSString *headerThumb = nil;
+            
+            if (channelThumbNailElement != nil)
+            {
+                headerThumb = [channelThumbNailElement valueForAttribute:@"src"];
+                if (![headerThumb containsString:@"https"])
+                {
+                    outputDict[@"thumbnail"] = [@"https:" stringByAppendingString:headerThumb];
+                    
+                    //NSLog(@"hop  %@", headerThumb);
+                } else {
+                    
+                    outputDict[@"thumbnail"] = headerThumb;
+                    
+                }
+            }
+            
+           
+            ONOXMLElement *canon = [root firstChildWithXPath:@"//link[contains(@rel, 'canonical')]"];
+             DLog(@"canon: %@", canon);
+            outputDict[@"channelID"] = [[canon valueForAttribute:@"href"] lastPathComponent];
+            
+            if (channelSubscribersElement != nil)
+            {
+                outputDict[@"subscribers"] = [channelSubscribersElement valueForAttribute:@"aria-label"];
+            }
+            
+            if (channelNameElement != nil)
+            {
+                outputDict[@"name"] = [channelNameElement valueForAttribute:@"content"];
+            }
+            if (channelDescElement != nil)
+            {
+                outputDict[@"description"] = [channelDescElement valueForAttribute:@"content"];
+            }
+            if (channelKeywordsElement != nil)
+            {
+                outputDict[@"keywords"] = [channelKeywordsElement valueForAttribute:@"content"];
+            }
+            if (headerBanner != nil)
+            {
+                outputDict[@"banner"] = headerBanner;
+            }
+            while (currentElement = [videoEnum nextObject])
+            {
+                //NSMutableDictionary *scienceDict = [NSMutableDictionary new];
+                KBYTSearchResult *result = [KBYTSearchResult new];
+                NSString *videoID = [currentElement valueForAttribute:@"data-context-item-id"];
+                if (videoID != nil)
+                {
+                    result.videoId = videoID;
+                }
+                ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-clip')]"] children] firstObject];
+                ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
+                ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"];
+                ;
+                ONOXMLElement *descElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-description')]"];
+                ONOXMLElement *authorElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-byline')]"] children] firstObject];
+                ONOXMLElement *ageAndViewsElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-meta-info')]"];//yt-lockup-meta-info
+                NSString *imagePath = [thumbNailElement valueForAttribute:@"data-thumb"];
+                if (imagePath == nil)
+                {
+                    imagePath = [thumbNailElement valueForAttribute:@"src"];
+                }
+                //w=196&h=110
+                if (imagePath != nil)
+                {
+                    
+                    imagePath = [self attemptConvertImagePathToHiRes:imagePath];
+                    
+                    
+                    if ([imagePath containsString:@"https:"])
+                    {
+                        result.imagePath = imagePath;
+                    } else {
+                        result.imagePath = [@"https:" stringByAppendingString:imagePath];
+                    }
+                }
+                
+                result.resultType = YTSearchResultTypeVideo;
+                
+                if (lengthElement != nil)
+                    result.duration = lengthElement.stringValue;
+                
+                if (titleElement != nil)
+                {
+                    result.title = [[[titleElement children]firstObject] valueForAttribute:@"title"];
+                }
+                
+                NSString *vdesc = [[descElement stringValue] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                if (vdesc != nil)
+                {
+                    result.details = [vdesc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                }
+                
+                if (authorElement != nil)
+                {
+                    result.author = [authorElement stringValue];
+                }
+                for (ONOXMLElement *currentElement in [ageAndViewsElement children])
+                {
+                    NSString *currentValue = [currentElement stringValue];
+                    if ([currentValue containsString:@"ago"]) //age
+                    {
+                        result.age = currentValue;
+                    } else if ([currentValue containsString:@"views"])
+                    {
+                        result.views = [[currentValue componentsSeparatedByString:@" "] firstObject];
+                    }
+                }
+                
+                if (result.videoId.length > 0 && ![[[result author] lowercaseString] isEqualToString:@"ad"])
+                {
+                    //NSLog(@"result: %@", result);
+                    [finalArray addObject:result];
+                } else {
+                    result = nil;
+                }
+                
+            }
+            if (outputDict[@"name"] != nil)
+            {
+                NSArray *channelPlaylists = [self playlistArrayFromUserName:outputDict[@"name"]];
+                outputDict[@"playlists"] = channelPlaylists;
+                
+            }
+            if ([finalArray count] > 0)
+            {
+                ONOXMLElement *loadMoreButton = [root firstChildWithXPath:@"//button[contains(@class, 'load-more-button')]"];
+                NSString *loadMoreHREF = [loadMoreButton valueForAttribute:@"data-uix-load-more-href"];
+                if (loadMoreHREF != nil){
+                    outputDict[@"loadMoreREF"] = loadMoreHREF;
+                }
+                outputDict[@"results"] = finalArray;
+                outputDict[@"resultCount"] = [NSNumber numberWithInteger:[finalArray count]];
+                NSInteger pageCount = 1;
+                outputDict[@"pageCount"] = [NSNumber numberWithInteger:pageCount];
+            }
+            NSString *errorString = @"failed to get featured details";
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if([finalArray count] > 0)
+                {
+                    completionBlock(outputDict);
+                } else {
+                    failureBlock(errorString);
+                }
+            });
+        }
+    });
+}
 
 - (void)getChannelVideos:(NSString *)channelID
          completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
@@ -2817,6 +3019,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 
                 if (authorElement != nil)
                 {
+                    result.channelPath = [authorElement valueForAttribute:@"href"];
+                    NSArray *pathArray = [result.channelPath componentsSeparatedByString:@"/"];
+                    NSString *pathType = pathArray[1];
+                    DLog(@"cp: %@ pathType: %@", result.channelPath,pathType);
+                    if ([pathType isEqualToString:@"channel"])
+                    {
+                        result.channelId = pathArray[2];
+                        DLog(@"channelID: %@", result.channelId);
+                    }
                     result.author = [authorElement stringValue];
                 }
                 for (ONOXMLElement *currentElement in [ageAndViewsElement children])

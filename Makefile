@@ -37,7 +37,6 @@ YTBrowser_FILES += CocoaHTTPServer/Vendor/CocoaLumberjack/Extensions/DispatchQue
 
 YTBrowser_FILES += yourTube/Download/URLCredential.m yourTube/Download/URLDownloader.m
 YTBrowser_FILES += yourTube/KBYourTube+Categories.m
-
 #YTBrowser_FILES += GCDWebServer/GCDWebServer.m GCDWebServer/GCDWebServerConnection.m GCDWebServer/GCDWebServerFunctions.m GCDWebServer/GCDWebServerRequest.m GCDWebServer/GCDWebServerResponse.m
 
 
@@ -49,9 +48,9 @@ YTBrowser_FILES += yourTube/KBYourTube+Categories.m
 YTBrowser_CXXFLAGS += -fobjc-arc
 YTBrowser_CFLAGS += -fobjc-arc
 
-YTBrowser_LDFLAGS = -undefined dynamic_lookup -framework Foundation -framework AppSupport -FFrameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/PrivateFrameworks -framework MusicLibrary -IFrameworks -I/Frameworks/GCDWebServers.framework/Headers -IGCDWebServer/Core -IGCDWebServer/Requests -IGCDWebServer/Responses -framework CFNetwork -framework AudioToolbox -Wl,-segalign,4000
+#YTBrowser_LDFLAGS = -undefined dynamic_lookup -framework Foundation -framework AppSupport -FFrameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/PrivateFrameworks -framework MusicLibrary -IFrameworks -I/Frameworks/GCDWebServers.framework/Headers -IGCDWebServer/Core -IGCDWebServer/Requests -IGCDWebServer/Responses -framework CFNetwork -framework AudioToolbox -Wl,-segalign,4000
 
-#YTBrowser_LDFLAGS = -undefined dynamic_lookup -framework Foundation -framework StoreServices -framework AppSupport -FFrameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/PrivateFrameworks -framework MusicLibrary -IFrameworks -I/Frameworks/GCDWebServers.framework/Headers -IGCDWebServer/Core -IGCDWebServer/Requests -IGCDWebServer/Responses -framework CFNetwork -framework AudioToolbox -Wl,-segalign,4000
+YTBrowser_LDFLAGS = -undefined dynamic_lookup -framework Foundation -framework StoreServices -framework AppSupport -FFrameworks -F/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/PrivateFrameworks -framework MusicLibrary -IFrameworks -I/Frameworks/GCDWebServers.framework/Headers -IGCDWebServer/Core -IGCDWebServer/Requests -IGCDWebServer/Responses -framework CFNetwork -framework AudioToolbox -Wl,-segalign,4000
  
 include $(FW_MAKEDIR)/tweak.mk
 

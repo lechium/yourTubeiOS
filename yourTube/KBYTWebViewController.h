@@ -11,8 +11,17 @@
 #import "KBYourTube.h"
 #import "KBYTPreferences.h"
 
+
+typedef enum {
+    TYWebViewControllerDefaultMode = 0,
+    TYWebViewControllerAuthMode = 1,
+    TYWebViewControllerPermissionMode = 2,
+} TYWebViewMode;
+
+
 @interface KBYTWebViewController : UIViewController <WKNavigationDelegate, UIActionSheetDelegate, WKScriptMessageHandler, UIWebViewDelegate >
 
+@property (readwrite, assign) TYWebViewMode viewMode;
 @property (strong, nonatomic) IBOutlet WKWebView *webView;
 @property (nonatomic, strong) KBYTMedia *currentMedia;
 @property (nonatomic, strong) NSString *previousVideoID;
@@ -25,6 +34,7 @@
 @property (readwrite, assign) CGFloat airplayProgressPercent;
 @property (readwrite, assign) CGFloat airplayDuration;
 
-
+- (id)initWithURL:(NSString*)theURL;
+- (id)initWithURL:(NSString*)theURL mode:(TYWebViewMode)mode;
 @end
 

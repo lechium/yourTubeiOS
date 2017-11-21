@@ -96,6 +96,7 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
 @property (nonatomic, strong) NSString *author;
 @property (nonatomic, strong) NSString *keywords;
 @property (nonatomic, strong) NSString *videoId;
+@property (nonatomic, strong) NSString *channelId; //what channel does video belong to
 @property (nonatomic, strong) NSString *views;
 @property (nonatomic, strong) NSString *duration;
 @property (nonatomic, strong) NSDictionary *images;
@@ -117,6 +118,8 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *author;
 @property (nonatomic, strong) NSString *videoId;
+@property (nonatomic, strong) NSString *channelPath; //what channel does video belong to
+@property (nonatomic, strong) NSString *channelId; //what channel does video belong to
 @property (nonatomic, strong) NSString *duration;
 @property (nonatomic, strong) NSString *imagePath;
 @property (nonatomic, strong) NSString *age;
@@ -211,6 +214,9 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
           completionBlock:(void(^)(NSDictionary * playlistDetails))completionBlock
              failureBlock:(void(^)(NSString *error))failureBlock;
 
+- (void)getUserVideos:(NSString *)channelID
+      completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
+         failureBlock:(void(^)(NSString *error))failureBlock;
 
 
 - (void)getChannelVideos:(NSString *)channelID

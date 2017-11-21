@@ -79,6 +79,8 @@
         [audioSession setActive:YES error:&error];
     }
     
+   
+    
   
     
     NSLog(@"app support: %@", [self appSupportFolder]);

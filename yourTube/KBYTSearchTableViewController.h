@@ -30,6 +30,7 @@
 @property (readwrite, assign) NSInteger currentPage;
 @property (nonatomic, strong) NSString *lastSearch;
 @property (readwrite, assign) BOOL showingSuggestedVideos;
-
+@property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
+@property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 - (void)getNextPage;
 @end
