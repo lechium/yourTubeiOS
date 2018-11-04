@@ -130,10 +130,10 @@ typedef struct _Input
             
             [[TYAuthUserManager sharedInstance] postOAuth2CodeToGoogle:token];
          
-            [self loadYTAuthPage];
+            //[self loadYTAuthPage];
             //[self.webview load]
             
-           // [self.navigationController popViewControllerAnimated:true];
+           [self.navigationController popViewControllerAnimated:true];
             return;
         }
         

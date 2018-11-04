@@ -1,6 +1,8 @@
-Architecture: tvos-arm
 Name: tuyu
 Package: com.nito.tuyu
+Pre-Depends: cy+model.appletv
+Depends: firmware(>= 9.0), mobilesubstrate
+Architecture: appletvos-arm64
 Version: 0.4.1
 Maintainer: Kevin Bradley
 Author: Kevin Bradley

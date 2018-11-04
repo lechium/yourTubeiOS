@@ -428,7 +428,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     self.duration = duration;
     self.videoId = videoID;
     self.views = [numFormatter stringFromNumber:view_count];
-    
+    if (self.keywords == nil){
+        self.keywords = @"";
+    }
+    if (self.views == nil){
+        self.views = @"";
+    }
     //separate the streams into their initial array
     
     // NSLog(@"StreamMap: %@", streamMap);

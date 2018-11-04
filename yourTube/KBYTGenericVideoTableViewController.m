@@ -80,6 +80,45 @@
     
 }
 
+- (void)showPlaylistCopyAlertForSearchResult:(KBYTSearchResult *)result
+{
+    DLOG_SELF;
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Playlist Options"
+                                          message: @"Create a copy of this playlist to your channel?"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Copy" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            [[TYAuthUserManager sharedInstance] copyPlaylist:result completion:^(NSString *response) {
+                
+                
+                
+                
+            }];
+            
+            
+        });
+        
+        
+    }];
+    [alertController addAction:yesAction];
+    UIAlertAction *cancelAction = [UIAlertAction
+                                   actionWithTitle:@"Cancel"
+                                   style:UIAlertActionStyleCancel
+                                   handler:^(UIAlertAction *action)
+                                   {
+                                   }];
+    [alertController addAction:cancelAction];
+    if (self.presentedViewController != nil){
+        [self.presentedViewController presentViewController:alertController animated:YES completion:nil];
+    } else {
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
 
 - (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
 {
@@ -194,6 +233,7 @@
             
         case YTSearchResultTypePlaylist:
             
+            [self showPlaylistCopyAlertForSearchResult:result];
             break;
             
         case YTSearchResultTypeUnknown:
