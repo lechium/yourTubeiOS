@@ -388,7 +388,44 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     return cell;
 }
 
-- (void)updateSearchResults:(NSArray *)newResults
+- (void)updateSearchResults:(KBYTSearchResults *)results {
+    if (self.currentPage > 1)
+    {
+        // [[self.collectionView]
+        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForItem:[[self searchResults] count]-1 inSection:0];
+        [self.collectionView performBatchUpdates:^{
+            NSMutableArray *allResults = [NSMutableArray new];
+            [allResults addObjectsFromArray:results.videos];
+            [allResults addObjectsFromArray:results.playlists];
+            [allResults addObjectsFromArray:results.channels];
+            [[self searchResults] addObjectsFromArray:allResults];
+            NSMutableArray *indexPathArray = [NSMutableArray new];
+            NSInteger i = 0;
+            for (i = 0; i < [allResults count]; i++)
+            {
+                NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:lastIndexPath.item+i inSection:0];
+                [indexPathArray addObject:newIndexPath];
+            }
+            
+            [self.collectionView insertItemsAtIndexPaths:indexPathArray];
+            
+        } completion:^(BOOL finished) {
+            
+            //
+        }];
+        
+    } else {
+        NSMutableArray *allResults = [NSMutableArray new];
+        [allResults addObjectsFromArray:results.videos];
+        [allResults addObjectsFromArray:results.playlists];
+        [allResults addObjectsFromArray:results.channels];
+        self.searchResults = [allResults mutableCopy];
+        [self.collectionView reloadData];
+        
+    }
+}
+
+- (void)oldupdateSearchResults:(NSArray *)newResults
 {
     if (self.currentPage > 1)
     {
@@ -471,7 +508,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         NSLog(@"[yourTubeiOS] search results: %@", result.videos);
         self.continuationToken = result.continuationToken;
         self.pageCount = 20; //just choosing an arbitrary number
-        [self updateSearchResults:result.videos];
+        [self updateSearchResults:result];
     } failureBlock:^(NSString *error) {
         
     }];
@@ -531,7 +568,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             if (self.currentPage == 1)
                 [SVProgressHUD dismiss];
             
-            [self updateSearchResults:result.videos];
+            [self updateSearchResults:result];
             [self.collectionView reloadDataWithCompletion:^{
                 _gettingPage = false;
             }];

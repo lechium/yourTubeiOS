@@ -28,7 +28,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 - (NSString *)description {
     NSString *desc = [super description];
-    return [NSString stringWithFormat:@"%@ videos: %@ playlists: %@ channels: %@ cc: %@", desc, _videos, _playlists, _channels, _continuationToken];
+    return [NSString stringWithFormat:@"%@ videos: %@ playlists: %@ channels: %@ cc: %@ results count: %lu", desc, _videos, _playlists, _channels, _continuationToken, _estimatedResults];
 }
 
 - (void)processJSON:(NSDictionary *)jsonDict {
@@ -38,31 +38,38 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     NSArray *videos = [jsonDict recursiveObjectsForKey:@"videoRenderer"];
     NSArray *playlists = [jsonDict recursiveObjectsForKey:@"playlistRenderer"];
     NSArray *channels = [jsonDict recursiveObjectsForKey:@"channelRenderer"];
-    NSLog(@"playlists: %@", playlists);
-    NSLog(@"channels: %@", channels);
+    NSInteger estimatedResults = [[jsonDict recursiveObjectForKey:@"estimatedResults"] integerValue];
+    //NSLog(@"playlists: %@", playlists);
+    //NSLog(@"channels: %@", channels);
+    if (channels){
+        [channels writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"channels.plist"] atomically:true];
+    }
+    NSLog(@"estimated results: %lu", estimatedResults);
     id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
     self.continuationToken = cc[@"token"];
     //NSLog(@"cc: %@", cc);
     [videos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary *current = obj[@"videoRenderer"];
-        NSString *lengthText = current[@"lengthText"][@"simpleText"];
-        NSDictionary *title = current[@"title"];
-        NSString *vid = current[@"videoId"];
-        NSString *viewCountText = current[@"viewCountText"][@"simpleText"];
-        NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"];
-        NSDictionary *longBylineText = current[@"longBylineText"];
-        NSDictionary *ownerText = current[@"ownerText"];
-        KBYTSearchResult *searchItem = [KBYTSearchResult new];
-        searchItem.details = [longBylineText recursiveObjectForKey:@"text"];
-        searchItem.author = [ownerText recursiveObjectForKey:@"text"];
-        searchItem.title = [title recursiveObjectForKey:@"text"];
-        searchItem.duration = lengthText;
-        searchItem.videoId = vid;
-        searchItem.views = viewCountText;
-        searchItem.age = current[@"publishedTimeText"][@"simpleText"];
-        searchItem.imagePath = thumbnails.lastObject[@"url"];
-        searchItem.resultType = YTSearchResultTypeVideo;
-        [searchResults addObject:searchItem];
+        if (current) {
+            NSString *lengthText = current[@"lengthText"][@"simpleText"];
+            NSDictionary *title = current[@"title"];
+            NSString *vid = current[@"videoId"];
+            NSString *viewCountText = current[@"viewCountText"][@"simpleText"];
+            NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"];
+            NSDictionary *longBylineText = current[@"longBylineText"];
+            NSDictionary *ownerText = current[@"ownerText"];
+            KBYTSearchResult *searchItem = [KBYTSearchResult new];
+            searchItem.details = [longBylineText recursiveObjectForKey:@"text"];
+            searchItem.author = [ownerText recursiveObjectForKey:@"text"];
+            searchItem.title = [title recursiveObjectForKey:@"text"];
+            searchItem.duration = lengthText;
+            searchItem.videoId = vid;
+            searchItem.views = viewCountText;
+            searchItem.resultType = YTSearchResultTypeVideo;
+            searchItem.age = current[@"publishedTimeText"][@"simpleText"];
+            searchItem.imagePath = thumbnails.lastObject[@"url"];
+            [searchResults addObject:searchItem];
+        }
     }];
     self.videos = searchResults;
     [playlists enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -81,23 +88,29 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         [playlistResults addObject:searchItem];
     }];
     self.playlists = playlistResults;
-    
+    NSLog(@"enumerating channels!");
     [channels enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSLog(@"channel count > 0: %lu", channels.count);
         NSDictionary *current = obj[@"channelRenderer"];
-        NSDictionary *title = [current recursiveObjectForKey:@"title"];
-        NSString *cis = current[@"channelId"];
-        NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"];
-        NSDictionary *longBylineText = current[@"longBylineText"];
-        KBYTSearchResult *searchItem = [KBYTSearchResult new];
-        searchItem.author = [longBylineText recursiveObjectForKey:@"text"];
-        searchItem.title = title[@"simpleText"];
-        searchItem.videoId = cis;
-        searchItem.imagePath = thumbnails.lastObject[@"url"];
-        searchItem.resultType = YTSearchResultTypeChannel;
-        searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"browseId"];
-        [channelResults addObject:searchItem];
+        if (current) {
+            NSLog(@"current: %@", [current allKeys]);
+            NSDictionary *title = [current recursiveObjectForKey:@"title"];
+            NSString *cis = current[@"channelId"];
+            NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"];
+            NSDictionary *longBylineText = current[@"longBylineText"];
+            KBYTSearchResult *searchItem = [KBYTSearchResult new];
+            searchItem.author = [longBylineText recursiveObjectForKey:@"text"];
+            searchItem.title = title[@"simpleText"];
+            searchItem.videoId = cis;
+            searchItem.imagePath = thumbnails.lastObject[@"url"];
+            searchItem.resultType = YTSearchResultTypeChannel;
+            searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"browseId"];
+            [channelResults addObject:searchItem];
+        }
     }];
     self.channels = channelResults;
+    NSLog(@"channelResults: %@", channelResults);
+    self.estimatedResults = estimatedResults;
 }
 
 @end

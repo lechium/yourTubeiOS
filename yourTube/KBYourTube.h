@@ -107,6 +107,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *channels;
+@property (readwrite, assign) NSInteger estimatedResults;
 - (void)processJSON:(NSDictionary *)jsonData;
 
 @end
@@ -129,10 +130,6 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (NSDictionary *)dictionaryRepresentation;
 - (YTPlayerItem *)playerItemRepresentation;
 @end
-
-
-
-
 
 @interface KBYTSearchResult: NSObject
 
