@@ -20,7 +20,9 @@
     self.view.backgroundColor = [UIColor blackColor];
     self.textView.textColor = [UIColor whiteColor];
     self.textView.backgroundColor = [UIColor clearColor];
+#if !TARGET_OS_TV
     self.textView.editable = false;
+#endif
     self.textView.userInteractionEnabled = true;
     self.textView.panGestureRecognizer.allowedTouchTypes = @[@(UITouchTypeIndirect)];
     self.textView.layoutManager.allowsNonContiguousLayout = NO;

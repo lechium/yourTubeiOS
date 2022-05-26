@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import "KBYourTube+Categories.h"
 
 @implementation NSHTTPCookieStorage (ClearAllCookies)
@@ -220,6 +221,95 @@
  */
 
 @implementation NSObject (convenience)
+
+- (id)recursiveObjectsForKey:(NSString *)desiredKey parent:(id)parent {
+    if ([self isKindOfClass:NSDictionary.class]) {
+        NSDictionary *dictSelf = (NSDictionary *)self;
+        //NSLog(@"dict: %@", dictSelf.allKeys);
+        for (NSString *key in dictSelf.allKeys) {
+            if ([desiredKey isEqualToString:key]){
+                //NSLog(@"got im!: %@", parent);
+                return parent ? parent : dictSelf[key];
+            } else {
+                NSDictionary *dict = dictSelf[key];
+                
+                if ([dict isKindOfClass:NSDictionary.class] || [dict isKindOfClass:NSArray.class]){
+                    //NSLog(@"checking key: %@", key);
+                    id obj = [dict recursiveObjectsForKey:desiredKey parent:key];
+                    if (obj) {
+                        //NSLog(@"found key: %@ in parent: %@", [obj valueForKey:@"title"], key);
+                        //return dict;
+                        return obj;
+                    }
+                }
+            }
+        }
+    } else if ([self isKindOfClass:NSArray.class]){
+        NSArray *arraySelf = (NSArray *)self;
+        for (NSDictionary *item in arraySelf) {
+            if ([item isKindOfClass:NSDictionary.class]){
+                id obj = [item recursiveObjectsForKey:desiredKey parent:arraySelf];
+                if (obj) {
+                    return obj;
+                }
+                //return [item recursiveObjectForKey:desiredKey];
+            }
+        }
+    } else {
+        NSLog(@"%@ is not an NSDictionary or an NSArray, bail!", self);
+    }
+    
+    return nil;
+}
+
+- (id)recursiveObjectForKey:(NSString *)desiredKey parent:(id)parent {
+    if ([self isKindOfClass:NSDictionary.class]) {
+        NSDictionary *dictSelf = (NSDictionary *)self;
+        //NSLog(@"dict: %@", dictSelf.allKeys);
+        for (NSString *key in dictSelf.allKeys) {
+            if ([desiredKey isEqualToString:key]){
+                //NSLog(@"got im!: %@", parent);
+                return dictSelf[key];
+            } else {
+                NSDictionary *dict = dictSelf[key];
+                
+                if ([dict isKindOfClass:NSDictionary.class] || [dict isKindOfClass:NSArray.class]){
+                    //NSLog(@"checking key: %@", key);
+                    id obj = [dict recursiveObjectForKey:desiredKey parent:key];
+                    if (obj) {
+                        //NSLog(@"found key: %@ in parent: %@", [obj valueForKey:@"title"], key);
+                        //return dict;
+                        return obj;
+                    }
+                }
+            }
+        }
+    } else if ([self isKindOfClass:NSArray.class]){
+        NSArray *arraySelf = (NSArray *)self;
+        for (NSDictionary *item in arraySelf) {
+            if ([item isKindOfClass:NSDictionary.class]){
+                id obj = [item recursiveObjectForKey:desiredKey parent:arraySelf];
+                if (obj) {
+                    return obj;
+                }
+                //return [item recursiveObjectForKey:desiredKey];
+            }
+        }
+    } else {
+        NSLog(@"%@ is not an NSDictionary or an NSArray, bail!", self);
+    }
+    
+    return nil;
+}
+
+- (id)recursiveObjectForKey:(NSString *)desiredKey {
+    return [self recursiveObjectForKey:desiredKey parent:nil];
+}
+
+- (id)recursiveObjectsForKey:(NSString *)desiredKey {
+    return [self recursiveObjectsForKey:desiredKey parent:nil];
+}
+
 
 + (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval
 {

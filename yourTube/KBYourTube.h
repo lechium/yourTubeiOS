@@ -17,6 +17,9 @@
 #endif
 #import "YTKBPlayerViewController.h"
 #import "KBYTQueuePlayer.h"
+
+@class KBYTSearchResult;
+
 // Logging
 
 /*
@@ -65,6 +68,14 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
     YTSearchResultTypeChannelList,
 };
 
+typedef NS_ENUM(NSUInteger, KBYTSearchType) {
+    KBYTSearchTypeAll,
+    KBYTSearchTypeVideos,
+    KBYTSearchTypeChannels,
+    KBYTSearchTypePlaylists,
+};
+
+
 @interface KBYTLocalMedia : NSObject <YTPlayerItemProtocol>
 
 @property (nonatomic, strong) NSString *title;
@@ -87,6 +98,16 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
 @interface YTPlayerItem: AVPlayerItem
 
 @property (nonatomic, weak) NSObject <YTPlayerItemProtocol> *associatedMedia;
+
+@end
+
+@interface KBYTSearchResults: NSObject
+
+@property (nonatomic, strong) NSString *continuationToken;
+@property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
+@property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
+@property (nonatomic, strong) NSArray <KBYTSearchResult *> *channels;
+- (void)processJSON:(NSDictionary *)jsonData;
 
 @end
 
@@ -126,6 +147,7 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
 @property (nonatomic, strong) NSString *views;
 @property (nonatomic, strong) NSString *details;
 @property (nonatomic, strong) KBYTMedia *media;
+@property (nonatomic, strong) NSString *continuationToken;
 @property (readwrite, assign) YTSearchResultType resultType;
 @property (nonatomic, strong) NSArray *items; //only relevant for channel list
 
@@ -203,6 +225,12 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
 - (void)getOrganizedChannelData:(NSString *)channelID
                 completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
                    failureBlock:(void(^)(NSString* error))failureBlock;
+
+- (void)apiSearch:(NSString *)search
+             type:(KBYTSearchType)type
+     continuation:(NSString *)continuation
+  completionBlock:(void(^)(KBYTSearchResults *result))completionBlock
+     failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)youTubeSearch:(NSString *)searchQuery
            pageNumber:(NSInteger)page

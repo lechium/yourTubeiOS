@@ -26,6 +26,7 @@
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;
+@property (nonatomic, strong) NSString *continuationToken;
 
 
 @end
@@ -56,7 +57,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         return;
     }
     
-   // DLog(@"at: %@", [UD valueForKey:@"access_token"]);
+    // DLog(@"at: %@", [UD valueForKey:@"access_token"]);
     
     if ([UD valueForKey:@"access_token"] == nil)
     {
@@ -110,59 +111,59 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                   }];
+    }];
     UIAlertAction *createPrivatePlaylist = [UIAlertAction
                                             actionWithTitle:@"Create private playlist"
                                             style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action)
                                             {
-                                                NSString *playlistName = alertController.textFields[0].text;
-                                                KBYTSearchResult *playlistItem =  [[TYAuthUserManager sharedInstance] createPlaylistWithTitle:playlistName andPrivacyStatus:@"private"];
-                                                NSLog(@"playlist created?: %@", playlistItem);
-                                                
-                                                /*
-                                                 
-                                                 etag = "\"m2yskBQFythfE4irbTIeOgYYfBU/vehTBMq9cEbTEevEChu3q4csUTk\"";
-                                                 id = PLnkIRfHufru8pR4pG2nDy2nQSHNxU3WFw;
-                                                 kind = "youtube#playlist";
-                                                 snippet =     {
-                                                 channelId = "UC-d63ZntP27p917VXU-VFiA";
-                                                 channelTitle = "Kevin Bradley";
-                                                 description = "";
-                                                 localized =         {
-                                                 description = "";
-                                                 title = "test 2";
-                                                 };
-                                                 publishedAt = "2017-08-15T16:19:38.000Z";
-                                                 thumbnails =         {
-                                                 default =             {
-                                                 height = 90;
-                                                 url = "http://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
-                                                 width = 120;
-                                                 };
-                                                 high =             {
-                                                 height = 360;
-                                                 url = "http://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
-                                                 width = 480;
-                                                 };
-                                                 medium =             {
-                                                 height = 180;
-                                                 url = "http://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
-                                                 width = 320;
-                                                 };
-                                                 };
-                                                 title = "test 2";
-                                                 };
-                                                 status =     {
-                                                 privacyStatus = public;
-                                                 };
-                                                 
-                                                 */
-                                                
-                                                NSString *plID = playlistItem.videoId;
-                                                
-                                                [self addVideo:searchResult toPlaylist:plID];
-                                            }];
+        NSString *playlistName = alertController.textFields[0].text;
+        KBYTSearchResult *playlistItem =  [[TYAuthUserManager sharedInstance] createPlaylistWithTitle:playlistName andPrivacyStatus:@"private"];
+        NSLog(@"playlist created?: %@", playlistItem);
+        
+        /*
+         
+         etag = "\"m2yskBQFythfE4irbTIeOgYYfBU/vehTBMq9cEbTEevEChu3q4csUTk\"";
+         id = PLnkIRfHufru8pR4pG2nDy2nQSHNxU3WFw;
+         kind = "youtube#playlist";
+         snippet =     {
+         channelId = "UC-d63ZntP27p917VXU-VFiA";
+         channelTitle = "Kevin Bradley";
+         description = "";
+         localized =         {
+         description = "";
+         title = "test 2";
+         };
+         publishedAt = "2017-08-15T16:19:38.000Z";
+         thumbnails =         {
+         default =             {
+         height = 90;
+         url = "http://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
+         width = 120;
+         };
+         high =             {
+         height = 360;
+         url = "http://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
+         width = 480;
+         };
+         medium =             {
+         height = 180;
+         url = "http://s.ytimg.com/yts/img/no_thumbnail-vfl4t3-4R.jpg";
+         width = 320;
+         };
+         };
+         title = "test 2";
+         };
+         status =     {
+         privacyStatus = public;
+         };
+         
+         */
+        
+        NSString *plID = playlistItem.videoId;
+        
+        [self addVideo:searchResult toPlaylist:plID];
+    }];
     
     
     UIAlertAction *createPublicPlaylist = [UIAlertAction
@@ -170,16 +171,16 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
                                            style:UIAlertActionStyleDefault
                                            handler:^(UIAlertAction *action)
                                            {
-                                               NSString *playlistName = alertController.textFields[0].text;
-                                               NSDictionary *playlistItem =  [[TYAuthUserManager sharedInstance] createPlaylistWithTitle:playlistName andPrivacyStatus:@"public"];
-                                               if (playlistItem != nil)
-                                               {
-                                                   NSLog(@"playlist created?: %@", playlistItem);
-                                                   NSString *plID = playlistItem[@"id"];
-                                                   
-                                                   [self addVideo:searchResult toPlaylist:plID];
-                                               }
-                                           }];
+        NSString *playlistName = alertController.textFields[0].text;
+        NSDictionary *playlistItem =  [[TYAuthUserManager sharedInstance] createPlaylistWithTitle:playlistName andPrivacyStatus:@"public"];
+        if (playlistItem != nil)
+        {
+            NSLog(@"playlist created?: %@", playlistItem);
+            NSString *plID = playlistItem[@"id"];
+            
+            [self addVideo:searchResult toPlaylist:plID];
+        }
+    }];
     
     
     [alertController addAction:createPrivatePlaylist];
@@ -241,7 +242,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                   }];
+    }];
     
     
     
@@ -269,7 +270,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                   }];
+    }];
     [alertController addAction:yesAction];
     [alertController addAction:cancelAction];
     [self presentViewController:alertController animated:YES completion:nil];
@@ -299,9 +300,9 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
     [sc.searchBar becomeFirstResponder];
     
-  //  [sc.view printRecursiveDescription];
+    //  [sc.view printRecursiveDescription];
     
-  //  [[UIApplication sharedApplication] printWindow];
+    //  [[UIApplication sharedApplication] printWindow];
     
 }
 
@@ -340,25 +341,25 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath
 {
-
-  
+    
+    
 }
 
- - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
- {
-     
-     //check to see if we are on the last row
-     NSInteger rowCount = self.searchResults.count / 5;
-     NSInteger currentRow = indexPath.row / 5;
-   //  NSLog(@"indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
-     if (currentRow+1 >= rowCount)
-     {
-         [self getNextPage];
-     }
- 
- }
- 
- 
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    //check to see if we are on the last row
+    NSInteger rowCount = self.searchResults.count / 5;
+    NSInteger currentRow = indexPath.row / 5;
+    //  NSLog(@"indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
+    if (currentRow+1 >= rowCount)
+    {
+        [self getNextPage];
+    }
+    
+}
+
+
 
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -371,7 +372,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         cell.overlayInfo.text = currentItem.details;
         cell.durationLabel.text = @"";
         cell.durationLabel.hidden = YES;
- 
+        
     } else {
         cell.overlayView.hidden = true;
         cell.overlayInfo.text = @"";
@@ -391,7 +392,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 {
     if (self.currentPage > 1)
     {
-       // [[self.collectionView]
+        // [[self.collectionView]
         NSIndexPath *lastIndexPath = [NSIndexPath indexPathForItem:[[self searchResults] count]-1 inSection:0];
         [self.collectionView performBatchUpdates:^{
             
@@ -432,7 +433,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     [[KBYourTube sharedInstance] getVideoDetailsForID:searchResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
         
         [SVProgressHUD dismiss];
-
+        
         [[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
         //NSURL *playURL = [[videoDetails.streams firstObject] url];
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
@@ -440,7 +441,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         DLog(@"singleItem meta: %@", singleItem.externalMetadata );
         //AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
         playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-        [[self.presentingViewController navigationController] pushViewController:playerView animated:true];
+        //[[self.presentingViewController navigationController] pushViewController:playerView animated:true];
+        [self presentViewController:playerView animated:true completion:nil];
         [playerView.player play];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
         
@@ -453,20 +455,30 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
+    LOG_SELF;
     self.currentPage = 1; //reset for new search
-    
+    self.continuationToken = nil;
     if ([_lastSearchResult isEqualToString:searchController.searchBar.text] || searchController.searchBar.text.length == 0)
     {
         //no need to refresh a search with an old string...
         return;
     }
-    
+    [[self searchResults] removeAllObjects];
     self.filterString = searchController.searchBar.text;
     _lastSearchResult = self.filterString;
     
+    [[KBYourTube sharedInstance] apiSearch:self.filterString type:KBYTSearchTypeAll continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
+        NSLog(@"[yourTubeiOS] search results: %@", result.videos);
+        self.continuationToken = result.continuationToken;
+        self.pageCount = 20; //just choosing an arbitrary number
+        [self updateSearchResults:result.videos];
+    } failureBlock:^(NSString *error) {
+        
+    }];
+    return;
     [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
         
-          //NSLog(@"search details: %@", searchDetails);
+        //NSLog(@"search details: %@", searchDetails);
         
         self.totalResults = [searchDetails[@"resultCount"] integerValue];
         self.pageCount = [searchDetails[@"pageCount"] integerValue];
@@ -496,7 +508,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
 {
-
+    
     self.focusedCollectionCell = (UICollectionViewCell *)context.nextFocusedView;
     //YTTVStandardCollectionViewCell *selectedCell = (YTTVStandardCollectionViewCell*)context.nextFocusedView;
     //self.selectedItem=  [[self collectionView] indexPathForCell:selectedCell];
@@ -512,7 +524,22 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         self.currentPage = nextPage;
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
-         
+        [[KBYourTube sharedInstance] apiSearch:self.filterString type:KBYTSearchTypeAll continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
+            [SVProgressHUD dismiss];
+            self.continuationToken = result.continuationToken;
+            //  NSLog(@"search details: %@", searchDetails);
+            if (self.currentPage == 1)
+                [SVProgressHUD dismiss];
+            
+            [self updateSearchResults:result.videos];
+            [self.collectionView reloadDataWithCompletion:^{
+                _gettingPage = false;
+            }];
+            
+        } failureBlock:^(NSString *error) {
+            [SVProgressHUD dismiss];
+        }];
+    /*
         [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
             
             [SVProgressHUD dismiss];
@@ -525,14 +552,10 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             //self.searchResults = searchDetails[@"results"];
             
             [self updateSearchResults:searchDetails[@"results"]];
-           // NSIndexPath *currentIndexPath = [[self collectionView] indexPathsForSelectedItems][0];
+            // NSIndexPath *currentIndexPath = [[self collectionView] indexPathsForSelectedItems][0];
             [self.collectionView reloadDataWithCompletion:^{
                 
-                /*
-                [self.collectionView selectItemAtIndexPath:self.selectedItem animated:false scrollPosition:UICollectionViewScrollPositionCenteredVertically];
-                UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
-                [sc.searchBar resignFirstResponder];
-                */
+                
                 _gettingPage = false;
             }];
             
@@ -541,8 +564,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             //
             [SVProgressHUD dismiss];
             
-        }];
-    
+        }];*/
+        
     }
     
 }
@@ -560,7 +583,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 // Uncomment this method to specify if the specified item should be selected
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-        LOG_SELF;
+    LOG_SELF;
     return YES;
 }
 
@@ -583,7 +606,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             
             [[TYTVHistoryManager sharedInstance] addChannelToHistory:searchDetails];
             
-          //  NSLog(@"searchDeets: %@", searchDetails);
+            //  NSLog(@"searchDeets: %@", searchDetails);
             
             cv.searchResults = searchDetails[@"results"];
             cv.pageCount = 1;
@@ -591,7 +614,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             cv.bannerURL = searchDetails[@"banner"];
             cv.channelTitle = searchDetails[@"name"];
             cv.subscribers = searchDetails[@"subscribers"];
-          
+            
             [[self.presentingViewController navigationController] pushViewController:cv animated:true];
             
             
@@ -622,15 +645,15 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 /*
  // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
  - (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
-	return NO;
+ return NO;
  }
  
  - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
-	return NO;
+ return NO;
  }
  
  - (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
-	
+ 
  }
  */
 

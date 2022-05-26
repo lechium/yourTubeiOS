@@ -58,6 +58,8 @@
 
 @interface NSObject  (convenience)
 
+- (id)recursiveObjectForKey:(NSString *)desiredKey;
+- (id)recursiveObjectsForKey:(NSString *)desiredKey;
 - (void)addCookies:(NSArray *)cookies forRequest:(NSMutableURLRequest *)request;
 - (BOOL)vanillaApp;
 - (NSString *)downloadFile;

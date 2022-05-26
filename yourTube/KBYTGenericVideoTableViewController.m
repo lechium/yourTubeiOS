@@ -41,7 +41,9 @@
     [super viewDidLoad];
     
     self.extendedLayoutIncludesOpaqueBars = NO;
+#if !TARGET_OS_TV
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+#endif
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     self.tableView.translatesAutoresizingMaskIntoConstraints = false;

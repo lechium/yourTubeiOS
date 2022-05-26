@@ -20,7 +20,9 @@ typedef enum {
 
 
 @interface KBYTWebViewController : UIViewController <WKNavigationDelegate, UIActionSheetDelegate, WKScriptMessageHandler, UIWebViewDelegate >
-
+{
+    WebView *wv;
+}
 @property (readwrite, assign) TYWebViewMode viewMode;
 @property (strong, nonatomic) IBOutlet WKWebView *webView;
 @property (nonatomic, strong) KBYTMedia *currentMedia;

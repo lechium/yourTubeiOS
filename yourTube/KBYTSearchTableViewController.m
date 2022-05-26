@@ -54,6 +54,19 @@
     //NSLog(@"search string: %@", searchString);
     if (self.currentPage == 1)
         [SVProgressHUD show];
+    
+    [[KBYourTube sharedInstance] apiSearch:searchString type:KBYTSearchTypeAll continuation:nil completionBlock:^(KBYTSearchResults *result) {
+        
+        NSLog(@"[yourTubeiOS] result: %@", result.videos);
+        if (self.currentPage == 1)
+            [SVProgressHUD dismiss];
+        
+        [self.searchResults addObjectsFromArray:result.videos];
+        [self.tableView reloadData];
+    } failureBlock:^(NSString *error) {
+        [SVProgressHUD dismiss];
+    }];
+    /*
     [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
         
         //  NSLog(@"search details: %@", searchDetails);
@@ -72,7 +85,7 @@
         [SVProgressHUD dismiss];
         
     }];
-    
+    */
     
 }
 
@@ -139,7 +152,9 @@
     [super viewDidLoad];
     
     self.extendedLayoutIncludesOpaqueBars = NO;
+#if !TARGET_OS_TV
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+#endif
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     self.tableView.translatesAutoresizingMaskIntoConstraints = false;
@@ -152,7 +167,9 @@
     self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.searchController.searchBar.frame.size.width, 44.0);
     self.searchController.searchBar.delegate = self;
     self.searchController.definesPresentationContext = true;
+#if !TARGET_OS_TV
     self.searchController.dimsBackgroundDuringPresentation = false;
+#endif
     self.tableView.tableHeaderView = self.searchController.searchBar;
 
 #if TARGET_OS_TV

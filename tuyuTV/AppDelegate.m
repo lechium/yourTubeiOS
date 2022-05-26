@@ -77,7 +77,9 @@
     searchController.obscuresBackgroundDuringPresentation = true;
     searchController.hidesNavigationBarDuringPresentation = true;
     searchController.searchResultsUpdater = svc;
+#if !TARGET_OS_TV
     searchController.searchBar.barStyle = UISearchBarStyleMinimal;
+#endif
     searchController.searchBar.placeholder = @"YouTube search";
     searchController.edgesForExtendedLayout = UIRectEdgeNone;
     searchController.automaticallyAdjustsScrollViewInsets = false;
@@ -333,6 +335,7 @@
     [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    LOG_SELF;
      NSLog(@"app support: %@", [self appSupportFolder]);
     self.tabBar = (UITabBarController *)self.window.rootViewController;
    // self.tabBar.tabBar.translucent = false;
