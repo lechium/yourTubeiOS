@@ -683,6 +683,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 {
     if (self.details == nil)self.details = @"Unavailable";
     if (self.keywords == nil)self.keywords = @"Unavailable";
+    if (self.views == nil)self.views = @"Unavailable";
+    if (self.duration == nil)self.duration = @"Unavailable";
+    if (self.title == nil)self.title = @"Unavailable";
     if (self.images == nil)self.images = @{};
     if (self.streams == nil)self.streams = @[];
     return @{@"title": self.title, @"author": self.author, @"keywords": self.keywords, @"videoID": self.videoId, @"views": self.views, @"duration": self.duration, @"images": self.images, @"streams": self.streams, @"details": self.details, @"expireTime": [NSNumber numberWithInteger:self.expireTime], @"isExpired": [self expiredString]};
@@ -3705,31 +3708,22 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
             NSString *errorString = nil;
             
-            //if we already have the timestamp and key theres no reason to fetch them again, should make additional calls quicker.
-            if (self.yttimestamp.length == 0 && self.ytkey.length == 0)
-            {
-                //get the time stamp and cipher key in case we need to decode the signature.
-                [self getTimeStampAndKey:[[searchResults firstObject] videoId]];
-            }
-            
-            //a fallback just in case the jsbody is changed and we cant automatically grab current signatures
-            //old ciphers generally continue to work at least temporarily.
-            
-            if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
-            {
-                errorString = @"Failed to decode signature cipher javascript.";
-                self.yttimestamp = hardcodedTimestamp;
-                self.ytkey = hardcodedCipher;
-                
-            }
-            
-            //the url we use to call get_video_info
-            
             NSInteger i = 0;
             
             for (KBYTSearchResult *result in searchResults) {
-                //    NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
                 
+                NSString *url = [self playerURL];
+                NSLog(@"url: %@", url);
+                //get the post body from the url above, gets the initial raw info we work with
+                NSDictionary *params = [self paramsForVideo:result.videoId];
+                NSString *body = [self stringFromPostRequest:url withParams:params];
+                NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
+                KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict];
+                [finalArray addObject:currentMedia];
+                
+                //    NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
+                /*
                 if ([result media] != nil && [[result media] isExpired] == false) //skip it if we've already fetched it.
                 {
                     [finalArray addObject:[result media]];
@@ -3766,6 +3760,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     NSLog(@"get video info failed for id: %@", result.videoId);
                 }
                 i++;
+                 */
             }
             
             
@@ -3794,29 +3789,22 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
             NSString *errorString = nil;
             
-            //if we already have the timestamp and key theres no reason to fetch them again, should make additional calls quicker.
-            if (self.yttimestamp.length == 0 && self.ytkey.length == 0)
-            {
-                //get the time stamp and cipher key in case we need to decode the signature.
-                [self getTimeStampAndKey:[videoIDs firstObject]];
-            }
-            
-            //a fallback just in case the jsbody is changed and we cant automatically grab current signatures
-            //old ciphers generally continue to work at least temporarily.
-            
-            if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
-            {
-                errorString = @"Failed to decode signature cipher javascript.";
-                self.yttimestamp = hardcodedTimestamp;
-                self.ytkey = hardcodedCipher;
-                
-            }
-            
             //the url we use to call get_video_info
             
             NSInteger i = 0;
             
             for (NSString *videoID in videoIDs) {
+                
+                NSString *url = [self playerURL];
+                NSLog(@"url: %@", url);
+                //get the post body from the url above, gets the initial raw info we work with
+                NSDictionary *params = [self paramsForVideo:videoID];
+                NSString *body = [self stringFromPostRequest:url withParams:params];
+                NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
+                NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
+                KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict];
+                [finalArray addObject:currentMedia];
+                /*
                 NSLog(@"processing videoID %@ at index: %lu", videoID, i);
                 
                 NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", videoID, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
@@ -3849,6 +3837,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     NSLog(@"get video info failed for id: %@", videoID);
                 }
                 i++;
+                 */
             }
             
             

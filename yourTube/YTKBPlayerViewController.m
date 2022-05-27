@@ -198,8 +198,8 @@
 #elif TARGET_OS_TV
     
     KBYTMedia *theMedia = [(YTPlayerItem *)item associatedMedia];
-    NSLog(@"theMedia: %@", theMedia);
-    [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
+    //NSLog(@"theMedia: %@", theMedia);
+   // [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
     
     
 #endif

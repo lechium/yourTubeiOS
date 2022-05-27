@@ -105,6 +105,7 @@
 
 - (void)addVideoToHistory:(NSDictionary *)videoDetails
 {
+    return;
   //  NSLog(@"video history: %@", videoDetails);
     NSMutableDictionary *video = [videoDetails mutableCopy];
     [video removeObjectForKey:@"streams"];

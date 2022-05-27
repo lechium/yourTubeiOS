@@ -471,7 +471,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         
         [SVProgressHUD dismiss];
         
-        [[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
+        //[[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
         //NSURL *playURL = [[videoDetails.streams firstObject] url];
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
         AVPlayerItem *singleItem = [videoDetails playerItemRepresentation];
