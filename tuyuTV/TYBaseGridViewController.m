@@ -837,10 +837,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
         [SVProgressHUD dismiss];
         self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
-        
+        [self.playerView addObjectsToPlayerQueue:videoArray];
         [self presentViewController:self.playerView animated:YES completion:nil];
         [[self.playerView player] play];
-        NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(0, searchResults.count-1)];
+        NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(1, searchResults.count-1)];
         
         NSDate *myStart = [NSDate date];
         [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {

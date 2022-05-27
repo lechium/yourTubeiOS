@@ -440,8 +440,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 - (YTPlayerItem *)playerItemRepresentation
 {
-    KBYTStream *firstStream = [self streams][0];
-    
+    KBYTStream *firstStream = [[self streams] lastObject];
+    NSLog(@"[tuyu] firstStream: %@ in %@", [self streams], NSStringFromSelector(_cmd));
    
     YTPlayerItem *mediaItem = [[YTPlayerItem alloc] initWithURL:firstStream.url];
     mediaItem.associatedMedia = self;

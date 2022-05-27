@@ -128,13 +128,13 @@
         }
         KBYTStream *stream = [[result streams] lastObject];
         NSLog(@"[tuyu] playing stream: %@", stream);
-            YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:[stream url]];
-            playerItem.associatedMedia = result;
-            if (playerItem != nil)
-            {
-                [(KBYTQueuePlayer *)self.player addItemToQueue:playerItem];
-                //[avPlayerItemArray addObject:playerItem];
-            }
+        YTPlayerItem *playerItem = [result playerItemRepresentation];//[[YTPlayerItem alloc] initWithURL:[stream url]];
+        //playerItem.associatedMedia = result;
+        if (playerItem != nil)
+        {
+            [(KBYTQueuePlayer *)self.player addItemToQueue:playerItem];
+            //[avPlayerItemArray addObject:playerItem];
+        }
     }
 }
 
