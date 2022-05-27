@@ -222,6 +222,97 @@
 
 @implementation NSObject (convenience)
 
+- (id)recursiveObjectLikeKey:(NSString *)desiredKey {
+    return [self recursiveObjectLikeKey:desiredKey parent:nil];
+}
+
+- (id)recursiveObjectLikeKey:(NSString *)desiredKey parent:(id)parent {
+    if ([self isKindOfClass:NSDictionary.class]) {
+        NSDictionary *dictSelf = (NSDictionary *)self;
+        NSPredicate *likePred = [NSPredicate predicateWithFormat:@"self like[c] %@ || self contains[c] %@", desiredKey, desiredKey];
+        //NSLog(@"dict: %@", dictSelf.allKeys);
+        for (NSString *key in dictSelf.allKeys) {
+            if ([likePred evaluateWithObject:key]){
+                //DLog(@"got im!: %@", key);
+                return dictSelf[key];
+            } else {
+                NSDictionary *dict = dictSelf[key];
+                
+                if ([dict isKindOfClass:NSDictionary.class] || [dict isKindOfClass:NSArray.class]){
+                    //NSLog(@"checking key: %@", key);
+                    id obj = [dict recursiveObjectLikeKey:desiredKey parent:key];
+                    if (obj) {
+                        //NSLog(@"found key: %@ in parent: %@", [obj valueForKey:@"title"], key);
+                        //return dict;
+                        return obj;
+                    }
+                }
+            }
+        }
+    } else if ([self isKindOfClass:NSArray.class]){
+        NSArray *arraySelf = (NSArray *)self;
+        for (NSDictionary *item in arraySelf) {
+            if ([item isKindOfClass:NSDictionary.class]){
+                id obj = [item recursiveObjectLikeKey:desiredKey parent:arraySelf];
+                if (obj) {
+                    return obj;
+                }
+                //return [item recursiveObjectForKey:desiredKey];
+            }
+        }
+    } else {
+        NSLog(@"%@ %@ is not an NSDictionary or an NSArray, bail!", NSStringFromSelector(_cmd), self);
+    }
+    
+    return nil;
+}
+
+- (id)recursiveObjectsLikeKey:(NSString *)desiredKey {
+    return [self recursiveObjectsLikeKey:desiredKey parent:nil];
+}
+
+- (id)recursiveObjectsLikeKey:(NSString *)desiredKey parent:(id)parent {
+    if ([self isKindOfClass:NSDictionary.class]) {
+        NSDictionary *dictSelf = (NSDictionary *)self;
+        NSPredicate *likePred = [NSPredicate predicateWithFormat:@"self like[c] %@ || self contains[c] %@", desiredKey, desiredKey];
+        //NSLog(@"dict: %@", dictSelf.allKeys);
+        for (NSString *key in dictSelf.allKeys) {
+            if ([likePred evaluateWithObject:key]){
+                //DLog(@"got im!: %@", key);
+                return parent ? parent : dictSelf[key];//return dictSelf[key];
+            } else {
+                NSDictionary *dict = dictSelf[key];
+                
+                if ([dict isKindOfClass:NSDictionary.class] || [dict isKindOfClass:NSArray.class]){
+                    //NSLog(@"checking key: %@", key);
+                    id obj = [dict recursiveObjectsLikeKey:desiredKey parent:key];
+                    if (obj) {
+                        //NSLog(@"found key: %@ in parent: %@", [obj valueForKey:@"title"], key);
+                        //return dict;
+                        return obj;
+                    }
+                }
+            }
+        }
+    } else if ([self isKindOfClass:NSArray.class]){
+        NSArray *arraySelf = (NSArray *)self;
+        for (NSDictionary *item in arraySelf) {
+            if ([item isKindOfClass:NSDictionary.class]){
+                id obj = [item recursiveObjectsLikeKey:desiredKey parent:arraySelf];
+                if (obj) {
+                    return obj;
+                }
+                //return [item recursiveObjectForKey:desiredKey];
+            }
+        }
+    } else {
+        NSLog(@"%@ %@ is not an NSDictionary or an NSArray, bail!", NSStringFromSelector(_cmd), self);
+    }
+    
+    return nil;
+}
+
+
 - (id)recursiveObjectsForKey:(NSString *)desiredKey parent:(id)parent {
     if ([self isKindOfClass:NSDictionary.class]) {
         NSDictionary *dictSelf = (NSDictionary *)self;

@@ -840,12 +840,13 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
         [self presentViewController:self.playerView animated:YES completion:nil];
         [[self.playerView player] play];
-        NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(1, searchResults.count-1)];
+        NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(0, searchResults.count-1)];
         
         NSDate *myStart = [NSDate date];
         [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
             
-            NSLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            NSLog(@"[tuyu] video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            NSLog(@"[tuyu] first object: %@", subarray.firstObject);
             [self.playerView addObjectsToPlayerQueue:videoArray];
             
         } failureBlock:^(NSString *error) {

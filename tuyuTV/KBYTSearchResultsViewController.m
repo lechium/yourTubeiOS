@@ -512,22 +512,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     } failureBlock:^(NSString *error) {
         
     }];
-    return;
-    [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
-        
-        //NSLog(@"search details: %@", searchDetails);
-        
-        self.totalResults = [searchDetails[@"resultCount"] integerValue];
-        self.pageCount = [searchDetails[@"pageCount"] integerValue];
-        //self.searchResults = searchDetails[@"results"];
-        [self updateSearchResults:searchDetails[@"results"]];
-        
-        
-    } failureBlock:^(NSString *error) {
-        //
-        [SVProgressHUD dismiss];
-        
-    }];
+ 
 }
 
 - (KBYTSearchResult *)searchResultFromFocusedCell

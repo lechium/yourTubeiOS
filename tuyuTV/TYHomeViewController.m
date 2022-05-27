@@ -46,11 +46,13 @@
     }
     //get the user details to populate these views with
     [self fetchChannelDetailsWithCompletionBlock:^(NSDictionary *finishedDetails) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (progress == true)
+            {      [SVProgressHUD dismiss]; }
+            self.playlistDictionary = finishedDetails;
+            [super reloadCollectionViews];
+        });
         
-          if (progress == true)
-          {      [SVProgressHUD dismiss]; }
-        self.playlistDictionary = finishedDetails;
-        [super reloadCollectionViews];
     }];
 }
 
@@ -74,7 +76,7 @@
     } failureBlock:^(NSString *error) {
         
     }];*/
-    return;
+    //return;
     //NSArray *results = userDetails[@"results"];
     NSInteger channelCount = [self.sectionLabels count];
     
@@ -84,9 +86,15 @@
     __block NSInteger currentIndex = 0;
     for (NSString *result in self.channelIDs)
     {
-        [[KBYourTube sharedInstance] getChannelVideos:result completionBlock:^(KBYTChannel *searchDetails) {
+        [[KBYourTube sharedInstance] getChannelVideosAlt:result completionBlock:^(KBYTChannel *searchDetails) {
             
-            channels[searchDetails.title] = searchDetails.videos;
+            if (searchDetails.videos){
+                if (searchDetails.title){
+                    channels[searchDetails.title] = searchDetails.videos;
+                } else {
+                    channels[self.sectionLabels[currentIndex]] = searchDetails.videos;
+                }
+            }
             currentIndex++;
             if (currentIndex == channelCount)
             {

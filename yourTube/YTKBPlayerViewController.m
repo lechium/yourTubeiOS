@@ -126,7 +126,9 @@
             NSLog(@"media already exists, dont add it again!");
             return;
         }
-            YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:[[[result streams] firstObject]url]];
+        KBYTStream *stream = [[result streams] lastObject];
+        NSLog(@"[tuyu] playing stream: %@", stream);
+            YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:[stream url]];
             playerItem.associatedMedia = result;
             if (playerItem != nil)
             {

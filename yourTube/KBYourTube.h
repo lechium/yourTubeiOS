@@ -155,10 +155,12 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @interface KBYTChannel: NSObject
 
 @property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *subtitle;
 @property (nonatomic, strong) NSString *owner;
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) NSString *image;
 @property (nonatomic, strong) NSString *channelID;
+@property (nonatomic, strong) NSString *continuationToken;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
 
 @end
@@ -170,6 +172,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) NSString *image;
 @property (nonatomic, strong) NSString *playlistID;
+@property (nonatomic, strong) NSString *continuationToken;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
 
 @end
@@ -251,11 +254,6 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
   completionBlock:(void(^)(KBYTSearchResults *result))completionBlock
      failureBlock:(void(^)(NSString* error))failureBlock;
 
-- (void)youTubeSearch:(NSString *)searchQuery
-           pageNumber:(NSInteger)page
-    includeAllResults:(BOOL)includeAl
-      completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
-         failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)getPlaylistVideos:(NSString *)listID
           completionBlock:(void(^)(KBYTPlaylist *playlist))completionBlock
@@ -268,6 +266,10 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (void)getChannelVideos:(NSString *)channelID
          completionBlock:(void(^)(KBYTChannel *channel))completionBlock
             failureBlock:(void(^)(NSString *error))failureBlock;
+
+- (void)getChannelVideosAlt:(NSString *)channelID
+          completionBlock:(void(^)(KBYTChannel *channel))completionBlock
+               failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getAllFeaturedVideosWithFilter:(NSString *)filter
                        completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
