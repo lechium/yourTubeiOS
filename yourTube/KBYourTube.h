@@ -152,6 +152,28 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (NSString *)readableSearchType;
 @end
 
+@interface KBYTChannel: NSObject
+
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *owner;
+@property (nonatomic, strong) NSString *url;
+@property (nonatomic, strong) NSString *image;
+@property (nonatomic, strong) NSString *channelID;
+@property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
+
+@end
+
+@interface KBYTPlaylist: NSObject
+
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *owner;
+@property (nonatomic, strong) NSString *url;
+@property (nonatomic, strong) NSString *image;
+@property (nonatomic, strong) NSString *playlistID;
+@property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
+
+@end
+
 @interface KBYTStream : NSObject
 
 @property (readwrite, assign) BOOL multiplexed;
@@ -236,16 +258,15 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
          failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)getPlaylistVideos:(NSString *)listID
-          completionBlock:(void(^)(NSDictionary * playlistDetails))completionBlock
+          completionBlock:(void(^)(KBYTPlaylist *playlist))completionBlock
              failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getUserVideos:(NSString *)channelID
       completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
          failureBlock:(void(^)(NSString *error))failureBlock;
 
-
 - (void)getChannelVideos:(NSString *)channelID
-         completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
+         completionBlock:(void(^)(KBYTChannel *channel))completionBlock
             failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getAllFeaturedVideosWithFilter:(NSString *)filter

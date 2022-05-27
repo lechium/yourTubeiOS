@@ -524,14 +524,14 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     } else if (type == 1) //popular
     {
         self.navigationItem.title = @"#PopularOnYouTube";
-        [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(NSDictionary *searchDetails) {
+        [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(KBYTChannel *searchDetails) {
             
             self.currentPage = 1;
             [SVProgressHUD dismiss];
-            self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            [self updateSearchResults:searchDetails[@"results"]];
-            self.nextHREF = searchDetails[@"loadMoreREF"];
+            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            [self updateSearchResults:searchDetails.videos];
+            //self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
@@ -541,14 +541,14 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }  else if (type == 2) //music
     {
         self.navigationItem.title = @"#Music";
-        [[KBYourTube sharedInstance] getChannelVideos:KBYTMusicChannelID completionBlock:^(NSDictionary *searchDetails) {
+        [[KBYourTube sharedInstance] getChannelVideos:KBYTMusicChannelID completionBlock:^(KBYTChannel *searchDetails) {
             
             self.currentPage = 1;
             [SVProgressHUD dismiss];
-            self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self updateSearchResults:searchDetails[@"results"]];
+            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            //self.nextHREF = searchDetails[@"loadMoreREF"];
+            [self updateSearchResults:searchDetails.videos];
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
@@ -558,14 +558,14 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     } else if (type == 3) //sports
     {
         self.navigationItem.title = @"#Sports";
-        [[KBYourTube sharedInstance] getChannelVideos:KBYTSportsChannelID completionBlock:^(NSDictionary *searchDetails) {
+        [[KBYourTube sharedInstance] getChannelVideos:KBYTSportsChannelID completionBlock:^(KBYTChannel *searchDetails) {
             
             self.currentPage = 1;
             [SVProgressHUD dismiss];
-            self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self updateSearchResults:searchDetails[@"results"]];
+            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            //self.nextHREF = searchDetails[@"loadMoreREF"];
+            [self updateSearchResults:searchDetails.videos];
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
@@ -575,14 +575,14 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     } else if (type == 4) //360
     {
         self.navigationItem.title = @"360 Videos";
-        [[KBYourTube sharedInstance] getChannelVideos:KBYT360ChannelID completionBlock:^(NSDictionary *searchDetails) {
+        [[KBYourTube sharedInstance] getChannelVideos:KBYT360ChannelID completionBlock:^(KBYTChannel *searchDetails) {
             
             self.currentPage = 1;
             [SVProgressHUD dismiss];
-            self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            [self updateSearchResults:searchDetails[@"results"]];
-            self.nextHREF = searchDetails[@"loadMoreREF"];
+            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            [self updateSearchResults:searchDetails.videos];
+            //self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
             
         } failureBlock:^(NSString *error) {
@@ -592,16 +592,16 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }  else if (type == 5) //custom channel
     {
         self.navigationItem.title = customTitle;
-        [[KBYourTube sharedInstance] getChannelVideos:self.customId completionBlock:^(NSDictionary *searchDetails) {
+        [[KBYourTube sharedInstance] getChannelVideos:self.customId completionBlock:^(KBYTChannel *searchDetails) {
             
             self.currentPage = 1;
             [SVProgressHUD dismiss];
-            self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            [self updateSearchResults:searchDetails[@"results"]];
-            self.nextHREF = searchDetails[@"loadMoreREF"];
+            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
+            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
+            [self updateSearchResults:searchDetails.videos];
+            //self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
-            [self fetchPlaylistDetailsInBackground:searchDetails[@"results"]];
+            [self fetchPlaylistDetailsInBackground:searchDetails.videos];
             
         } failureBlock:^(NSString *error) {
             [SVProgressHUD dismiss];
@@ -610,15 +610,15 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }   else if (type == 6) //custom playlist
     {
         self.navigationItem.title = customTitle;
-        [[KBYourTube sharedInstance] getPlaylistVideos:self.customId completionBlock:^(NSDictionary *searchDetails) {
+        [[KBYourTube sharedInstance] getPlaylistVideos:self.customId completionBlock:^(KBYTPlaylist *searchDetails) {
             
             self.currentPage = 1;
             [SVProgressHUD dismiss];
-            NSArray *searchArray = searchDetails[@"results"];
+            NSArray *searchArray = searchDetails.videos;
             self.totalResults = [searchArray count];
             self.pageCount = 1;
             [self updateSearchResults:searchArray];
-            self.nextHREF = searchDetails[@"loadMoreREF"];
+            //self.nextHREF = searchDetails[@"loadMoreREF"];
             [self.tableView reloadData];
             [self fetchPlaylistDetailsInBackground:searchArray];
             

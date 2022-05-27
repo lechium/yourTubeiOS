@@ -16,6 +16,7 @@
 		3204FFFD1E4F8C8200D3B8B0 /* KBYourTube.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */; };
 		3204FFFE1E4F8C8400D3B8B0 /* KBYourTube+Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */; };
 		3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A241C5E8B3D00F50BC2 /* APAttribute.m */; };
+		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
 		324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */; };
 		324CDA4A1FC24B4F003B3A0F /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93611C8D74B300B34DAA /* WebViewController.m */; };
 		328E33801E4F868C00C544ED /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328E337F1E4F868C00C544ED /* TVServices.framework */; };
@@ -103,7 +104,6 @@
 		8926694F1C88B2F500082B31 /* success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A601C88A90000E1987E /* success@2x.png */; };
 		892669501C88B2F500082B31 /* success@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A611C88A90000E1987E /* success@3x.png */; };
 		892669511C88B3CF00082B31 /* YTPlaceHolderImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A631C88A90000E1987E /* YTPlaceHolderImage.png */; };
-		892669531C88BCA000082B31 /* AppSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 892669521C88BCA000082B31 /* AppSupport.framework */; };
 		8929758C1CB026B3003D7473 /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8929758B1CB026B3003D7473 /* AboutViewController.m */; };
 		8929758E1CB026D8003D7473 /* About.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8929758D1CB026D8003D7473 /* About.txt */; };
 		8929FCBF1CB44540003D7473 /* tuyuApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 8929FCBE1CB44540003D7473 /* tuyuApplication.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -387,6 +387,7 @@
 /* Begin PBXFileReference section */
 		320400031E4F8DA000D3B8B0 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
 		320400041E4F8DA000D3B8B0 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		324693A028404C65002D91F0 /* AppSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupport.tbd; sourceTree = SOURCE_ROOT; };
 		328411781E4FA763002B1310 /* tuyuShelf.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = tuyuShelf.entitlements; sourceTree = "<group>"; };
 		328411791E4FDFFE002B1310 /* tuyu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = tuyu.entitlements; sourceTree = "<group>"; };
 		328E337E1E4F868C00C544ED /* tuyuShelf.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = tuyuShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -817,10 +818,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				32D2A1591F424F56006F24B3 /* libz.tbd in Frameworks */,
-				892669531C88BCA000082B31 /* AppSupport.framework in Frameworks */,
 				892669151C88AD5200082B31 /* libxml2.2.dylib in Frameworks */,
 				89A83AD61C88AB7100E1987E /* AVKit.framework in Frameworks */,
 				89A83AD41C88AB6B00E1987E /* AVFoundation.framework in Frameworks */,
+				324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */,
 				89A83AD21C88AB6600E1987E /* MapKit.framework in Frameworks */,
 				89A83AD01C88AB5F00E1987E /* AudioToolbox.framework in Frameworks */,
 				89A83ACE1C88AB4300E1987E /* Accelerate.framework in Frameworks */,
@@ -1484,6 +1485,7 @@
 		89B9D4211C44F49F00740BF1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				324693A028404C65002D91F0 /* AppSupport.tbd */,
 				32D2A1581F424F56006F24B3 /* libz.tbd */,
 				32D2A1561F424F4E006F24B3 /* libz.tbd */,
 				898E93001C8D562400B34DAA /* AudioToolbox.framework */,
@@ -1698,6 +1700,8 @@
 					};
 					89A83A181C88A89300E1987E = {
 						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = 9EUFEA5U7G;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -2391,10 +2395,12 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9EUFEA5U7G;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -2433,12 +2439,17 @@
 				INFOPLIST_FILE = tuyu/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8045e548-f879-41c6-bd56-28b48da873f1";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2462,10 +2473,12 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 9EUFEA5U7G;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -2498,11 +2511,16 @@
 				INFOPLIST_FILE = tuyu/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "8045e548-f879-41c6-bd56-28b48da873f1";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

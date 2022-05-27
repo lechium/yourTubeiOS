@@ -58,6 +58,13 @@
 - (void)fetchChannelDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock
 {
     NSMutableDictionary *channels = [NSMutableDictionary new];
+    [[KBYourTube sharedInstance] getChannelVideos:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
+        self.featuredVideos = channel.videos;
+        [[self featuredVideosCollectionView] reloadData];
+    } failureBlock:^(NSString *error) {
+        
+    }];
+    /*
     [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
         
         self.featuredVideos = searchDetails[@"results"];
@@ -66,8 +73,8 @@
         
     } failureBlock:^(NSString *error) {
         
-    }];
-    
+    }];*/
+    return;
     //NSArray *results = userDetails[@"results"];
     NSInteger channelCount = [self.sectionLabels count];
     
@@ -77,9 +84,9 @@
     __block NSInteger currentIndex = 0;
     for (NSString *result in self.channelIDs)
     {
-        [[KBYourTube sharedInstance] getChannelVideos:result completionBlock:^(NSDictionary *searchDetails) {
+        [[KBYourTube sharedInstance] getChannelVideos:result completionBlock:^(KBYTChannel *searchDetails) {
             
-            channels[searchDetails[@"name"]] = searchDetails[@"results"];
+            channels[searchDetails.title] = searchDetails.videos;
             currentIndex++;
             if (currentIndex == channelCount)
             {

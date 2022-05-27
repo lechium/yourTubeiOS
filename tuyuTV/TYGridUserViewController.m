@@ -150,9 +150,9 @@
         adjustment++;
     }
     
-    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(NSDictionary *searchDetails) {
+    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(KBYTChannel *searchDetails) {
         
-        self.featuredVideos = searchDetails[@"results"];
+        self.featuredVideos = searchDetails.videos;
         [[self featuredVideosCollectionView] reloadData];
         
        
@@ -199,10 +199,10 @@
         if (result.resultType == YTSearchResultTypePlaylist)
         {
             NSLog(@"getting details for: %@ id: %@", result.title, result.videoId);
-            [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(NSDictionary *searchDetails) {
+            [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(KBYTPlaylist *searchDetails) {
                 
                  NSLog(@"got details for: %@", result.title);
-                playlists[result.title] = searchDetails[@"results"];
+                playlists[result.title] = searchDetails.videos;
                 DLog(@"currentIndex: %lu count: %lu", currentIndex, playlistCount);
                 currentIndex++;
                 if (currentIndex == playlistCount)

@@ -154,14 +154,14 @@
 {
     __block  KBYTSearchResult *plResult = [self createPlaylistWithTitle:result.title andPrivacyStatus:@"public"];
     
-    [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(NSDictionary *playlistDetails) {
+    [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(KBYTPlaylist *playlistDetails) {
         
        // NSNumber *pageCount = playlistDetails[@"pageCount"];
         
         //DLog(@"details: %@", playlistDetails);
         
         
-        NSArray <KBYTSearchResult *>*results = playlistDetails[@"results"];
+        NSArray <KBYTSearchResult *>*results = playlistDetails.videos;
         for (KBYTSearchResult *video in results)
         {
             [self addVideo:video.videoId toPlaylistWithID:plResult.videoId];

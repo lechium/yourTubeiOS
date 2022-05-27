@@ -169,10 +169,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     _backingSectionLabels = [NSMutableArray new];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
     NSString *channelID = userDetails[@"channelID"];
-    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(NSDictionary *searchDetails) {
+    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(KBYTChannel *searchDetails) {
         
-        //self.featuredVideosDict = searchDetails;
-        self.channelVideos = searchDetails[@"results"];
+        //self.featuredVideosChannel = searchDetails;
+        self.channelVideos = searchDetails.videos;
         [[self channelVideosCollectionView] reloadData];
         
         
@@ -195,9 +195,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     {
         if (result.resultType == YTSearchResultTypePlaylist)
         {
-            [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(NSDictionary *searchDetails) {
+            [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(KBYTPlaylist *searchDetails) {
                 
-                playlists[result.title] = searchDetails[@"results"];
+                playlists[result.title] = searchDetails.videos;
                 currentIndex++;
                 if (currentIndex == playlistCount)
                 {

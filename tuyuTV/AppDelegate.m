@@ -267,13 +267,13 @@
 {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
-    [[KBYourTube sharedInstance] getPlaylistVideos:videoID completionBlock:^(NSDictionary *searchDetails) {
+    [[KBYourTube sharedInstance] getPlaylistVideos:videoID completionBlock:^(KBYTPlaylist *playlist) {
         
         [SVProgressHUD dismiss];
         
-        NSString *nextHREF = searchDetails[@"loadMoreREF"];
-        YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:name backgroundColor:[UIColor blackColor] withPlaylistItems:searchDetails[@"results"]];
-        playlistViewController.loadMoreHREF = nextHREF;
+        //NSString *nextHREF = searchDetails[@"loadMoreREF"];
+        YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:name backgroundColor:[UIColor blackColor] withPlaylistItems:playlist.videos];
+        //playlistViewController.loadMoreHREF = nextHREF;
         [self presentViewController:playlistViewController animated:YES completion:nil];
         // [[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
         

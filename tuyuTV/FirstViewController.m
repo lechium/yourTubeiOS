@@ -28,9 +28,10 @@
     self.reuseFeatureID = @"FeaturedCell";
     self.reuseStandardID = @"StandardCell";
     [super viewDidLoad];
+    /*
     [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
         
-        self.featuredVideosDict = searchDetails;
+        self.featuredVideosChannel = searchDetails;
         self.featuredVideos = searchDetails[@"results"];
         [[self collectionView1] reloadData];
         
@@ -38,13 +39,13 @@
     } failureBlock:^(NSString *error) {
     
     }];
+    */
     
     
+    [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(KBYTChannel *searchDetails) {
     
-    [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(NSDictionary *searchDetails) {
-    
-        self.popularVideosDict = searchDetails;
-        self.popularVideos = searchDetails[@"results"];
+        self.popularVideosChannel = searchDetails;
+        self.popularVideos = searchDetails.videos;
         [[self collectionView2] reloadData];
         
     } failureBlock:^(NSString *error) {
@@ -52,10 +53,10 @@
     
     }];
     
-    [[KBYourTube sharedInstance] getChannelVideos:KBYTMusicChannelID completionBlock:^(NSDictionary *searchDetails) {
+    [[KBYourTube sharedInstance] getChannelVideos:KBYTMusicChannelID completionBlock:^(KBYTChannel *searchDetails) {
         
-        self.musicVideosDict = searchDetails;
-        self.musicVideos = searchDetails[@"results"];
+        self.musicVideosChannel = searchDetails;
+        self.musicVideos = searchDetails.videos;
         [[self collectionView3] reloadData];
         
     } failureBlock:^(NSString *error) {
@@ -63,10 +64,10 @@
         
     }];
     
-    [[KBYourTube sharedInstance] getChannelVideos:KBYTSportsChannelID completionBlock:^(NSDictionary *searchDetails) {
+    [[KBYourTube sharedInstance] getChannelVideos:KBYTSportsChannelID completionBlock:^(KBYTChannel *searchDetails) {
         
-        self.sportsVideosDict = searchDetails;
-        self.sportsVideos = searchDetails[@"results"];
+        self.sportsVideosChannel = searchDetails;
+        self.sportsVideos = searchDetails.videos;
         [[self collectionView4] reloadData];
         
     } failureBlock:^(NSString *error) {

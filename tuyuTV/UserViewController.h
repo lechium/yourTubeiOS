@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class KBYTPlaylist, KBYTChannel;
+
 @interface UserViewController : UIViewController <UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIScrollViewDelegate>
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UICollectionView *collectionView1;
@@ -22,13 +24,13 @@
 
 @property (nonatomic, strong) NSString *reuseFeatureID;
 @property (nonatomic, strong) NSString *reuseStandardID;
-@property (nonatomic, strong) NSDictionary *featuredVideosDict;
+@property (nonatomic, strong) KBYTChannel *featuredVideosChannel;
 @property (nonatomic, strong) NSArray *featuredVideos;
-@property (nonatomic, strong) NSDictionary *popularVideosDict;
+@property (nonatomic, strong) KBYTPlaylist *popularVideosChannel;
 @property (nonatomic, strong) NSArray *popularVideos;
-@property (nonatomic, strong) NSDictionary *musicVideosDict;
+@property (nonatomic, strong) KBYTPlaylist *musicVideosChannel;
 @property (nonatomic, strong) NSArray *musicVideos;
-@property (nonatomic, strong) NSDictionary *sportsVideosDict;
+@property (nonatomic, strong) KBYTPlaylist *sportsVideosChannels;
 @property (nonatomic, strong) NSArray *sportsVideos;
 
 @end

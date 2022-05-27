@@ -35,10 +35,10 @@
     [super viewDidLoad];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
     NSString *channelID = userDetails[@"channelID"];
-    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(NSDictionary *searchDetails) {
+    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(KBYTChannel *searchDetails) {
         
-        self.featuredVideosDict = searchDetails;
-        self.featuredVideos = searchDetails[@"results"];
+        self.featuredVideosChannel = searchDetails;
+        self.featuredVideos = searchDetails.videos;
         [[self collectionView1] reloadData];
         
         
@@ -53,10 +53,10 @@
         if (firstResult.resultType == YTSearchResultTypePlaylist)
         {
             self.firstLabel.text = firstResult.title;
-            [[KBYourTube sharedInstance] getPlaylistVideos:firstResult.videoId completionBlock:^(NSDictionary *searchDetails) {
+            [[KBYourTube sharedInstance] getPlaylistVideos:firstResult.videoId completionBlock:^(KBYTPlaylist *searchDetails) {
                 
-                self.popularVideosDict = searchDetails;
-                self.popularVideos = searchDetails[@"results"];
+                self.popularVideosChannel = searchDetails;
+                self.popularVideos = searchDetails.videos;
                 [[self collectionView2] reloadData];
                 
             } failureBlock:^(NSString *error) {
@@ -69,10 +69,10 @@
         {
             KBYTSearchResult *secondResult = results[1];
             self.secondLabel.text = secondResult.title;
-            [[KBYourTube sharedInstance] getPlaylistVideos:secondResult.videoId completionBlock:^(NSDictionary *searchDetails) {
+            [[KBYourTube sharedInstance] getPlaylistVideos:secondResult.videoId completionBlock:^(KBYTPlaylist *searchDetails) {
                 
-                self.musicVideosDict = searchDetails;
-                self.musicVideos = searchDetails[@"results"];
+                self.musicVideosChannel = searchDetails;
+                self.musicVideos = searchDetails.videos;
                 [[self collectionView3] reloadData];
                 
             } failureBlock:^(NSString *error) {
@@ -85,10 +85,10 @@
         {
             KBYTSearchResult *thirdResult = results[2];
             self.thirdLabel.text = thirdResult.title;
-            [[KBYourTube sharedInstance] getPlaylistVideos:thirdResult.videoId completionBlock:^(NSDictionary *searchDetails) {
+            [[KBYourTube sharedInstance] getPlaylistVideos:thirdResult.videoId completionBlock:^(KBYTPlaylist *searchDetails) {
                 
-                self.sportsVideosDict = searchDetails;
-                self.sportsVideos = searchDetails[@"results"];
+                self.sportsVideosChannels = searchDetails;
+                self.sportsVideos = searchDetails.videos;
                 [[self collectionView4] reloadData];
                 
             } failureBlock:^(NSString *error) {
