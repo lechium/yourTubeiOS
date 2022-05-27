@@ -806,9 +806,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 {
     if (collectionView == self.featuredVideosCollectionView)
     {
-        KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
-        
-        [self playFirstStreamForResult:currentItem];
+        //KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
+        NSArray *subarray = [self.featuredVideos subarrayWithRange:NSMakeRange(indexPath.row, self.featuredVideos.count - indexPath.row)];
+        [self playAllSearchResults:subarray];
+        //[self playFirstStreamForResult:currentItem];
     } else {
         
         //get our detail array based on collectionView
@@ -882,6 +883,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [SVProgressHUD dismiss];
         //NSLog(@"videoDetails: %@", videoDetails);
           //[[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
+        
         NSURL *playURL = [[videoDetails.streams firstObject] url];
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
         AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];

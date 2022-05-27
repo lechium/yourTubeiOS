@@ -341,8 +341,8 @@
    // self.tabBar.tabBar.translucent = false;
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"360° Videos"];
-    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYT360ChannelID];
+    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"Fashion & Beauty",@"YouTube",@"Virtual Reality"];
+    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYTFashionAndBeautyID, KBYTSpotlightChannelID, KBYT360ChannelID];
     TYHomeViewController *hvc = [[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
    // hvc.channelIDs = idArray;
     hvc.title = @"tuyu";

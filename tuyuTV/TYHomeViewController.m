@@ -56,7 +56,7 @@
     }];
 }
 
-
+//@"UCByOQJjav0CUDwxCk-jVNRQ"
 - (void)fetchChannelDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock
 {
     NSMutableDictionary *channels = [NSMutableDictionary new];
@@ -88,15 +88,13 @@
     {
         [[KBYourTube sharedInstance] getChannelVideosAlt:result completionBlock:^(KBYTChannel *searchDetails) {
             
+            NSString *title = searchDetails.title ? searchDetails.title : self.sectionLabels[currentIndex];
+            NSLog(@"[tuyu] searchDetails title: %@ details:%@", title, searchDetails);
             if (searchDetails.videos){
-                if (searchDetails.title){
-                    channels[searchDetails.title] = searchDetails.videos;
-                } else {
-                    channels[self.sectionLabels[currentIndex]] = searchDetails.videos;
-                }
+                channels[title] = searchDetails.videos;
             }
             currentIndex++;
-            if (currentIndex == channelCount)
+            if (currentIndex >= channelCount)
             {
                completionBlock(channels);
             }
