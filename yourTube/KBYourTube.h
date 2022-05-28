@@ -258,6 +258,11 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 
 - (void)getPlaylistVideos:(NSString *)listID
+             continuation:(NSString *)continuationToken
+          completionBlock:(void(^)(KBYTPlaylist *playlist))completionBlock
+             failureBlock:(void(^)(NSString *error))failureBlock;
+
+- (void)getPlaylistVideos:(NSString *)listID
           completionBlock:(void(^)(KBYTPlaylist *playlist))completionBlock
              failureBlock:(void(^)(NSString *error))failureBlock;
 
@@ -266,10 +271,20 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
          failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getChannelVideos:(NSString *)channelID
+            continuation:(NSString *)continuationToken
+         completionBlock:(void (^)(KBYTChannel *))completionBlock
+            failureBlock:(void (^)(NSString *))failureBlock;
+
+- (void)getChannelVideos:(NSString *)channelID
          completionBlock:(void(^)(KBYTChannel *channel))completionBlock
             failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getChannelVideosAlt:(NSString *)channelID
+          completionBlock:(void(^)(KBYTChannel *channel))completionBlock
+               failureBlock:(void(^)(NSString *error))failureBlock;
+
+- (void)getChannelVideosAlt:(NSString *)channelID
+               continuation:(NSString *)continuationToken
           completionBlock:(void(^)(KBYTChannel *channel))completionBlock
                failureBlock:(void(^)(NSString *error))failureBlock;
 

@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class KBYTChannel;
+
 @interface KBYTChannelViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate>
 {
     BOOL _gettingPage;
@@ -16,6 +18,7 @@
 @property (nonatomic, weak) IBOutlet UILabel *authorLabel;
 @property (nonatomic, weak) IBOutlet UILabel *subscribersLabel;
 @property (nonatomic, weak) IBOutlet UIImageView *bannerImage;
+@property (nonatomic, strong) KBYTChannel *channel;
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;

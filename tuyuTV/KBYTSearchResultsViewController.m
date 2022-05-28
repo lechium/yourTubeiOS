@@ -667,6 +667,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             
             //  NSLog(@"searchDeets: %@", searchDetails);
             
+            cv.channel = searchDetails;
             cv.searchResults = [searchDetails.videos mutableCopy];
             cv.pageCount = 1;
             //cv.nextHREF = searchDetails[@"loadMoreREF"];

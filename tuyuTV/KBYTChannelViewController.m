@@ -405,16 +405,29 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
 }
 
-- (void)getNextPage
-{
+- (void)getNextPage {
+    NSLog(@"[tuyu] getNextPage");
     if (_gettingPage) return;
     NSInteger nextPage = self.currentPage + 1;
-    if ([self.nextHREF length] > 0)
+    if ([self.channel.continuationToken length] > 0)
     {
         _gettingPage = true;
         self.currentPage = nextPage;
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
+        NSString *channelID = [[self channel] channelID];
+        [[KBYourTube sharedInstance] getChannelVideos:channelID continuation:self.channel.continuationToken completionBlock:^(KBYTChannel *channel) {
+            NSLog(@"[tuyu] got next page?: %@", channel);
+            [SVProgressHUD dismiss];
+            self.channel = channel;
+            [self updateSearchResults:channel.videos];
+           // [self.channelCollectionView reloadData];
+            _gettingPage = false;
+        } failureBlock:^(NSString *fail) {
+            NSLog(@"[tuyu] failed to get next page!");
+            [SVProgressHUD dismiss];
+        }];
+        
          [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
             
           //    NSLog(@"search details: %@", outputResults);
@@ -462,7 +475,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         
         [SVProgressHUD dismiss];
         self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
-        
+        [self.playerView addObjectsToPlayerQueue:videoArray];
         [self presentViewController:self.playerView animated:YES completion:nil];
         [[self.playerView player] play];
         NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(1, searchResults.count-1)];
