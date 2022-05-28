@@ -10,6 +10,15 @@
 #import "YTCreds.h"
 #import "KBYourTube.h"
 
+@interface TYAuthUserManager()
+@property (nonatomic, strong) NSDictionary *authResponse;
+@property (nonatomic, strong) NSTimer *pollingTimer;
+@property (nonatomic, strong) NSDate *startPollingTime;
+@property (nonatomic, strong) NSDictionary *tokenData;
+@property (nonatomic, strong) FinishedBlock finishedBlock;
+@property (nonatomic, strong) PurchaseValidatedBlock purchaseBlock;
+@property (nonatomic, strong) AuthStateUpdatedBlock updateBlock;
+@end
 
 @implementation TYAuthUserManager
 
@@ -57,6 +66,137 @@
 + (NSString *)suastring
 {
     return [NSString stringWithFormat:@"https://accounts.google.com/o/oauth2/auth?client_id=%@&redirect_uri=%@", ytClientID, @"urn:ietf:wg:oauth:2.0:oob:auto&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube.force-ssl+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutubepartner&response_type=code&access_type=offline&pageId=none"];
+}
+
+- (void)stopTime {
+    
+    [self.pollingTimer invalidate];
+    self.pollingTimer = nil;
+}
+
+/*
+ {
+   "device_code": "AH-1Ng1eBIAIiU3wptG_h_yQ4XU-jbxP7uroivmC-NsEzNH5snOR3yqZHJhe8qvC3O5O4yv_frm85avNus3ombjenIISAu1-sw",
+   "user_code": "DGRH-XKCG",
+   "expires_in": 1800,
+   "interval": 5,
+   "verification_url": "https://www.google.com/device"
+ }
+ */
+
+/*
+ NSURL *baseURL = [NSURL URLWithString:@"https://accounts.google.com/o/oauth2"];
+ 
+
+ AFOAuth2Manager *OAuth2Manager =
+ [[AFOAuth2Manager alloc] initWithBaseURL:baseURL
+                                 clientID:ytClientID
+                                   secret:ytSecretKey];
+ */
+
+- (void)pollForToken {
+    
+    NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:self.startPollingTime];
+    NSLog(@"interval since start: %f", interval);
+    NSInteger expiresTime = 900; //15 minutes
+    if (interval > expiresTime) {
+        
+        [self stopTime];
+        NSError *theError = [NSError errorWithDomain:@"com.nito.nitoTV4" code:2001 userInfo:nil];
+        self.finishedBlock(nil,theError);
+        return;
+    }
+    
+    /*
+     client_id=670004260779-f193lea0mkihris4cr8gi4qaek46c0kl.apps.googleusercontent.com&client_secret=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&device_code=AH-1Ng2uKm7Q6rhcdQCWUCCxjDLH9NS5gSWW9jB8xwYbE_bcSr_Vodl7WtCXk6cD8DEP8y9slleFxHEOFghVylHlZ0skKZAK8A&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
+     */
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    NSString *deviceCode = self.authResponse[@"device_code"];
+    NSString *pollURL = @"https://oauth2.googleapis.com/token";
+    NSString* post = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&device_code=%@&grant_type=%@",ytClientID, ytSecretKey, deviceCode,  [@"urn:ietf:params:oauth:grant-type:device_code" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    
+    // Encode post string
+    NSData* postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:false];
+    
+    // Calculate length of post data
+    NSString* postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
+    
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:postData];
+    [request setHTTPMethod:@"POST"];
+    [request setURL:[NSURL URLWithString:pollURL]];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        
+        NSURLResponse *theResponse = nil;
+        NSError *theError  = nil;
+        NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&theError];
+        if (returnData){
+            NSDictionary *tokenResponse = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
+            
+            BOOL authorized = [[tokenResponse allKeys] containsObject:@"access_token"];
+            if (!authorized){
+                self.authorized = false;
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    /*
+                     
+                     "error": "authorization_pending",
+                     "error_description": "Precondition Required"
+                     
+                     "access_token": "ya29.a0ARrdaM-ImfR0lSglbpcSDum_F3Xc63rLKfL9UtZ-LP8MmWliM0g3vcLcvwISFBWXYtdGUvHpiV4g-Gu7RPmXyiiYMwDPl8VMMk50Uz_FTXghQmLmgaN2HjQLyZFD3BwN6-M4N6KVY52V4gLdCCv0oxyUJLlD",
+                       "expires_in": 3599,
+                       "refresh_token": "1//06-oXZLuoysIgCgYIARAAGAYSNwF-L9IrVnd7cTPZcxuDerJI_7uBFc-lW3sfanDNK8-a2sKx0SiE-4Veed2ZdligxVq5aJCGkgI",
+                       "scope": "https://www.googleapis.com/auth/youtube.readonly",
+                       "token_type": "Bearer"
+                     */
+                    
+                    NSString *refreshToken = [tokenResponse valueForKey:@"refresh_token"];
+                    AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
+                    credential.refreshToken = refreshToken;
+                    [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
+                    NSLog(@"[tuyu] token response: %@", tokenResponse);
+                    NSLog(@"[tuyu] credential: %@", credential);
+                    //NSString *userId = tokenResponse[@"UserId"];
+                    //[UD setValue:userId forKey:kNTVPortalAuthUserName];
+                    self.tokenData = tokenResponse;
+                    self.authorized = true;
+                    self.finishedBlock(self.tokenData, nil);
+                    [self stopTime];
+                    
+                });
+                
+            }
+        } else {
+           
+            self.finishedBlock(nil, theError);
+            NSLog(@"NO RETURN DATA!!, PROBABLY THROW ERROR HERE?");
+            
+        }
+        
+    });
+    
+    //NSLog(@"token response %@", tokenResponse);
+
+    
+}
+
+- (void)startAuthPolling {
+    
+    //https://api.amazon.com/auth/o2/token
+    
+    self.startPollingTime = [NSDate date];
+    
+    [self pollForToken];
+    NSInteger interval = 10;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.pollingTimer = [NSTimer scheduledTimerWithTimeInterval:interval repeats:TRUE block:^(NSTimer * _Nonnull timer) {
+            [self pollForToken];
+        }];
+    });
+    
 }
 
 
@@ -187,16 +327,16 @@
         channel = channelId;
     }
     
-    NSLog(@"subscribe to channel: %@", channel);
+    NSLog(@"[tuyu] subscribe to channel: %@", channel);
     
-    [self refreshAuthToken];
+    //[self refreshAuthToken];
     
     NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
     NSDictionary *resourceId = [NSDictionary dictionaryWithObjectsAndKeys:@"youtube#channel", @"kind", channel, @"channelId", nil];
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:resourceId , @"resourceId", nil];
     [finalDict setObject:dict forKey:@"snippet"];
     
-    DLog(@"finalDict: %@", finalDict);
+    NSLog(@"[tuyu] finalDict: %@", finalDict);
     
     NSError* error;
     
@@ -216,8 +356,8 @@
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
     
-    
-    NSString *authorization = [NSString stringWithFormat:@"Bearer %@",[UD valueForKey: @"access_token"]];
+    AFOAuthCredential *cred = [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
+    NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
 
     [request setHTTPMethod:@"POST"];
@@ -232,14 +372,14 @@
     
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-    NSLog(@"status string: %@", returnString);
+    NSLog(@"[tuyu] status string: %@", returnString);
     
     
     //JSON data
     
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
     
-    // NSLog(@"jsonDict: %@", jsonDict);
+     NSLog(@"[tuyu] jsonDict: %@", jsonDict);
     if ([jsonDict valueForKey:@"error"] != nil)
     {
         return datString;
@@ -323,16 +463,22 @@
     
 }
 
+- (void)signOut {
+    [AFOAuthCredential deleteCredentialWithIdentifier:@"default"];
+    self.tokenData = nil;
+    [UD removeObjectForKey:@"access_token"];
+    [UD removeObjectForKey:@"refresh_token"];
+}
 
-
-- (void)checkAndSetCredential
+- (BOOL)checkAndSetCredential
 {
-   AFOAuthCredential * cred =  [AFOAuthCredential retrieveCredentialWithIdentifier:@"default" accessGroup:nil];
-    DLog(@"cred: %@", cred);
-    if (cred)
-    {
+   AFOAuthCredential * cred =  [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
+    NSLog(@"[tuyu] cred: %@", cred);
+    if (cred) {
         [self setCredential:cred];
+        return YES;
     }
+    return NO;
 }
 
 - (id)newcreatePlaylistWithTitle:(NSString *)playlistTitle andPrivacyStatus:(NSString *)privacyStatus
@@ -454,7 +600,7 @@
     
     // Create URL request and set url, method, content-length, content-type, and body
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:@"https://accounts.google.com/o/oauth2/token"]];
+    [request setURL:[NSURL URLWithString:@"https://oauth2.googleapis.com/token"]];
     [request setHTTPMethod:@"POST"];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
@@ -473,7 +619,11 @@
     {
         return jsonDict;
     } else {
-        
+        NSString *refreshToken = [jsonDict valueForKey:@"refresh_token"];
+        AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[jsonDict valueForKey:@"access_token"] tokenType:[jsonDict valueForKey:@"token_type"]];
+        credential.refreshToken = refreshToken;
+        [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
+        NSLog(@"[tuyu] refreshed credential: %@", credential);
         [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         
     }
@@ -575,7 +725,7 @@
     
     [OAuth2Manager authenticateUsingOAuthWithURLString:@"https://accounts.google.com/o/oauth2/token" parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject, AFOAuthCredential * _Nonnull credential) {
         
-        [AFOAuthCredential storeCredential:credential withIdentifier:@"youtube"];
+        [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
         
         DLog(@"credential: %@", credential);
         block(@"Success");
@@ -586,6 +736,61 @@
         block(@"fail");
     }];
 
+}
+
+- (void)startAuthAndGetUserCodeDetails:(DeviceCodeBlock)codeBlock completion:(FinishedBlock)finished {
+    
+    self.finishedBlock = finished;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        
+        [self getOAuthCodeWithCompletion:^(NSDictionary *codeDict) {
+            if (codeDict) {
+                
+                self.authResponse = codeDict;
+                NSLog(@"self.authResponse: %@", self.authResponse);
+                [self startAuthPolling];
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                codeBlock(self.authResponse);
+            });
+        }];
+    });
+}
+
+- (void)getOAuthCodeWithCompletion:(void(^)(NSDictionary *codeDict))block {
+   
+    //curl -d "client_id=670004260779-f193lea0mkihris4cr8gi4qaek46c0kl.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube.readonly" \
+    https://oauth2.googleapis.com/device/code
+    NSString* post = [NSString stringWithFormat:@"client_id=%@&scope=%@",ytClientID, [@"https://www.googleapis.com/auth/youtube" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    // Encode post string
+    NSData* postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:false];
+    
+    // Calculate length of post data
+    NSString* postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
+    
+    // Create URL request and set url, method, content-length, content-type, and body
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
+    [request setURL:[NSURL URLWithString:@"https://oauth2.googleapis.com/device/code"]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:postData];
+    NSHTTPURLResponse *theResponse = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
+    
+    NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+    
+    NSLog(@"datString: %@", datString);
+    
+    NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
+    
+    //JSON data
+    
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
+    if (block){
+        block(jsonDict);
+    }
 }
 
 - (id)postOAuth2CodeToGoogle:(NSString *)code{

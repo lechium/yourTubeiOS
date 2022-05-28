@@ -21,10 +21,18 @@
 
 @class KBYTSearchResult;
 
+typedef void (^AuthStateUpdatedBlock) (NSString *authState);
+typedef void (^PurchaseValidatedBlock)(BOOL success, NSString *message);
+typedef void (^FinishedBlock)(NSDictionary *tokenDict, NSError *error);
+typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
+
 @interface TYAuthUserManager : AFHTTPSessionManager
 
+@property (readwrite, assign) BOOL authorized;
+
 + (NSString *)suastring;
-- (void)checkAndSetCredential;
+- (BOOL)checkAndSetCredential;
+- (void)signOut;
 + (NSString *)ytAuthURL;
 
 #if TARGET_OS_IOS
@@ -36,6 +44,7 @@
 + (WebViewController *)ytAuthWebViewController;
 + (WebViewController *)OAuthWebViewController;
 #endif
+
 + (id)sharedInstance;
 - (id)postOAuth2CodeToGoogle:(NSString *)code;
 - (void)postOAuth2CodeToGoogle:(NSString *)code completion:(void(^)(NSString *value))block;
@@ -49,4 +58,6 @@
 - (id)addVideo:(NSString *)videoID toPlaylistWithID:(NSString *)playlistID;
 - (void)setCredential:(AFOAuthCredential *)credential;
 - (void)copyPlaylist:(KBYTSearchResult *)result completion:(void(^)(NSString *response))completion;
+- (void)getOAuthCodeWithCompletion:(void(^)(NSDictionary *codeDict))block;
+- (void)startAuthAndGetUserCodeDetails:(DeviceCodeBlock)codeBlock completion:(FinishedBlock)finished;
 @end

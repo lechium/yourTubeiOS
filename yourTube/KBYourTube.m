@@ -893,6 +893,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     ONOXMLDocument *xmlDoc = [self documentFromURL:@"https://www.youtube.com/feed/history"];
     ONOXMLElement *root = [xmlDoc rootElement];
     ONOXMLElement * displayMessage = [root firstChildWithXPath:@"//div[contains(@class, 'display-message')]"];
+    //[root firstChildWithXPath:@"//div[contains(@class, 'yt-formatted-string')]"]
     NSString *displayMessageString = [displayMessage stringValue];
     NSLog(@"dms: %@", displayMessageString);
     if (displayMessageString.length == 0 || displayMessageString == nil)

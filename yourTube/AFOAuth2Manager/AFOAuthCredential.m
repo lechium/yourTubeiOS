@@ -112,7 +112,7 @@ static NSDictionary *AFKeychainQueryDictionaryWithIdentifier(NSString *identifie
 + (BOOL)storeCredential:(AFOAuthCredential *)credential
          withIdentifier:(NSString *)identifier
 {
-    return [self storeCredential:credential withIdentifier:identifier accessGroup:@"group.com.likey"];
+    return [self storeCredential:credential withIdentifier:identifier accessGroup:@"group.com.tuyu"];
 }
 
 + (BOOL)storeCredential:(AFOAuthCredential *)credential
@@ -163,7 +163,7 @@ static NSDictionary *AFKeychainQueryDictionaryWithIdentifier(NSString *identifie
 
 + (BOOL)deleteCredentialWithIdentifier:(NSString *)identifier
 {
-    return [self deleteCredentialWithIdentifier:identifier accessGroup:@"group.com.likey"];
+    return [self deleteCredentialWithIdentifier:identifier accessGroup:@"group.com.tuyu"];
 }
 
 + (BOOL)deleteCredentialWithIdentifier:(NSString *)identifier accessGroup:(NSString *)accessGroup  {
@@ -176,7 +176,7 @@ static NSDictionary *AFKeychainQueryDictionaryWithIdentifier(NSString *identifie
 
 + (AFOAuthCredential *)retrieveCredentialWithIdentifier:(NSString *)identifier
 {
-    return [self retrieveCredentialWithIdentifier:identifier accessGroup:@"group.com.likey"];
+    return [self retrieveCredentialWithIdentifier:identifier accessGroup:@"group.com.tuyu"];
 }
 
 + (AFOAuthCredential *)retrieveCredentialWithIdentifier:(NSString *)identifier accessGroup:(NSString *)accessGroup  {

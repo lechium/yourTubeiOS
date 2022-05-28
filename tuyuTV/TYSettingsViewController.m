@@ -12,12 +12,13 @@
 #import "WebViewController.h"
 #import "AppDelegate.h"
 #import "TYAuthUserManager.h"
+#import "AuthViewController.h"
 
 @implementation TYSettingsViewController
 
 - (BOOL)signedIn
 {
-    return [[KBYourTube sharedInstance] isSignedIn];
+    return [[TYAuthUserManager sharedInstance] checkAndSetCredential];//[[KBYourTube sharedInstance] isSignedIn];
 }
 
 + (id)settingsView
@@ -75,9 +76,39 @@
     {
         [self showSignOutAlert];
     } else {
-        WebViewController *wvc = [TYAuthUserManager OAuthWebViewController];
-        [self.navigationController pushViewController:wvc animated:true];
+        [self storeAuth];
+        //WebViewController *wvc = [TYAuthUserManager OAuthWebViewController];
+        //[self.navigationController pushViewController:wvc animated:true];
     }
+}
+
+- (void)storeAuth {
+    
+    TYAuthUserManager *shared = [TYAuthUserManager sharedInstance];
+    
+    [shared startAuthAndGetUserCodeDetails:^(NSDictionary *deviceCodeDict) {
+        
+        AuthViewController *avc = [[AuthViewController alloc] initWithUserCodeDetails:deviceCodeDict];
+        
+        [self presentViewController:avc animated:true completion:nil];
+        
+        
+    } completion:^(NSDictionary *tokenDict, NSError *error) {
+        
+        NSLog(@"inside here???");
+        
+        if ([[tokenDict allKeys] containsObject:@"access_token"]){
+            NSLog(@"we good: %@", tokenDict );
+            [self dismissViewControllerAnimated:true completion:nil];
+        } else {
+            
+            NSLog(@"show error alert here");
+            [self dismissViewControllerAnimated:true completion:nil];
+            
+        }
+        
+    }];
+    
 }
 
 - (void)signOut
@@ -85,6 +116,7 @@
     [self stringFromRequest:@"https://www.youtube.com/logout"];
     AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     [ad updateForSignedOut];
+    [[TYAuthUserManager sharedInstance] signOut];
 }
 
 

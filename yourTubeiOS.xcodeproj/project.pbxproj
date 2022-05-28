@@ -17,6 +17,7 @@
 		3204FFFE1E4F8C8400D3B8B0 /* KBYourTube+Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */; };
 		3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A241C5E8B3D00F50BC2 /* APAttribute.m */; };
 		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
+		324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 324693A82841EE8A002D91F0 /* AuthViewController.m */; };
 		324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */; };
 		324CDA4A1FC24B4F003B3A0F /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93611C8D74B300B34DAA /* WebViewController.m */; };
 		328E33801E4F868C00C544ED /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328E337F1E4F868C00C544ED /* TVServices.framework */; };
@@ -388,6 +389,8 @@
 		320400031E4F8DA000D3B8B0 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
 		320400041E4F8DA000D3B8B0 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		324693A028404C65002D91F0 /* AppSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupport.tbd; sourceTree = SOURCE_ROOT; };
+		324693A82841EE8A002D91F0 /* AuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthViewController.m; sourceTree = "<group>"; };
+		324693A92841EE8A002D91F0 /* AuthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AuthViewController.h; sourceTree = "<group>"; };
 		328411781E4FA763002B1310 /* tuyuShelf.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = tuyuShelf.entitlements; sourceTree = "<group>"; };
 		328411791E4FDFFE002B1310 /* tuyu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = tuyu.entitlements; sourceTree = "<group>"; };
 		328E337E1E4F868C00C544ED /* tuyuShelf.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = tuyuShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1135,6 +1138,8 @@
 				899876641CDE78BA006A639E /* CollectionView */,
 				898E926B1C8D056700B34DAA /* AppDelegate.h */,
 				898E926C1C8D056700B34DAA /* AppDelegate.m */,
+				324693A92841EE8A002D91F0 /* AuthViewController.h */,
+				324693A82841EE8A002D91F0 /* AuthViewController.m */,
 				8929FCBD1CB4453F003D7473 /* tuyuApplication.h */,
 				8929FCBE1CB44540003D7473 /* tuyuApplication.m */,
 				89EEC1011C9214B0006B1944 /* YTTVPlaylistViewController.h */,
@@ -1978,6 +1983,7 @@
 				32D2A13F1F424805006F24B3 /* AFSecurityPolicy.m in Sources */,
 				898E93471C8D56BD00B34DAA /* SVProgressHUD.m in Sources */,
 				898E93111C8D569600B34DAA /* UIColor+Additions.m in Sources */,
+				324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */,
 				898E93541C8D56D100B34DAA /* UIImage+MultiFormat.m in Sources */,
 				898E930A1C8D566000B34DAA /* KBYTDownloadStream.m in Sources */,
 				899876671CDE78BA006A639E /* CollectionViewLayout.m in Sources */,
