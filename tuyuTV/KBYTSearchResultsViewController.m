@@ -609,13 +609,50 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     return YES;
 }
 
+- (void)playAllSearchResults:(NSArray *)searchResults
+{
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD show];
+    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
+        
+        [SVProgressHUD dismiss];
+        YTKBPlayerViewController *playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
+        [playerView addObjectsToPlayerQueue:videoArray];
+        [self presentViewController:playerView animated:YES completion:nil];
+        [[playerView player] play];
+        NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(1, searchResults.count-1)];
+        
+        NSDate *myStart = [NSDate date];
+        [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
+            
+            NSLog(@"[tuyu] video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            NSLog(@"[tuyu] first object: %@", subarray.firstObject);
+            [playerView addObjectsToPlayerQueue:videoArray];
+            
+        } failureBlock:^(NSString *error) {
+            
+            [SVProgressHUD dismiss];
+            DLog(@"failed?");
+            //[self showFailureAlert:error];
+        }];
+        
+        
+    } failureBlock:^(NSString *error) {
+        [SVProgressHUD dismiss];
+         DLog(@"failed?");
+        //[self showFailureAlert:error];
+    }];
+}
+
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
     if (searchResult.resultType == YTSearchResultTypeVideo)
     {
-        [self playFirstStreamForResult:searchResult];
+        NSArray *subarray = [self.searchResults subarrayWithRange:NSMakeRange(indexPath.row, self.searchResults.count - indexPath.row)];
+        [self playAllSearchResults:subarray];
+        //[self playFirstStreamForResult:searchResult];
     } else if (searchResult.resultType == YTSearchResultTypeChannel)
     {
         UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
