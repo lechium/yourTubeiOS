@@ -108,7 +108,7 @@
     
     for (KBYTSearchResult *result in results)
     {
-        if (result.resultType == YTSearchResultTypePlaylist)
+        if (result.resultType ==kYTSearchResultTypePlaylist)
         {
             [_backingSectionLabels addObject:result.title];
         }
@@ -215,7 +215,7 @@
     
     YTSearchResultType type = [KBYourTube resultTypeForString:url.host];
     
-    if (type == YTSearchResultTypeVideo)
+    if (type ==kYTSearchResultTypeVideo)
     {
         [SVProgressHUD show];
         [[KBYourTube sharedInstance] getVideoDetailsForID:url.path.lastPathComponent completionBlock:^(KBYTMedia *videoDetails) {
@@ -237,10 +237,10 @@
         } failureBlock:^(NSString *error) {
             //
         }];
-    } else if (type == YTSearchResultTypeChannel)
+    } else if (type ==kYTSearchResultTypeChannel)
     {
         [self showChannel:url.path.lastPathComponent];
-    } else if (type == YTSearchResultTypePlaylist)
+    } else if (type ==kYTSearchResultTypePlaylist)
     {
         
         NSString *path = url.path.lastPathComponent;

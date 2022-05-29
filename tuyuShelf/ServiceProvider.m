@@ -80,11 +80,11 @@
             NSArray <KBYTSearchResult *> *rChannels = outputResults[@"channels"];
             [results enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                
-                if (obj.resultType == YTSearchResultTypeChannel)
+                if (obj.resultType ==kYTSearchResultTypeChannel)
                 {
                     [self.channels addObject:obj];
                     
-                } else if (obj.resultType == YTSearchResultTypePlaylist)
+                } else if (obj.resultType ==kYTSearchResultTypePlaylist)
                 {
                     [self.playlists addObject:obj];
                 }

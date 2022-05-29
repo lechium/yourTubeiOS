@@ -328,21 +328,21 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
     switch (searchResult.resultType)
     {
-        case YTSearchResultTypeVideo:
+        casekYTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:searchResult];
             break;
             
-        case YTSearchResultTypeChannel:
+        casekYTSearchResultTypeChannel:
             
             [self showChannelAlertForSearchResult:searchResult];
             break;
             
-        case YTSearchResultTypePlaylist:
+        casekYTSearchResultTypePlaylist:
             
             break;
             
-        case YTSearchResultTypeUnknown:
+        case kYTSearchResultTypeUnknown:
             
             break;
     }

@@ -52,7 +52,8 @@
 @property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 @property (nonatomic, strong) NSLayoutConstraint *featuredHeightConstraint;
 
-
+- (KBYTChannel *)channelForCollectionView:(UICollectionView *)theView;
+- (KBYTSearchResult *)searchResultFromFocusedCell;
 - (KBYTChannelHeaderView *)headerview;
 - (void)showChannel:(KBYTSearchResult *)searchResult;
 - (void)playAllSearchResults:(NSArray *)searchResults;
@@ -62,6 +63,7 @@
 - (NSString *)titleForSection:(NSInteger)section;
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView;
 -(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer;
+- (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell;
 @end
 
 

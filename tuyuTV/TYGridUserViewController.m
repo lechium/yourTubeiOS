@@ -196,7 +196,7 @@
     for (KBYTSearchResult *result in results)
     {
         
-        if (result.resultType == YTSearchResultTypePlaylist)
+        if (result.resultType ==kYTSearchResultTypePlaylist)
         {
             NSLog(@"getting details for: %@ id: %@", result.title, result.videoId);
             [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(KBYTPlaylist *searchDetails) {

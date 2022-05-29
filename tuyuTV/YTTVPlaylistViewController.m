@@ -372,7 +372,7 @@
     
     switch (searchResult.resultType)
     {
-        case YTSearchResultTypeVideo:
+        casekYTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:searchResult];
             break;

@@ -36,6 +36,36 @@
     [self refreshDataWithProgress:false];
 }
 
+- (void)getNextPage:(KBYTChannel *)currentChannel inCollectionView:(UICollectionView *)cv {
+    NSLog(@"[tuyu] currentChannel.continuationToken: %@", currentChannel.continuationToken);
+    [[KBYourTube sharedInstance] getChannelVideosAlt:currentChannel.channelID continuation:currentChannel.continuationToken completionBlock:^(KBYTChannel *channel) {
+        if (channel.videos.count > 0){
+            NSLog(@"[tuyu] got more channels!");
+            [currentChannel mergeChannelVideos:channel];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [cv reloadData];//[self reloadCollectionViews];
+            });
+        }
+    } failureBlock:^(NSString *error) {
+        
+    }];
+}
+
+- (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell {
+    [super focusedCell:focusedCell];
+    UICollectionView *cv = (UICollectionView*)[focusedCell superview];
+    //if it isnt a collectionView or it IS the top collection view we dont do any adjustments
+    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView )
+    {
+        return;
+    }
+    KBYTChannel *currentChannel = [self channelForCollectionView:cv];
+    NSIndexPath *indexPath = [cv indexPathForCell:focusedCell];
+    if (indexPath.row+1 == currentChannel.videos.count){
+        NSLog(@"[tuyu] get a new page maybe?");
+        [self getNextPage:currentChannel inCollectionView:cv];
+    }
+}
 
 - (void)refreshDataWithProgress:(BOOL)progress
 {
@@ -89,9 +119,9 @@
         [[KBYourTube sharedInstance] getChannelVideosAlt:result completionBlock:^(KBYTChannel *searchDetails) {
             
             NSString *title = searchDetails.title ? searchDetails.title : self.sectionLabels[currentIndex];
-            NSLog(@"[tuyu] searchDetails title: %@ details:%@", title, searchDetails);
+            NSLog(@"[tuyu] searchDetails title: %@ details:%@", title, searchDetails.continuationToken);
             if (searchDetails.videos){
-                channels[title] = searchDetails.videos;
+                channels[title] = searchDetails;
             }
             currentIndex++;
             if (currentIndex >= channelCount)

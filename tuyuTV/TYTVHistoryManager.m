@@ -37,7 +37,7 @@
             result.videoId = videoDict[@"videoID"];
             result.title = videoDict[@"title"];
             result.author = videoDict[@"author"];
-            result.resultType = YTSearchResultTypeVideo;
+            result.resultType =kYTSearchResultTypeVideo;
             result.imagePath = videoDict[@"images"][@"high"];
             [convertedArray addObject:result];
         }
@@ -60,7 +60,7 @@
             result.title = channelDict[@"name"];
             result.duration = channelDict[@"duration"];
             result.author = channelDict[@"author"];
-            result.resultType = YTSearchResultTypeChannel;
+            result.resultType =kYTSearchResultTypeChannel;
             result.imagePath = channelDict[@"thumbnail"];
             [convertedArray addObject:result];
         }

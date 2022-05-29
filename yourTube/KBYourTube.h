@@ -23,7 +23,7 @@
 // Logging
 
 /*
- 
+ //PLFgquLnL59ampo3SyfL95RBPrT6Q3a84N
  //music channel = UC-9-kyTW8ZkZNDHQJ6FgpwQ
  //popular on yt = UCF0pVplsI8R5kcAqgtoRqoA
  //sports = UCEgdi0XIXXZ-qJOFPf4JSKw
@@ -63,11 +63,11 @@ static NSString *const KBYTSpotlightChannelID = @"UCBR8-60-B28hp2BmDPdntcQ";
 
 typedef NS_ENUM(NSUInteger, YTSearchResultType) {
     
-    YTSearchResultTypeUnknown,
-    YTSearchResultTypeVideo,
-    YTSearchResultTypePlaylist,
-    YTSearchResultTypeChannel,
-    YTSearchResultTypeChannelList,
+    kYTSearchResultTypeUnknown,
+   kYTSearchResultTypeVideo,
+   kYTSearchResultTypePlaylist,
+   kYTSearchResultTypeChannel,
+   kYTSearchResultTypeChannelList,
 };
 
 typedef NS_ENUM(NSUInteger, KBYTSearchType) {
@@ -164,7 +164,8 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *channelID;
 @property (nonatomic, strong) NSString *continuationToken;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
-
+@property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
+- (void)mergeChannelVideos:(KBYTChannel *)channel;
 @end
 
 @interface KBYTPlaylist: NSObject
@@ -218,6 +219,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *lastSearch;
 @property (nonatomic, strong) NSDictionary *userDetails; 
 
+- (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current;
 + (YTSearchResultType)resultTypeForString:(NSString *)string;
 + (id)sharedInstance;
 - (BOOL)isSignedIn;

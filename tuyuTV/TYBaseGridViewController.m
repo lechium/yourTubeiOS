@@ -338,21 +338,21 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     switch (searchResult.resultType)
     {
-        case YTSearchResultTypeVideo:
+        casekYTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:searchResult];
             break;
             
-        case YTSearchResultTypeChannel:
+        casekYTSearchResultTypeChannel:
             
             [self showChannelAlertForSearchResult:searchResult];
             break;
             
-        case YTSearchResultTypePlaylist:
+        casekYTSearchResultTypePlaylist:
             
             break;
             
-        case YTSearchResultTypeUnknown:
+        case kYTSearchResultTypeUnknown:
             
             break;
     }
@@ -617,6 +617,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     {
         return;
     }
+    KBYTSearchResult *result = [self searchResultFromFocusedCell];
+    
     //get the indexPath for the row to make sure its row 0 to shift upwards
     NSIndexPath *indexPath = [cv indexPathForCell:focusedCell];
     //get our headerTag by re-adjusting the offsets from the collectionView tag
@@ -778,6 +780,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView
 {
+    KBYTChannel *channel = [self channelForCollectionView:theView];
+    return channel.videos;
+}
+
+- (KBYTChannel *)channelForCollectionView:(UICollectionView *)theView {
     NSInteger section = theView.tag - tagOffset;
     return self.playlistDictionary[[self titleForSection:section]];
 }
@@ -816,7 +823,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         NSArray *detailsArray = [self arrayForCollectionView:collectionView];
         KBYTSearchResult *selectedItem = [detailsArray objectAtIndex:indexPath.row];
         //if its a channel then show a channel instead of trying to playback a playlist
-        if (selectedItem.resultType == YTSearchResultTypeChannel)
+        if (selectedItem.resultType ==kYTSearchResultTypeChannel)
         {
             [self showChannel:selectedItem];
             return;

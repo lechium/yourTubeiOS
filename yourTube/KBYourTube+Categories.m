@@ -224,6 +224,102 @@
 
 @implementation NSObject (convenience)
 
+- (void)recursiveInspectObjectForKey:(NSString *)desiredKey saving:(NSMutableArray *)array {
+    if ([self isKindOfClass:NSDictionary.class]) {
+        NSDictionary *dictSelf = (NSDictionary *)self;
+        //NSLog(@"dict: %@", dictSelf.allKeys);
+        for (NSString *key in dictSelf.allKeys) {
+            if ([desiredKey isEqualToString:key]){
+                [array addObject:dictSelf[key]];
+                //return dictSelf[key];
+            } else {
+                NSDictionary *dict = dictSelf[key];
+                
+                if ([dict isKindOfClass:NSDictionary.class]) {
+                    //NSLog(@"checking key: %@", key);
+                    id obj = dict[desiredKey];
+                    if (obj) {
+                        //NSLog(@"found key: %@ in parent: %@", obj, key);
+                        //return dict;
+                        [array addObject:obj];
+                        //return obj;
+                    } else {
+                        //DLog(@"inspecting: %@", dict);
+                        [dict recursiveInspectObjectForKey:desiredKey saving:array];
+                    }
+                } else {
+                    if ([dict isKindOfClass:[NSArray class]]){
+                        [dict recursiveInspectObjectForKey:desiredKey saving:array];
+                    }
+                }
+            }
+        }
+    } else if ([self isKindOfClass:NSArray.class]){
+        NSArray *arraySelf = (NSArray *)self;
+        for (NSDictionary *item in arraySelf) {
+            if ([item isKindOfClass:NSDictionary.class]){
+                //NSLog(@"checking item: %@", item);
+                id obj = item[desiredKey];
+                if (obj) {
+                    //NSLog(@"found key: %@", obj);
+                    [array addObject:obj];
+                    //return obj;
+                } else {
+                    [item recursiveInspectObjectForKey:desiredKey saving:array];
+                }
+                //return [item recursiveObjectForKey:desiredKey];
+            }
+        }
+    } else {
+        NSLog(@"%@ is not an NSDictionary or an NSArray, bail!", self);
+    }
+
+}
+
+- (void)recursiveInspectObjectLikeKey:(NSString *)desiredKey saving:(NSMutableArray *)array {
+    NSPredicate *likePred = [NSPredicate predicateWithFormat:@"self like[c] %@ || self contains[c] %@", desiredKey, desiredKey];
+    if ([self isKindOfClass:NSDictionary.class]) {
+        NSDictionary *dictSelf = (NSDictionary *)self;
+        //NSLog(@"dict: %@", dictSelf.allKeys);
+        for (NSString *key in dictSelf.allKeys) {
+            if ([likePred evaluateWithObject:key]){
+                [array addObject:dictSelf[key]];
+                //return dictSelf[key];
+            } else {
+                NSDictionary *dict = dictSelf[key];
+                
+                if ([dict isKindOfClass:NSDictionary.class]) {
+                    //NSLog(@"checking key: %@", key);
+                    id obj = dict[desiredKey];
+                    if (obj) {
+                        //NSLog(@"found key: %@ in parent: %@", obj, key);
+                        //return dict;
+                        [array addObject:obj];
+                        //return obj;
+                    } else {
+                        //DLog(@"inspecting: %@", dict);
+                        [dict recursiveInspectObjectLikeKey:desiredKey saving:array];
+                    }
+                } else {
+                    if ([dict isKindOfClass:[NSArray class]]){
+                        [dict recursiveInspectObjectLikeKey:desiredKey saving:array];
+                    }
+                }
+            }
+        }
+    } else if ([self isKindOfClass:NSArray.class]){
+        NSArray *arraySelf = (NSArray *)self;
+        for (NSDictionary *item in arraySelf) {
+            if ([item isKindOfClass:NSDictionary.class]){
+                [item recursiveInspectObjectLikeKey:desiredKey saving:array];
+            }
+        }
+    } else {
+        NSLog(@"%@ is not an NSDictionary or an NSArray, bail!", self);
+    }
+
+}
+
 - (id)recursiveObjectLikeKey:(NSString *)desiredKey {
     return [self recursiveObjectLikeKey:desiredKey parent:nil];
 }

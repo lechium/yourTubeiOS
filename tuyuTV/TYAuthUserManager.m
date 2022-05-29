@@ -567,7 +567,7 @@
     KBYTSearchResult *searchResult = [KBYTSearchResult new];
     searchResult.videoId = jsonDict[@"id"];
     searchResult.title = playlistTitle;
-    searchResult.resultType = YTSearchResultTypePlaylist;
+    searchResult.resultType =kYTSearchResultTypePlaylist;
     
     if (searchResult.videoId.length > 0)
     {
@@ -638,7 +638,7 @@
     NSArray *results = userDetails[@"results"];
     for (KBYTSearchResult *result in results)
     {
-        if (result.resultType == YTSearchResultTypePlaylist)
+        if (result.resultType ==kYTSearchResultTypePlaylist)
         {
             [finalArray addObject:result];
         }

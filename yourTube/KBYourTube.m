@@ -33,6 +33,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return [NSString stringWithFormat:@"%@ videos: %@ title: %@ ID: %@", desc, _videos, _title, _channelID];
 }
 
+- (void)mergeChannelVideos:(KBYTChannel *)channel {
+    NSMutableArray *newVideos = [self.videos mutableCopy];
+    NSLog(@"[tuyu] new channel: %@", channel.videos);
+    NSLog(@"[tuyu] current videos: %@", self.videos);
+    [newVideos addObjectsFromArray:channel.videos];
+    self.continuationToken = channel.continuationToken;
+    self.videos = newVideos;
+}
+
 @end
 
 @implementation KBYTPlaylist
@@ -56,42 +65,22 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     __block NSMutableArray *searchResults = [NSMutableArray new];
     __block NSMutableArray *playlistResults = [NSMutableArray new];
     __block NSMutableArray *channelResults = [NSMutableArray new];
-    NSArray *videos = [jsonDict recursiveObjectsForKey:@"videoRenderer"];
+    NSMutableArray *ourVideos = [NSMutableArray new];
+    [jsonDict recursiveInspectObjectLikeKey:@"videoRenderer" saving:ourVideos];
+    [ourVideos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        KBYTSearchResult *searchItem = [[KBYourTube sharedInstance] searchResultFromVideoRenderer:obj];
+        [searchResults addObject:searchItem];
+    }];
     NSArray *playlists = [jsonDict recursiveObjectsForKey:@"playlistRenderer"];
     NSArray *channels = [jsonDict recursiveObjectsForKey:@"channelRenderer"];
     NSInteger estimatedResults = [[jsonDict recursiveObjectForKey:@"estimatedResults"] integerValue];
     //NSLog(@"playlists: %@", playlists);
     //NSLog(@"channels: %@", channels);
-    if (channels){
-        [channels writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"channels.plist"] atomically:true];
-    }
     NSLog(@"estimated results: %lu", estimatedResults);
     id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
     self.continuationToken = cc[@"token"];
     //NSLog(@"cc: %@", cc);
-    [videos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSDictionary *current = obj[@"videoRenderer"];
-        if (current) {
-            NSString *lengthText = current[@"lengthText"][@"simpleText"];
-            NSDictionary *title = current[@"title"];
-            NSString *vid = current[@"videoId"];
-            NSString *viewCountText = current[@"viewCountText"][@"simpleText"];
-            NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"];
-            NSDictionary *longBylineText = current[@"longBylineText"];
-            NSDictionary *ownerText = current[@"ownerText"];
-            KBYTSearchResult *searchItem = [KBYTSearchResult new];
-            searchItem.details = [longBylineText recursiveObjectForKey:@"text"];
-            searchItem.author = [ownerText recursiveObjectForKey:@"text"];
-            searchItem.title = [title recursiveObjectForKey:@"text"];
-            searchItem.duration = lengthText;
-            searchItem.videoId = vid;
-            searchItem.views = viewCountText;
-            searchItem.resultType = YTSearchResultTypeVideo;
-            searchItem.age = current[@"publishedTimeText"][@"simpleText"];
-            searchItem.imagePath = thumbnails.lastObject[@"url"];
-            [searchResults addObject:searchItem];
-        }
-    }];
+    
     self.videos = searchResults;
     [playlists enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary *current = obj[@"playlistRenderer"];
@@ -104,17 +93,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         searchItem.title = title[@"simpleText"];
         searchItem.videoId = pis;
         searchItem.imagePath = thumbnails.lastObject[@"url"];
-        searchItem.resultType = YTSearchResultTypePlaylist;
+        searchItem.resultType = kYTSearchResultTypePlaylist;
         searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"browseId"];
         [playlistResults addObject:searchItem];
     }];
     self.playlists = playlistResults;
-    NSLog(@"enumerating channels!");
     [channels enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSLog(@"channel count > 0: %lu", channels.count);
         NSDictionary *current = obj[@"channelRenderer"];
         if (current) {
-            NSLog(@"current: %@", [current allKeys]);
             NSDictionary *title = [current recursiveObjectForKey:@"title"];
             NSString *cis = current[@"channelId"];
             NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"];
@@ -124,13 +110,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             searchItem.title = title[@"simpleText"];
             searchItem.videoId = cis;
             searchItem.imagePath = thumbnails.lastObject[@"url"];
-            searchItem.resultType = YTSearchResultTypeChannel;
-            searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"browseId"];
+            searchItem.resultType = kYTSearchResultTypeChannel;
+            searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
             [channelResults addObject:searchItem];
         }
     }];
     self.channels = channelResults;
-    NSLog(@"channelResults: %@", channelResults);
     self.estimatedResults = estimatedResults;
 }
 
@@ -206,11 +191,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (NSString *)readableSearchType
 {
     switch (self.resultType) {
-        case YTSearchResultTypeUnknown: return @"Unknown";
-        case YTSearchResultTypeVideo: return @"Video";
-        case YTSearchResultTypePlaylist: return @"Playlist";
-        case YTSearchResultTypeChannel: return @"Channel";
-        case YTSearchResultTypeChannelList: return @"Channel List";
+        case kYTSearchResultTypeUnknown: return @"Unknown";
+        casekYTSearchResultTypeVideo: return @"Video";
+        casekYTSearchResultTypePlaylist: return @"Playlist";
+        casekYTSearchResultTypeChannel: return @"Channel";
+        casekYTSearchResultTypeChannelList: return @"Channel List";
         default:
             return @"Unknown";
     }
@@ -739,6 +724,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (NSDictionary *)paramsForChannelID:(NSString *)channelID continuation:(NSString *)continuationToken {
     if (continuationToken == nil) {
      return @{ @"browseId": channelID,
+               @"continuation": @"",
                @"context":  @{ @"client":
                                    @{ @"clientName": @"WEB",
                                       @"clientVersion": @"2.20210408.08.00",
@@ -820,12 +806,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 + (YTSearchResultType)resultTypeForString:(NSString *)string
 {
-    if ([string isEqualToString:@"Channel"]) return YTSearchResultTypeChannel;
-    else if ([string isEqualToString:@"Playlist"]) return YTSearchResultTypePlaylist;
-    else if ([string isEqualToString:@"Channel List"]) return YTSearchResultTypeChannelList;
-    else if ([string isEqualToString:@"Video"]) return YTSearchResultTypeVideo;
-     else if ([string isEqualToString:@"Unknown"]) return YTSearchResultTypeUnknown;
-     else return YTSearchResultTypeUnknown;
+    if ([string isEqualToString:@"Channel"]) return kYTSearchResultTypeChannel;
+    else if ([string isEqualToString:@"Playlist"]) return kYTSearchResultTypePlaylist;
+    else if ([string isEqualToString:@"Channel List"]) return kYTSearchResultTypeChannelList;
+    else if ([string isEqualToString:@"Video"]) return kYTSearchResultTypeVideo;
+     else if ([string isEqualToString:@"Unknown"]) return kYTSearchResultTypeUnknown;
+     else return kYTSearchResultTypeUnknown;
 }
 
 + (id)sharedInstance {
@@ -996,7 +982,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 userChannel.videoId = channelID;
                 userChannel.details = [NSString stringWithFormat:@"%lu videos", channelVideoCount];
                 userChannel.imagePath = ourUserDetails[@"profileImage"];
-                userChannel.resultType = YTSearchResultTypeChannel;
+                userChannel.resultType =kYTSearchResultTypeChannel;
                 [itemArray addObject:userChannel];
                 
                 NSInteger wlCount = [channelDict[@"wlCount"] integerValue];
@@ -1007,7 +993,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 wlPl.details = [NSString stringWithFormat:@"%lu videos", wlCount];
                 wlPl.title = @"Watch later";
                 wlPl.imagePath = ourUserDetails[@"profileImage"];
-                wlPl.resultType = YTSearchResultTypePlaylist;
+                wlPl.resultType =kYTSearchResultTypePlaylist;
                 
                 [itemArray addObject:wlPl];
                 
@@ -1290,7 +1276,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         result.author = channel;
         result.details = videoCount;
         result.videoId = playlistURL;
-        result.resultType = YTSearchResultTypePlaylist;
+        result.resultType =kYTSearchResultTypePlaylist;
         //NSDictionary *playlistItem = @{@"thumbURL": [NSString stringWithFormat:@"https:%@", thumbPath], @"title": playlistTitle, @"URL": playlistURL, @"videoCount": videoCount};
         [finalArray addObject:result];
         
@@ -1327,7 +1313,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         result.author = userName;
         result.details = videoCount;
         result.videoId = playlistURL;
-        result.resultType = YTSearchResultTypePlaylist;
+        result.resultType =kYTSearchResultTypePlaylist;
         //NSDictionary *playlistItem = @{@"thumbURL": [NSString stringWithFormat:@"https:%@", thumbPath], @"title": playlistTitle, @"URL": playlistURL, @"videoCount": videoCount};
         [finalArray addObject:result];
         
@@ -1609,32 +1595,27 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (void)getPlaylistVideos:(NSString *)listID
              continuation:(NSString *)continuationToken
           completionBlock:(void(^)(KBYTPlaylist *playlist))completionBlock
-             failureBlock:(void(^)(NSString *error))failureBlock
-{
+             failureBlock:(void(^)(NSString *error))failureBlock {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         @autoreleasepool {
             NSString *errorString = nil;
             NSString *url = [self nextURL];
-            NSLog(@"url: %@", url);
+            //NSLog(@"url: %@", url);
             //get the post body from the url above, gets the initial raw info we work with
             NSDictionary *params = [self paramsForPlaylist:listID continuation:continuationToken];
             NSString *body = [self stringFromPostRequest:url withParams:params];
             NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
             NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
             //NSLog(@"body: %@ for: %@ %@", jsonDict, url, params);
-            if (continuationToken.length > 0) {
-                NSLog(@"[tuyu] writing file: %@", [NSHomeDirectory() stringByAppendingPathComponent:@"brosivel.plist"]);
-                [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"brosivel.plist"] atomically:true];
-            } else {
-                NSLog(@"[tuyu] writing file: %@", [NSHomeDirectory() stringByAppendingPathComponent:@"defaultChannelList.plist"]);
-                [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"defaultChannelList.plist"] atomically:true];
-            }
+            NSMutableArray *vrArray = [NSMutableArray new];
+            [jsonDict recursiveInspectObjectLikeKey:@"videoRenderer" saving:vrArray];
+            //        DLog(@"array: %lu", vrArray.count);
             __block NSMutableArray *videos = [NSMutableArray new];
             KBYTPlaylist *playlist = [KBYTPlaylist new];
             id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
             playlist.playlistID = listID;
-            NSLog(@"[tuyu] cc: %@", cc);
+            //NSLog(@"[tuyu] cc: %@", cc);
             playlist.continuationToken = cc[@"token"];
             NSDictionary *plRoot = [jsonDict recursiveObjectForKey:@"playlist"][@"playlist"];
             if (plRoot) {
@@ -1643,39 +1624,18 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 //NSLog(@"owner: %@ title: %@", owner, title);
                 playlist.owner = owner;
                 playlist.title = title;
-                NSArray *vr = [jsonDict recursiveObjectsForKey:@"playlistPanelVideoRenderer"];
-                //NSLog(@"vr: %@", vr);
-                //[plRoot writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"root.plist"] atomically:true];
-                [vr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    //NSLog(@"%@", obj[@"playlistPanelVideoRenderer"]);
-                    NSDictionary *current = obj[@"playlistPanelVideoRenderer"];
-                    if (current) {
-                        
-                        KBYTSearchResult *searchItem = [self searchResultFromVideoRenderer:current];
-                        [videos addObject:searchItem];
-                    } else {
-                        NSLog(@"[tuyu] no vr: %@", [obj allKeys]);
-                    }
-                }];
-                playlist.videos = videos;
-            } else {
-                NSArray *continuationItems = [jsonDict recursiveObjectForKey:@"continuationItems"];
-                if (continuationItems) {
-                    NSLog(@"[tuyu] we found continuation items: %lu", continuationItems.count);
-                    [continuationItems enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                        //NSLog(@"%@", obj[@"playlistPanelVideoRenderer"]);
-                        NSDictionary *current = [obj recursiveObjectLikeKey:@"videoRenderer"];
-                        if (current) {
-                            
-                            KBYTSearchResult *searchItem = [self searchResultFromVideoRenderer:current];
-                            [videos addObject:searchItem];
-                        } else {
-                            NSLog(@"[tuyu] no vr: %@", [obj allKeys]);
-                        }
-                    }];
-                    playlist.videos = videos;
-                }
             }
+            if ([vrArray count] > 0){
+                [vrArray enumerateObjectsUsingBlock:^(id  _Nonnull video, NSUInteger idx, BOOL * _Nonnull stop) {
+                    KBYTSearchResult *result = [self searchResultFromVideoRenderer:video];
+                    //DLog(@"shelf item %lu subindex %lu is a video object", idx, idx2);
+                    [videos addObject:result];
+                    //DLog(@"result: %@", result);
+                    
+                }];
+            }
+            playlist.videos = videos;
+            
             //NSLog(@"videos: %@", videos);
             //NSLog(@"root info: %@", rootInfo);
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1732,7 +1692,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             {
                 //NSMutableDictionary *scienceDict = [NSMutableDictionary new];
                 KBYTSearchResult *result = [KBYTSearchResult new];
-                result.resultType = YTSearchResultTypeVideo;
+                result.resultType =kYTSearchResultTypeVideo;
                 NSString *videoID = [currentElement valueForAttribute:@"data-video-id"];
                 if (videoID != nil)
                 {
@@ -1841,7 +1801,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             while (currentElement = [videoEnum nextObject])
             {
                 KBYTSearchResult *result = [KBYTSearchResult new];
-                result.resultType = YTSearchResultTypeVideo;
+                result.resultType =kYTSearchResultTypeVideo;
                 NSString *videoID = [currentElement valueForAttribute:@"data-context-item-id"];
                 if (videoID != nil)
                 {
@@ -1981,7 +1941,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         result.title = playlistTitle;
         result.author = userName;
         result.videoId = playlistURL;
-        result.resultType = YTSearchResultTypeChannel;
+        result.resultType =kYTSearchResultTypeChannel;
         //NSDictionary *playlistItem = @{@"thumbURL": [NSString stringWithFormat:@"https:%@", thumbPath], @"title": playlistTitle, @"URL": playlistURL, @"videoCount": videoCount};
         [finalArray addObject:result];
         //[finalArray addObject:playlistItem];
@@ -2023,7 +1983,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         result.title = playlistTitle;
         result.author = userName;
         result.videoId = playlistURL;
-        result.resultType = YTSearchResultTypeChannel;
+        result.resultType =kYTSearchResultTypeChannel;
         //NSDictionary *playlistItem = @{@"thumbURL": [NSString stringWithFormat:@"https:%@", thumbPath], @"title": playlistTitle, @"URL": playlistURL, @"videoCount": videoCount};
         [finalArray addObject:result];
         //[finalArray addObject:playlistItem];
@@ -2150,7 +2110,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                 }
                 
-                result.resultType = YTSearchResultTypeVideo;
+                result.resultType =kYTSearchResultTypeVideo;
                 
                 if (lengthElement != nil)
                     result.duration = lengthElement.stringValue;
@@ -2236,7 +2196,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (!fullTitle) {
         fullTitle = [title recursiveObjectForKey:@"simpleText"];
     }
-    NSString *vid = current[@"videoId"];
+    NSString *vid = [current recursiveObjectForKey:@"videoId"];
     NSString *viewCountText = current[@"viewCountText"][@"simpleText"];
     NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"];
     NSDictionary *longBylineText = current[@"longBylineText"];
@@ -2256,7 +2216,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     searchItem.views = viewCountText;
     searchItem.age = current[@"publishedTimeText"][@"simpleText"];
     searchItem.imagePath = thumbnails.lastObject[@"url"];
-    searchItem.resultType = YTSearchResultTypeVideo;
+    searchItem.resultType =kYTSearchResultTypeVideo;
     return searchItem;
 }
 
@@ -2282,21 +2242,19 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSString *body = [self stringFromPostRequest:url withParams:params];
             NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
             NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
-            NSLog(@"[tuyu] params: %@", params);
+            //NSLog(@"[tuyu] params: %@", params);
             //NSLog(@"body: %@ for: %@ %@", jsonDict, url, params);
             //NSMutableArray* arr = [NSMutableArray array];
             //[self obtainKeyPaths:jsonDict intoArray:arr withString:nil];
-            NSLog(@"[tuyu] file: %@", [NSHomeDirectory() stringByAppendingPathComponent:@"channelAlt.plist"]);
+            //NSLog(@"[tuyu] file: %@", [NSHomeDirectory() stringByAppendingPathComponent:@"channelAlt.plist"]);
             
-            [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"channelAlt.plist"] atomically:true];
+            //[jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"channelAlt.plist"] atomically:true];
+            
             id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
-            //DLog(@"cc: %@", cc);
             __block NSMutableArray *items = [NSMutableArray new];
-            NSDictionary *grid = [jsonDict recursiveObjectForKey:@"richGridRenderer"];
+            __block NSMutableArray *playlists = [NSMutableArray new];
+            
             NSDictionary *details = [jsonDict recursiveObjectForKey:@"topicChannelDetailsRenderer"];
-            if (!grid) {
-                grid = [jsonDict recursiveObjectForKey:@"sectionListRenderer"];
-            }
             if (!details) {
                 details = [jsonDict recursiveObjectForKey:@"channelMetadataRenderer"];
                 //DLog(@"details: %@", details);
@@ -2320,78 +2278,41 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             channel.continuationToken = cc[@"token"];
             //DLog(@"details: %@", details);
             //title,subtitle,thumbnails
-            NSArray *contents = grid[@"contents"];
-            [contents enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                NSArray *contents = [obj recursiveObjectForKey:@"contents"];
-                if (contents) {
-                    //DLog(@"%lu is a shelf object", idx);
-                    [contents enumerateObjectsUsingBlock:^(id  _Nonnull obj2, NSUInteger idx2, BOOL * _Nonnull stop2) {
-                        NSDictionary *videoR = [obj2 recursiveObjectForKey:@"videoRenderer"];
-                        if (videoR) {
-                            KBYTSearchResult *result = [self searchResultFromVideoRenderer:videoR];
-                            //DLog(@"shelf item %lu subindex %lu is a video object", idx, idx2);
-                            [items addObject:result];
-                        } else { //check for the horizontal lists...
-                            
-                            NSArray *vrTest = [obj2 recursiveObjectsLikeKey:@"videoRenderer"];
-                            if (vrTest){
-                                //DLog(@"vrTest: %lu", vrTest.count);
-                                [vrTest enumerateObjectsUsingBlock:^(id  _Nonnull hlistObj, NSUInteger hListIdx, BOOL * _Nonnull hListStop) {
-                                    NSDictionary *videoR = [hlistObj recursiveObjectLikeKey:@"videoRenderer"];
-                                    if (videoR) {
-                                        //DLog(@"vrTest item %lu subindex %lu is a video object", hListIdx, idx2);
-                                        KBYTSearchResult *res = [self searchResultFromVideoRenderer:videoR];
-                                        //DLog(@"%@", res);
-                                        [items addObject:res];
-                                    }
-                                }];
-                            }
-                            /*
-                            NSArray *horizList = [obj2 recursiveObjectForKey:@"horizontalListRenderer"][@"items"];
-                            if (horizList) {
-                                DLog(@"horiz: %lu", horizList.count);
-                                //DLog(@"got a horiz list");
-                                [horizList enumerateObjectsUsingBlock:^(id  _Nonnull hlistObj, NSUInteger hListIdx, BOOL * _Nonnull hListStop) {
-                                    NSDictionary *videoR = [hlistObj recursiveObjectForKey:@"gridVideoRenderer"];
-                                    if (videoR) {
-                                        //DLog(@"horiz item %lu subindex %lu is a video object", hListIdx, idx2);
-                                        KBYTSearchResult *res = [self searchResultFromVideoRenderer:videoR];
-                                        //DLog(@"%@", res);
-                                        [items addObject:res];
-                                    }
-                                }];
-                            } else {
-                                NSArray *horizList = [obj2 recursiveObjectForKey:@"gridRenderer"][@"items"];
-                                if (horizList) {
-                                    DLog(@"horiz: %lu", horizList.count);
-                                    //DLog(@"found gridRenderer list: %lu", horizList.count);
-                                    [horizList enumerateObjectsUsingBlock:^(id  _Nonnull hlistObj, NSUInteger hListIdx, BOOL * _Nonnull hListStop) {
-                                        NSDictionary *videoR = [hlistObj recursiveObjectForKey:@"gridVideoRenderer"];
-                                        if (videoR) {
-                                            //DLog(@"horiz item %lu subindex %lu is a video object", hListIdx, idx2);
-                                            KBYTSearchResult *res = [self searchResultFromVideoRenderer:videoR];
-                                            //DLog(@"%@", res);
-                                            [items addObject:res];
-                                        }
-                                    }];
-                                }
-                            }
-                            */
-                        }
-                    }];
-                } else { //should be a singular object
-                    DLog(@"%lu is a singular object: %@", idx, contents);
-                    NSDictionary *videoR = [obj recursiveObjectForKey:@"videoRenderer"];
-                    if (videoR) {
-                        KBYTSearchResult *result = [self searchResultFromVideoRenderer:videoR];
-                        DLog(@"%lu is a video object", idx);
-                        [items addObject:result];
-                    }
-                }
-            }];
             
+            NSMutableArray *vrArray = [NSMutableArray new];
+            [jsonDict recursiveInspectObjectLikeKey:@"videoRenderer" saving:vrArray];
+            NSMutableArray *plArray = [NSMutableArray new];
+            [jsonDict recursiveInspectObjectLikeKey:@"stationRenderer" saving:plArray];
+            if ([vrArray count] > 0){
+                [vrArray enumerateObjectsUsingBlock:^(id  _Nonnull video, NSUInteger idx, BOOL * _Nonnull stop) {
+                    KBYTSearchResult *result = [self searchResultFromVideoRenderer:video];
+                    //DLog(@"shelf item %lu subindex %lu is a video object", idx, idx2);
+                    [items addObject:result];
+                    //DLog(@"result: %@", result);
+                    
+                }];
+            }
+            
+            if ([plArray count] > 0){
+                [plArray enumerateObjectsUsingBlock:^(id  _Nonnull playlist, NSUInteger idx, BOOL * _Nonnull stop) {
+                    NSDictionary *title = [playlist recursiveObjectForKey:@"title"];
+                    NSString *cis = [playlist recursiveObjectForKey:@"playlistId"];
+                    NSArray *thumbnails = playlist[@"thumbnail"][@"thumbnails"];
+                    NSDictionary *desc = playlist[@"description"];
+                    KBYTSearchResult *searchItem = [KBYTSearchResult new];
+                    searchItem.title = title[@"simpleText"];
+                    searchItem.videoId = cis;
+                    searchItem.imagePath = thumbnails.lastObject[@"url"];
+                    searchItem.resultType = kYTSearchResultTypePlaylist;
+                    searchItem.details = [desc recursiveObjectForKey:@"simpleText"];
+                    [playlists addObject:searchItem];
+                    //DLog(@"result: %@", searchItem);
+                    
+                }];
+            }
             channel.channelID = channelID;
             channel.videos = items;
+            channel.playlists = playlists;
             //get the post body from the url above, gets the initial raw info we work with
             if (completionBlock) {
                 completionBlock(channel);
@@ -2607,7 +2528,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     {
                         result.videoId = [[videoID componentsSeparatedByString:@"="] lastObject];
                     }
-                    result.resultType = YTSearchResultTypeVideo;
+                    result.resultType =kYTSearchResultTypeVideo;
                     ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-clip')]"] children] firstObject];
                     ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                     ONOXMLElement *ageAndViewsElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'lohp-video-metadata')]"];//yt-lockup-meta-info
@@ -2676,7 +2597,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         {
                             result.videoId = [[videoID componentsSeparatedByString:@"="] lastObject];
                         }
-                        result.resultType = YTSearchResultTypeVideo;
+                        result.resultType =kYTSearchResultTypeVideo;
                         ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-clip')]"] children] firstObject];
                         ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                         id ageEnum = [currentElement XPath:@".//*[contains(@class, 'lohp-video-metadata')]"];
@@ -2752,7 +2673,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         {
                             result.videoId = videoID;
                         }
-                        result.resultType = YTSearchResultTypeVideo;
+                        result.resultType =kYTSearchResultTypeVideo;
                         ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-clip')]"] children] firstObject];
                         ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                         ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"];
@@ -2941,7 +2862,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     {
                         result.videoId = videoID;
                     }
-                    result.resultType = YTSearchResultTypeVideo;
+                    result.resultType =kYTSearchResultTypeVideo;
                     ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
                     ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                     ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"];
@@ -3098,7 +3019,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 {
                     result.videoId = videoID;
                 }
-                result.resultType = YTSearchResultTypeVideo;
+                result.resultType =kYTSearchResultTypeVideo;
                 ONOXMLElement *thumbNailElement = [[[currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-thumb-simple')]"] children] firstObject];
                 ONOXMLElement *lengthElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'video-time')]"];
                 ONOXMLElement *titleElement = [currentElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"];
@@ -3420,6 +3341,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSInteger i = 0;
             
             for (KBYTSearchResult *result in searchResults) {
+                
+                if (!result.videoId){
+                    NSLog(@"[tuyu] missing video id: %@ bail!", result);
+                    continue;;
+                }
                 
                 NSString *url = [self playerURL];
                 NSLog(@"url: %@", url);
