@@ -8,8 +8,9 @@
 
 #import "TYHomeViewController.h"
 
-@interface TYHomeViewController ()
-
+@interface TYHomeViewController () {
+    BOOL firstLoad;
+}
 @end
 
 @implementation TYHomeViewController
@@ -24,16 +25,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self refreshDataWithProgress:true];
-    
-    
-    // Do any additional setup after loading the view.
+    //[self refreshDataWithProgress:false];
+    firstLoad = true;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self refreshDataWithProgress:false];
+    if (firstLoad){
+        [self refreshDataWithProgress:true];
+        firstLoad = false;
+    } else {
+        [self refreshDataWithProgress:false];
+    }
 }
 
 - (void)getNextPage:(KBYTChannel *)currentChannel inCollectionView:(UICollectionView *)cv {
@@ -50,7 +53,7 @@
         
     }];
 }
-
+/*
 - (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell {
     [super focusedCell:focusedCell];
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
@@ -66,6 +69,7 @@
         [self getNextPage:currentChannel inCollectionView:cv];
     }
 }
+ */
 
 - (void)refreshDataWithProgress:(BOOL)progress
 {

@@ -165,6 +165,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *continuationToken;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
+- (NSArray <KBYTSearchResult*> *)allSortedItems;
 - (void)mergeChannelVideos:(KBYTChannel *)channel;
 @end
 

@@ -42,6 +42,20 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     self.videos = newVideos;
 }
 
+- (NSArray <KBYTSearchResult *>*)allSortedItems {
+    if (self.videos.count > 0 && self.playlists.count > 0){
+        NSMutableArray *_newArray = [[self videos] mutableCopy];
+        NSLog(@"[tuyu] playlists: %@", self.playlists);
+        [_newArray addObjectsFromArray:self.playlists];
+        NSSortDescriptor *title = [NSSortDescriptor sortDescriptorWithKey:@"title" ascending:true];
+        [_newArray sortUsingDescriptors:@[title]];
+        return _newArray;
+    } else {
+        return self.videos;
+    }
+    return self.videos;
+}
+
 @end
 
 @implementation KBYTPlaylist
@@ -2305,6 +2319,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     searchItem.imagePath = thumbnails.lastObject[@"url"];
                     searchItem.resultType = kYTSearchResultTypePlaylist;
                     searchItem.details = [desc recursiveObjectForKey:@"simpleText"];
+                    searchItem.duration = [playlist[@"videoCountText"] recursiveObjectForKey:@"text"];
                     [playlists addObject:searchItem];
                     //DLog(@"result: %@", searchItem);
                     

@@ -9,6 +9,7 @@
 #import "TYBaseGridViewController.h"
 #import "TYAuthUserManager.h"
 #import "KBYTGridChannelViewController.h"
+#import "YTTVPlaylistViewController.h"
 /*
  
  Tag offsets are used for both the collection views and their header views to be able to query them easily
@@ -736,6 +737,25 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
 }
 
+- (void)showPlaylist:(NSString *)videoID named:(NSString *)name
+{
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD show];
+    [[KBYourTube sharedInstance] getPlaylistVideos:videoID completionBlock:^(KBYTPlaylist *playlist) {
+        
+        [SVProgressHUD dismiss];
+        
+        //NSString *nextHREF = searchDetails[@"loadMoreREF"];
+        YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:name backgroundColor:[UIColor blackColor] withPlaylistItems:playlist.videos];
+        //playlistViewController.loadMoreHREF = nextHREF;
+        [self presentViewController:playlistViewController animated:YES completion:nil];
+        // [[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
+        
+    } failureBlock:^(NSString *error) {
+        //
+    }];
+}
+
 //used to show a channel instead if a channel was selected
 
 - (void)showChannel:(KBYTSearchResult *)searchResult
@@ -781,7 +801,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView
 {
     KBYTChannel *channel = [self channelForCollectionView:theView];
-    return channel.videos;
+    return channel.allSortedItems;
 }
 
 - (KBYTChannel *)channelForCollectionView:(UICollectionView *)theView {
@@ -823,9 +843,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         NSArray *detailsArray = [self arrayForCollectionView:collectionView];
         KBYTSearchResult *selectedItem = [detailsArray objectAtIndex:indexPath.row];
         //if its a channel then show a channel instead of trying to playback a playlist
-        if (selectedItem.resultType ==kYTSearchResultTypeChannel)
+        if (selectedItem.resultType == kYTSearchResultTypeChannel)
         {
             [self showChannel:selectedItem];
+            return;
+        } else if (selectedItem.resultType == kYTSearchResultTypePlaylist) {
+            [self showPlaylist:selectedItem.videoId named:selectedItem.title];
             return;
         }
         
