@@ -75,6 +75,7 @@
 
 - (void)awakeFromNib {
     // Initialization code
+    [super awakeFromNib];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -433,17 +434,29 @@
     [self.delegate selectedItemAtIndexPath:indexPath];
     if (indexPath.row == self.itemNames.count-1)
     {
-        if (self.nextHREF.length > 0)
+        if (self.playlistItem.continuationToken.length > 0)
         {
             [self getNextPage];
         }
     }
 }
 
-- (void)getNextPage
-{
+- (void)getNextPage {
     LOG_SELF;
     self.currentPage++;
+    [[KBYourTube sharedInstance] getPlaylistVideos:self.playlistItem.playlistID continuation:self.playlistItem.continuationToken completionBlock:^(KBYTPlaylist *playlist) {
+        [self updateSearchResults:playlist.videos];
+        self.playlistItem.continuationToken = playlist.continuationToken;
+        NSMutableArray *imageArray = [NSMutableArray new];
+        for (KBYTSearchResult *result in playlist.videos) {
+            [imageArray addObject:result.imagePath];
+        }
+        [self.delegate addImageURLs:imageArray];
+        [self.tableView reloadData];
+    } failureBlock:^(NSString *error) {
+        [self.tableView reloadData];
+    }];
+    return;
     [[KBYourTube sharedInstance] loadMorePlaylistVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
         
         NSArray *results = outputResults[@"results"];
@@ -616,6 +629,32 @@
 @synthesize itemNames, imageNames;
 
 
++ (id)playlistViewControllerForPlaylist:(KBYTPlaylist *)playlist backgroundColor:(UIColor* )bgColor {
+    YTTVPlaylistViewController *splitViewController = [YTTVPlaylistViewController new];
+    splitViewController.view.backgroundColor = bgColor;
+    //splitViewController.itemNames = names;
+    //splitViewController.imageNames = images;
+    splitViewController.view.backgroundColor = bgColor;
+    PlaylistTableViewController *masterTableViewController = [[PlaylistTableViewController alloc] init];
+    masterTableViewController.playlistItem = playlist;
+    masterTableViewController.itemNames = [[NSMutableArray alloc] initWithArray:playlist.videos];
+    
+    masterTableViewController.selectionDelegate = splitViewController;
+    PLDetailViewController *detailViewController = [[PLDetailViewController alloc] init];
+    detailViewController.view.backgroundColor = bgColor;
+    NSMutableArray *imageArray = [NSMutableArray new];
+    for (KBYTSearchResult *result in playlist.videos)
+    {
+        [imageArray addObject:result.imagePath];
+    }
+    detailViewController.imageURLs = imageArray;
+    masterTableViewController.view.backgroundColor = bgColor;
+    masterTableViewController.delegate = detailViewController;
+    [splitViewController setViewControllers:@[detailViewController,masterTableViewController]];
+    splitViewController.title = playlist.title;
+    [splitViewController setTitle:playlist.title];
+    return splitViewController;
+}
 
 + (id)playlistViewControllerWithTitle:(NSString *)theTitle backgroundColor:(UIColor *)bgColor withPlaylistItems:(NSArray *)playlistItems
 {

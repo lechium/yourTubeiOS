@@ -29,6 +29,8 @@
 #import <UIKit/UIKit.h>
 #import "KBYTDownloadCell.h"
 
+@class KBYTPlaylist;
+
 @interface PlaylistTableViewCell : KBYTDownloadCell
 
 @property (nonatomic, strong) UIColor *selectionColor;
@@ -65,6 +67,7 @@
 @property (nonatomic, weak) id<PLDetailViewSelectionDelegate> delegate;
 @property (nonatomic, strong) NSMutableArray *itemNames;
 @property (nonatomic, weak) NSString *nextHREF;
+@property (nonatomic, strong) KBYTPlaylist *playlistItem;
 @property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
 @property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 
@@ -109,6 +112,7 @@
 @property (nonatomic, assign) CGFloat viewBorderWidth;
 @property (readwrite, assign) CGFloat preferredPrimaryColumnWidthFraction; //doesnt do anything right now
 
+
 @property (nonatomic, readonly) UIViewController *masterViewController;
 @property (nonatomic, readonly) UIViewController *detailViewController;
 
@@ -123,6 +127,8 @@
  */
 
 + (id)playlistViewControllerWithTitle:(NSString *)theTitle backgroundColor:(UIColor *)bgColor withPlaylistItems:(NSArray *)playlistItems;
+
++ (id)playlistViewControllerForPlaylist:(KBYTPlaylist *)playlist backgroundColor:(UIColor* )bgColor;
 
 @end
 

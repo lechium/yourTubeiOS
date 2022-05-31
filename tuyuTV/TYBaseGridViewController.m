@@ -618,7 +618,6 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     {
         return;
     }
-    KBYTSearchResult *result = [self searchResultFromFocusedCell];
     
     //get the indexPath for the row to make sure its row 0 to shift upwards
     NSIndexPath *indexPath = [cv indexPathForCell:focusedCell];
@@ -746,13 +745,14 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [SVProgressHUD dismiss];
         
         //NSString *nextHREF = searchDetails[@"loadMoreREF"];
-        YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:name backgroundColor:[UIColor blackColor] withPlaylistItems:playlist.videos];
+        YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerForPlaylist:playlist backgroundColor:[UIColor blackColor]];
+        //YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:name backgroundColor:[UIColor blackColor] withPlaylistItems:playlist.videos];
         //playlistViewController.loadMoreHREF = nextHREF;
         [self presentViewController:playlistViewController animated:YES completion:nil];
         // [[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
         
     } failureBlock:^(NSString *error) {
-        //
+        //RDCLAK5uy_n4g8XbXdlPTtik7Fwl4RU3Gij-63HBsmo
     }];
 }
 
@@ -822,8 +822,14 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             return currentItem;
         }
         
-       // NSLog(@"cv: %@ indexPath row: %lu", cv, indexPath.row);
-        KBYTSearchResult *searchResult = [[self arrayForCollectionView:cv] objectAtIndex:indexPath.row];
+       
+        NSArray *theArray = [self arrayForCollectionView:cv];
+        NSLog(@"[tuyu] cv: %@ indexPath row: %lu arrayCount: %lu", cv, indexPath.row,theArray.count);
+        if (indexPath.row > theArray.count){
+            NSLog(@"[tuyu] bail!!");
+            return nil;
+        }
+        KBYTSearchResult *searchResult = [theArray objectAtIndex:indexPath.row];
         return searchResult;
     }
     return nil;
