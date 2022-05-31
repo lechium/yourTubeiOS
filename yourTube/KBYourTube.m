@@ -2483,17 +2483,21 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                     [stations enumerateObjectsUsingBlock:^(id  _Nonnull channelObj, NSUInteger idx, BOOL * _Nonnull stop) {
                                         NSString *firstKey = [[channelObj allKeys] firstObject];
                                         NSDictionary *channel = channelObj[firstKey];
-                                        NSDictionary *title = [channel recursiveObjectForKey:@"title"];
+                                        NSDictionary *title = channel[@"title"];
                                         NSString *cis = channel[@"channelId"];
                                         NSArray *thumbnails = channel[@"thumbnail"][@"thumbnails"];
                                         NSDictionary *longBylineText = channel[@"longBylineText"];
+                                        NSString *thumb = thumbnails.lastObject[@"url"];
+                                        if (![thumb containsString:@"https:"]){
+                                            thumb = [NSString stringWithFormat:@"https:%@", thumb];
+                                        }
                                         KBYTSearchResult *searchItem = [KBYTSearchResult new];
                                         searchItem.author = [longBylineText recursiveObjectForKey:@"text"];
                                         searchItem.title = title[@"simpleText"];
                                         searchItem.author = title[@"simpleText"];
                                         searchItem.duration = [channel[@"videoCountText"] recursiveObjectForKey:@"text"];
                                         searchItem.videoId = cis;
-                                        searchItem.imagePath = thumbnails.lastObject[@"url"];
+                                        searchItem.imagePath = thumb;
                                         searchItem.resultType = kYTSearchResultTypeChannel;
                                         searchItem.details = [channel recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
                                         [content addObject:searchItem];

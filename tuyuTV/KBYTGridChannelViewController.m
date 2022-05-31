@@ -137,6 +137,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             _backingSectionLabels = [NSMutableArray new];
             __block NSMutableDictionary *plDict = [NSMutableDictionary new];
             [[channel sections] enumerateObjectsUsingBlock:^(KBYTSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if (obj.title == nil){
+                    obj.title = [NSString stringWithFormat:@"%lu", idx];
+                }
                 [_backingSectionLabels addObject:obj.title];
                 plDict[obj.title] = obj.content;
             }];
