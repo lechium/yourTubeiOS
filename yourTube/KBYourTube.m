@@ -2346,6 +2346,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 details = [jsonDict recursiveObjectForKey:@"channelMetadataRenderer"];
                 //DLog(@"details: %@", details);
             }
+            NSDictionary *subscriberCount = [jsonDict recursiveObjectForKey:@"subscriberCountText"];
+            NSLog(@"subscriber count: %@", subscriberCount);
             NSDictionary *title = [details recursiveObjectForKey:@"title"];
             NSDictionary *subtitle = [details recursiveObjectForKey:@"subtitle"];
             NSArray *thumbnails = [details recursiveObjectForKey:@"thumbnails"];
@@ -2360,6 +2362,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             } else {
                 channel.subtitle = subtitle[@"simpleText"];
             }
+            channel.subscribers = subscriberCount[@"simpleText"];
             channel.image = thumbnails.lastObject[@"url"];
             channel.url = [details recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
             channel.continuationToken = cc[@"token"];

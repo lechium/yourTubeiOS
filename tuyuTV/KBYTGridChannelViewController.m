@@ -124,6 +124,33 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
     }
+    
+    [[KBYourTube sharedInstance] getChannelVideosAlt:self.channelID continuation:nil completionBlock:^(KBYTChannel *channel) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            UIImage *banner = [UIImage imageNamed:@"Banner"];
+            NSURL *imageURL =  [NSURL URLWithString:channel.banner];
+            [self.headerview.bannerImageView sd_setImageWithURL:imageURL placeholderImage:banner options:SDWebImageAllowInvalidSSLCertificates];
+            self.headerview.subscriberLabel.text = channel.subscribers;
+            self.headerview.authorLabel.text = channel.title;
+            _backingSectionLabels = [NSMutableArray new];
+            __block NSMutableDictionary *plDict = [NSMutableDictionary new];
+            [[channel sections] enumerateObjectsUsingBlock:^(KBYTSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [_backingSectionLabels addObject:obj.title];
+                plDict[obj.title] = obj.content;
+            }];
+            self.playlistDictionary = plDict;
+            if (progress == true){
+                [SVProgressHUD dismiss];
+                [self initialSetup];
+                
+            }
+        });
+    } failureBlock:^(NSString *error) {
+        
+    }];
+    return;
     //get the user details to populate these views with
     [[KBYourTube sharedInstance] getOrganizedChannelData:self.channelID completionBlock:^(NSDictionary *searchDetails) {
         //
@@ -139,7 +166,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [_backingSectionLabels addObjectsFromArray:searchDetails[@"sections"]];
         
         DLog(@"bsl: %@", _backingSectionLabels);
-       
+        
         if (progress == true){
             [SVProgressHUD dismiss];
             [self initialSetup];
@@ -163,9 +190,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
          
          
          */
-    
+        
         [super reloadCollectionViews];
-
+        
         
     } failureBlock:^(NSString *error) {
         //
@@ -183,7 +210,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView;
 {
     NSInteger section = theView.tag - 60;
-    NSArray *theArray = [self.playlistDictionary[[self titleForSection:section]] valueForKey:@"videos"];
+    NSArray *theArray = self.playlistDictionary[[self titleForSection:section]];
     return theArray;
 }
 
@@ -196,13 +223,13 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 @end
