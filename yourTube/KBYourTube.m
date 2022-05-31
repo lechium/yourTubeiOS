@@ -2277,6 +2277,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     NSString *vid = [current recursiveObjectForKey:@"videoId"];//current[@"videoId"];
     NSString *viewCountText = current[@"viewCountText"][@"simpleText"];
     NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"] ? current[@"thumbnail"][@"thumbnails"] : [current recursiveObjectForKey:@"thumbnail"][@"thumbnails"];
+    //https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg
+    NSDictionary *thumb = thumbnails.lastObject;
+    NSString *imagePath = thumb[@"url"];
+    NSInteger width = [thumb[@"width"] integerValue];
+    if (width < 100){
+        imagePath = [NSString stringWithFormat:@"https://i.ytimg.com/vi/%@/hqdefault.jpg", vid];
+    }
     NSDictionary *longBylineText = [current recursiveObjectForKey:@"longBylineText"];
     if (!longBylineText) {
         longBylineText = [current recursiveObjectForKey:@"shortBylineText"];
@@ -2294,7 +2301,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     searchItem.videoId = vid;
     searchItem.views = viewCountText;
     searchItem.age = current[@"publishedTimeText"][@"simpleText"];
-    searchItem.imagePath = thumbnails.lastObject[@"url"];
+    searchItem.imagePath = imagePath;
     searchItem.resultType = kYTSearchResultTypeVideo;
     return searchItem;
 }
