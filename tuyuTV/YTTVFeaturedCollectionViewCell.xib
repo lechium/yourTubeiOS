@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder.AppleTV.XIB" version="3.0" toolsVersion="9532" systemVersion="14F27" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.AppleTV.XIB" version="3.0" toolsVersion="17701" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="appleTV" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <deployment identifier="tvOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -17,19 +19,28 @@
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="feature-0.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="W8p-4h-Z0y">
                         <rect key="frame" x="0.0" y="0.0" width="640" height="480"/>
                     </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X9V-uj-LMT">
+                        <rect key="frame" x="50" y="432" width="560" height="0.0"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
-                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
                 <constraint firstItem="W8p-4h-Z0y" firstAttribute="top" secondItem="TLi-IO-xtr" secondAttribute="top" id="7Yh-Bq-55g"/>
                 <constraint firstItem="W8p-4h-Z0y" firstAttribute="leading" secondItem="TLi-IO-xtr" secondAttribute="leading" id="IgO-aY-7pz"/>
                 <constraint firstAttribute="trailing" secondItem="W8p-4h-Z0y" secondAttribute="trailing" id="SVu-nd-Qra"/>
-                <constraint firstItem="W8p-4h-Z0y" firstAttribute="leading" secondItem="TLi-IO-xtr" secondAttribute="leadingMargin" constant="-8" id="uKZ-qA-Zwh"/>
+                <constraint firstAttribute="trailing" secondItem="X9V-uj-LMT" secondAttribute="trailing" constant="30" id="dS9-jB-Brb"/>
+                <constraint firstItem="X9V-uj-LMT" firstAttribute="leading" secondItem="W8p-4h-Z0y" secondAttribute="leading" constant="50" id="i5D-uR-yaW"/>
                 <constraint firstAttribute="bottom" secondItem="W8p-4h-Z0y" secondAttribute="bottom" id="w3Q-2L-6aH"/>
+                <constraint firstAttribute="bottom" secondItem="X9V-uj-LMT" secondAttribute="bottom" constant="48" id="xua-1Q-6hF"/>
             </constraints>
             <connections>
                 <outlet property="featuredImage" destination="W8p-4h-Z0y" id="5oq-qz-x0n"/>
+                <outlet property="featuredTitle" destination="X9V-uj-LMT" id="cZr-zP-5oj"/>
             </connections>
+            <point key="canvasLocation" x="170" y="33"/>
         </collectionViewCell>
     </objects>
     <resources>

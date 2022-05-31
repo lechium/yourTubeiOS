@@ -47,8 +47,8 @@
     [self.subscriberLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
     self.authorLabel.textColor = [UIColor whiteColor];
     self.subscriberLabel.textColor = [UIColor whiteColor];
-    //[self.subscriberLabel shadowify];
-    //[self.authorLabel shadowify];
+    [self.subscriberLabel shadowify];
+    [self.authorLabel shadowify];
 }
 
 /*

@@ -11,5 +11,6 @@
 @interface YTTVFeaturedCollectionViewCell : UICollectionViewCell
 
 @property (nonatomic, weak) IBOutlet UIImageView *featuredImage;
+@property (nonatomic, weak) IBOutlet UILabel *featuredTitle;
 
 @end

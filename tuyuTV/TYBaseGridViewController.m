@@ -180,7 +180,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
         [headerView setupView];
-        [self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0];
+        [headerView autoSetDimension:ALDimensionHeight toSize:175];
+        [self.scrollView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:headerView];
+        //[self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0];
     } else {
         
         [self.scrollView autoPinToTopLayoutGuideOfViewController:self withInset:0];
@@ -715,6 +717,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
             UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
             [cell.featuredImage sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+            cell.featuredTitle.text = currentItem.title;
+            [cell.featuredTitle shadowify];
         } else {
             cell.featuredImage.image = [UIImage imageNamed:@"YTPlaceholder"];
         }
