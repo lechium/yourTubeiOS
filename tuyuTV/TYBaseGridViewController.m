@@ -175,7 +175,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     {
         [self.view addSubview:headerView];
         //[headerView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-        [headerView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        [headerView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:40];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
         [headerView setupView];

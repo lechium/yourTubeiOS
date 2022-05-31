@@ -150,53 +150,6 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     } failureBlock:^(NSString *error) {
         
     }];
-    return;
-    //get the user details to populate these views with
-    [[KBYourTube sharedInstance] getOrganizedChannelData:self.channelID completionBlock:^(NSDictionary *searchDetails) {
-        //
-        UIImage *banner = [UIImage imageNamed:@"Banner"];
-        NSURL *imageURL = [NSURL URLWithString:searchDetails[@"banner"]];
-        [self.headerview.bannerImageView sd_setImageWithURL:imageURL placeholderImage:banner options:SDWebImageAllowInvalidSSLCertificates];
-        self.headerview.subscriberLabel.text = searchDetails[@"subscribers"];
-        self.headerview.authorLabel.text = searchDetails[@"name"];
-        self.playlistDictionary = searchDetails;
-        [self.headerview.subscriberLabel shadowify];
-        [self.headerview.authorLabel shadowify];
-        _backingSectionLabels = [NSMutableArray new];
-        [_backingSectionLabels addObjectsFromArray:searchDetails[@"sections"]];
-        
-        DLog(@"bsl: %@", _backingSectionLabels);
-        
-        if (progress == true){
-            [SVProgressHUD dismiss];
-            [self initialSetup];
-        }
-        
-        /*
-         
-         banner = "https://yt3.ggpht.com/xL-ZdgLMLqbeN9G5JW1HVLz7UMlHg_wHxGwZynC8Yh02XeiGbgyImUmqg3F2PvqsHUUUQJ0a=w1060-fcrop64=1,00005a57ffffa5a8-nd-c0xffffffff-rj-k-no";
-         channelID = UC1vTH0ByVIcIOB83FbvHP7Q;
-         description = "Anti-neocons videos basically.";
-         keywords = "Ryan Dawson";
-         name = "Ryan Dawson";
-         sections =     (
-         "What to watch next",
-         "Popular uploads",
-         Uploads,
-         911
-         );
-         subscribers = "28,691 subscribers";
-         thumbnail = "https://yt3.ggpht.com/-d8ZQDAP-yS0/AAAAAAAAAAI/AAAAAAAAAAA/9VvIT5rmU3A/s100-c-k-no-mo-rj-c0xffffff/photo.jpg";
-         
-         
-         */
-        
-        [super reloadCollectionViews];
-        
-        
-    } failureBlock:^(NSString *error) {
-        //
-    }];
 }
 
 - (void)viewDidLayoutSubviews
