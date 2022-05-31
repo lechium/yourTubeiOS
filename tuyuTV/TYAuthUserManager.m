@@ -315,22 +315,65 @@
     }];
 }
 
-- (id)subscribeToChannel:(NSString *)channelId
-{
+/*
+ 
+ curl \
+   'https://youtube.googleapis.com/youtube/v3/subscriptions?part=snippet%2CcontentDetails&mine=true&key=[YOUR_API_KEY]' \
+   --header 'Authorization: Bearer [YOUR_ACCESS_TOKEN]' \
+   --header 'Accept: application/json' \
+   --compressed
+
+
+ */
+
+- (void)getChannelListWithCompletion:(void(^)(NSArray <KBYTChannel *> *channels, NSString *error))completionBlock {
     
-    NSString *channel = [[channelId stringByDeletingLastPathComponent] lastPathComponent];
-    
-    
-    
-    if (channel.length == 0)
-    {
-        channel = channelId;
-    }
-    
-    NSLog(@"[tuyu] subscribe to channel: %@", channel);
     
     //[self refreshAuthToken];
+    NSString *initialString = @"https:/youtube.googleapis.com/youtube/v3/subscriptions?part=snippet%2CcontentDetails&mine=true&key=";
+    NSString *urlString = [NSString stringWithFormat:@"%@%@", initialString, ytClientID];
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
+                                                                cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
     
+    AFOAuthCredential *cred = [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
+    NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
+    [request setValue:authorization forHTTPHeaderField:@"Authorization"];
+
+    [request setHTTPMethod:@"GET"];
+    
+    NSHTTPURLResponse *theResponse = nil;
+    
+    NSError* error = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
+    
+    NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+    NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
+    NSLog(@"[tuyu] status string: %@", returnString);
+    
+    //JSON data
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
+    NSLog(@"[tuyu] jsonDict: %@", jsonDict);
+    if ([jsonDict valueForKey:@"error"] != nil) {
+        if (completionBlock) {
+            completionBlock(nil, datString);
+        }
+        return;
+    }
+    //NSLog(@"jsonDict: %@", jsonDict);
+    [jsonDict writeToFile:@"/var/mobile/Library/Preferences/getChannelListResponse.plist" atomically:TRUE];
+    if (completionBlock){
+        completionBlock(nil, nil);
+    }
+}
+
+- (id)subscribeToChannel:(NSString *)channelId {
+    
+    NSString *channel = [[channelId stringByDeletingLastPathComponent] lastPathComponent];
+    if (channel.length == 0) {
+        channel = channelId;
+    }
+    NSLog(@"[tuyu] subscribe to channel: %@", channel);
+    //[self refreshAuthToken];
     NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
     NSDictionary *resourceId = [NSDictionary dictionaryWithObjectsAndKeys:@"youtube#channel", @"kind", channel, @"channelId", nil];
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:resourceId , @"resourceId", nil];
@@ -338,7 +381,7 @@
     
     NSLog(@"[tuyu] finalDict: %@", finalDict);
     
-    NSError* error;
+    NSError* error = nil;
     
     // Encode post string
     NSData* postData = [NSJSONSerialization dataWithJSONObject:finalDict options:NSJSONWritingPrettyPrinted error:nil];
