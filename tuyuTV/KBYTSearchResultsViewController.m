@@ -17,6 +17,7 @@
 #import "TYTVHistoryManager.h"
 #import "UIView+RecursiveFind.h"
 #import "TYAuthUserManager.h"
+#import "KBYTGridChannelViewController.h"
 
 @interface KBYTSearchResultsViewController ()
 
@@ -655,6 +656,10 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         //[self playFirstStreamForResult:searchResult];
     } else if (searchResult.resultType ==kYTSearchResultTypeChannel)
     {
+        
+        KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
+        [self presentViewController:cv animated:true completion:nil];
+        return;/*
         UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         KBYTChannelViewController *cv = [sb instantiateViewControllerWithIdentifier:@"channelViewController"];
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
@@ -681,6 +686,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         } failureBlock:^(NSString *error) {
             //
         }];
+                */
     } else if (searchResult.resultType ==kYTSearchResultTypePlaylist)
     {
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];

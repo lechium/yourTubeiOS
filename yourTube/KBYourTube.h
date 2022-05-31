@@ -154,6 +154,13 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (NSString *)readableSearchType;
 @end
 
+@interface KBYTSection: NSObject
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *subtitle;
+@property (nonatomic, strong) NSArray <KBYTSearchResult *> *content;
+- (void)addResult:(KBYTSearchResult *)result;
+@end
+
 @interface KBYTChannel: NSObject
 
 @property (nonatomic, strong) NSString *title;
@@ -163,9 +170,12 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *image;
 @property (nonatomic, strong) NSString *channelID;
 @property (nonatomic, strong) NSString *continuationToken;
+@property (nonatomic, strong) NSString *banner;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
-- (NSArray <KBYTSearchResult*> *)allSortedItems;
+@property (nonatomic, strong) NSArray <KBYTSection *> *sections;
+- (NSArray <KBYTSearchResult *>*)allSectionItems;
+- (NSArray <KBYTSearchResult *>*)allSortedItems; //legacy
 - (void)mergeChannelVideos:(KBYTChannel *)channel;
 @end
 

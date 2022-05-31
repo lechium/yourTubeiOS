@@ -123,8 +123,8 @@
         [[KBYourTube sharedInstance] getChannelVideosAlt:result completionBlock:^(KBYTChannel *searchDetails) {
             
             NSString *title = searchDetails.title ? searchDetails.title : self.sectionLabels[currentIndex];
-            NSLog(@"[tuyu] searchDetails title: %@ details:%@", title, searchDetails.continuationToken);
-            if (searchDetails.videos){
+            NSLog(@"[tuyu] searchDetails title: %@ sections:%@", title, searchDetails.sections);
+            if (searchDetails.sections){
                 channels[title] = searchDetails;
             }
             currentIndex++;

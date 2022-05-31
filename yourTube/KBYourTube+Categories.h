@@ -72,6 +72,8 @@
 - (NSArray *)matchesForString:(NSString *)string withRegex:(NSString *)pattern;
 - (NSMutableDictionary *)dictionaryFromString:(NSString *)string withRegex:(NSString *)pattern;
 - (NSString *)stringFromRequest:(NSString *)url;
+#define recursiveObjectsLike(key, object, array) NSMutableArray *array = [NSMutableArray new]; [object recursiveInspectObjectLikeKey:key saving:array]
+#define recursiveObjectsFor(key, object, array) NSMutableArray *array = [NSMutableArray new]; [object recursiveInspectObjectForKey:key saving:array]
 
 @end
 

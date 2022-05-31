@@ -801,7 +801,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView
 {
     KBYTChannel *channel = [self channelForCollectionView:theView];
-    return channel.allSortedItems;
+    return channel.allSectionItems;
 }
 
 - (KBYTChannel *)channelForCollectionView:(UICollectionView *)theView {
