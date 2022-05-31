@@ -40,9 +40,9 @@
     [self addSubview:self.authorLabel];
     [self addSubview:self.subscriberLabel];
     [self.authorLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:99];
-    [self.authorLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:27];
+    [self.authorLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:40];
     [self.subscriberLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.authorLabel withOffset:9];
-    [self.subscriberLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:27];
+    [self.subscriberLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:40];
     [self.authorLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
     [self.subscriberLabel setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
     self.authorLabel.textColor = [UIColor whiteColor];

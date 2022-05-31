@@ -175,7 +175,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     {
         [self.view addSubview:headerView];
         //[headerView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-        [headerView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:40];
+        [headerView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+        //[headerView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:40];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
         [headerView setupView];
@@ -840,6 +841,16 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     if (collectionView == self.featuredVideosCollectionView)
     {
         //KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
+        KBYTSearchResult *selectedItem = [self.featuredVideos objectAtIndex:indexPath.row];
+        //if its a channel then show a channel instead of trying to playback a playlist
+        if (selectedItem.resultType == kYTSearchResultTypeChannel)
+        {
+            [self showChannel:selectedItem];
+            return;
+        } else if (selectedItem.resultType == kYTSearchResultTypePlaylist) {
+            [self showPlaylist:selectedItem.videoId named:selectedItem.title];
+            return;
+        }
         NSArray *subarray = [self.featuredVideos subarrayWithRange:NSMakeRange(indexPath.row, self.featuredVideos.count - indexPath.row)];
         [self playAllSearchResults:subarray];
         //[self playFirstStreamForResult:currentItem];

@@ -43,6 +43,7 @@
 @property (nonatomic, strong) UIView *headerView;
 @property (nonatomic, strong) UICollectionView *featuredVideosCollectionView;
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
+@property (nonatomic, strong) KBYTChannel *featuredChannel;
 @property (nonatomic, strong) NSArray *featuredVideos;
 @property (nonatomic, strong) NSDictionary *playlistDictionary;
 @property (nonatomic, strong) NSArray *sectionLabels;

@@ -94,12 +94,24 @@
 - (void)fetchChannelDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock
 {
     NSMutableDictionary *channels = [NSMutableDictionary new];
+    [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.featuredChannel = channel;
+            self.featuredVideos = channel.allSectionItems;
+            [[self featuredVideosCollectionView] reloadData];
+        });
+    } failureBlock:^(NSString *error) {
+        
+    }];
+    
+    /*
     [[KBYourTube sharedInstance] getChannelVideos:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
         self.featuredVideos = channel.videos;
         [[self featuredVideosCollectionView] reloadData];
     } failureBlock:^(NSString *error) {
         
     }];
+     */
     /*
     [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
         

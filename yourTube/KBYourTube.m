@@ -2281,7 +2281,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     NSDictionary *thumb = thumbnails.lastObject;
     NSString *imagePath = thumb[@"url"];
     NSInteger width = [thumb[@"width"] integerValue];
-    if (width < 100){
+    if (width < 300){
         imagePath = [NSString stringWithFormat:@"https://i.ytimg.com/vi/%@/hqdefault.jpg", vid];
     }
     NSDictionary *longBylineText = [current recursiveObjectForKey:@"longBylineText"];
@@ -2483,13 +2483,20 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                     [stations enumerateObjectsUsingBlock:^(id  _Nonnull channelObj, NSUInteger idx, BOOL * _Nonnull stop) {
                                         NSString *firstKey = [[channelObj allKeys] firstObject];
                                         NSDictionary *channel = channelObj[firstKey];
-                                        NSDictionary *title = channel[@"title"];
+                                        
+                                        NSDictionary *title = channel[@"title"];//[channel recursiveObjectForKey:@"title"];
                                         NSString *cis = channel[@"channelId"];
                                         NSArray *thumbnails = channel[@"thumbnail"][@"thumbnails"];
                                         NSDictionary *longBylineText = channel[@"longBylineText"];
-                                        NSString *thumb = thumbnails.lastObject[@"url"];
-                                        if (![thumb containsString:@"https:"]){
-                                            thumb = [NSString stringWithFormat:@"https:%@", thumb];
+                                        NSDictionary *thumb = thumbnails.lastObject;
+                                        NSString *imagePath = thumb[@"url"];
+                                        NSInteger width = [thumb[@"height"] integerValue];
+                                        if (width < 400){
+                                            NSLog(@"generate thumb manually!");
+                                            imagePath = [self hiRestChannelImageFromDict:thumb];
+                                        }
+                                        if (![imagePath containsString:@"https:"]){
+                                            imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
                                         }
                                         KBYTSearchResult *searchItem = [KBYTSearchResult new];
                                         searchItem.author = [longBylineText recursiveObjectForKey:@"text"];
@@ -2497,9 +2504,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         searchItem.author = title[@"simpleText"];
                                         searchItem.duration = [channel[@"videoCountText"] recursiveObjectForKey:@"text"];
                                         searchItem.videoId = cis;
-                                        searchItem.imagePath = thumb;
+                                        searchItem.imagePath = imagePath;
                                         searchItem.resultType = kYTSearchResultTypeChannel;
                                         searchItem.details = [channel recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
+                                        NSLog(@"channel: %@ keys: %@", searchItem, channel.allKeys);
                                         [content addObject:searchItem];
                                     }];
                                     
@@ -3381,6 +3389,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         }
     });
     
+}
+
+- (NSString *)hiRestChannelImageFromDict:(NSDictionary *)dict {
+    NSInteger height = [dict[@"height"] integerValue];
+    NSString *findString = [NSString stringWithFormat:@"=s%lu", height];
+    NSString *replaceString = @"=s480";
+    NSString *origURL = dict[@"url"];
+    return [origURL stringByReplacingOccurrencesOfString:findString withString:replaceString];
 }
 
 - (NSString *)attemptConvertImagePathToHiRes:(NSString *)imagePath
