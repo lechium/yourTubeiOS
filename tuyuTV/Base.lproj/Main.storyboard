@@ -556,7 +556,9 @@
                                     <outlet property="durationLabel" destination="MW8-tQ-zh0" id="3r6-nk-fCJ"/>
                                     <outlet property="durationTrailingConstraint" destination="ABW-Jk-FbV" id="wDy-bC-Xmu"/>
                                     <outlet property="image" destination="eIf-nL-IxE" id="uF8-jK-BoJ"/>
+                                    <outlet property="overlayHeightConstraint" destination="1U1-tJ-UXb" id="k0x-hx-FBU"/>
                                     <outlet property="overlayInfo" destination="C5j-Yn-spu" id="7AA-Xp-INk"/>
+                                    <outlet property="overlayTrailingConstraint" destination="caR-hM-Zeg" id="yif-Zn-N8I"/>
                                     <outlet property="overlayView" destination="o6d-DX-Qul" id="cJq-M1-cy1"/>
                                     <outlet property="title" destination="w8E-Cj-6tO" id="Foj-Tb-bYM"/>
                                 </connections>

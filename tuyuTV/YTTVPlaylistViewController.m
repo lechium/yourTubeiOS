@@ -74,6 +74,7 @@
 - (void)awakeFromNib {
     // Initialization code
     [super awakeFromNib];
+    //self.marqueeTextLabel.holdScrolling = true;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -438,25 +439,6 @@
         [self.delegate addImageURLs:imageArray];
         [self.tableView reloadData];
     } failureBlock:^(NSString *error) {
-        [self.tableView reloadData];
-    }];
-    return;
-    [[KBYourTube sharedInstance] loadMorePlaylistVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
-        
-        NSArray *results = outputResults[@"results"];
-        [self updateSearchResults:results];
-        NSMutableArray *imageArray = [NSMutableArray new];
-        for (KBYTSearchResult *result in results)
-        {
-            [imageArray addObject:result.imagePath];
-        }
-        [self.delegate addImageURLs:imageArray];
-        self.nextHREF = outputResults[@"loadMoreREF"];
-        [self.tableView reloadData];
-        
-    } failureBlock:^(NSString *error) {
-        
-        self.nextHREF = nil;
         [self.tableView reloadData];
     }];
 }

@@ -35,22 +35,16 @@
     if ([self isFocused]) {
         
         self.image.adjustsImageWhenAncestorFocused = true;
-        CGRect frame = self.overlayView.frame;
-        frame.size.height = 300;
-        frame.origin.y = 0;
-        frame.size.width = 250;
-        self.overlayView.frame = frame;
+        self.overlayHeightConstraint.constant = 100;
+        self.overlayTrailingConstraint.constant = -40;
         self.title.alpha = 1;
         self.title.holdScrolling = false;
         [self.title restartLabel];
         self.durationTrailingConstraint.constant = 0;
         self.durationBottomConstraint.constant = -10;
     } else {
-        CGRect frame = self.overlayView.frame;
-        frame.size.height = 240;
-        frame.origin.y = 30;
-        frame.size.width = 160;
-        self.overlayView.frame = frame;
+        self.overlayHeightConstraint.constant = 0;
+        self.overlayTrailingConstraint.constant = 0;
         self.image.adjustsImageWhenAncestorFocused = false;
         self.title.alpha = 1;
         self.title.holdScrolling = true;

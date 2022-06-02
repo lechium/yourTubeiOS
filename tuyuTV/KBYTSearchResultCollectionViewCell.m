@@ -11,8 +11,8 @@
 @implementation KBYTSearchResultCollectionViewCell
 @synthesize title, image;
 
-- (void)awakeFromNib
-{
+- (void)awakeFromNib {
+    [super awakeFromNib];
     self.image.adjustsImageWhenAncestorFocused = true;
     self.image.clipsToBounds = false;
 }

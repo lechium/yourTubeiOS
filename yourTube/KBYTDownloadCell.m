@@ -72,6 +72,7 @@
         self.marqueeTextLabel.font = self.textLabel.font;
         self.marqueeTextLabel.textColor = self.textLabel.textColor;
         self.marqueeTextLabel.text = self.textLabel.text;
+        self.marqueeTextLabel.holdScrolling = true;
         self.textLabel.hidden = true;
       
         UIFont *theFont = [UIFont systemFontOfSize:14];
@@ -106,6 +107,13 @@
         self.marqueeDetailTextLabel.text = self.detailTextLabel.text;
         [[self contentView] addSubview:self.marqueeDetailTextLabel];
         [[self contentView] addSubview:self.marqueeTextLabel];
+        if ([self isFocused]){
+            self.marqueeTextLabel.holdScrolling = false;
+            [self.marqueeTextLabel restartLabel];
+        } else {
+            self.marqueeTextLabel.holdScrolling = true;
+            [self.marqueeTextLabel shutdownLabel];
+        }
         self.marqueeDetailTextLabel.frame =  self.detailTextLabel.frame;
         self.detailTextLabel.hidden = true;
         

@@ -110,8 +110,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         KBYTSearchResult *searchItem = [[KBYourTube sharedInstance] searchResultFromVideoRenderer:obj];
         [searchResults addObject:searchItem];
     }];
-    NSArray *playlists = [jsonDict recursiveObjectsForKey:@"playlistRenderer"];
-    NSArray *channels = [jsonDict recursiveObjectsForKey:@"channelRenderer"];
+    //NSArray *playlists = [jsonDict recursiveObjectsForKey:@"playlistRenderer"];
+    recursiveObjectsFor(@"playlistRenderer", jsonDict, playlists);
+    recursiveObjectsFor(@"channelRenderer", jsonDict, channels);
+    //NSArray *channels = [jsonDict recursiveObjectsForKey:@"channelRenderer"];
     NSInteger estimatedResults = [[jsonDict recursiveObjectForKey:@"estimatedResults"] integerValue];
     //NSLog(@"playlists: %@", playlists);
     //NSLog(@"channels: %@", channels);
@@ -121,38 +123,58 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     //NSLog(@"cc: %@", cc);
     
     self.videos = searchResults;
-    [playlists enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSDictionary *current = obj[@"playlistRenderer"];
+    //NSLog(@"[tuyu] playlist count: %lu", playlists.count);
+    [playlists enumerateObjectsUsingBlock:^(id  _Nonnull current, NSUInteger idx, BOOL * _Nonnull stop) {
+        //NSDictionary *current = obj[@"playlistRenderer"];
         NSDictionary *title = [current recursiveObjectForKey:@"title"];
         NSString *pis = current[@"playlistId"];
-        NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"];
+        NSArray *thumbnails = [current recursiveObjectForKey:@"thumbnail"][@"thumbnails"];
+        NSString *imagePath = thumbnails.lastObject[@"url"];
+        if (![imagePath containsString:@"https:"]){
+            imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
+        }
         NSDictionary *longBylineText = current[@"longBylineText"];
         KBYTSearchResult *searchItem = [KBYTSearchResult new];
         searchItem.author = [longBylineText recursiveObjectForKey:@"text"];
         searchItem.title = title[@"simpleText"];
         searchItem.videoId = pis;
-        searchItem.imagePath = thumbnails.lastObject[@"url"];
+        searchItem.imagePath = imagePath;
         searchItem.resultType = kYTSearchResultTypePlaylist;
         searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"browseId"];
+        if (!title){
+            NSLog(@"[tuyu] weird pl item: %@", current);
+            NSLog(@"[tuyu] pl item: %@", searchItem);
+        }
+        NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
+        [current writeToFile:outputFile atomically:true];
+        NSLog(@"[tuyu] writing playlist: %@", outputFile);
+        [channelResults addObject:searchItem];
         [playlistResults addObject:searchItem];
     }];
     self.playlists = playlistResults;
-    [channels enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSDictionary *current = obj[@"channelRenderer"];
-        if (current) {
+    [channels enumerateObjectsUsingBlock:^(id  _Nonnull current, NSUInteger idx, BOOL * _Nonnull stop) {
             NSDictionary *title = [current recursiveObjectForKey:@"title"];
             NSString *cis = current[@"channelId"];
-            NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"];
+            NSArray *thumbnails = [current recursiveObjectForKey:@"thumbnail"][@"thumbnails"];//current[@"thumbnail"][@"thumbnails"];
+            NSString *imagePath = thumbnails.lastObject[@"url"];
+            if (![imagePath containsString:@"https:"]){
+                imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
+            }
             NSDictionary *longBylineText = current[@"longBylineText"];
             KBYTSearchResult *searchItem = [KBYTSearchResult new];
             searchItem.author = [longBylineText recursiveObjectForKey:@"text"];
             searchItem.title = title[@"simpleText"];
             searchItem.videoId = cis;
-            searchItem.imagePath = thumbnails.lastObject[@"url"];
+            searchItem.imagePath = imagePath;
             searchItem.resultType = kYTSearchResultTypeChannel;
             searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
+            if (!title){
+                NSLog(@"[tuyu] weird channel item: %@", current);
+            }
+            NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
+            [current writeToFile:outputFile atomically:true];
+            NSLog(@"[tuyu] writing channel: %@", outputFile);
             [channelResults addObject:searchItem];
-        }
     }];
     self.channels = channelResults;
     self.estimatedResults = estimatedResults;
