@@ -29,20 +29,28 @@
     svc.view.backgroundColor = [UIColor blackColor];
     
     
-    if ([svc signedIn] == true)
-    {
-        
+    if ([svc signedIn] == true) {
         mainMenuItem = @{@"name": @"Sign Out", @"imagePath": @"YTPlaceholder.png", @"detail": @"", @"detailOptions": @[],  @"description": @"Sign out of your YouTube account."};
     } else {
         mainMenuItem = @{@"name": @"Sign In", @"imagePath": @"YTPlaceholder.png", @"detail": @"", @"detailOptions": @[], @"description": @"Sign in to your YouTube account."};
     }
     
+    NSString *filterType = [UD valueForKey:@"filterType"];
+    if (!filterType){
+        filterType = @"All";
+    }
+    
+    NSDictionary *searchSettings = @{@"name": @"Search Filter", @"imagePath": @"YTPlaceholder.png", @"detail": filterType, @"detailOptions": @[@"All", @"Playlists", @"Channels"],  @"description": @"Filter what results come back from searches."};
+    
     MetaDataAsset *asset = [[MetaDataAsset alloc] initWithDictionary:mainMenuItem];
+    MetaDataAsset *search = [[MetaDataAsset alloc] initWithDictionary:searchSettings];
+    /*
     MetaDataAsset *updatePermissions = [MetaDataAsset new];
     updatePermissions.name = @"Update permissions";
     updatePermissions.imagePath = @"YTPlaceholder.png";
     updatePermissions.assetDescription = @"Update authentication permissions so it's possible to add videos to playlists and subscribe to channels";
-    svc.items = @[asset, updatePermissions];
+     */
+    svc.items = @[asset, search];
     svc.title = @"settings";
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:svc];
     return navController;
@@ -158,12 +166,20 @@
             
         case 1:
             
-            [self updatePermissions];
-            
+            //[self updatePermissions];
+            [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+            [self handleToggle];
             break;
         default:
             break;
     }
+}
+
+- (void)handleToggle {
+    MetaDataAsset *asset = [self.items lastObject];
+    NSString *detail = [asset detail];
+    NSLog(@"[tuyu] asset detail: %@", detail);
+    [UD setValue:detail forKey:@"filterType"];
 }
 
 - (void)updatePermissions

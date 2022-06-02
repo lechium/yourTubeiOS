@@ -508,10 +508,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
                                           preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
-        [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+        });
         
     }];
-    [alertController addAction:yesAction];
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel

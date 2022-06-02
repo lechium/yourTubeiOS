@@ -235,6 +235,32 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 @synthesize title, author, details, imagePath, videoId, duration, age, views, resultType;
 
+- (id)initWithYTChannelDictionary:(NSDictionary *)channelDict {
+    KBYTSearchResult *channel = [KBYTSearchResult new];
+    channel.videoId = [channelDict recursiveObjectForKey:@"resourceId"][@"channelId"];
+    channel.channelId = channelDict[@"snippet"][@"channelId"];
+    channel.title = [channelDict recursiveObjectForKey:@"title"];
+    channel.details = [channelDict recursiveObjectForKey:@"description"];
+    channel.imagePath = [channelDict recursiveObjectForKey:@"thumbnails"][@"high"][@"url"];
+    channel.resultType = kYTSearchResultTypeChannel;
+    channel.continuationToken = channelDict[@"nextPageToken"];
+    return channel;
+}
+
+- (id)initWithYTPlaylistDictionary:(NSDictionary *)playlistDict {
+    KBYTSearchResult *playlist = [KBYTSearchResult new];
+    playlist.videoId = playlistDict[@"id"];
+    playlist.author = playlistDict[@"snippet"][@"channelTitle"];
+    playlist.channelId = playlistDict[@"snippet"][@"channelId"];
+    playlist.duration = [NSString stringWithFormat:@"%@ tracks", playlistDict[@"contentDetails"][@"itemCount"]];
+    playlist.title = [playlistDict recursiveObjectForKey:@"title"];
+    playlist.details = [playlistDict recursiveObjectForKey:@"description"];
+    playlist.imagePath = [playlistDict recursiveObjectForKey:@"thumbnails"][@"high"][@"url"];
+    playlist.resultType = kYTSearchResultTypePlaylist;
+    playlist.continuationToken = playlistDict[@"nextPageToken"];
+    return playlist;
+}
+
 - (id)initWithDictionary:(NSDictionary *)resultDict
 {
     self = [super init];
@@ -762,6 +788,16 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 @synthesize ytkey, yttimestamp, deviceController, airplayIP, lastSearch, userDetails;
 
 #pragma mark convenience methods
+
+- (void)addChannelToUserDetails:(KBYTSearchResult *)channel {
+    NSMutableArray *channels = [self.userDetails[@"channels"] mutableCopy];
+    if (!channels){
+        channels = [NSMutableArray new];
+    }
+    [channels insertObject:channel atIndex:0];//add it to the front/top.
+    [(NSMutableDictionary*)self.userDetails setObject:channels forKey:@"channels"];
+    
+}
 
 - (NSString *)nextURL {
     return @"https://www.youtube.com/youtubei/v1/next?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";

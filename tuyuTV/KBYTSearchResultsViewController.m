@@ -46,9 +46,15 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
        initWithTarget:self action:@selector(handleLongpressMethod:)];
     longpress.minimumPressDuration = .5; //seconds
     longpress.delegate = self;
-    longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
+    longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect], [NSNumber numberWithInteger:UIPressTypePlayPause]];
+    
     [self.collectionView addGestureRecognizer:longpress];
     // Do any additional setup after loading the view.
+}
+
+- (UIView *)focusedView {
+    UIFocusSystem *sys = [UIFocusSystem focusSystemForEnvironment: self];
+    return [sys focusedItem];
 }
 
 -(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -66,7 +72,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
     KBYTSearchResult *searchResult = [self searchResultFromFocusedCell];
     
-    NSLog(@"searchResult: %@", searchResult);
+    NSLog(@"[tuyu] searchResult: %@", searchResult);
     
     switch (searchResult.resultType)
     {
@@ -257,10 +263,11 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
                                           preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
-        [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+        });
         
     }];
-    [alertController addAction:yesAction];
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel
@@ -478,6 +485,18 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
 }
 
+- (KBYTSearchType)searchTypeForSettings {
+    NSString *filterType = [UD valueForKey:@"filterType"];
+    if (!filterType){
+        return KBYTSearchTypeAll;
+    }
+    if ([filterType isEqualToString:@"All"]) return KBYTSearchTypeAll;
+    else if ([filterType isEqualToString:@"Playlists"]) return KBYTSearchTypePlaylists;
+    else if ([filterType isEqualToString:@"Channels"]) return KBYTSearchTypeChannels;
+    
+    return KBYTSearchTypeAll;
+}
+
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     LOG_SELF;
     self.currentPage = 1; //reset for new search
@@ -491,7 +510,10 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     self.filterString = searchController.searchBar.text;
     _lastSearchResult = self.filterString;
     
-    [[KBYourTube sharedInstance] apiSearch:self.filterString type:KBYTSearchTypeAll continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
+    KBYTSearchType type = [self searchTypeForSettings];
+    NSLog(@"[tuyu] search type: %lu", type);
+    
+    [[KBYourTube sharedInstance] apiSearch:self.filterString type:type continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
         NSLog(@"[yourTubeiOS] search results: %@", result.videos);
         self.continuationToken = result.continuationToken;
         self.pageCount = 20; //just choosing an arbitrary number

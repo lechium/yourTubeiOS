@@ -32,13 +32,18 @@
 }
 
 
+-(BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
+    BOOL result = [super shouldUpdateFocusInContext:context];
+    if (context.focusHeading == UIFocusHeadingUp && self.textView.contentOffset.y > 0) {
+        return NO;
+    }
+    return result;
+}
 
-- (void)viewWillAppear:(BOOL)animated
-{
+
+
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:true];
-    
-    
-    
 }
 
 

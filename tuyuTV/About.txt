@@ -1,4 +1,4 @@
-tuyu 0.4.1 for AppleTV 4
+tuyu 0.5 for AppleTV 4
 
 By: Kevin Bradley
 

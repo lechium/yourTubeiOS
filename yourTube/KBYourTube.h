@@ -151,6 +151,8 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSArray *items; //only relevant for channel list
 
 - (id)initWithDictionary:(NSDictionary *)resultDict;
+- (id)initWithYTChannelDictionary:(NSDictionary *)channelDict;
+- (id)initWithYTPlaylistDictionary:(NSDictionary *)playlistDict;
 - (NSString *)readableSearchType;
 @end
 
@@ -334,4 +336,5 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP;
 - (void)pauseAirplay;
 - (NSInteger)airplayStatus;
+- (void)addChannelToUserDetails:(KBYTSearchResult *)channel;
 @end

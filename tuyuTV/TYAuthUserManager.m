@@ -342,6 +342,7 @@
     [self genericGetCommand:initialString completion:^(NSDictionary *jsonResponse, NSString *error) {
         NSArray *items = jsonResponse[@"items"];
         [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+           /*
             KBYTSearchResult *playlist = [KBYTSearchResult new];
             playlist.videoId = obj[@"id"];
             playlist.author = obj[@"snippet"][@"channelTitle"];
@@ -351,7 +352,8 @@
             playlist.details = [obj recursiveObjectForKey:@"description"];
             playlist.imagePath = [obj recursiveObjectForKey:@"thumbnails"][@"high"][@"url"];
             playlist.resultType = kYTSearchResultTypePlaylist;
-            playlist.continuationToken = obj[@"nextPageToken"];
+            playlist.continuationToken = obj[@"nextPageToken"]; */
+            KBYTSearchResult *playlist = [[KBYTSearchResult alloc] initWithYTPlaylistDictionary:obj];
             //NSLog(@"[tuyu] playlist: %@", playlist);
             [playlists addObject:playlist];
         }];
@@ -414,7 +416,7 @@
     [self genericGetCommand:initialString completion:^(NSDictionary *jsonResponse, NSString *error) {
         NSArray *items = jsonResponse[@"items"];
         [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            KBYTSearchResult *channel = [KBYTSearchResult new];
+            /*KBYTSearchResult *channel = [KBYTSearchResult new];
             channel.videoId = [obj recursiveObjectForKey:@"resourceId"][@"channelId"];
             channel.channelId = obj[@"snippet"][@"channelId"];
             channel.title = [obj recursiveObjectForKey:@"title"];
@@ -423,6 +425,8 @@
             channel.resultType = kYTSearchResultTypeChannel;
             channel.continuationToken = obj[@"nextPageToken"];
             //NSLog(@"[tuyu] channel: %@", channel);
+             */
+            KBYTSearchResult *channel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:obj];
             [channels addObject:channel];
         }];
         //NSLog(@"[tuyu] count: %lu %@", channels.count, channels);
@@ -498,7 +502,9 @@
     }
     //NSLog(@"jsonDict: %@", jsonDict);
     //[jsonDict writeToFile:@"/var/mobile/Library/Preferences/channelSubscribeResponse.plist" atomically:TRUE];
-    
+    KBYTSearchResult *newChannel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:jsonDict];
+    NSLog(@"[tuyu] new channel: %@", newChannel);
+    [[KBYourTube sharedInstance] addChannelToUserDetails:newChannel];
     return jsonDict;
     
 }
