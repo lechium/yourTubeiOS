@@ -48,8 +48,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.currentPage = 1;
     UIImage *banner = [UIImage imageNamed:@"Banner"];
@@ -65,27 +64,22 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
-{
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return 50;
 }
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-{
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     return 50;
 }
 
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
     return UIEdgeInsetsMake(0.0, 50.0, 0.0, 50.0);
 }
 
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
-{
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
 }
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.searchResults.count;
 }
 
@@ -104,15 +98,13 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     return cell;
 }
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     
     self.focusedCollectionCell = (UICollectionViewCell *)context.nextFocusedView;
 
 }
 
-- (KBYTSearchResult *)searchResultFromFocusedCell
-{
+- (KBYTSearchResult *)searchResultFromFocusedCell {
     if (self.focusedCollectionCell != nil)
     {
         UICollectionView *cv = self.channelCollectionView;
@@ -123,8 +115,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     return nil;
 }
 
-- (void)promptForNewPlaylistForVideo:(KBYTSearchResult *)searchResult
-{
+- (void)promptForNewPlaylistForVideo:(KBYTSearchResult *)searchResult {
     
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"New Playlist"
@@ -222,14 +213,12 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
 }
 
-- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
-{
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist {
     DLog(@"add video: %@ to playlistID: %@", video, playlist);
     [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
 }
 
-- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Video Options"
@@ -284,8 +273,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
 }
 
-- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
@@ -311,13 +299,12 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 
 
--(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
-{
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
     LOG_SELF;
     if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
         return;
     }
-    if ([UD valueForKey:@"access_token"] == nil)
+    if (![[KBYourTube sharedInstance] isSignedIn])
     {
         return;
     }
@@ -328,17 +315,17 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
     switch (searchResult.resultType)
     {
-        casekYTSearchResultTypeVideo:
+        case kYTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:searchResult];
             break;
             
-        casekYTSearchResultTypeChannel:
+        case kYTSearchResultTypeChannel:
             
             [self showChannelAlertForSearchResult:searchResult];
             break;
             
-        casekYTSearchResultTypePlaylist:
+        case kYTSearchResultTypePlaylist:
             
             break;
             
@@ -350,8 +337,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 
-- (void)updateSearchResults:(NSArray *)newResults
-{
+- (void)updateSearchResults:(NSArray *)newResults {
     if (self.currentPage > 1)
     {
         // [[self.collectionView]
@@ -381,8 +367,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }
 }
 
-- (void)oldUpdateSearchResults:(NSArray *)newResults
-{
+- (void)oldUpdateSearchResults:(NSArray *)newResults {
     if (self.currentPage > 1)
     {
         [[self searchResults] addObjectsFromArray:newResults];
@@ -391,8 +376,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }
 }
 
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
     
     //check to see if we are on the last row
     NSInteger rowCount = self.searchResults.count / 5;
@@ -452,23 +436,20 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
 }
 
-- (void)itemDidFinishPlaying:(NSNotification *)n
-{
+- (void)itemDidFinishPlaying:(NSNotification *)n {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     //[[self.presentingViewController navigationController] popViewControllerAnimated:true];
     [self dismissViewControllerAnimated:true completion:nil];
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     //KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
     //[self playFirstStreamForResult:searchResult];
     NSArray *subarray = [[self searchResults] subarrayWithRange:NSMakeRange(indexPath.row, [[self searchResults] count] - indexPath.row)];
     [self playAllSearchResults:subarray];
 }
 
-- (void)playAllSearchResults:(NSArray *)searchResults
-{
+- (void)playAllSearchResults:(NSArray *)searchResults {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
@@ -496,8 +477,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }];
 }
 
-- (void)playFirstStreamForResult:(KBYTSearchResult *)searchResult
-{
+- (void)playFirstStreamForResult:(KBYTSearchResult *)searchResult {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForID:searchResult.videoId completionBlock:^(KBYTMedia *videoDetails) {

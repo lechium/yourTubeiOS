@@ -231,10 +231,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 {
     switch (self.resultType) {
         case kYTSearchResultTypeUnknown: return @"Unknown";
-        casekYTSearchResultTypeVideo: return @"Video";
-        casekYTSearchResultTypePlaylist: return @"Playlist";
-        casekYTSearchResultTypeChannel: return @"Channel";
-        casekYTSearchResultTypeChannelList: return @"Channel List";
+        case kYTSearchResultTypeVideo: return @"Video";
+        case kYTSearchResultTypePlaylist: return @"Playlist";
+        case kYTSearchResultTypeChannel: return @"Channel";
+        case kYTSearchResultTypeChannelList: return @"Channel List";
         default:
             return @"Unknown";
     }
@@ -937,6 +937,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 - (BOOL)isSignedIn
 {
+#ifndef SHELF_EXT
+    return [[TYAuthUserManager sharedInstance] authorized];
+#endif
     ONOXMLDocument *xmlDoc = [self documentFromURL:@"https://www.youtube.com/feed/history"];
     ONOXMLElement *root = [xmlDoc rootElement];
     ONOXMLElement * displayMessage = [root firstChildWithXPath:@"//div[contains(@class, 'display-message')]"];
@@ -985,8 +988,57 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             
             BOOL signedIn = [self isSignedIn];
             NSString *errorString = @"Unknown error occurred";
-            NSMutableDictionary *returnDict = [NSMutableDictionary new];
+            __block NSMutableDictionary *returnDict = [NSMutableDictionary new];
+            __block NSMutableArray *itemArray = [NSMutableArray new];
             if (signedIn == true) {
+                
+#ifndef SHELF_EXT
+                TYAuthUserManager *authManager = [TYAuthUserManager sharedInstance];
+                [authManager getPlaylistsWithCompletion:^(NSArray<KBYTSearchResult *> *playlists, NSString *error) {
+                    if (playlists.count > 0) {
+                        [itemArray addObjectsFromArray:playlists];
+                        if (![[returnDict allKeys] containsObject:@"channelID"]){
+                            returnDict[@"channelID"] = [playlists firstObject].channelId;
+                        }
+                        returnDict[@"userName"] = [playlists firstObject].author;
+                        
+                    }
+                    [authManager getChannelListWithCompletion:^(NSArray<KBYTSearchResult *> *channels, NSString *error) {
+                        if (channels.count > 0) {
+                            returnDict[@"channels"] = channels;
+                            if (![[returnDict allKeys] containsObject:@"channelID"]){
+                                returnDict[@"channelID"] = [channels firstObject].channelId;
+                            }
+                        }
+                        NSString *userName = returnDict[@"userName"];
+                        NSString *channelID = returnDict[@"channelID"];
+                        //NSLog(@"[tuyu] rd: %@", returnDict);
+                        KBYTSearchResult *userChannel = [KBYTSearchResult new];
+                        userChannel.title = @"Your channel";
+                        userChannel.author = userName;
+                        userChannel.videoId = channelID;
+                        //userChannel.details = [NSString stringWithFormat:@"%lu videos", channelVideoCount];
+                        //userChannel.imagePath = ourUserDetails[@"profileImage"];
+                        userChannel.resultType =kYTSearchResultTypeChannel;
+                        [itemArray addObject:userChannel];
+                        returnDict[@"results"] = itemArray;
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            if (returnDict != nil)
+                            {
+                                completionBlock(returnDict);
+                            } else {
+                                failureBlock(errorString);
+                            }
+                            
+                            
+                        });
+                    }];
+                }];
+                
+                return;
+                
+#else
                 
                 NSDictionary *channelDict = [self channelIDAndWatchLaterCount];
                 NSLog(@"[yourTubeiOS] channelDict: %@", channelDict);
@@ -994,7 +1046,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 NSDictionary *ourUserDetails = [self userDetailsFromChannelURL:channelID];
                 if (ourUserDetails == nil)
                 {
-                    NSLog(@"false positive on signed in, bail");
+                    NSLog(@"[yourTubeiOS] false positive on signed in, bail");
                     failureBlock(@"false positive on signed in");
                     return;
                 }
@@ -1049,6 +1101,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     
                 }
                 
+#endif
                 
             } else {
                 errorString = @"Not signed in";
@@ -1681,7 +1734,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             } else {
                 NSArray *continuationItems = [jsonDict recursiveObjectForKey:@"continuationItems"];
                 if (continuationItems) {
-                    NSLog(@"[tuyu] we found continuation items: %lu", continuationItems.count);
+                    //NSLog(@"[tuyu] we found continuation items: %lu", continuationItems.count);
                     [continuationItems enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                         //NSLog(@"%@", obj[@"playlistPanelVideoRenderer"]);
                         NSDictionary *current = [obj recursiveObjectLikeKey:@"videoRenderer"];

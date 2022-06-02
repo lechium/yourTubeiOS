@@ -47,22 +47,17 @@ static int headerTagOffset = 70;
 
 @end
 
-
-
-
 @implementation TYBaseGridCollectionHeaderView
 
 //yeh KVO or even custom getters/setters could work, but so does this ;-P
 
-- (void)updateTopOffset:(CGFloat)offset
-{
+- (void)updateTopOffset:(CGFloat)offset {
     self.topOffset = offset;
     [self.topConstraint setConstant:-offset];
     [self layoutIfNeeded];
 }
 
-- (id)initWithFrame:(CGRect)frame
-{
+- (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
@@ -86,8 +81,7 @@ static int headerTagOffset = 70;
 @end
 
 
-@interface TYBaseGridViewController ()
-{
+@interface TYBaseGridViewController () {
     //CGFloat _totalHeight; //keep track of the total height of the scrollViews content view based on collection views
     NSInteger _focusedCollectionView;
 }
@@ -103,8 +97,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 @implementation TYBaseGridViewController
 
-- (id)initWithSections:(NSArray *)sections
-{
+- (id)initWithSections:(NSArray *)sections {
     self = [super init];
     self.sectionLabels = sections;
     _backingSectionLabels = [sections mutableCopy];
@@ -132,11 +125,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 //use the tag offset for collectionViews to cycle through and reload them based on section count
 
-- (void)reloadCollectionViews
-{
+- (void)reloadCollectionViews {
     NSInteger i = 0;
-    for (i = 0; i < [_backingSectionLabels count]; i++)
-    {
+    for (i = 0; i < [_backingSectionLabels count]; i++) {
         UICollectionView *collectionView = (UICollectionView*)[self.view viewWithTag:tagOffset+i];
         // NSLog(@"collectionView: %@", collectionView);
         if ([collectionView isKindOfClass:[UICollectionView class]])
@@ -146,33 +137,28 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     }
 }
 
-- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
-{
+- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
     
     
 }
 
-- (void)swipeMethod:(UISwipeGestureRecognizer *)gestureRecognizer
-{
+- (void)swipeMethod:(UISwipeGestureRecognizer *)gestureRecognizer {
     
     NSLog(@"direction: %lu", (unsigned long)gestureRecognizer.direction);
     CGPoint location = [gestureRecognizer locationInView:gestureRecognizer.view];
     NSLog(@"location: %@", NSStringFromCGPoint(location));
 }
 
-- (KBYTChannelHeaderView *)headerview
-{
+- (KBYTChannelHeaderView *)headerview {
     return nil;
 }
 
-- (void)setupViews
-{
+- (void)setupViews {
     self.scrollView = [[UIScrollView alloc] initForAutoLayout];
     self.scrollView.translatesAutoresizingMaskIntoConstraints = false;
     [self.view addSubview:self.scrollView];
     KBYTChannelHeaderView *headerView = [self headerview];
-    if (headerView != nil)
-    {
+    if (headerView != nil) {
         [self.view addSubview:headerView];
         //[headerView autoPinToTopLayoutGuideOfViewController:self withInset:0];
         [headerView autoPinEdgeToSuperviewMargin:ALEdgeTop];
@@ -246,8 +232,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     NSInteger i = 0;
     _totalHeight = 0;
-    for (i = 0; i < [_backingSectionLabels count]; i++)
-    {
+    for (i = 0; i < [_backingSectionLabels count]; i++) {
         UILongPressGestureRecognizer *longpress
         = [[UILongPressGestureRecognizer alloc]
            initWithTarget:self action:@selector(handleLongpressMethod:)];
@@ -319,20 +304,17 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     LOG_SELF;
     return true;
 }
 
--(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
-{
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
     LOG_SELF;
     if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
         return;
     }
-    if ([UD valueForKey:@"access_token"] == nil)
-    {
+    if (![[KBYourTube sharedInstance] isSignedIn]) {
         return;
     }
 
@@ -340,19 +322,18 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     NSLog(@"searchResult: %@", searchResult);
     
-    switch (searchResult.resultType)
-    {
-        casekYTSearchResultTypeVideo:
+    switch (searchResult.resultType) {
+        case kYTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:searchResult];
             break;
             
-        casekYTSearchResultTypeChannel:
+        case kYTSearchResultTypeChannel:
             
             [self showChannelAlertForSearchResult:searchResult];
             break;
             
-        casekYTSearchResultTypePlaylist:
+        case kYTSearchResultTypePlaylist:
             
             break;
             
@@ -363,8 +344,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 }
 
-- (void)promptForNewPlaylistForVideo:(KBYTSearchResult *)searchResult
-{
+- (void)promptForNewPlaylistForVideo:(KBYTSearchResult *)searchResult {
     
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"New Playlist"
@@ -462,14 +442,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
 }
 
-- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
-{
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist {
     DLog(@"add video: %@ to playlistID: %@", video, playlist);
     [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
 }
 
-- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Video Options"
@@ -480,8 +458,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     
     __weak typeof(self) weakSelf = self;
-    self.alertHandler = ^(UIAlertAction *action)
-    {
+    self.alertHandler = ^(UIAlertAction *action) {
         NSString *playlistID = nil;
         
         for (KBYTSearchResult *result in playlistArray)
@@ -495,8 +472,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [weakSelf addVideo:result toPlaylist:playlistID];
     };
     
-    for (KBYTSearchResult *result in playlistArray)
-    {
+    for (KBYTSearchResult *result in playlistArray) {
         UIAlertAction *plAction = [UIAlertAction actionWithTitle:result.title style:UIAlertActionStyleDefault handler:self.alertHandler];
         [alertController addAction:plAction];
     }
@@ -524,8 +500,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
 }
 
-- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
@@ -548,12 +523,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     UICollectionReusableView *reusableview = nil;
     NSString *theTitle = nil;
-    if (collectionView == self.featuredVideosCollectionView)
-    {
+    if (collectionView == self.featuredVideosCollectionView) {
         theTitle = @"Your Videos"; //was trying to set top header, doesnt actually work.
     } else {
         
@@ -579,8 +552,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 //use that _totalHeight value to let the scrollView know its content size
 
-- (void)viewDidLayoutSubviews
-{
+- (void)viewDidLayoutSubviews {
     [[self scrollView] setContentSize:CGSizeMake(1920, _totalHeight)];
     
     // [self.view printRecursiveDescription];
@@ -589,8 +561,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 //this is where the header offset magic happens
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     //we always shift the previous views header back down just in case, if needed it will
     //be shifted back up in the focusedCell call below.
     [self previouslyFocusedCell:(YTTVStandardCollectionViewCell*)context.previouslyFocusedView];
@@ -598,12 +569,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     self.focusedCollectionCell = (UICollectionViewCell *)context.nextFocusedView;
 }
 
-- (void)previouslyFocusedCell:(YTTVStandardCollectionViewCell *)focusedCell
-{
+- (void)previouslyFocusedCell:(YTTVStandardCollectionViewCell *)focusedCell {
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
     //if it isnt a collectionView or it IS the top collection view we dont do any adjustments
-    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView )
-    {
+    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView ) {
         return;
     }
     NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
@@ -612,13 +581,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
      [header.title setTextColor:[UIColor lightTextColor]];
 }
 
-- (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell
-{
+- (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell {
     //the superview of a CollectionViewCell is its respective collectionView
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
     //if it isnt a collectionView or it IS the top collection view we dont do any adjustments
-    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView )
-    {
+    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView ) {
         return;
     }
     
@@ -632,8 +599,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     //always changed the focused headers text color to white
     [header.title setTextColor:[UIColor whiteColor]];
     //if we are the first object we want to shift the header up to prevent overlapping
-    if (indexPath.row == 0)
-    {
+    if (indexPath.row == 0) {
         [header updateTopOffset:-20];
         
     } else {
@@ -650,20 +616,16 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 }
 
 
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
-{
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
 }
 
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     NSInteger count = 0;
-    if (collectionView == self.featuredVideosCollectionView)
-    {
+    if (collectionView == self.featuredVideosCollectionView) {
         count = self.featuredVideos.count;
         
-    } else
-    {
+    } else {
         return [[self arrayForCollectionView:collectionView] count];
     }
     
@@ -680,10 +642,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
  
  */
 
-- (void)collectionView:(UICollectionView *)collectionView willDisplaySupplementaryView:(UICollectionReusableView *)view forElementKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath NS_AVAILABLE_IOS(8_0);
-{
-    if ([self arrayForCollectionView:collectionView] == 0)
-    {
+- (void)collectionView:(UICollectionView *)collectionView willDisplaySupplementaryView:(UICollectionReusableView *)view forElementKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath NS_AVAILABLE_IOS(8_0); {
+    if ([self arrayForCollectionView:collectionView] == 0) {
         [[(TYBaseGridCollectionHeaderView *)view title] setTextColor:self.view.backgroundColor];
     } else {
         if (_focusedCollectionView == collectionView.tag)
@@ -696,13 +656,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     }
 }
 
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
     
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -724,8 +682,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         }
         
         return cell;
-    } else //cell for any of the collection views below the top one.
-    {
+    } else { //cell for any of the collection views below the top one.
         YTTVStandardCollectionViewCell  *cell = [collectionView dequeueReusableCellWithReuseIdentifier:standardReuseIdentifier forIndexPath:indexPath];
         
         NSArray *detailsArray = [self arrayForCollectionView:collectionView];
@@ -741,8 +698,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
 }
 
-- (void)showPlaylist:(NSString *)videoID named:(NSString *)name
-{
+- (void)showPlaylist:(NSString *)videoID named:(NSString *)name {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getPlaylistVideos:videoID completionBlock:^(KBYTPlaylist *playlist) {
@@ -763,8 +719,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 //used to show a channel instead if a channel was selected
 
-- (void)showChannel:(KBYTSearchResult *)searchResult
-{
+- (void)showChannel:(KBYTSearchResult *)searchResult {
     
     KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
     [self presentViewController:cv animated:true completion:nil];
@@ -796,17 +751,21 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 //datasoure method that will return a title for the respective section
 
-- (NSString *)titleForSection:(NSInteger)section
-{
+- (NSString *)titleForSection:(NSInteger)section {
     return [_backingSectionLabels objectAtIndex:section];
 }
 
 //datasource method to return the collection based on the view
 
-- (NSArray *)arrayForCollectionView:(UICollectionView *)theView
-{
+- (NSArray *)arrayForCollectionView:(UICollectionView *)theView {
     KBYTChannel *channel = [self channelForCollectionView:theView];
-    return channel.allSectionItems;
+    if ([channel isKindOfClass:KBYTChannel.class]){
+        return channel.allSectionItems;
+    } else if ([channel isKindOfClass:KBYTPlaylist.class]) {
+        return [(KBYTPlaylist *)channel videos];
+    } else {
+        return (NSArray *)channel;
+    }
 }
 
 - (KBYTChannel *)channelForCollectionView:(UICollectionView *)theView {
@@ -814,22 +773,19 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     return self.playlistDictionary[[self titleForSection:section]];
 }
 
-- (KBYTSearchResult *)searchResultFromFocusedCell
-{
-    if (self.focusedCollectionCell != nil)
-    {
+- (KBYTSearchResult *)searchResultFromFocusedCell {
+    if (self.focusedCollectionCell != nil) {
         UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
         NSIndexPath *indexPath = [cv indexPathForCell:self.focusedCollectionCell];
         
-        if (cv == self.featuredVideosCollectionView)
-        {
+        if (cv == self.featuredVideosCollectionView) {
             KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
             return currentItem;
         }
         
        
         NSArray *theArray = [self arrayForCollectionView:cv];
-        NSLog(@"[tuyu] cv: %@ indexPath row: %lu arrayCount: %lu", cv, indexPath.row,theArray.count);
+        //NSLog(@"[tuyu] cv: %@ indexPath row: %lu arrayCount: %lu", cv, indexPath.row,theArray.count);
         if (indexPath.row > theArray.count){
             NSLog(@"[tuyu] bail!!");
             return nil;
@@ -840,15 +796,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     return nil;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (collectionView == self.featuredVideosCollectionView)
-    {
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (collectionView == self.featuredVideosCollectionView) {
         //KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
         KBYTSearchResult *selectedItem = [self.featuredVideos objectAtIndex:indexPath.row];
         //if its a channel then show a channel instead of trying to playback a playlist
-        if (selectedItem.resultType == kYTSearchResultTypeChannel)
-        {
+        if (selectedItem.resultType == kYTSearchResultTypeChannel) {
             [self showChannel:selectedItem];
             return;
         } else if (selectedItem.resultType == kYTSearchResultTypePlaylist) {
@@ -864,8 +817,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         NSArray *detailsArray = [self arrayForCollectionView:collectionView];
         KBYTSearchResult *selectedItem = [detailsArray objectAtIndex:indexPath.row];
         //if its a channel then show a channel instead of trying to playback a playlist
-        if (selectedItem.resultType == kYTSearchResultTypeChannel)
-        {
+        if (selectedItem.resultType == kYTSearchResultTypeChannel) {
             [self showChannel:selectedItem];
             return;
         } else if (selectedItem.resultType == kYTSearchResultTypePlaylist) {
@@ -877,12 +829,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         //in that range
         NSArray *subarray = [detailsArray subarrayWithRange:NSMakeRange(indexPath.row, detailsArray.count - indexPath.row)];
         [self playAllSearchResults:subarray];
-        
     }
 }
 
-- (void)playAllSearchResults:(NSArray *)searchResults
-{
+- (void)playAllSearchResults:(NSArray *)searchResults {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
@@ -897,8 +847,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         NSDate *myStart = [NSDate date];
         [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
             
-            NSLog(@"[tuyu] video details fetched in %@", [myStart timeStringFromCurrentDate]);
-            NSLog(@"[tuyu] first object: %@", subarray.firstObject);
+            //NSLog(@"[tuyu] video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            //NSLog(@"[tuyu] first object: %@", subarray.firstObject);
             [self.playerView addObjectsToPlayerQueue:videoArray];
             
         } failureBlock:^(NSString *error) {
@@ -916,8 +866,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     }];
 }
 
-- (void)showFailureAlert:(NSString *)error
-{
+- (void)showFailureAlert:(NSString *)error {
     UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:@"An error occured" message:error preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"D'oh" style:UIAlertActionStyleCancel handler:nil];
     [alertCon addAction:okAction];
@@ -925,8 +874,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
 }
 
-- (void)playFirstStreamForResult:(KBYTSearchResult *)searchResult
-{
+- (void)playFirstStreamForResult:(KBYTSearchResult *)searchResult {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForID:searchResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
@@ -954,20 +902,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
 }
 
-- (void)itemDidFinishPlaying:(NSNotification *)n
-{
+- (void)itemDidFinishPlaying:(NSNotification *)n {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     [self dismissViewControllerAnimated:true completion:nil];
 }
 
-/*
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- */
 
 @end

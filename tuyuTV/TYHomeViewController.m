@@ -93,6 +93,7 @@
 //@"UCByOQJjav0CUDwxCk-jVNRQ"
 - (void)fetchChannelDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock
 {
+    //
     NSMutableDictionary *channels = [NSMutableDictionary new];
     [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -135,7 +136,7 @@
         [[KBYourTube sharedInstance] getChannelVideosAlt:result completionBlock:^(KBYTChannel *searchDetails) {
             
             NSString *title = searchDetails.title ? searchDetails.title : self.sectionLabels[currentIndex];
-            NSLog(@"[tuyu] searchDetails title: %@ sections:%@", title, searchDetails.sections);
+            //NSLog(@"[tuyu] searchDetails title: %@ sections:%@", title, searchDetails.sections);
             if (searchDetails.sections){
                 channels[title] = searchDetails;
             }

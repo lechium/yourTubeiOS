@@ -29,13 +29,11 @@
 @implementation KBYTSearchTableViewController
 
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     // [self resetSearchResults];
 }
 
-- (void)resetSearchResults
-{
+- (void)resetSearchResults {
     self.currentPage = 1;
     self.totalResults = 0;
     self.pageCount = 0;
@@ -43,8 +41,7 @@
     [self.tableView reloadData];
 }
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     LOG_SELF;
     self.showingSuggestedVideos = false;
     self.navigationItem.title = @"YouTube Search";
@@ -89,24 +86,20 @@
     
 }
 
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
-{
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
     [self resetSearchResults];
 }
 
-- (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar
-{
+- (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar {
     
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     [self.searchController dismissViewControllerAnimated:false completion:nil];
     [super viewWillDisappear:animated];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     NSLog(@"last search: %@", self.lastSearch);
     if (self.lastSearch != nil)
@@ -213,8 +206,7 @@
  }
  }
  */
-- (void)getNextPage
-{
+- (void)getNextPage {
     
     NSInteger nextPage = self.currentPage + 1;
     if (self.pageCount > nextPage)
@@ -259,8 +251,7 @@
     
 }
 
-- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView
-{
+- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView {
     tableView.backgroundColor = [UIColor whiteColor];
 }
 
@@ -285,12 +276,10 @@
 }
 
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 100;
 }
-- (void)updateSearchResults:(NSArray *)newResults
-{
+- (void)updateSearchResults:(NSArray *)newResults {
     if (self.currentPage > 1)
     {
         [[self searchResults] addObjectsFromArray:newResults];
@@ -307,8 +296,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }
 }
 
-- (void)addLongPressToCell:(KBYTDownloadCell *)cell
-{
+- (void)addLongPressToCell:(KBYTDownloadCell *)cell {
     UILongPressGestureRecognizer *longpress
     = [[UILongPressGestureRecognizer alloc]
        initWithTarget:self action:@selector(handleLongpressMethod:)];
@@ -317,8 +305,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell addGestureRecognizer:longpress];
 }
 
-- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
-{
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         
         DLog(@"add video: %@ to playlistID: %@", video, playlist);
@@ -329,8 +316,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 
-- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Video Options"
@@ -406,8 +392,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
 }
 
-- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
@@ -441,14 +426,13 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 
--(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
-{
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
     LOG_SELF;
     if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
         return;
     }
     
-    if ([UD valueForKey:@"access_token"] == nil)
+    if (![[KBYourTube sharedInstance] isSignedIn])
     {
         DLog(@"NO ACCESS KEY");
         return;
@@ -462,17 +446,17 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     switch (result.resultType)
     {
-        casekYTSearchResultTypeVideo:
+        case kYTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:result];
             break;
             
-        casekYTSearchResultTypeChannel:
+        case kYTSearchResultTypeChannel:
             
             [self showChannelAlertForSearchResult:result];
             break;
             
-        casekYTSearchResultTypePlaylist:
+        case kYTSearchResultTypePlaylist:
             
         
             [self showPlaylistCopyAlertForSearchResult:result];
@@ -485,8 +469,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
 }
 
-- (void)showPlaylistCopyAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showPlaylistCopyAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Playlist Options"
@@ -566,8 +549,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [[self tableView] deselectRowAtIndexPath:indexPath animated:false];
     if (indexPath.row >= self.searchResults.count)
     {
@@ -656,8 +638,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 
 
-- (void)checkAirplay
-{
+- (void)checkAirplay {
 #if TARGET_OS_IOS
     NSInteger status = [[KBYourTube sharedInstance] airplayStatus];
     
@@ -691,22 +672,19 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 #endif
 }
 
-- (void)fireAirplayTimer
-{
+- (void)fireAirplayTimer {
     self.airplayTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(checkAirplay) userInfo:nil repeats:TRUE];
 }
 
 #define FLEXY                    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil]
 
-- (void)sliderMoved:(UISlider *)slider
-{
+- (void)sliderMoved:(UISlider *)slider {
     
     CGFloat translatedSpot = self.airplayDuration * slider.value;
     [self scrubToPosition:translatedSpot];
 }
 
-- (void)populateToolbar:(NSInteger)status
-{
+- (void)populateToolbar:(NSInteger)status {
 #if TARGET_OS_IOS
     self.sliderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 220, 40)];
     self.airplaySlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, 220, 40)];
@@ -727,8 +705,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 
-- (NSDictionary *)returnFromURLRequest:(NSString *)requestString requestType:(NSString *)type
-{
+- (NSDictionary *)returnFromURLRequest:(NSString *)requestString requestType:(NSString *)type {
     NSURL *deviceURL = [NSURL URLWithString:requestString];
     
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
@@ -742,8 +719,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     return [datString dictionaryValue];
 }
 
-- (NSDictionary *)scrubToPosition:(CGFloat)position
-{
+- (NSDictionary *)scrubToPosition:(CGFloat)position {
     NSString *requestString = [NSString stringWithFormat:@"http://%@/scrub?position=%f", [[KBYourTube sharedInstance] airplayIP], position];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"POST"];
     //  NSLog(@"returnDict: %@", returnDict);
@@ -752,8 +728,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     //   /scrub?position=20.097000
 }
 
-- (NSDictionary *)getAirplayDetails
-{
+- (NSDictionary *)getAirplayDetails {
     NSString *requestString = [NSString stringWithFormat:@"http://%@/playback-info", [[KBYourTube sharedInstance] airplayIP]];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"GET"];
     //    NSLog(@"returnDict: %@", returnDict);

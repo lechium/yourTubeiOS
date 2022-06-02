@@ -26,13 +26,11 @@
 @synthesize tableType, customTitle, customId, currentPlaybackArray;
 
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self checkAirplay];
 }
@@ -61,8 +59,7 @@
     
 }
 
-- (void)addLongPressToCell:(KBYTDownloadCell *)cell
-{
+- (void)addLongPressToCell:(KBYTDownloadCell *)cell {
     UILongPressGestureRecognizer *longpress
     = [[UILongPressGestureRecognizer alloc]
        initWithTarget:self action:@selector(handleLongpressMethod:)];
@@ -71,8 +68,7 @@
     [cell addGestureRecognizer:longpress];
 }
 
-- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
-{
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         
         DLog(@"add video: %@ to playlistID: %@", video, playlist);
@@ -82,8 +78,7 @@
     
 }
 
-- (void)showPlaylistCopyAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showPlaylistCopyAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Playlist Options"
@@ -112,7 +107,7 @@
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                   }];
+    }];
     [alertController addAction:cancelAction];
     if (self.presentedViewController != nil){
         [self.presentedViewController presentViewController:alertController animated:YES completion:nil];
@@ -122,8 +117,7 @@
 }
 
 
-- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Video Options"
@@ -133,7 +127,7 @@
     NSArray *playlistArray = [[TYAuthUserManager sharedInstance] playlists];
     //NSArray *playlistArray = @[];
     
-   // __weak typeof(self) weakSelf = self;
+    // __weak typeof(self) weakSelf = self;
     self.alertHandler = ^(UIAlertAction *action)
     {
         NSString *playlistID = nil;
@@ -160,7 +154,7 @@
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                   }];
+    }];
     
     
     
@@ -170,8 +164,7 @@
     
 }
 
-- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
@@ -195,21 +188,20 @@
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                   }];
+    }];
     [alertController addAction:yesAction];
     [alertController addAction:cancelAction];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
 
--(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
-{
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
     LOG_SELF;
     if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
         return;
     }
     
-    if ([UD valueForKey:@"access_token"] == nil)
+    if (![[KBYourTube sharedInstance] isSignedIn])
     {
         DLog(@"NO ACCESS KEY");
         return;
@@ -223,17 +215,17 @@
     
     switch (result.resultType)
     {
-        casekYTSearchResultTypeVideo:
+        case kYTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:result];
             break;
             
-        casekYTSearchResultTypeChannel:
+        case kYTSearchResultTypeChannel:
             
             [self showChannelAlertForSearchResult:result];
             break;
             
-        casekYTSearchResultTypePlaylist:
+        case kYTSearchResultTypePlaylist:
             
             [self showPlaylistCopyAlertForSearchResult:result];
             break;
@@ -246,8 +238,7 @@
 }
 
 
-- (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier
-{
+- (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier {
     self = [super initWithStyle:UITableViewStylePlain];
     tableType = detailsType;
     customTitle = theTitle;
@@ -256,8 +247,7 @@
 }
 
 
-- (id)initForType:(NSInteger)detailsType
-{
+- (id)initForType:(NSInteger)detailsType {
     self = [super initWithStyle:UITableViewStylePlain];
     tableType = detailsType;
     return self;
@@ -399,7 +389,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (cell.tag == kGenericLoadingCellTag) {
         [self getNextPage];
     } else {
-    
+        
         KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
         if (currentItem.resultType ==kYTSearchResultTypeVideo)
         {
@@ -433,8 +423,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     return cell;
 }
 
-- (void)updateTableForType:(NSInteger)type
-{
+- (void)updateTableForType:(NSInteger)type {
     [SVProgressHUD show];
     if (type == 0) //featured
     {
@@ -469,10 +458,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                 {
                     [SVProgressHUD show];
                     [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
-                         [SVProgressHUD dismiss];
+                        [SVProgressHUD dismiss];
                         [[KBYourTube sharedInstance] setUserDetails:outputResults];
                         NSLog(@"signed in since launch, add user details!");
-                       // NSArray *userDetailsArray = [[KBYourTube sharedInstance]userDetails][@"results"];
+                        // NSArray *userDetailsArray = [[KBYourTube sharedInstance]userDetails][@"results"];
                         //NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
                         
                         NSArray *userDetailsArray = outputResults[@"results"];
@@ -488,7 +477,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                         }
                         
                         
-                       // NSMutableArray *fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
+                        // NSMutableArray *fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
                         [fullArray addObjectsFromArray:searchDetails[@"results"]];
                         [self updateSearchResults:fullArray];
                         self.totalResults = [fullArray count];
@@ -497,7 +486,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                         [self.tableView reloadData];
                     } failureBlock:^(NSString *error) {
                         
-                         [SVProgressHUD dismiss];
+                        [SVProgressHUD dismiss];
                         [self updateSearchResults:searchDetails[@"results"]];
                         self.totalResults = [searchDetails[@"resultCount"] integerValue];
                         self.pageCount = [searchDetails[@"pageCount"] integerValue];
@@ -508,7 +497,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                     [self updateSearchResults:searchDetails[@"results"]];
                     self.totalResults = [searchDetails[@"resultCount"] integerValue];
                 }
-            
+                
             }
             
             
@@ -631,41 +620,37 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
 }
 
-- (void)fetchPlaylistDetailsInBackground:(NSArray *)resultArray
-{
+- (void)fetchPlaylistDetailsInBackground:(NSArray *)resultArray {
     //void start just by fetching the first object so we can start playing as soon as possible
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[resultArray firstObject]] completionBlock:^(NSArray *videoArray) {
         
-       
+        
         
         //[[resultArray firstObject]setAssociatedMedia:videoDetails];
         [self showPlayAllButton];
-     
+        
         
     } failureBlock:^(NSString *error) {
         //
     }];
     
     
-
+    
 }
 
-- (void)showPlayAllButton
-{
+- (void)showPlayAllButton {
     UIBarButtonItem *playButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay target:self action:@selector(playAll)];
     self.navigationItem.rightBarButtonItem = playButton;
 }
 
-- (void)playFromIndex:(NSInteger)index
-{
+- (void)playFromIndex:(NSInteger)index {
     DLOG_SELF;
     NSArray *subarray = [self.searchResults subarrayWithRange:NSMakeRange(index, self.searchResults.count-index)];
     [self playAllSearchResults:subarray];
     
 }
 
-- (void)playAllSearchResults:(NSArray *)searchResults
-{
+- (void)playAllSearchResults:(NSArray *)searchResults {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
@@ -693,15 +678,14 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }];
 }
 
-- (void)playAll
-{
+- (void)playAll {
     self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:self.searchResults];
     
     [self presentViewController:self.playerView animated:YES completion:nil];
     [[self.playerView player] play];
     NSArray *subarray = [self.searchResults subarrayWithRange:NSMakeRange(1, self.searchResults.count-1)];
     
-     NSDate *myStart = [NSDate date];
+    NSDate *myStart = [NSDate date];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
         
@@ -734,8 +718,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     [self playStreams:playerItems];
 }
 
-- (BOOL)isPlaying
-{
+- (BOOL)isPlaying {
     if ([self player] != nil)
     {
         if (self.player.rate != 0)
@@ -747,8 +730,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
 }
 
-- (IBAction)playStreams:(NSArray *)streams
-{
+- (IBAction)playStreams:(NSArray *)streams {
     LOG_SELF;
     
     if ([self isPlaying] == true  ){
@@ -812,20 +794,17 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     
 }
 
-- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView
-{
+- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView {
     tableView.backgroundColor = [UIColor whiteColor];
 }
 
 
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 100;
 }
 
-- (void)updateSearchResults:(NSArray *)newResults
-{
+- (void)updateSearchResults:(NSArray *)newResults {
     if (self.currentPage > 1)
     {
         if (self.searchResults == nil) {
@@ -851,7 +830,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         cell = [[KBYTDownloadCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
-   
+    
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
     cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     if ([currentItem.author length] == 0)
@@ -895,12 +874,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
     cell.imageView.autoresizingMask = ( UIViewAutoresizingNone );
     [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
-     [self addLongPressToCell:cell];
+    [self addLongPressToCell:cell];
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [[self tableView] deselectRowAtIndexPath:indexPath animated:false];
     if (indexPath.row >= self.searchResults.count)
     {
@@ -997,9 +975,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 
 
-- (void)checkAirplay
-{
-    #if TARGET_OS_IOS
+- (void)checkAirplay {
+#if TARGET_OS_IOS
     NSInteger status = [[KBYourTube sharedInstance] airplayStatus];
     
     if (status == 0) {
@@ -1032,23 +1009,20 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 #endif
 }
 
-- (void)fireAirplayTimer
-{
+- (void)fireAirplayTimer {
     self.airplayTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(checkAirplay) userInfo:nil repeats:TRUE];
 }
 
 #define FLEXY                    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil]
 
-- (void)sliderMoved:(UISlider *)slider
-{
+- (void)sliderMoved:(UISlider *)slider {
     
     CGFloat translatedSpot = self.airplayDuration * slider.value;
     [self scrubToPosition:translatedSpot];
 }
 
-- (void)populateToolbar:(NSInteger)status
-{
-    #if TARGET_OS_IOS
+- (void)populateToolbar:(NSInteger)status {
+#if TARGET_OS_IOS
     self.sliderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 220, 40)];
     self.airplaySlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, 220, 40)];
     self.airplaySlider.value = self.airplayProgressPercent;
@@ -1068,8 +1042,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 
-- (NSDictionary *)returnFromURLRequest:(NSString *)requestString requestType:(NSString *)type
-{
+- (NSDictionary *)returnFromURLRequest:(NSString *)requestString requestType:(NSString *)type {
     NSURL *deviceURL = [NSURL URLWithString:requestString];
     
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
@@ -1083,8 +1056,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     return [datString dictionaryValue];
 }
 
-- (NSDictionary *)scrubToPosition:(CGFloat)position
-{
+- (NSDictionary *)scrubToPosition:(CGFloat)position {
     NSString *requestString = [NSString stringWithFormat:@"http://%@/scrub?position=%f", [[KBYourTube sharedInstance] airplayIP], position];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"POST"];
     //  NSLog(@"returnDict: %@", returnDict);
@@ -1093,8 +1065,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     //   /scrub?position=20.097000
 }
 
-- (NSDictionary *)getAirplayDetails
-{
+- (NSDictionary *)getAirplayDetails {
     NSString *requestString = [NSString stringWithFormat:@"http://%@/playback-info", [[KBYourTube sharedInstance] airplayIP]];
     NSDictionary *returnDict = [self returnFromURLRequest:requestString requestType:@"GET"];
     //    NSLog(@"returnDict: %@", returnDict);

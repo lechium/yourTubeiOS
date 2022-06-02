@@ -19,7 +19,7 @@
 #import "AFOAuthCredential.h"
 #import "AFOAuth2Manager.h"
 
-@class KBYTSearchResult;
+@class KBYTSearchResult, KBYTPlaylist, KBYTChannel;
 
 typedef void (^AuthStateUpdatedBlock) (NSString *authState);
 typedef void (^PurchaseValidatedBlock)(BOOL success, NSString *message);
@@ -44,7 +44,8 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 + (WebViewController *)ytAuthWebViewController;
 + (WebViewController *)OAuthWebViewController;
 #endif
-
+- (void)getPlaylistsWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *playlists, NSString *error))completionBlock;
+- (void)getChannelListWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock;
 + (id)sharedInstance;
 - (id)postOAuth2CodeToGoogle:(NSString *)code;
 - (void)postOAuth2CodeToGoogle:(NSString *)code completion:(void(^)(NSString *value))block;

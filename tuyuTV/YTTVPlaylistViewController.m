@@ -39,8 +39,7 @@
 
 @synthesize viewBackgroundColor, selectionColor;
 
-- (void)layoutSubviews
-{
+- (void)layoutSubviews {
     [super layoutSubviews];
     if (self.selectionColor == nil)
         self.selectionColor = [UIColor whiteColor];
@@ -49,8 +48,7 @@
         self.viewBackgroundColor = self.contentView.backgroundColor;
 }
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
     if (context.nextFocusedView == self)
     {
@@ -113,15 +111,13 @@
     
 }
 
-- (void)addImageURLs:(NSArray *)urls
-{
+- (void)addImageURLs:(NSArray *)urls {
     NSMutableArray *images = [[NSMutableArray alloc] initWithArray:self.imageURLs];
     [images addObjectsFromArray:urls];
     self.imageURLs = images;
 }
 
-- (void)selectedItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)selectedItemAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < self.imageURLs.count)
     {
         [self.imageView sd_setImageWithURL:self.imageURLs[indexPath.row] placeholderImage:[UIImage imageNamed:@"YTPlaceholder"] options:SDWebImageAllowInvalidSSLCertificates];
@@ -130,8 +126,7 @@
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     
@@ -188,15 +183,13 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
-- (KBYTSearchResult *)searchResultFromFocusedCell
-{
+- (KBYTSearchResult *)searchResultFromFocusedCell {
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     KBYTSearchResult *searchResult = [self.itemNames objectAtIndex:indexPath.row];
     return searchResult;
 }
 
-- (void)promptForNewPlaylistForVideo:(KBYTSearchResult *)searchResult
-{
+- (void)promptForNewPlaylistForVideo:(KBYTSearchResult *)searchResult {
     
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"New Playlist"
@@ -294,14 +287,12 @@
     
 }
 
-- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist
-{
+- (void)addVideo:(KBYTSearchResult *)video toPlaylist:(NSString *)playlist {
     DLog(@"add video: %@ to playlistID: %@", video, playlist);
     [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
 }
 
-- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result
-{
+- (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Video Options"
@@ -356,14 +347,12 @@
     
 }
 
--(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer
-{
+-(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
     LOG_SELF;
     if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
         return;
     }
-    if ([UD valueForKey:@"access_token"] == nil)
-    {
+    if (![[KBYourTube sharedInstance] isSignedIn]) {
         return;
     }
     
@@ -373,7 +362,7 @@
     
     switch (searchResult.resultType)
     {
-        casekYTSearchResultTypeVideo:
+        case kYTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:searchResult];
             break;
@@ -387,16 +376,14 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)selectedItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)selectedItemAtIndexPath:(NSIndexPath *)indexPath {
     if ([self.delegate respondsToSelector:@selector(selectedItemAtIndexPath:)])
     {
         [self.delegate selectedItemAtIndexPath:indexPath];
     }
 }
 
-- (void)updateSearchResults:(NSArray *)newResults
-{
+- (void)updateSearchResults:(NSArray *)newResults {
     if (self.currentPage > 1)
     {
         [[self itemNames] addObjectsFromArray:newResults];
@@ -405,8 +392,7 @@
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 100;
 }
 
@@ -418,8 +404,7 @@
 }
 
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [self focusedCell:(PlaylistTableViewCell*)context.nextFocusedView];
 }
 
@@ -428,8 +413,7 @@
     return self.itemNames.count;
 }
 
-- (void)focusedCell:(PlaylistTableViewCell *)focusedCell
-{
+- (void)focusedCell:(PlaylistTableViewCell *)focusedCell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:focusedCell];
     [self.delegate selectedItemAtIndexPath:indexPath];
     if (indexPath.row == self.itemNames.count-1)
@@ -477,8 +461,7 @@
     }];
 }
 
-- (void)playAllSearchResults:(NSArray *)searchResults
-{
+- (void)playAllSearchResults:(NSArray *)searchResults {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
@@ -506,8 +489,7 @@
     }];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSArray *subarray = [[self itemNames] subarrayWithRange:NSMakeRange(indexPath.row, [[self itemNames] count] - indexPath.row)];
     [self playAllSearchResults:subarray];
     if ([self.selectionDelegate respondsToSelector:@selector(itemSelectedAtIndexPath:)])
@@ -656,8 +638,7 @@
     return splitViewController;
 }
 
-+ (id)playlistViewControllerWithTitle:(NSString *)theTitle backgroundColor:(UIColor *)bgColor withPlaylistItems:(NSArray *)playlistItems
-{
++ (id)playlistViewControllerWithTitle:(NSString *)theTitle backgroundColor:(UIColor *)bgColor withPlaylistItems:(NSArray *)playlistItems {
     YTTVPlaylistViewController *splitViewController = [YTTVPlaylistViewController new];
     splitViewController.view.backgroundColor = bgColor;
     //splitViewController.itemNames = names;
@@ -684,16 +665,14 @@
 }
 
 
-- (void)itemSelectedAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)itemSelectedAtIndexPath:(NSIndexPath *)indexPath {
     if ([self.selectionDelegate respondsToSelector:@selector(itemSelectedAtIndexPath:fromNavigationController:)])
     {
         [self.selectionDelegate itemSelectedAtIndexPath:indexPath fromNavigationController:self.navigationController];
     }
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
@@ -703,26 +682,23 @@
     return self;
 }
 
-- (void)awakeFromNib
-{
+- (void)awakeFromNib {
+    [super awakeFromNib];
     [self initializeSplitViewController];
 }
 
-- (void)setMasterWidth:(CGFloat)masterWidth
-{
+- (void)setMasterWidth:(CGFloat)masterWidth {
     self.usingCustomMasterWidth = YES;
     _masterWidth = masterWidth;
 }
 
-- (void)initializeSplitViewController
-{
+- (void)initializeSplitViewController {
     self.viewCornerRadius = RZSPLITVIEWCONTROLLER_DEFAULT_CORNER_RADIUS;
     self.viewBorderWidth = RZSPLITVIEWCONTROLLER_DEFAULT_BORDER_WIDTH;
     self.viewBorderColor = self.view.backgroundColor;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     //self.view.backgroundColor = [UIColor blackColor];
@@ -731,8 +707,7 @@
     
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     [self layoutViewsForCollapsed:self.collapsed animated:NO];
@@ -741,31 +716,26 @@
     plTvC.nextHREF = self.loadMoreHREF;
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
 }
 
 #pragma mark - Property Accessor Overrides
 
-- (UIViewController*)masterViewController
-{
+- (UIViewController*)masterViewController {
     return [self.viewControllers objectAtIndex:kRZSplitViewMasterIndex];
 }
 
-- (UIViewController*)detailViewController
-{
+- (UIViewController*)detailViewController {
     return [self.viewControllers objectAtIndex:kRZSplitViewDetailIndex];
 }
 
-- (void)setViewControllers:(NSArray *)viewControllers
-{
+- (void)setViewControllers:(NSArray *)viewControllers {
     NSAssert(2 == [viewControllers count], @"You must have exactly 2 view controllers in the array. This array has %lu.", (long)[viewControllers count]);
     
     [_viewControllers enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -788,8 +758,7 @@
     [self layoutViewControllers];
 }
 
-- (void)setCollapseBarButtonImage:(UIImage *)collapseBarButtonImage
-{
+- (void)setCollapseBarButtonImage:(UIImage *)collapseBarButtonImage {
     _collapseBarButtonImage = collapseBarButtonImage;
     
     if (!self.collapsed)
@@ -798,8 +767,7 @@
     }
 }
 
-- (void)setExpandBarButtonImage:(UIImage *)expandBarButtonImage
-{
+- (void)setExpandBarButtonImage:(UIImage *)expandBarButtonImage {
     _expandBarButtonImage = expandBarButtonImage;
     
     if (self.collapsed)
@@ -808,8 +776,7 @@
     }
 }
 
-- (void)setDetailViewController:(UIViewController*)detailVC
-{
+- (void)setDetailViewController:(UIViewController*)detailVC {
     NSAssert(detailVC != nil, @"The detail view controller must not be nil");
     
     if (detailVC)
@@ -820,8 +787,7 @@
     }
 }
 
-- (void)setMasterViewController:(UIViewController*)masterVC
-{
+- (void)setMasterViewController:(UIViewController*)masterVC {
     NSAssert(masterVC != nil, @"The master view controller must not be nil");
     
     if (masterVC)
@@ -832,8 +798,7 @@
     }
 }
 
-- (UIBarButtonItem*)collapseBarButton
-{
+- (UIBarButtonItem*)collapseBarButton {
     if (nil == _collapseBarButton)
     {
         _collapseBarButton = [[UIBarButtonItem alloc] initWithTitle:(self.collapsed ? @">>" : @"<<") style:UIBarButtonItemStylePlain target:self action:@selector(collapseBarButtonTapped:)];
@@ -844,13 +809,11 @@
     return _collapseBarButton;
 }
 
-- (void)setCollapsed:(BOOL)collapsed
-{
+- (void)setCollapsed:(BOOL)collapsed {
     [self setCollapsed:collapsed animated:NO];
 }
 
-- (void)setCollapsed:(BOOL)collapsed animated:(BOOL)animated
-{
+- (void)setCollapsed:(BOOL)collapsed animated:(BOOL)animated {
     if (collapsed == _collapsed)
     {
         return;
@@ -865,8 +828,7 @@
 
 #pragma mark - View Controller Layout
 
-- (void)layoutViewControllers
-{
+- (void)layoutViewControllers {
     UIViewController *masterVC = [self.viewControllers objectAtIndex:kRZSplitViewMasterIndex];
     UIViewController *detailVC = [self.viewControllers objectAtIndex:kRZSplitViewDetailIndex];
     
@@ -897,8 +859,7 @@
     [self layoutViewsForCollapsed:self.collapsed animated:NO];
 }
 
-- (void)layoutViewsForCollapsed:(BOOL)collapsed animated:(BOOL)animated
-{
+- (void)layoutViewsForCollapsed:(BOOL)collapsed animated:(BOOL)animated {
     void (^layoutBlock)(void);
     void (^completionBlock)(BOOL finished);
     
@@ -964,8 +925,7 @@
     }
 }
 
-- (void)configureCollapseButton:(UIBarButtonItem*)collapseButton forCollapsed:(BOOL)collapsed
-{
+- (void)configureCollapseButton:(UIBarButtonItem*)collapseButton forCollapsed:(BOOL)collapsed {
     if (collapsed)
     {
         if (self.expandBarButtonImage)
@@ -996,8 +956,7 @@
 
 #pragma mark - Action Methods
 
-- (void)collapseBarButtonTapped:(id)sender
-{
+- (void)collapseBarButtonTapped:(id)sender {
     BOOL collapsed = !self.collapsed;
     
     UIBarButtonItem *buttonItem = (UIBarButtonItem*)sender;
