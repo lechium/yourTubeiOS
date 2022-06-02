@@ -145,10 +145,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSLog(@"[tuyu] weird pl item: %@", current);
             NSLog(@"[tuyu] pl item: %@", searchItem);
         }
+        /*
         NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
         [current writeToFile:outputFile atomically:true];
         NSLog(@"[tuyu] writing playlist: %@", outputFile);
-        [channelResults addObject:searchItem];
+         */
         [playlistResults addObject:searchItem];
     }];
     self.playlists = playlistResults;
@@ -171,9 +172,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             if (!title){
                 NSLog(@"[tuyu] weird channel item: %@", current);
             }
+        /*
             NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
             [current writeToFile:outputFile atomically:true];
-            NSLog(@"[tuyu] writing channel: %@", outputFile);
+            NSLog(@"[tuyu] writing channel: %@", outputFile);*/
             [channelResults addObject:searchItem];
     }];
     self.channels = channelResults;
