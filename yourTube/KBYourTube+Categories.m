@@ -17,8 +17,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 @implementation NSHTTPCookieStorage (ClearAllCookies)
 
-- (void)clearAllCookies
-{
+- (void)clearAllCookies {
     [self.cookies enumerateObjectsUsingBlock:^(NSHTTPCookie * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         [self deleteCookie:obj];
@@ -31,8 +30,7 @@
 
 @implementation UITableView (completion)
 
-- (void)reloadDataWithCompletion:(void(^)(void))completionBlock
-{
+- (void)reloadDataWithCompletion:(void(^)(void))completionBlock {
     [self reloadData];
     
     dispatch_async(dispatch_get_main_queue(),^{
@@ -47,8 +45,7 @@
 
 @implementation UICollectionView (completion)
 
-- (void)reloadDataWithCompletion:(void(^)(void))completionBlock
-{
+- (void)reloadDataWithCompletion:(void(^)(void))completionBlock {
     [self reloadData];
     
     dispatch_async(dispatch_get_main_queue(),^{
@@ -64,16 +61,14 @@
 
 @implementation NSDictionary (strings)
 
-- (NSString *)stringValue
-{
+- (NSString *)stringValue {
     NSString *error = nil;
     NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:NSPropertyListXMLFormat_v1_0 errorDescription:&error];
     NSString *s=[[NSString alloc] initWithData:xmlData encoding: NSUTF8StringEncoding];
     return s;
 }
 
-- (NSString *)JSONStringRepresentation
-{
+- (NSString *)JSONStringRepresentation {
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self options:NSJSONWritingPrettyPrinted error:nil];
     return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
@@ -82,8 +77,7 @@
 
 @implementation NSArray (strings)
 
-- (NSString *)stringFromArray
-{
+- (NSString *)stringFromArray {
     NSString *error = nil;
     NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:NSPropertyListXMLFormat_v1_0 errorDescription:&error];
     NSString *s=[[NSString alloc] initWithData:xmlData encoding: NSUTF8StringEncoding];
@@ -95,12 +89,10 @@
 
 @implementation NSString (TSSAdditions)
 
-- (NSInteger)timeFromDuration
-{
+- (NSInteger)timeFromDuration {
     NSLog(@"duration: %@", self);
     NSArray *durationArray = [self componentsSeparatedByString:@":"];
-    if ([durationArray count] == 3)
-    {
+    if ([durationArray count] == 3) {
         //has hours
         NSLog(@"has hours???");
         NSInteger hoursInSeconds = [[durationArray firstObject] integerValue] * 3600;
@@ -115,15 +107,13 @@
     return 0;
 }
 
-+ (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval
-{
++ (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval {
     NSInteger interval = timeInterval;
     long seconds = interval % 60;
     long minutes = (interval / 60) % 60;
     long hours = (interval / 3600);
     
-    if (hours > 0)
-    {
+    if (hours > 0) {
         return [NSString stringWithFormat:@"%ld:%ld:%0.2ld", hours, minutes, seconds];
     }
     
@@ -136,8 +126,7 @@
  
  */
 
-- (id)dictionaryValue
-{
+- (id)dictionaryValue {
     NSString *error = nil;
     NSPropertyListFormat format;
     NSData *theData = [self dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
@@ -152,21 +141,18 @@
 
 @implementation NSDate (convenience)
 
-+ (BOOL)passedEpochDateInterval:(NSTimeInterval)interval
-{
++ (BOOL)passedEpochDateInterval:(NSTimeInterval)interval {
     //return true; //force to test to see if it works
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:interval];
     NSComparisonResult result = [date compare:[NSDate date]];
-    if (result == NSOrderedAscending)
-    {
+    if (result == NSOrderedAscending) {
         return true;
     }
     return false;
 }
 
 
-- (NSString *)timeStringFromCurrentDate
-{
+- (NSString *)timeStringFromCurrentDate {
     NSDate *currentDate = [NSDate date];
     NSTimeInterval timeInt = [currentDate timeIntervalSinceDate:self];
     // NSLog(@"timeInt: %f", timeInt);
@@ -231,8 +217,7 @@
     u_int count;
     objc_property_t* properties = class_copyPropertyList(clazz, &count);
     NSMutableArray* propArray = [NSMutableArray arrayWithCapacity:count];
-    for (int i = 0; i < count ; i++)
-    {
+    for (int i = 0; i < count ; i++) {
         const char* propertyName = property_getName(properties[i]);
         NSString *propName = [NSString  stringWithCString:propertyName encoding:NSUTF8StringEncoding];
         [propArray addObject:propName];
@@ -245,8 +230,7 @@
     u_int count;
     objc_property_t* properties = class_copyPropertyList(self.class, &count);
     NSMutableArray* propArray = [NSMutableArray arrayWithCapacity:count];
-    for (int i = 0; i < count ; i++)
-    {
+    for (int i = 0; i < count ; i++) {
         const char* propertyName = property_getName(properties[i]);
         NSString *propName = [NSString  stringWithCString:propertyName encoding:NSUTF8StringEncoding];
         [propArray addObject:propName];
@@ -573,8 +557,7 @@
 }
 
 
-+ (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval
-{
++ (NSString *)stringFromTimeInterval:(NSTimeInterval)timeInterval {
     NSInteger interval = timeInterval;
     NSInteger ms = (fmod(timeInterval, 1) * 1000);
     long seconds = interval % 60;
@@ -589,22 +572,19 @@
 
 //change a wall of "body" text into a dictionary like &key=value
 
-- (NSMutableDictionary *)parseFlashVars:(NSString *)vars
-{
+- (NSMutableDictionary *)parseFlashVars:(NSString *)vars {
     return [self dictionaryFromString:vars withRegex:@"([^&=]*)=([^&]*)"];
 }
 
 //give us the actual matches from a regex, rather then NSTextCheckingResult full of ranges
 
-- (NSArray *)matchesForString:(NSString *)string withRegex:(NSString *)pattern
-{
+- (NSArray *)matchesForString:(NSString *)string withRegex:(NSString *)pattern {
     NSMutableArray *array = [NSMutableArray new];
     NSError *error = NULL;
     NSRange range = NSMakeRange(0, string.length);
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive | NSRegularExpressionAnchorsMatchLines error:&error];
     NSArray *matches = [regex matchesInString:string options:NSMatchingReportProgress range:range];
-    for (NSTextCheckingResult *entry in matches)
-    {
+    for (NSTextCheckingResult *entry in matches) {
         NSString *text = [string substringWithRange:entry.range];
         [array addObject:text];
     }
@@ -615,13 +595,11 @@
 
 //the actual function that does the &key=value dictionary creation mentioned above
 
-- (NSMutableDictionary *)dictionaryFromString:(NSString *)string withRegex:(NSString *)pattern
-{
+- (NSMutableDictionary *)dictionaryFromString:(NSString *)string withRegex:(NSString *)pattern {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     NSArray *matches = [self matchesForString:string withRegex:pattern];
     
-    for (NSString *text in matches)
-    {
+    for (NSString *text in matches) {
         NSArray *components = [text componentsSeparatedByString:@"="];
         [dict setObject:[components objectAtIndex:1] forKey:[components objectAtIndex:0]];
     }
@@ -629,8 +607,7 @@
     return dict;
 }
 
-- (BOOL)vanillaApp
-{
+- (BOOL)vanillaApp {
     NSArray *paths =
     NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
                                         NSUserDomainMask, YES);
@@ -641,13 +618,11 @@
    
 }
 
-- (NSString *)downloadFile
-{
+- (NSString *)downloadFile {
     return [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads.plist"];
 }
 
-- (NSString *)vanillaAppSupport
-{
+- (NSString *)vanillaAppSupport {
     NSArray *paths =
     NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                         NSUserDomainMask, YES);
@@ -658,35 +633,28 @@
     return basePath;
 }
 
-- (NSString *)appSupportFolder
-{
-    if ([self vanillaApp])
-    {
+- (NSString *)appSupportFolder {
+    if ([self vanillaApp]) {
         return [self vanillaAppSupport];
     }
    
     NSString *outputFolder = @"/var/mobile/Library/Application Support/tuyu";
-    if (![FM fileExistsAtPath:outputFolder])
-    {
+    if (![FM fileExistsAtPath:outputFolder]) {
         [FM createDirectoryAtPath:outputFolder withIntermediateDirectories:true attributes:nil error:nil];
     }
     return outputFolder;
 }
 
-- (NSString *)downloadFolder
-{
+- (NSString *)downloadFolder {
     NSString *dlF = [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads"];
-    if (![FM fileExistsAtPath:dlF])
-    {
+    if (![FM fileExistsAtPath:dlF]) {
         [FM createDirectoryAtPath:dlF withIntermediateDirectories:true attributes:nil error:nil];
     }
     return dlF;
 }
 
-- (void)addCookies:(NSArray *)cookies forRequest:(NSMutableURLRequest *)request
-{
-    if ([cookies count] > 0)
-    {
+- (void)addCookies:(NSArray *)cookies forRequest:(NSMutableURLRequest *)request {
+    if ([cookies count] > 0) {
         NSHTTPCookie *cookie;
         NSString *cookieHeader = nil;
         for (cookie in cookies)
@@ -709,8 +677,7 @@
 
 //take a url and get its raw body, then return in string format
 
-- (NSString *)stringFromRequest:(NSString *)url
-{
+- (NSString *)stringFromRequest:(NSString *)url {
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]
                                                            cachePolicy:NSURLRequestReloadIgnoringCacheData
@@ -750,8 +717,7 @@
 
 @implementation NSString (SplitString)
 
-- (NSArray *)splitString
-{
+- (NSArray *)splitString {
     NSUInteger index = 0;
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:self.length];
     
@@ -770,9 +736,8 @@
 
 @implementation UILabel (Additions)
 //TODO: since this particular shadow is ALWAYS the same, can probably cache/reuse a static version
-- (void)shadowify
-{
-    if (!self.text){
+- (void)shadowify {
+    if (!self.text) {
         NSLog(@"[tuyu] no text for you!");
         return;
     }
@@ -793,13 +758,11 @@
 @implementation NSObject (AMAssociatedObjects)
 
 
-- (void)associateValue:(id)value withKey:(void *)key
-{
+- (void)associateValue:(id)value withKey:(void *)key {
     objc_setAssociatedObject(self, key, value, OBJC_ASSOCIATION_RETAIN);
 }
 
-- (void)weaklyAssociateValue:(id)value withKey:(void *)key
-{
+- (void)weaklyAssociateValue:(id)value withKey:(void *)key {
     objc_setAssociatedObject(self, key, value, OBJC_ASSOCIATION_ASSIGN);
 }
 
