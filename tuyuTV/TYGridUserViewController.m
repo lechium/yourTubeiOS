@@ -10,6 +10,7 @@
 
 @interface TYGridUserViewController () {
     BOOL _didAdjustTotalHeight;
+    BOOL _isBeingReordered;
 }
 @end
 
@@ -19,7 +20,20 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self refreshDataWithProgress:true];
+    _pressGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pressed:)];
+        _pressGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu), @(UIPressTypeSelect), @(UIPressTypePlayPause)];
+        [self.view addGestureRecognizer:_pressGestureRecognizer];
+    _pressGestureRecognizer.enabled = NO;
 }
+
+- (void)pressed:(UITapGestureRecognizer *)gesture {
+    if (!_isBeingReordered)
+        return;
+
+    _isBeingReordered = NO;
+    _pressGestureRecognizer.enabled = NO;
+}
+
 
 - (void)refreshDataWithProgress:(BOOL)progress {
     if (progress == true){

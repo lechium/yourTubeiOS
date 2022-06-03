@@ -12,5 +12,6 @@
 {
     BOOL _jiggling;
     UITapGestureRecognizer *menuTapRecognizer;
+    UITapGestureRecognizer *_pressGestureRecognizer;
 }
 @end

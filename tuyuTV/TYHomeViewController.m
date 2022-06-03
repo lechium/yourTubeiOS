@@ -15,8 +15,7 @@
 
 @implementation TYHomeViewController
 
-- (id)initWithSections:(NSArray *)sections andChannelIDs:(NSArray *)channelIds
-{
+- (id)initWithSections:(NSArray *)sections andChannelIDs:(NSArray *)channelIds {
     
     self = [super initWithSections:sections];
     self.channelIDs = channelIds;
@@ -71,8 +70,7 @@
 }
  */
 
-- (void)refreshDataWithProgress:(BOOL)progress
-{
+- (void)refreshDataWithProgress:(BOOL)progress {
     if (progress == true)
     {
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
@@ -91,8 +89,7 @@
 }
 
 //@"UCByOQJjav0CUDwxCk-jVNRQ"
-- (void)fetchChannelDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock
-{
+- (void)fetchChannelDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock {
     //
     NSMutableDictionary *channels = [NSMutableDictionary new];
     [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
@@ -104,27 +101,7 @@
     } failureBlock:^(NSString *error) {
         
     }];
-    
-    /*
-    [[KBYourTube sharedInstance] getChannelVideos:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
-        self.featuredVideos = channel.videos;
-        [[self featuredVideosCollectionView] reloadData];
-    } failureBlock:^(NSString *error) {
-        
-    }];
-     */
-    /*
-    [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
-        
-        self.featuredVideos = searchDetails[@"results"];
-        [[self featuredVideosCollectionView] reloadData];
-        
-        
-    } failureBlock:^(NSString *error) {
-        
-    }];*/
-    //return;
-    //NSArray *results = userDetails[@"results"];
+
     NSInteger channelCount = [self.sectionLabels count];
     
     //since blocks are being used to fetch the data need to keep track of indices so we know
@@ -150,12 +127,7 @@
             
             //
         }];
-        
-        
     }
-    
-    
-    
 }
 
 - (void)didReceiveMemoryWarning {

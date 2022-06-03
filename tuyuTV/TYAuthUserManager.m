@@ -159,8 +159,8 @@
                     AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
                     credential.refreshToken = refreshToken;
                     [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-                    NSLog(@"[tuyu] token response: %@", tokenResponse);
-                    NSLog(@"[tuyu] credential: %@", credential);
+                    //NSLog(@"[tuyu] token response: %@", tokenResponse);
+                    //NSLog(@"[tuyu] credential: %@", credential);
                     //NSString *userId = tokenResponse[@"UserId"];
                     //[UD setValue:userId forKey:kNTVPortalAuthUserName];
                     self.tokenData = tokenResponse;
@@ -370,7 +370,7 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         id token = [self refreshAuthToken];
-        NSLog(@"[tuyu] refreshed token: %@", token);
+        //NSLog(@"[tuyu] refreshed token: %@", token);
         NSString *urlString = [NSString stringWithFormat:@"%@&key=%@", command, ytClientID];
         NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                     cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
@@ -388,7 +388,7 @@
         
         NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
         NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-        NSLog(@"[tuyu] status string: %@", returnString);
+        //NSLog(@"[tuyu] status string: %@", returnString);
         
         //JSON data
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
@@ -444,14 +444,14 @@
     if (channel.length == 0) {
         channel = channelId;
     }
-    NSLog(@"[tuyu] subscribe to channel: %@", channel);
+    //NSLog(@"[tuyu] subscribe to channel: %@", channel);
     //[self refreshAuthToken];
     NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
     NSDictionary *resourceId = [NSDictionary dictionaryWithObjectsAndKeys:@"youtube#channel", @"kind", channel, @"channelId", nil];
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:resourceId , @"resourceId", nil];
     [finalDict setObject:dict forKey:@"snippet"];
     
-    NSLog(@"[tuyu] finalDict: %@", finalDict);
+    //NSLog(@"[tuyu] finalDict: %@", finalDict);
     
     NSError* error = nil;
     
@@ -487,23 +487,21 @@
     
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-    NSLog(@"[tuyu] status string: %@", returnString);
+    //NSLog(@"[tuyu] status string: %@", returnString);
     
     
     //JSON data
     
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
     
-    NSLog(@"[tuyu] jsonDict: %@", jsonDict);
-    if ([jsonDict valueForKey:@"error"] != nil)
-    {
+    //NSLog(@"[tuyu] jsonDict: %@", jsonDict);
+    if ([jsonDict valueForKey:@"error"] != nil) {
         return datString;
-        
     }
     //NSLog(@"jsonDict: %@", jsonDict);
     //[jsonDict writeToFile:@"/var/mobile/Library/Preferences/channelSubscribeResponse.plist" atomically:TRUE];
     KBYTSearchResult *newChannel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:jsonDict];
-    NSLog(@"[tuyu] new channel: %@", newChannel);
+    //NSLog(@"[tuyu] new channel: %@", newChannel);
     [[KBYourTube sharedInstance] addChannelToUserDetails:newChannel];
     return jsonDict;
     
@@ -741,7 +739,7 @@
         AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[jsonDict valueForKey:@"access_token"] tokenType:[jsonDict valueForKey:@"token_type"]];
         credential.refreshToken = refreshToken;
         [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-        NSLog(@"[tuyu] refreshed credential: %@", credential);
+        //NSLog(@"[tuyu] refreshed credential: %@", credential);
         [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         
     }

@@ -99,7 +99,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 @interface YTPlayerItem: AVPlayerItem
 
-@property (nonatomic, weak) NSObject <YTPlayerItemProtocol> *associatedMedia;
+@property (nonatomic, strong) NSObject <YTPlayerItemProtocol> *associatedMedia;
 
 @end
 

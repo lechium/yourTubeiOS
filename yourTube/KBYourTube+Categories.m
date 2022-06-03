@@ -738,7 +738,7 @@
 //TODO: since this particular shadow is ALWAYS the same, can probably cache/reuse a static version
 - (void)shadowify {
     if (!self.text) {
-        NSLog(@"[tuyu] no text for you!");
+        //NSLog(@"[tuyu] no text for you!");
         return;
     }
     NSShadow* shadow = [[NSShadow alloc] init];

@@ -18,8 +18,7 @@
 
 @implementation ServiceProvider
 
-+ (NSUserDefaults *)sharedUserDefaults
-{
++ (NSUserDefaults *)sharedUserDefaults {
     static dispatch_once_t pred;
     static NSUserDefaults* shared = nil;
     
@@ -49,8 +48,7 @@
     return TVTopShelfContentStyleSectioned;
 }
 
-- (void)testGetYTScience
-{
+- (void)testGetYTScience {
    // NSLog(@"appCookies: %@", [[ServiceProvider sharedUserDefaults] valueForKey:@"ApplicationCookie"]);
     NSData *cookieData = [[ServiceProvider sharedUserDefaults] objectForKey:@"ApplicationCookie"];
     if ([cookieData length] > 0) {
@@ -71,8 +69,7 @@
         DLog(@"error: %@", error);
     }];
     
-    if ([[KBYourTube sharedInstance] isSignedIn] == YES)
-    {
+    if ([[KBYourTube sharedInstance] isSignedIn] == YES) {
         DLog(@"is signed in, get those sciences too!");
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
             
@@ -109,8 +106,7 @@ private func urlForIdentifier(identifier: String) -> NSURL {
                                             value: identifier)] return components.URL!
 }*/
 
-- (NSURL *)urlForIdentifier:(NSString*)identifier type:(NSString *)type
-{
+- (NSURL *)urlForIdentifier:(NSString*)identifier type:(NSString *)type {
     return [NSURL URLWithString:[NSString stringWithFormat:@"tuyu://%@/%@", type, identifier]];
 }
 
@@ -118,8 +114,7 @@ private func urlForIdentifier(identifier: String) -> NSURL {
 - (NSArray *)topShelfItems {
     // Create an array of TVContentItems.
     
-    if (self.menuItems.count == 0)
-    {
+    if (self.menuItems.count == 0) {
         [self testGetYTScience];
     }
    // [self testGetYTScience];
@@ -129,8 +124,7 @@ private func urlForIdentifier(identifier: String) -> NSURL {
     __block NSMutableArray *playlistItems = [NSMutableArray new];
     __block NSMutableArray *sectionItems = [NSMutableArray new];
     
-    if (self.channels.count > 0)
-    {
+    if (self.channels.count > 0) {
         TVContentIdentifier *csection = [[TVContentIdentifier alloc] initWithIdentifier:@"channels" container:nil];
         TVContentItem * cItem = [[TVContentItem alloc] initWithContentIdentifier:csection];
         cItem.title = @"Channels";
@@ -149,8 +143,7 @@ private func urlForIdentifier(identifier: String) -> NSURL {
         [sectionItems addObject:cItem];
     }
     
-    if (self.playlists.count > 0)
-    {
+    if (self.playlists.count > 0) {
         TVContentIdentifier *psection = [[TVContentIdentifier alloc] initWithIdentifier:@"playlists" container:nil];
         TVContentItem * pItem = [[TVContentItem alloc] initWithContentIdentifier:psection];
         pItem.title = @"Playlists";

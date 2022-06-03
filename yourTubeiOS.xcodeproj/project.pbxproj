@@ -16,6 +16,7 @@
 		3204FFFD1E4F8C8200D3B8B0 /* KBYourTube.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */; };
 		3204FFFE1E4F8C8400D3B8B0 /* KBYourTube+Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */; };
 		3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A241C5E8B3D00F50BC2 /* APAttribute.m */; };
+		321DAC012849EA64002D07B6 /* KBBulletinView.m in Sources */ = {isa = PBXBuildFile; fileRef = 321DABFD2849EA64002D07B6 /* KBBulletinView.m */; };
 		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
 		324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 324693A82841EE8A002D91F0 /* AuthViewController.m */; };
 		324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */; };
@@ -388,6 +389,8 @@
 /* Begin PBXFileReference section */
 		320400031E4F8DA000D3B8B0 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
 		320400041E4F8DA000D3B8B0 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
+		321DABFB2849EA64002D07B6 /* KBBulletinView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBBulletinView.h; sourceTree = "<group>"; };
+		321DABFD2849EA64002D07B6 /* KBBulletinView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBBulletinView.m; sourceTree = "<group>"; };
 		324693A028404C65002D91F0 /* AppSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupport.tbd; sourceTree = SOURCE_ROOT; };
 		324693A82841EE8A002D91F0 /* AuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthViewController.m; sourceTree = "<group>"; };
 		324693A92841EE8A002D91F0 /* AuthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AuthViewController.h; sourceTree = "<group>"; };
@@ -837,6 +840,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		321DABF92849EA64002D07B6 /* KBBulletinView */ = {
+			isa = PBXGroup;
+			children = (
+				321DABFA2849EA64002D07B6 /* Classes */,
+			);
+			path = KBBulletinView;
+			sourceTree = "<group>";
+		};
+		321DABFA2849EA64002D07B6 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				321DABFB2849EA64002D07B6 /* KBBulletinView.h */,
+				321DABFD2849EA64002D07B6 /* KBBulletinView.m */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
 		328E33811E4F868C00C544ED /* tuyuShelf */ = {
 			isa = PBXGroup;
 			children = (
@@ -1125,6 +1145,7 @@
 		898E92671C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXGroup;
 			children = (
+				321DABF92849EA64002D07B6 /* KBBulletinView */,
 				328411791E4FDFFE002B1310 /* tuyu.entitlements */,
 				8998767C1CE1079C006A639E /* layout */,
 				8998766C1CDEA423006A639E /* Categories */,
@@ -1973,6 +1994,7 @@
 				898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */,
 				898E934F1C8D56D100B34DAA /* SDWebImageDownloaderOperation.m in Sources */,
 				32D2A14B1F424805006F24B3 /* AFOAuthCredential.m in Sources */,
+				321DAC012849EA64002D07B6 /* KBBulletinView.m in Sources */,
 				32D2A1531F424F1C006F24B3 /* NSData+Godzippa.m in Sources */,
 				32B022851E63EB82002211C3 /* KBYTChannelHeaderView.m in Sources */,
 				899876621CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,

@@ -102,7 +102,8 @@
 }
 
 - (void)addVideoToHistory:(NSDictionary *)videoDetails {
-    NSLog(@"[tuyu] video history: %@", videoDetails);
+    if (!videoDetails) return;
+    //NSLog(@"[tuyu] video history: %@", videoDetails);
     NSMutableDictionary *video = [videoDetails mutableCopy];
     [video removeObjectForKey:@"streams"];
     NSArray *history = [self videoHistory];

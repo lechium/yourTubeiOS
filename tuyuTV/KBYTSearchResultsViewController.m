@@ -65,17 +65,15 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
     // DLog(@"at: %@", [UD valueForKey:@"access_token"]);
     
-    if (![[KBYourTube sharedInstance] isSignedIn])
-    {
+    if (![[KBYourTube sharedInstance] isSignedIn]) {
         return;
     }
     
     KBYTSearchResult *searchResult = [self searchResultFromFocusedCell];
     
-    NSLog(@"[tuyu] searchResult: %@", searchResult);
+    //NSLog(@"[tuyu] searchResult: %@", searchResult);
     
-    switch (searchResult.resultType)
-    {
+    switch (searchResult.resultType) {
         case kYTSearchResultTypeVideo:
             
             [self showPlaylistAlertForSearchResult:searchResult];
@@ -211,8 +209,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
     
     __weak typeof(self) weakSelf = self;
-    self.alertHandler = ^(UIAlertAction *action)
-    {
+    self.alertHandler = ^(UIAlertAction *action) {
         NSString *playlistID = nil;
         
         for (KBYTSearchResult *result in playlistArray)
@@ -226,8 +223,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         [weakSelf addVideo:result toPlaylist:playlistID];
     };
     
-    for (KBYTSearchResult *result in playlistArray)
-    {
+    for (KBYTSearchResult *result in playlistArray) {
         UIAlertAction *plAction = [UIAlertAction actionWithTitle:result.title style:UIAlertActionStyleDefault handler:self.alertHandler];
         [alertController addAction:plAction];
     }
@@ -350,8 +346,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     NSInteger rowCount = self.searchResults.count / 5;
     NSInteger currentRow = indexPath.row / 5;
     //  NSLog(@"indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
-    if (currentRow+1 >= rowCount)
-    {
+    if (currentRow+1 >= rowCount) {
         [self getNextPage];
     }
     
@@ -364,8 +359,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     YTTVStandardCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
-    if (currentItem.resultType !=kYTSearchResultTypeVideo)
-    {
+    if (currentItem.resultType !=kYTSearchResultTypeVideo) {
         cell.overlayView.hidden = false;
         cell.overlayInfo.text = currentItem.details;
         cell.durationLabel.text = @"";
@@ -387,8 +381,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (void)updateSearchResults:(KBYTSearchResults *)results {
-    if (self.currentPage > 1)
-    {
+    if (self.currentPage > 1) {
         // [[self.collectionView]
         NSIndexPath *lastIndexPath = [NSIndexPath indexPathForItem:[[self searchResults] count]-1 inSection:0];
         [self.collectionView performBatchUpdates:^{
@@ -424,8 +417,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (void)oldupdateSearchResults:(NSArray *)newResults {
-    if (self.currentPage > 1)
-    {
+    if (self.currentPage > 1) {
         // [[self.collectionView]
         NSIndexPath *lastIndexPath = [NSIndexPath indexPathForItem:[[self searchResults] count]-1 inSection:0];
         [self.collectionView performBatchUpdates:^{
@@ -501,8 +493,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     LOG_SELF;
     self.currentPage = 1; //reset for new search
     self.continuationToken = nil;
-    if ([_lastSearchResult isEqualToString:searchController.searchBar.text] || searchController.searchBar.text.length == 0)
-    {
+    if ([_lastSearchResult isEqualToString:searchController.searchBar.text] || searchController.searchBar.text.length == 0) {
         //no need to refresh a search with an old string...
         return;
     }
@@ -525,8 +516,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (KBYTSearchResult *)searchResultFromFocusedCell {
-    if (self.focusedCollectionCell != nil)
-    {
+    if (self.focusedCollectionCell != nil) {
         UICollectionView *cv = self.collectionView;
         NSIndexPath *indexPath = [cv indexPathForCell:self.focusedCollectionCell];
         KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
@@ -546,8 +536,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)getNextPage {
     if (_gettingPage) return;
     NSInteger nextPage = self.currentPage + 1;
-    if (self.pageCount > nextPage)
-    {
+    if (self.pageCount > nextPage) {
         _gettingPage = true;
         self.currentPage = nextPage;
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
@@ -604,8 +593,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         NSDate *myStart = [NSDate date];
         [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
             
-            NSLog(@"[tuyu] video details fetched in %@", [myStart timeStringFromCurrentDate]);
-            NSLog(@"[tuyu] first object: %@", subarray.firstObject);
+            //NSLog(@"[tuyu] video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            //NSLog(@"[tuyu] first object: %@", subarray.firstObject);
             [playerView addObjectsToPlayerQueue:videoArray];
             
         } failureBlock:^(NSString *error) {
@@ -626,19 +615,16 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
-    if (searchResult.resultType ==kYTSearchResultTypeVideo)
-    {
+    if (searchResult.resultType ==kYTSearchResultTypeVideo) {
         NSArray *subarray = [self.searchResults subarrayWithRange:NSMakeRange(indexPath.row, self.searchResults.count - indexPath.row)];
         [self playAllSearchResults:subarray];
         //[self playFirstStreamForResult:searchResult];
-    } else if (searchResult.resultType ==kYTSearchResultTypeChannel)
-    {
+    } else if (searchResult.resultType ==kYTSearchResultTypeChannel) {
         
         KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
         [self presentViewController:cv animated:true completion:nil];
         
-    } else if (searchResult.resultType ==kYTSearchResultTypePlaylist)
-    {
+    } else if (searchResult.resultType ==kYTSearchResultTypePlaylist) {
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
         [[KBYourTube sharedInstance] getPlaylistVideos:searchResult.videoId completionBlock:^(KBYTPlaylist *searchDetails) {

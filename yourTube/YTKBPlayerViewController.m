@@ -117,7 +117,7 @@
             NSLog(@"media already exists, dont add it again!");
             return;
         }
-        KBYTStream *stream = [[result streams] lastObject];
+        //KBYTStream *stream = [[result streams] lastObject];
         //NSLog(@"[tuyu] playing stream: %@", stream);
         YTPlayerItem *playerItem = [result playerItemRepresentation];//[[YTPlayerItem alloc] initWithURL:[stream url]];
         //playerItem.associatedMedia = result;
@@ -183,9 +183,12 @@
     [self setNowPlayingInfo];
 #elif TARGET_OS_TV
     
-    KBYTMedia *theMedia = [(YTPlayerItem *)item associatedMedia];
+    KBYTMedia *theMedia = (KBYTMedia*)[(YTPlayerItem *)item associatedMedia];
+    if (theMedia){
+        [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
+    }
     //NSLog(@"theMedia: %@", theMedia);
-    [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
+    //[[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
     
     
 #endif
