@@ -19,5 +19,7 @@
 - (NSArray *)videoHistoryObjects;
 - (NSArray *)channelHistory;
 - (NSArray *)videoHistory;
+- (void)clearChannelHistory;
+- (void)clearVideoHistory;
 
 @end

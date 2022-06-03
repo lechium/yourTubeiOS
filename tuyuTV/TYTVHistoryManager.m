@@ -25,19 +25,29 @@
     
 }
 
-- (NSArray *)videoHistoryObjects
-{
+- (void)clearChannelHistory {
+    [UD removeObjectForKey:@"ChannelHistory"];
+}
+
+- (void)clearVideoHistory {
+    [UD removeObjectForKey:@"VideoHistory"];
+}
+
+- (NSArray *)videoHistoryObjects {
     NSArray *vidHistory = [self videoHistory];
-    if (vidHistory != nil)
-    {
+    if (vidHistory != nil) {
         NSMutableArray *convertedArray = [NSMutableArray new];
-        for (NSDictionary *videoDict in vidHistory)
-        {
+        for (NSDictionary *videoDict in vidHistory) {
+            NSString *duration = videoDict[@"duration"];
+            if (![duration containsString:@":"]){
+                duration = [NSString stringFromTimeInterval:[duration integerValue]];
+            }
             KBYTSearchResult *result = [KBYTSearchResult new];
             result.videoId = videoDict[@"videoID"];
             result.title = videoDict[@"title"];
             result.author = videoDict[@"author"];
-            result.resultType =kYTSearchResultTypeVideo;
+            result.duration = duration;
+            result.resultType = kYTSearchResultTypeVideo;
             result.imagePath = videoDict[@"images"][@"high"];
             [convertedArray addObject:result];
         }
@@ -47,21 +57,16 @@
     return nil;
 }
 
-- (NSArray *)channelHistoryObjects
-{
+- (NSArray *)channelHistoryObjects {
     NSArray *prefHistory = [self channelHistory];
-    if (prefHistory != nil)
-    {
+    if (prefHistory != nil) {
         NSMutableArray *convertedArray = [NSMutableArray new];
-        for (NSDictionary *channelDict in prefHistory)
-        {
+        for (NSDictionary *channelDict in prefHistory) {
             KBYTSearchResult *result = [KBYTSearchResult new];
             result.videoId = channelDict[@"channelID"];
-            result.title = channelDict[@"name"];
-            result.duration = channelDict[@"duration"];
-            result.author = channelDict[@"author"];
-            result.resultType =kYTSearchResultTypeChannel;
-            result.imagePath = channelDict[@"thumbnail"];
+            result.title = channelDict[@"title"];
+            result.resultType = kYTSearchResultTypeChannel;
+            result.imagePath = channelDict[@"image"];
             [convertedArray addObject:result];
         }
         return convertedArray;
@@ -70,30 +75,23 @@
     return nil;
 }
 
-- (NSArray *)channelHistory
-{
+- (NSArray *)channelHistory {
     return [[NSUserDefaults standardUserDefaults] arrayForKey:@"ChannelHistory"];
 }
-- (NSArray *)videoHistory
-{
+- (NSArray *)videoHistory {
     return [[NSUserDefaults standardUserDefaults] arrayForKey:@"VideoHistory"];
 }
 
-- (void)addChannelToHistory:(NSDictionary *)channelDetails
-{
+- (void)addChannelToHistory:(NSDictionary *)channelDetails {
     NSMutableDictionary *channel = [channelDetails mutableCopy];
 
-    [channel removeObjectForKey:@"results"];
-    [channel removeObjectForKey:@"playlists"];
+    [channel removeObjectForKey:@"sections"];
     NSArray *history = [self channelHistory];
-    if (history == nil)
-    {
+    if (history == nil) {
         NSArray *newArray = @[channel];
         [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"ChannelHistory"];
     } else {
-        
-        if ([history containsObject:channel])
-        {
+        if ([history containsObject:channel]){
             return;
         }
         
@@ -103,30 +101,23 @@
     }
 }
 
-- (void)addVideoToHistory:(NSDictionary *)videoDetails
-{
-    return;
-  //  NSLog(@"video history: %@", videoDetails);
+- (void)addVideoToHistory:(NSDictionary *)videoDetails {
+    NSLog(@"[tuyu] video history: %@", videoDetails);
     NSMutableDictionary *video = [videoDetails mutableCopy];
     [video removeObjectForKey:@"streams"];
     NSArray *history = [self videoHistory];
-    if (history == nil)
-    {
+    if (history == nil) {
         NSArray *newArray = @[video];
         [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"VideoHistory"];
     } else {
-        
-        if ([history containsObject:video])
-        {
-            NSLog(@"item already exists");
+        if ([history containsObject:video]) {
+            NSLog(@"[tuyu] item already exists");
             return;
         }
-        
         NSMutableArray *newArray = [history mutableCopy];
         [newArray addObject:video];
         [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"VideoHistory"];
     }
 }
-
 
 @end

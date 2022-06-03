@@ -517,7 +517,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (YTPlayerItem *)playerItemRepresentation
 {
     KBYTStream *firstStream = [[self streams] lastObject];
-    NSLog(@"[tuyu] firstStream: %@ in %@", [self streams], NSStringFromSelector(_cmd));
+    //NSLog(@"[tuyu] firstStream: %@ in %@", [self streams], NSStringFromSelector(_cmd));
    
     YTPlayerItem *mediaItem = [[YTPlayerItem alloc] initWithURL:firstStream.url];
     mediaItem.associatedMedia = self;
@@ -2464,6 +2464,17 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSDictionary *title = [details recursiveObjectForKey:@"title"];
             NSDictionary *subtitle = [details recursiveObjectForKey:@"subtitle"];
             NSArray *thumbnails = [details recursiveObjectForKey:@"thumbnails"];
+            NSDictionary *thumb = [thumbnails lastObject];
+            NSInteger width = [thumb[@"height"] integerValue];
+            NSString *imagePath = thumb[@"url"];
+            
+            if (width < 400){
+                NSLog(@"generate thumb manually!");
+                imagePath = [self hiRestChannelImageFromDict:thumb];
+            }
+            if (![imagePath containsString:@"https:"]){
+                imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
+            }
             __block KBYTChannel *channel = [KBYTChannel new];
             if ([title isKindOfClass:[NSDictionary class]]){
                 channel.title = title[@"simpleText"];
@@ -2475,8 +2486,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             } else {
                 channel.subtitle = subtitle[@"simpleText"];
             }
+            channel.channelID = channelID;
             channel.subscribers = subscriberCount[@"simpleText"];
-            channel.image = thumbnails.lastObject[@"url"];
+            channel.image = imagePath;
             channel.url = [details recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
             channel.continuationToken = cc[@"token"];
             channel.banner = lastBanner;
@@ -2505,7 +2517,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     } else {
                         NSLog(@"[tuyu] no videoRenderer!: %@", obj);
                         id cc = [obj recursiveObjectForKey:@"continuationCommand"];
-                        NSLog(@"[tuyu] cc: %@", cc);
+                        //NSLog(@"[tuyu] cc: %@", cc);
                         channel.continuationToken = cc[@"token"];
                         
                     }

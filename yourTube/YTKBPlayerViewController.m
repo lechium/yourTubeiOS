@@ -30,8 +30,7 @@
  
  */
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didForeground:) name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -52,23 +51,21 @@
         
     }];
     
-   
+    
 #if TARGET_OS_IOS
     self.titleTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(setNowPlayingInfo) userInfo:nil repeats:true];
 #endif 
     
 }
 
-- (void)queuePlayerHasMultipleItems:(KBYTQueuePlayer *)player
-{
+- (void)queuePlayerHasMultipleItems:(KBYTQueuePlayer *)player {
     LOG_SELF;
     
     MPRemoteCommandCenter *shared = [MPRemoteCommandCenter sharedCommandCenter];
     
-    if ([[shared nextTrackCommand]isEnabled])
-    {
-       // NSLog(@"already enabled, dont add new targets!");
-     //   return;
+    if ([[shared nextTrackCommand]isEnabled]) {
+        // NSLog(@"already enabled, dont add new targets!");
+        //   return;
         //remove them just in case before re-adding, kinda a kill shot double tap
         [[MPRemoteCommandCenter sharedCommandCenter].nextTrackCommand removeTarget:self];
         [[MPRemoteCommandCenter sharedCommandCenter].previousTrackCommand removeTarget:self];
@@ -90,16 +87,13 @@
     }];
 }
 
-- (id)initWithFrame:(CGRect)frame usingStreamingMediaArray:(NSArray *)streamingMedia
-{
+- (id)initWithFrame:(CGRect)frame usingStreamingMediaArray:(NSArray *)streamingMedia {
     self = [super init];
     mediaIsLocal = false;
     
     NSMutableArray *avPlayerItemArray = [NSMutableArray new];
-    for (KBYTSearchResult *result in streamingMedia)
-    {
-        if ([result media] != nil)
-        {
+    for (KBYTSearchResult *result in streamingMedia) {
+        if ([result media] != nil) {
             YTPlayerItem *playerItem = [[result media] playerItemRepresentation];
             //YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:[[[[result media]streams] firstObject]url]];
             playerItem.associatedMedia = [result media];
@@ -117,35 +111,29 @@
     return self;
 }
 
-- (void)addObjectsToPlayerQueue:(NSArray *)objects
-{
-    for (KBYTMedia *result in objects)
-    {
-        if ([(KBYTQueuePlayer *)self.player mediaObjectExists:result])
-        {
+- (void)addObjectsToPlayerQueue:(NSArray *)objects {
+    for (KBYTMedia *result in objects) {
+        if ([(KBYTQueuePlayer *)self.player mediaObjectExists:result]) {
             NSLog(@"media already exists, dont add it again!");
             return;
         }
         KBYTStream *stream = [[result streams] lastObject];
-        NSLog(@"[tuyu] playing stream: %@", stream);
+        //NSLog(@"[tuyu] playing stream: %@", stream);
         YTPlayerItem *playerItem = [result playerItemRepresentation];//[[YTPlayerItem alloc] initWithURL:[stream url]];
         //playerItem.associatedMedia = result;
-        if (playerItem != nil)
-        {
+        if (playerItem != nil) {
             [(KBYTQueuePlayer *)self.player addItemToQueue:playerItem];
             //[avPlayerItemArray addObject:playerItem];
         }
     }
 }
 
-- (id)initWithFrame:(CGRect)frame usingLocalMediaArray:(NSArray *)localMediaArray
-{
+- (id)initWithFrame:(CGRect)frame usingLocalMediaArray:(NSArray *)localMediaArray {
     self = [super init];
     mediaIsLocal = true;
     NSMutableArray *avPlayerItemArray = [NSMutableArray new];
     
-    for (KBYTLocalMedia *file in localMediaArray)
-    {
+    for (KBYTLocalMedia *file in localMediaArray) {
         NSString *filePath = file.filePath;
         NSURL *playURL = [NSURL fileURLWithPath:filePath];
         YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:playURL];
@@ -158,8 +146,7 @@
     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };
     self.showsPlaybackControls = true;
     self.player = [KBYTQueuePlayer queuePlayerWithItems:avPlayerItemArray];
-    if ([localMediaArray count] > 1)
-    {
+    if ([localMediaArray count] > 1) {
         [self queuePlayerHasMultipleItems:(KBYTQueuePlayer*)self.player];
     }
     [(KBYTQueuePlayer *)self.player setDelegate:self];
@@ -169,8 +156,7 @@
 }
 
 
-- (void)setNowPlayingInfo
-{
+- (void)setNowPlayingInfo {
     NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
     YTPlayerItem *currentPlayerItem = [playerItems firstObject];
     double currentTime = currentPlayerItem.currentTime.value/currentPlayerItem.currentTime.timescale;
@@ -178,8 +164,7 @@
     //NSLog(@"currentItem: %@", currentItem);
     NSString *duration = [currentItem duration];
     NSNumber *usableDuration = nil;
-    if ([duration containsString:@":"])
-    {
+    if ([duration containsString:@":"]) {
         usableDuration = [NSNumber numberWithInteger:[[currentItem duration]timeFromDuration]];
     } else {
         NSNumberFormatter *numFormatter = [NSNumberFormatter new];
@@ -187,51 +172,47 @@
     }
     if (currentItem == nil) { return; }
     
-        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: usableDuration, MPNowPlayingInfoPropertyElapsedPlaybackTime: [NSNumber numberWithDouble:currentTime] }; //, MPMediaItemPropertyArtwork: artwork };
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: usableDuration, MPNowPlayingInfoPropertyElapsedPlaybackTime: [NSNumber numberWithDouble:currentTime] }; //, MPMediaItemPropertyArtwork: artwork };
     
-
+    
 }
 
-- (void)queuePlayer:(KBYTQueuePlayer *)player didStartPlayingItem:(AVPlayerItem *)item
-{
-//    LOG_SELF;
+- (void)queuePlayer:(KBYTQueuePlayer *)player didStartPlayingItem:(AVPlayerItem *)item {
+    //    LOG_SELF;
 #if TARGET_OS_IOS
     [self setNowPlayingInfo];
 #elif TARGET_OS_TV
     
     KBYTMedia *theMedia = [(YTPlayerItem *)item associatedMedia];
     //NSLog(@"theMedia: %@", theMedia);
-   // [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
+    [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
     
     
 #endif
     /*
-    if ([[(KBYTQueuePlayer *)self.player items] count] == 0)
-    {
-        [self dismissViewControllerAnimated:true completion:nil];
-        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
-    } else {
-        [self setNowPlayingInfo];
-    }
+     if ([[(KBYTQueuePlayer *)self.player items] count] == 0)
+     {
+     [self dismissViewControllerAnimated:true completion:nil];
+     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
+     } else {
+     [self setNowPlayingInfo];
+     }
      */
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[MPRemoteCommandCenter sharedCommandCenter].pauseCommand removeTarget:self];
     [[MPRemoteCommandCenter sharedCommandCenter].playCommand removeTarget:self];
     [[MPRemoteCommandCenter sharedCommandCenter].nextTrackCommand removeTarget:self];
-     [[MPRemoteCommandCenter sharedCommandCenter].previousTrackCommand removeTarget:self];
+    [[MPRemoteCommandCenter sharedCommandCenter].previousTrackCommand removeTarget:self];
     [(AVQueuePlayer *)[self player] removeAllItems];
     self.player = nil;
     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
-    if ([self titleTimer] != nil)
-    {
-        if ([self.titleTimer isValid])
-        {
+    if ([self titleTimer] != nil) {
+        if ([self.titleTimer isValid]) {
             [self.titleTimer invalidate];
             self.titleTimer = nil;
         }
@@ -239,10 +220,8 @@
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 }
 
-- (void)didForeground:(NSNotification *)n
-{
-    if (_layerToRestore != nil)
-    {
+- (void)didForeground:(NSNotification *)n {
+    if (_layerToRestore != nil) {
         [_layerToRestore setPlayer:[self player]];
         _layerToRestore = nil;
     }
@@ -254,8 +233,7 @@
 
 - (AVPlayerLayer *)findLayerWithAVPlayerLayer:(UIView *)view {
     AVPlayerLayer *foundView = nil;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0"))
-    {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
         if ([view.layer isKindOfClass:[AVPlayerLayer class]]) {
             return (AVPlayerLayer *)view.layer;
         }
@@ -266,8 +244,7 @@
         @catch ( NSException *e ) {
             //  NSLog(@"exception: %@", e);
         }
-        @finally
-        {
+        @finally {
             if (foundView != nil)
             {
                 return foundView;
@@ -277,20 +254,16 @@
     
     for (UIView *v in view.subviews) {
         AVPlayerLayer *theLayer = [self findLayerWithAVPlayerLayer:v];
-        if (theLayer != nil)
-        {
+        if (theLayer != nil) {
             return theLayer;
         }
     }
     return nil;
 }
 
-- (BOOL)isPlaying
-{
-    if ([self player] != nil)
-    {
-        if (self.player.rate != 0)
-        {
+- (BOOL)isPlaying {
+    if ([self player] != nil) {
+        if (self.player.rate != 0) {
             return true;
         }
     }
@@ -298,15 +271,12 @@
     
 }
 
-- (BOOL)hasVideo
-{
+- (BOOL)hasVideo {
     AVPlayerItem *playerItem = [[self player] currentItem];
     NSArray *tracks = [playerItem tracks];
-    for (AVPlayerItemTrack *playerItemTrack in tracks)
-    {
+    for (AVPlayerItemTrack *playerItemTrack in tracks) {
         // find video tracks
-        if ([playerItemTrack.assetTrack hasMediaCharacteristic:AVMediaCharacteristicVisual])
-        {
+        if ([playerItemTrack.assetTrack hasMediaCharacteristic:AVMediaCharacteristicVisual]) {
             //playerItemTrack.enabled = NO; // disable the track
             return true;
         }
@@ -314,12 +284,10 @@
     return false;
 }
 
-- (void)didBackground:(NSNotification *)n
-{
+- (void)didBackground:(NSNotification *)n {
     // NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
     //NSLog(@"### view recursiveDescription: %@", recursiveDesc);
-    if ([self isPlaying] == true && [self hasVideo] == true)
-    {
+    if ([self isPlaying] == true && [self hasVideo] == true) {
         
         _layerToRestore = [self findPlayerView];
         [_layerToRestore setPlayer:nil];
@@ -327,8 +295,7 @@
     }
 }
 
-- (BOOL)shouldAutorotate
-{
+- (BOOL)shouldAutorotate {
     return TRUE;
 }
 

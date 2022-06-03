@@ -8,11 +8,11 @@
 
 #import "KBYTGridChannelViewController.h"
 #import "UIImageView+WebCache.h"
+#import "TYTVHistoryManager.h"
 
 static NSString * const standardReuseIdentifier = @"StandardCell";
 
-@interface KBYTGridChannelViewController ()
-{
+@interface KBYTGridChannelViewController () {
     KBYTChannelHeaderView *__headerView;
 }
 @end
@@ -30,20 +30,17 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     // Dispose of any resources that can be recreated.
 }
 
-- (id)initWithChannelID:(NSString *)channelID
-{
+- (id)initWithChannelID:(NSString *)channelID {
     self = [super init];
     _channelID = channelID;
     return self;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 }
 
-- (void)initialSetup
-{
+- (void)initialSetup {
     NSInteger i = 0;
     self.totalHeight = 0;
     self.featuredHeightConstraint.constant = 200;
@@ -118,8 +115,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     }
 }
 
-- (void)refreshDataWithProgress:(BOOL)progress
-{
+- (void)refreshDataWithProgress:(BOOL)progress {
     if (progress == true){
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
@@ -146,6 +142,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             self.playlistDictionary = plDict;
             if (progress == true){
                 [SVProgressHUD dismiss];
+                [[TYTVHistoryManager sharedInstance] addChannelToHistory:[channel dictionaryRepresentation]];
                 [self initialSetup];
                 
             }
@@ -155,23 +152,20 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     }];
 }
 
-- (void)viewDidLayoutSubviews
-{
+- (void)viewDidLayoutSubviews {
     [[self scrollView] setContentSize:CGSizeMake(1920, self.totalHeight)];
     
     // [self.view printRecursiveDescription];
     
 }
 
-- (NSArray *)arrayForCollectionView:(UICollectionView *)theView;
-{
+- (NSArray *)arrayForCollectionView:(UICollectionView *)theView; {
     NSInteger section = theView.tag - 60;
     NSArray *theArray = self.playlistDictionary[[self titleForSection:section]];
     return theArray;
 }
 
-- (KBYTChannelHeaderView *)headerview
-{
+- (KBYTChannelHeaderView *)headerview {
     if (__headerView != nil) return __headerView;
     
     __headerView = [[KBYTChannelHeaderView alloc] initForAutoLayout];

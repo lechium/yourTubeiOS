@@ -130,8 +130,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     for (i = 0; i < [_backingSectionLabels count]; i++) {
         UICollectionView *collectionView = (UICollectionView*)[self.view viewWithTag:tagOffset+i];
         // NSLog(@"collectionView: %@", collectionView);
-        if ([collectionView isKindOfClass:[UICollectionView class]])
-        {
+        if ([collectionView isKindOfClass:[UICollectionView class]]) {
             [collectionView reloadData];
         }
     }
@@ -882,7 +881,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
         [SVProgressHUD dismiss];
         //NSLog(@"videoDetails: %@", videoDetails);
-          //[[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
+        [[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
         
         NSURL *playURL = [[videoDetails.streams firstObject] url];
         AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];

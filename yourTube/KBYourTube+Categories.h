@@ -57,6 +57,7 @@
 @end
 
 @interface NSObject  (convenience)
+- (NSDictionary *)dictionaryRepresentation;
 - (void)recursiveInspectObjectLikeKey:(NSString *)desiredKey saving:(NSMutableArray *)array;
 - (void)recursiveInspectObjectForKey:(NSString *)desiredKey saving:(NSMutableArray *)array;
 - (id)recursiveObjectsLikeKey:(NSString *)desiredKey;

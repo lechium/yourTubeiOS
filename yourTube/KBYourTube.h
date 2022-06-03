@@ -174,6 +174,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *continuationToken;
 @property (nonatomic, strong) NSString *banner;
 @property (nonatomic, strong) NSString *subscribers;
+@property (nonatomic, strong) NSString *duration; //video count
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
 @property (nonatomic, strong) NSArray <KBYTSection *> *sections;

@@ -46,19 +46,14 @@
 @end
 
 
-
-
-
 @implementation AppDelegate
 
-- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
-{
+- (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
    // DLOG_SELF;
     return UIBarPositionAny;
 }
 
-+ (NSUserDefaults *)sharedUserDefaults
-{
++ (NSUserDefaults *)sharedUserDefaults {
     static dispatch_once_t pred;
     static NSUserDefaults* shared = nil;
     
@@ -69,8 +64,7 @@
     return shared;
 }
 
-- (UIViewController *)packagedSearchController
-{
+- (UIViewController *)packagedSearchController {
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     KBYTSearchResultsViewController *svc = [sb instantiateViewControllerWithIdentifier:@"SearchResultsViewController"];
     UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:svc];
@@ -101,38 +95,32 @@
     return searchNavigationController;
 }
 
-- (TYGridUserViewController *)loggedInUserGridViewFromResults:(NSDictionary *)outputResults
-{
+- (TYGridUserViewController *)loggedInUserGridViewFromResults:(NSDictionary *)outputResults {
     NSArray *results = outputResults[@"results"];
     NSMutableArray *_backingSectionLabels = [NSMutableArray new];
     
-    for (KBYTSearchResult *result in results)
-    {
-        if (result.resultType ==kYTSearchResultTypePlaylist)
-        {
+    for (KBYTSearchResult *result in results) {
+        if (result.resultType ==kYTSearchResultTypePlaylist) {
             [_backingSectionLabels addObject:result.title];
         }
     }
     
     //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
     
-    if (outputResults[@"channels"] != nil)
-    {
+    if (outputResults[@"channels"] != nil) {
         [_backingSectionLabels addObject:@"Channels"];
     }
     
     NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
     
-    if ([historyObjects count] > 0)
-    {
+    if ([historyObjects count] > 0) {
         [_backingSectionLabels addObject:@"Channel History"];
         //  playlists[@"Channel History"] = historyObjects;
     }
     
     NSArray *videoHistory = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
     
-    if ([videoHistory count] > 0)
-    {
+    if ([videoHistory count] > 0) {
         [_backingSectionLabels addObject:@"Video History"];
         //  playlists[@"Channel History"] = historyObjects;
     }
@@ -142,8 +130,7 @@
 
 
 
-- (void)updateForSignedIn
-{
+- (void)updateForSignedIn {
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     if ([viewControllers count] == 5) { return; }
   //  UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
@@ -186,8 +173,7 @@
     }
 }
 
-- (void)updateForSignedOut
-{
+- (void)updateForSignedOut {
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     [self.tabBar setSelectedIndex:0];
     if ([viewControllers count] == 5)
@@ -209,8 +195,7 @@
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] clearAllCookies];
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
-{
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
     DLog(@"url: %@ path: %@", url.host, url.path.lastPathComponent);
     
     YTSearchResultType type = [KBYourTube resultTypeForString:url.host];
@@ -255,16 +240,14 @@
     return YES;
 }
 
-- (void)presentViewController:(UIViewController *)vc animated:(BOOL)isAnimated completion:(void (^ __nullable)(void))completion
-{
+- (void)presentViewController:(UIViewController *)vc animated:(BOOL)isAnimated completion:(void (^ __nullable)(void))completion {
     UIViewController *rvc = UIApplication.sharedApplication.keyWindow.rootViewController;
     [rvc presentViewController:vc animated:isAnimated completion:completion];
     
     
 }
 
-- (void)showPlaylist:(NSString *)videoID named:(NSString *)name
-{
+- (void)showPlaylist:(NSString *)videoID named:(NSString *)name {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[KBYourTube sharedInstance] getPlaylistVideos:videoID completionBlock:^(KBYTPlaylist *playlist) {
@@ -283,8 +266,7 @@
 }
 
 
-- (void)showChannel:(NSString *)videoId
-{
+- (void)showChannel:(NSString *)videoId {
     
     KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:videoId];
     [self presentViewController:cv animated:true completion:nil];
@@ -314,8 +296,7 @@
    */
 }
 
-- (void)itemDidFinishPlaying:(NSNotification *)n
-{
+- (void)itemDidFinishPlaying:(NSNotification *)n {
     UIViewController *rvc = [[UIApplication sharedApplication]keyWindow].rootViewController;
     if ([rvc isKindOfClass:AVPlayerViewController.class])
     {

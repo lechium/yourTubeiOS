@@ -8,10 +8,8 @@
 
 #import "TYGridUserViewController.h"
 
-@interface TYGridUserViewController ()
-{
+@interface TYGridUserViewController () {
     BOOL _didAdjustTotalHeight;
-    
 }
 @end
 
@@ -121,11 +119,17 @@
     
     NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
     if ([historyObjects count] > 0) {
+        if (![_backingSectionLabels containsObject:@"Channel History"]) {
+            [_backingSectionLabels addObject:@"Channel History"];
+        }
         playlists[@"Channel History"] = historyObjects;
         adjustment++;
     }
     NSArray *videoObjects = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
     if ([videoObjects count] > 0) {
+        if (![_backingSectionLabels containsObject:@"Video History"]) {
+            [_backingSectionLabels addObject:@"Video History"];
+        }
         playlists[@"Video History"] = videoObjects;
         adjustment++;
     }
