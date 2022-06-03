@@ -723,30 +723,6 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
     [self presentViewController:cv animated:true completion:nil];
-    /*
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    KBYTChannelViewController *cv = [sb instantiateViewControllerWithIdentifier:@"channelViewController"];
-    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
-    [SVProgressHUD show];
-    [[KBYourTube sharedInstance] getChannelVideos:searchResult.videoId completionBlock:^(NSDictionary *searchDetails) {
-        
-        [SVProgressHUD dismiss];
-        
-        [[TYTVHistoryManager sharedInstance] addChannelToHistory:searchDetails];
-        cv.searchResults = searchDetails[@"results"];
-        cv.pageCount = 1;
-        cv.nextHREF = searchDetails[@"loadMoreREF"];
-        cv.bannerURL = searchDetails[@"banner"];
-        cv.channelTitle = searchDetails[@"name"];
-        cv.subscribers = searchDetails[@"subscribers"];
-        
-        [self presentViewController:cv animated:true completion:nil];
-        //[self.navigationController pushViewController:cv animated:true];
-        
-    } failureBlock:^(NSString *error) {
-        
-    }];
-     */
 }
 
 //datasoure method that will return a title for the respective section

@@ -567,32 +567,6 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         } failureBlock:^(NSString *error) {
             [SVProgressHUD dismiss];
         }];
-    /*
-        [[KBYourTube sharedInstance] youTubeSearch:self.filterString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
-            
-            [SVProgressHUD dismiss];
-            //  NSLog(@"search details: %@", searchDetails);
-            if (self.currentPage == 1)
-                [SVProgressHUD dismiss];
-            
-            self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            //self.searchResults = searchDetails[@"results"];
-            
-            [self updateSearchResults:searchDetails[@"results"]];
-            // NSIndexPath *currentIndexPath = [[self collectionView] indexPathsForSelectedItems][0];
-            [self.collectionView reloadDataWithCompletion:^{
-                
-                
-                _gettingPage = false;
-            }];
-            
-            
-        } failureBlock:^(NSString *error) {
-            //
-            [SVProgressHUD dismiss];
-            
-        }];*/
         
     }
     
@@ -662,34 +636,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         
         KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
         [self presentViewController:cv animated:true completion:nil];
-        return;/*
-        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        KBYTChannelViewController *cv = [sb instantiateViewControllerWithIdentifier:@"channelViewController"];
-        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
-        [SVProgressHUD show];
-        [[KBYourTube sharedInstance] getChannelVideos:searchResult.videoId completionBlock:^(KBYTChannel *searchDetails) {
-            
-            [SVProgressHUD dismiss];
-            
-            //[[TYTVHistoryManager sharedInstance] addChannelToHistory:searchDetails];
-            
-            //  NSLog(@"searchDeets: %@", searchDetails);
-            
-            cv.channel = searchDetails;
-            cv.searchResults = [searchDetails.videos mutableCopy];
-            cv.pageCount = 1;
-            //cv.nextHREF = searchDetails[@"loadMoreREF"];
-            //cv.bannerURL = searchDetails[@"banner"];
-            cv.channelTitle = searchDetails.title;//searchDetails[@"name"];
-            //cv.subscribers = searchDetails[@"subscribers"];
-            
-            [[self.presentingViewController navigationController] pushViewController:cv animated:true];
-            
-            
-        } failureBlock:^(NSString *error) {
-            //
-        }];
-                */
+        
     } else if (searchResult.resultType ==kYTSearchResultTypePlaylist)
     {
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
