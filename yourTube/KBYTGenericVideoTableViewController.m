@@ -12,6 +12,8 @@
 #import "KBYTSearchItemViewController.h"
 #import "TYAuthUserManager.h"
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 @interface KBYTGenericVideoTableViewController ()
 
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results

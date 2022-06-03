@@ -27,6 +27,8 @@
 #import <libxml2/libxml/xpathInternals.h>
 #import <libxml2/libxml/HTMLparser.h>
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 NSString * const ONOXMLDocumentErrorDomain = @"com.ono.error";
 
 static NSRegularExpression * ONOIdRegularExpression() {

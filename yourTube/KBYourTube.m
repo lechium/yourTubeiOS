@@ -15,6 +15,8 @@
 #import "TYAuthUserManager.h"
 #endif
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 static NSString * const hardcodedTimestamp = @"16864";
 static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
@@ -100,60 +102,65 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return [NSString stringWithFormat:@"%@ videos: %@ playlists: %@ channels: %@ cc: %@ results count: %lu", desc, _videos, _playlists, _channels, _continuationToken, _estimatedResults];
 }
 
-- (void)processJSON:(NSDictionary *)jsonDict {
-    __block NSMutableArray *searchResults = [NSMutableArray new];
-    __block NSMutableArray *playlistResults = [NSMutableArray new];
-    __block NSMutableArray *channelResults = [NSMutableArray new];
-    NSMutableArray *ourVideos = [NSMutableArray new];
-    [jsonDict recursiveInspectObjectLikeKey:@"videoRenderer" saving:ourVideos];
-    [ourVideos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        KBYTSearchResult *searchItem = [[KBYourTube sharedInstance] searchResultFromVideoRenderer:obj];
-        [searchResults addObject:searchItem];
-    }];
-    //NSArray *playlists = [jsonDict recursiveObjectsForKey:@"playlistRenderer"];
-    recursiveObjectsFor(@"playlistRenderer", jsonDict, playlists);
-    recursiveObjectsFor(@"channelRenderer", jsonDict, channels);
-    //NSArray *channels = [jsonDict recursiveObjectsForKey:@"channelRenderer"];
+- (void)processJSON:(NSDictionary *)jsonData {
+    [self processJSON:jsonData filter:KBYTSearchTypeAll];
+}
+
+- (void)processJSON:(NSDictionary *)jsonDict filter:(KBYTSearchType)filter {
+    
     NSInteger estimatedResults = [[jsonDict recursiveObjectForKey:@"estimatedResults"] integerValue];
-    //NSLog(@"playlists: %@", playlists);
-    //NSLog(@"channels: %@", channels);
-    NSLog(@"estimated results: %lu", estimatedResults);
+    self.estimatedResults = estimatedResults;
     id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
     self.continuationToken = cc[@"token"];
     //NSLog(@"cc: %@", cc);
+    if (filter == KBYTSearchTypeAll) {
+        __block NSMutableArray *videoResults = [NSMutableArray new];
+        recursiveObjectsLike(@"videoRenderer", jsonDict, videos);
+        [videos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            KBYTSearchResult *searchItem = [[KBYourTube sharedInstance] searchResultFromVideoRenderer:obj];
+            [videoResults addObject:searchItem];
+        }];
+        self.videos = videoResults;
+    }
     
-    self.videos = searchResults;
     //NSLog(@"[tuyu] playlist count: %lu", playlists.count);
-    [playlists enumerateObjectsUsingBlock:^(id  _Nonnull current, NSUInteger idx, BOOL * _Nonnull stop) {
-        //NSDictionary *current = obj[@"playlistRenderer"];
-        NSDictionary *title = [current recursiveObjectForKey:@"title"];
-        NSString *pis = current[@"playlistId"];
-        NSArray *thumbnails = [current recursiveObjectForKey:@"thumbnail"][@"thumbnails"];
-        NSString *imagePath = thumbnails.lastObject[@"url"];
-        if (![imagePath containsString:@"https:"]){
-            imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
-        }
-        NSDictionary *longBylineText = current[@"longBylineText"];
-        KBYTSearchResult *searchItem = [KBYTSearchResult new];
-        searchItem.author = [longBylineText recursiveObjectForKey:@"text"];
-        searchItem.title = title[@"simpleText"];
-        searchItem.videoId = pis;
-        searchItem.imagePath = imagePath;
-        searchItem.resultType = kYTSearchResultTypePlaylist;
-        searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"browseId"];
-        if (!title){
-            NSLog(@"[tuyu] weird pl item: %@", current);
-            NSLog(@"[tuyu] pl item: %@", searchItem);
-        }
-        /*
-        NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
-        [current writeToFile:outputFile atomically:true];
-        NSLog(@"[tuyu] writing playlist: %@", outputFile);
-         */
-        [playlistResults addObject:searchItem];
-    }];
-    self.playlists = playlistResults;
-    [channels enumerateObjectsUsingBlock:^(id  _Nonnull current, NSUInteger idx, BOOL * _Nonnull stop) {
+    if (filter == KBYTSearchTypeAll || filter == KBYTSearchTypePlaylists) {
+        __block NSMutableArray *playlistResults = [NSMutableArray new];
+        recursiveObjectsFor(@"playlistRenderer", jsonDict, playlists);
+        [playlists enumerateObjectsUsingBlock:^(id  _Nonnull current, NSUInteger idx, BOOL * _Nonnull stop) {
+            //NSDictionary *current = obj[@"playlistRenderer"];
+            NSDictionary *title = [current recursiveObjectForKey:@"title"];
+            NSString *pis = current[@"playlistId"];
+            NSArray *thumbnails = [current recursiveObjectForKey:@"thumbnail"][@"thumbnails"];
+            NSString *imagePath = thumbnails.lastObject[@"url"];
+            if (![imagePath containsString:@"https:"]){
+                imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
+            }
+            NSDictionary *longBylineText = current[@"longBylineText"];
+            KBYTSearchResult *searchItem = [KBYTSearchResult new];
+            searchItem.author = [longBylineText recursiveObjectForKey:@"text"];
+            searchItem.title = title[@"simpleText"];
+            searchItem.videoId = pis;
+            searchItem.imagePath = imagePath;
+            searchItem.resultType = kYTSearchResultTypePlaylist;
+            searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"browseId"];
+            if (!title){
+                NSLog(@"[tuyu] weird pl item: %@", current);
+                NSLog(@"[tuyu] pl item: %@", searchItem);
+            }
+            /*
+             NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
+             [current writeToFile:outputFile atomically:true];
+             NSLog(@"[tuyu] writing playlist: %@", outputFile);
+             */
+            [playlistResults addObject:searchItem];
+        }];
+        self.playlists = playlistResults;
+    }
+    if (filter == KBYTSearchTypeAll || filter == KBYTSearchTypeChannels) {
+        __block NSMutableArray *channelResults = [NSMutableArray new];
+        recursiveObjectsFor(@"channelRenderer", jsonDict, channels);
+        [channels enumerateObjectsUsingBlock:^(id  _Nonnull current, NSUInteger idx, BOOL * _Nonnull stop) {
             NSDictionary *title = [current recursiveObjectForKey:@"title"];
             NSString *cis = current[@"channelId"];
             NSArray *thumbnails = [current recursiveObjectForKey:@"thumbnail"][@"thumbnails"];//current[@"thumbnail"][@"thumbnails"];
@@ -172,14 +179,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             if (!title){
                 NSLog(@"[tuyu] weird channel item: %@", current);
             }
-        /*
-            NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
-            [current writeToFile:outputFile atomically:true];
-            NSLog(@"[tuyu] writing channel: %@", outputFile);*/
+            /*
+             NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
+             [current writeToFile:outputFile atomically:true];
+             NSLog(@"[tuyu] writing channel: %@", outputFile);*/
             [channelResults addObject:searchItem];
-    }];
-    self.channels = channelResults;
-    self.estimatedResults = estimatedResults;
+        }];
+        self.channels = channelResults;
+    }
+
 }
 
 @end
@@ -3605,7 +3613,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             id jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
             //NSLog(@"body: %@ for: %@ %@", jsonDict, url, params);
             KBYTSearchResults *results = [KBYTSearchResults new];
-            [results processJSON:jsonDict];
+            [results processJSON:jsonDict filter:type];
             NSLog(@"video count: %lu", results.videos.count);
             [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"search.plist"] atomically:true];
             dispatch_async(dispatch_get_main_queue(), ^{

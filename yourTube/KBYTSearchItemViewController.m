@@ -3,7 +3,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import "KBYTQueuePlayer.h"
 
-
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 float calcLabelHeight(NSString *string, UIFont *font, float width) {
 	float height = [string sizeWithFont:font constrainedToSize:CGSizeMake(width, 1000.0f) lineBreakMode:NSLineBreakByTruncatingTail].height + 16.0f;
 	if (height > 32.0f)

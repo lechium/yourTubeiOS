@@ -111,6 +111,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *channels;
 @property (readwrite, assign) NSInteger estimatedResults;
 - (void)processJSON:(NSDictionary *)jsonData;
+- (void)processJSON:(NSDictionary *)jsonDict filter:(KBYTSearchType)filter;
 
 @end
 

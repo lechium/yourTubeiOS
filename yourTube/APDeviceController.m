@@ -7,6 +7,8 @@
 #import <arpa/inet.h>
 #import "KBYourTube.h"
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 @implementation APDeviceController
 
 @synthesize deviceDictionary, airplayServers, acbrowser, apbrowser, services, reachabilityManager;

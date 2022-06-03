@@ -13,6 +13,8 @@
 #ifndef SHELF_EXT
 #import "TYAuthUserManager.h"
 #endif
+
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 @implementation NSHTTPCookieStorage (ClearAllCookies)
 
 - (void)clearAllCookies

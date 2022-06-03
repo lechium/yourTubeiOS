@@ -552,7 +552,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         self.currentPage = nextPage;
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
-        [[KBYourTube sharedInstance] apiSearch:self.filterString type:KBYTSearchTypeAll continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
+        [[KBYourTube sharedInstance] apiSearch:self.filterString type:[self searchTypeForSettings] continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
             [SVProgressHUD dismiss];
             self.continuationToken = result.continuationToken;
             //  NSLog(@"search details: %@", searchDetails);

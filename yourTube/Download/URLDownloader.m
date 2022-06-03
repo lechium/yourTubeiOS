@@ -11,6 +11,8 @@
 
 #pragma mark -
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 @interface URLDownloader()
 
 @property(retain) NSURLConnection *urlConnection;

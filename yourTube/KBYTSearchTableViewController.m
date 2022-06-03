@@ -15,6 +15,7 @@
 
 #define kLoadingCellTag 500
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 @interface KBYTSearchTableViewController () <UISearchResultsUpdating, UISearchBarDelegate>
 

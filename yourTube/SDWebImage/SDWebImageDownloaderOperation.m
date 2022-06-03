@@ -12,6 +12,8 @@
 #import <ImageIO/ImageIO.h>
 #import "SDWebImageManager.h"
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 NSString *const SDWebImageDownloadStartNotification = @"SDWebImageDownloadStartNotification";
 NSString *const SDWebImageDownloadReceiveResponseNotification = @"SDWebImageDownloadReceiveResponseNotification";
 NSString *const SDWebImageDownloadStopNotification = @"SDWebImageDownloadStopNotification";
