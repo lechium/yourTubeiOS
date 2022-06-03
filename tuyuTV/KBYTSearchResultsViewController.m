@@ -634,8 +634,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             //NSString *nextHREF = searchDetails[@"loadMoreREF"];
             YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:searchResult.title backgroundColor:[UIColor blackColor] withPlaylistItems:searchDetails.videos];
             //playlistViewController.loadMoreHREF = nextHREF;
-            
-            [[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
+            [self presentViewController:playlistViewController animated:true completion:nil];
+            //[[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
             
         } failureBlock:^(NSString *error) {
             //

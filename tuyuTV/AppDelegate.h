@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, UIBarPositioningDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, UIBarPositioningDelegate, UISearchBarDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 @property (weak, nonatomic) UITabBarController *tabBar;

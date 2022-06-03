@@ -306,9 +306,6 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
           completionBlock:(void(^)(KBYTChannel *channel))completionBlock
                failureBlock:(void(^)(NSString *error))failureBlock;
 
-- (void)getAllFeaturedVideosWithFilter:(NSString *)filter
-                       completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
-                          failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)getFeaturedVideosWithCompletionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
                                 failureBlock:(void(^)(NSString* error))failureBlock;

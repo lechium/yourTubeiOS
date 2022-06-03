@@ -6,26 +6,11 @@
 //
 //
 
-/*
- 
- This is based on the swift sample at http://www.brianjcoleman.com/tvos-tutorial-video-app-in-swift/
- 
- it made more sense to keep everything in obj-c since the rest of this project is in obj-c,
- took the code there and made a carbon copy into obj-cafied version, the most fun was re-adding 
- all the autolayout constraints, the plus side is im a bit more comfortable with autolayout now.
- 
- for now this is just a POC to get some ATV4 work under my belt, need to actually adopt it to 
- use information and classes from the iOS version of tuyu in here. committing initial version from now 
- just to do it while its actually working :)
- 
- 
- */
 
 #import "KBYTGridChannelViewController.h"
 #import "AppDelegate.h"
 #import "KBYourTube.h"
 #import "KBYourTube+Categories.h"
-#import "UserViewController.h"
 #import "KBYTSearchTableViewController.h"
 #import "KBYTSearchResultsViewController.h"
 #import "SignOutViewController.h"
@@ -88,11 +73,11 @@
     searchContainer.extendedLayoutIncludesOpaqueBars = true;
     searchContainer.title = @"search";
     
-    searchContainer.view.backgroundColor = [UIColor blackColor];
+    searchContainer.view.backgroundColor = [UIColor blackColor];/*
     UINavigationController *searchNavigationController = [[UINavigationController alloc] initWithRootViewController:searchContainer];
-    searchNavigationController.edgesForExtendedLayout = UIRectEdgeNone;
+    searchNavigationController.edgesForExtendedLayout = UIRectEdgeNone;*/
 
-    return searchNavigationController;
+    return searchContainer;
 }
 
 - (TYGridUserViewController *)loggedInUserGridViewFromResults:(NSDictionary *)outputResults {
@@ -293,30 +278,28 @@
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     LOG_SELF;
-     NSLog(@"app support: %@", [self appSupportFolder]);
+     NSLog(@"[tuyu] app support: %@", [self appSupportFolder]);
     self.tabBar = (UITabBarController *)self.window.rootViewController;
    // self.tabBar.tabBar.translucent = false;
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
+    if (!viewControllers){
+        NSLog(@"[tuyu] vcs: %@", viewControllers);
+        viewControllers = [NSMutableArray new];
+    }
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"Fashion & Beauty",@"YouTube",@"Virtual Reality"];
     NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYTFashionAndBeautyID, KBYTSpotlightChannelID, KBYT360ChannelID];
-    TYHomeViewController *hvc = [[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
-   // hvc.channelIDs = idArray;
-    hvc.title = @"tuyu";
-    UIViewController *vc = [self packagedSearchController];
-    [viewControllers removeObjectAtIndex:0];
-    [viewControllers insertObject:hvc atIndex:0];
-    [viewControllers insertObject:vc atIndex:1];
-    TYSettingsViewController *settingsView = [TYSettingsViewController settingsView];
-    [viewControllers addObject:settingsView];
-    AboutViewController *avc = [AboutViewController new];
-    avc.title = @"about";
-    [viewControllers addObject:avc];
+    TYHomeViewController *homeViewController = [[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
+    UIViewController *searchViewController = [self packagedSearchController];
+    //[viewControllers removeObjectAtIndex:0];
+    [viewControllers insertObject:homeViewController atIndex:0];
+    [viewControllers insertObject:searchViewController atIndex:1];
+    [viewControllers addObject:[TYSettingsViewController settingsView]];
+    [viewControllers addObject:[AboutViewController new]];
     self.tabBar.viewControllers = viewControllers;
     
-    if ([[KBYourTube sharedInstance] isSignedIn])
-    {
-        DLog(@"%@", [TYAuthUserManager suastring]);
+    if ([[KBYourTube sharedInstance] isSignedIn]) {
+        //DLog(@"%@", [TYAuthUserManager suastring]);
         [[TYAuthUserManager sharedInstance] checkAndSetCredential];
         
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
@@ -332,19 +315,6 @@
                 uvc.title = outputResults[@"altUserName"];
             }
             [viewControllers insertObject:uvc atIndex:1];
-            //[vc addObject:uvc];
-            /*
-            [viewControllers removeLastObject];
-            [viewControllers removeLastObject];
-            SignOutViewController *svc = [SignOutViewController new];
-            svc.title = @"sign out";
-            [viewControllers addObject:svc];
-            AboutViewController *avc = [AboutViewController new];
-            avc.title = @"about";
-            TYSettingsViewController *settingsView = [TYSettingsViewController settingsView];
-            [viewControllers addObject:settingsView];
-            [viewControllers addObject:avc];
-           */
             self.tabBar.viewControllers = viewControllers;
             
             

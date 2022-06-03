@@ -20,6 +20,7 @@
     self.view.backgroundColor = [UIColor blackColor];
     self.textView.textColor = [UIColor whiteColor];
     self.textView.backgroundColor = [UIColor clearColor];
+    self.title = @"about";
 #if !TARGET_OS_TV
     self.textView.editable = false;
 #endif

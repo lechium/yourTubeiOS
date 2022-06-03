@@ -26,6 +26,7 @@
     [super viewDidLoad];
     //[self refreshDataWithProgress:false];
     firstLoad = true;
+    self.title = @"tuyu";
 }
 
 - (void)viewWillAppear:(BOOL)animated {
