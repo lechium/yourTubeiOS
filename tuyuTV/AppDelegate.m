@@ -13,10 +13,8 @@
 #import "KBYourTube+Categories.h"
 #import "KBYTSearchTableViewController.h"
 #import "KBYTSearchResultsViewController.h"
-#import "SignOutViewController.h"
 #import "WebViewController.h"
 #import "AboutViewController.h"
-#import "TYUserViewController.h"
 #import "TYBaseGridViewController.h"
 #import "TYGridUserViewController.h"
 #import "TYHomeViewController.h"
@@ -137,18 +135,7 @@
                 uvc.title = outputResults[@"altUserName"];
             }
             [viewControllers insertObject:uvc atIndex:1];
-          /*
-            [viewControllers removeLastObject];
-            [viewControllers removeLastObject];
-            SignOutViewController *svc = [SignOutViewController new];
-            svc.title = @"sign out";
-            [viewControllers addObject:svc];
-            AboutViewController *avc = [AboutViewController new];
-            avc.title = @"about";
-            [viewControllers addObject:avc];
-            TYSettingsViewController *settingsView = [TYSettingsViewController settingsView];
-            [viewControllers addObject:settingsView];
-           */
+          
             self.tabBar.viewControllers = viewControllers;
             
             

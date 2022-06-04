@@ -11,7 +11,6 @@
 #import "SVProgressHUD.h"
 #import "KBYourTube.h"
 #import "UIImageView+WebCache.h"
-#import "KBYTChannelViewController.h"
 #import "SVProgressHUD.h"
 #import "YTTVPlaylistViewController.h"
 #import "TYTVHistoryManager.h"
