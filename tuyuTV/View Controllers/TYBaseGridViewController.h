@@ -1,5 +1,5 @@
 //
-//  TYUserViewController.h
+//  TYBaseGridViewController.h
 //  yourTubeiOS
 //
 //  Created by Kevin Bradley on 5/7/16.
@@ -17,7 +17,6 @@
 #import "MarqueeLabel.h"
 #import "CollectionViewLayout.h"
 #import "YTTVFeaturedCollectionViewCell.h"
-#import "KBYTChannelViewController.h"
 #import "TYTVHistoryManager.h"
 #import "KBYTChannelHeaderView.h"
 

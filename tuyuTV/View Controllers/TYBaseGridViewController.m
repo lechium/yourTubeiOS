@@ -1,5 +1,5 @@
 //
-//  TYUserViewController.m
+//  TYBaseGridViewController.m
 //  yourTubeiOS
 //
 //  Created by Kevin Bradley on 5/7/16.
