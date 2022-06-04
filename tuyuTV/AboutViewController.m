@@ -12,10 +12,9 @@
 @implementation AboutViewController
 
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad{
+    LOG_SELF;
     [super viewDidLoad];
-    
     self.textView = [[UITextView alloc] initWithFrame:CGRectMake(100, 200, self.view.bounds.size.width-200, self.view.bounds.size.height-200)];
     self.view.backgroundColor = [UIColor blackColor];
     self.textView.textColor = [UIColor whiteColor];

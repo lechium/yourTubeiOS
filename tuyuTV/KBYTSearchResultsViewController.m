@@ -28,8 +28,6 @@
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;
 @property (nonatomic, strong) NSString *continuationToken;
-
-
 @end
 
 @implementation KBYTSearchResultsViewController
@@ -40,22 +38,21 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     UILongPressGestureRecognizer *longpress
     = [[UILongPressGestureRecognizer alloc]
        initWithTarget:self action:@selector(handleLongpressMethod:)];
     longpress.minimumPressDuration = .5; //seconds
-    longpress.delegate = self;
+    //longpress.delegate = self;
     longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect], [NSNumber numberWithInteger:UIPressTypePlayPause]];
-    
     [self.collectionView addGestureRecognizer:longpress];
     // Do any additional setup after loading the view.
 }
 
+/*
 - (UIView *)focusedView {
     UIFocusSystem *sys = [UIFocusSystem focusSystemForEnvironment: self];
     return [sys focusedItem];
-}
+}*/
 
 -(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
     LOG_SELF;
@@ -64,15 +61,11 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }
     
     // DLog(@"at: %@", [UD valueForKey:@"access_token"]);
-    
     if (![[KBYourTube sharedInstance] isSignedIn]) {
         return;
     }
-    
     KBYTSearchResult *searchResult = [self searchResultFromFocusedCell];
-    
     //NSLog(@"[tuyu] searchResult: %@", searchResult);
-    
     switch (searchResult.resultType) {
         case kYTSearchResultTypeVideo:
             
@@ -85,11 +78,12 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             break;
             
         case kYTSearchResultTypePlaylist:
-            
             break;
             
         case kYTSearchResultTypeUnknown:
+            break;
             
+        case kYTSearchResultTypeChannelList:
             break;
     }
     
@@ -206,20 +200,14 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
                                           preferredStyle:UIAlertControllerStyleAlert];
     
     NSArray *playlistArray = [[TYAuthUserManager sharedInstance] playlists];
-    
-    
     __weak typeof(self) weakSelf = self;
     self.alertHandler = ^(UIAlertAction *action) {
         NSString *playlistID = nil;
-        
-        for (KBYTSearchResult *result in playlistArray)
-        {
-            if ([result.title isEqualToString:action.title])
-            {
+        for (KBYTSearchResult *result in playlistArray) {
+            if ([result.title isEqualToString:action.title]) {
                 playlistID = result.videoId;
             }
         }
-        
         [weakSelf addVideo:result toPlaylist:playlistID];
     };
     
@@ -229,26 +217,17 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }
     
     UIAlertAction *newPlAction = [UIAlertAction actionWithTitle:@"Create new playlist" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
         [self promptForNewPlaylistForVideo:result];
-        
     }];
     [alertController addAction:newPlAction];
-    
-    
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
     }];
-    
-    
-    
     [alertController addAction:cancelAction];
     [self presentViewController:alertController animated:YES completion:nil];
-    
-    
 }
 
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
@@ -282,16 +261,6 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     // Dispose of any resources that can be recreated.
 }
 
-/*
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- */
-
 - (void)viewDidAppear:(BOOL)animated {
     
     [super viewDidAppear:animated];
@@ -311,8 +280,6 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 
-
-
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
@@ -328,15 +295,11 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     return 1;
 }
 
-
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    
-    
     return self.searchResults.count;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
-    
     
 }
 
@@ -345,19 +308,15 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     //check to see if we are on the last row
     NSInteger rowCount = self.searchResults.count / 5;
     NSInteger currentRow = indexPath.row / 5;
-    //  NSLog(@"indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
+    //NSLog(@"[tuyu] indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
     if (currentRow+1 >= rowCount) {
         [self getNextPage];
     }
-    
 }
-
-
-
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     YTTVStandardCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
-    
+    // Configure the cell
     KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
     if (currentItem.resultType !=kYTSearchResultTypeVideo) {
         cell.overlayView.hidden = false;
@@ -375,14 +334,13 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
     [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
     cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
-    // Configure the cell
     
     return cell;
 }
 
 - (void)updateSearchResults:(KBYTSearchResults *)results {
+    [SVProgressHUD dismiss];
     if (self.currentPage > 1) {
-        // [[self.collectionView]
         NSIndexPath *lastIndexPath = [NSIndexPath indexPathForItem:[[self searchResults] count]-1 inSection:0];
         [self.collectionView performBatchUpdates:^{
             NSMutableArray *allResults = [NSMutableArray new];
@@ -392,8 +350,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             [[self searchResults] addObjectsFromArray:allResults];
             NSMutableArray *indexPathArray = [NSMutableArray new];
             NSInteger i = 0;
-            for (i = 0; i < [allResults count]; i++)
-            {
+            for (i = 0; i < [allResults count]; i++) {
                 NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:lastIndexPath.item+i inSection:0];
                 [indexPathArray addObject:newIndexPath];
             }
@@ -416,66 +373,12 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }
 }
 
-- (void)oldupdateSearchResults:(NSArray *)newResults {
-    if (self.currentPage > 1) {
-        // [[self.collectionView]
-        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForItem:[[self searchResults] count]-1 inSection:0];
-        [self.collectionView performBatchUpdates:^{
-            
-            [[self searchResults] addObjectsFromArray:newResults];
-            NSMutableArray *indexPathArray = [NSMutableArray new];
-            NSInteger i = 0;
-            for (i = 0; i < [newResults count]; i++)
-            {
-                NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:lastIndexPath.item+i inSection:0];
-                [indexPathArray addObject:newIndexPath];
-            }
-            
-            [self.collectionView insertItemsAtIndexPaths:indexPathArray];
-            
-        } completion:^(BOOL finished) {
-            
-            //
-        }];
-        
-    } else {
-        self.searchResults = [newResults mutableCopy];
-        [self.collectionView reloadData];
-        
-    }
-}
 
 - (void)itemDidFinishPlaying:(NSNotification *)n {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
     [[self.presentingViewController navigationController] popViewControllerAnimated:true];
 }
 
-
-- (void)playFirstStreamForResult:(KBYTSearchResult *)searchResult {
-    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
-    [SVProgressHUD show];
-    [[KBYourTube sharedInstance] getVideoDetailsForID:searchResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
-        
-        [SVProgressHUD dismiss];
-        
-        [[TYTVHistoryManager sharedInstance] addVideoToHistory:[videoDetails dictionaryRepresentation]];
-        //NSURL *playURL = [[videoDetails.streams firstObject] url];
-        AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
-        AVPlayerItem *singleItem = [videoDetails playerItemRepresentation];
-        DLog(@"singleItem meta: %@", singleItem.externalMetadata );
-        //AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
-        playerView.player = [AVQueuePlayer playerWithPlayerItem:singleItem];
-        //[[self.presentingViewController navigationController] pushViewController:playerView animated:true];
-        [self presentViewController:playerView animated:true completion:nil];
-        [playerView.player play];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
-        
-        
-    } failureBlock:^(NSString *error) {
-        
-    }];
-    
-}
 
 - (KBYTSearchType)searchTypeForSettings {
     NSString *filterType = [UD valueForKey:@"filterType"];
@@ -497,22 +400,22 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         //no need to refresh a search with an old string...
         return;
     }
+    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+    [SVProgressHUD show];
     [[self searchResults] removeAllObjects];
     self.filterString = searchController.searchBar.text;
     _lastSearchResult = self.filterString;
     
     KBYTSearchType type = [self searchTypeForSettings];
-    NSLog(@"[tuyu] search type: %lu", type);
-    
+    //NSLog(@"[tuyu] search type: %lu", type);
     [[KBYourTube sharedInstance] apiSearch:self.filterString type:type continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
-        NSLog(@"[yourTubeiOS] search results: %@", result.videos);
+        //NSLog(@"[tuyu] search results: %@", result.videos);
         self.continuationToken = result.continuationToken;
         self.pageCount = 20; //just choosing an arbitrary number
         [self updateSearchResults:result];
     } failureBlock:^(NSString *error) {
         
     }];
- 
 }
 
 - (KBYTSearchResult *)searchResultFromFocusedCell {
@@ -535,6 +438,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)getNextPage {
     if (_gettingPage) return;
+    LOG_SELF;
     NSInteger nextPage = self.currentPage + 1;
     if (self.pageCount > nextPage) {
         _gettingPage = true;
@@ -556,21 +460,16 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         } failureBlock:^(NSString *error) {
             [SVProgressHUD dismiss];
         }];
-        
     }
-    
 }
 
 #pragma mark <UICollectionViewDelegate>
-
 
 // Uncomment this method to specify if the specified item should be highlighted during tracking
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
     LOG_SELF;
     return YES;
 }
-
-
 
 // Uncomment this method to specify if the specified item should be selected
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -590,7 +489,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         [[playerView player] play];
         NSArray *subarray = [searchResults subarrayWithRange:NSMakeRange(1, searchResults.count-1)];
         
-        NSDate *myStart = [NSDate date];
+        //NSDate *myStart = [NSDate date];
         [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
             
             //NSLog(@"[tuyu] video details fetched in %@", [myStart timeStringFromCurrentDate]);
@@ -607,18 +506,16 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         
     } failureBlock:^(NSString *error) {
         [SVProgressHUD dismiss];
-         DLog(@"failed?");
+        DLog(@"failed?");
         //[self showFailureAlert:error];
     }];
 }
-
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
     if (searchResult.resultType ==kYTSearchResultTypeVideo) {
         NSArray *subarray = [self.searchResults subarrayWithRange:NSMakeRange(indexPath.row, self.searchResults.count - indexPath.row)];
         [self playAllSearchResults:subarray];
-        //[self playFirstStreamForResult:searchResult];
     } else if (searchResult.resultType ==kYTSearchResultTypeChannel) {
         
         KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
@@ -628,35 +525,14 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
         [[KBYourTube sharedInstance] getPlaylistVideos:searchResult.videoId completionBlock:^(KBYTPlaylist *searchDetails) {
-            
             [SVProgressHUD dismiss];
-            
-            //NSString *nextHREF = searchDetails[@"loadMoreREF"];
             YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:searchResult.title backgroundColor:[UIColor blackColor] withPlaylistItems:searchDetails.videos];
-            //playlistViewController.loadMoreHREF = nextHREF;
             [self presentViewController:playlistViewController animated:true completion:nil];
-            //[[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
             
         } failureBlock:^(NSString *error) {
             //
         }];
     }
-    
 }
-
-/*
- // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
- - (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
- return NO;
- }
- 
- - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
- return NO;
- }
- 
- - (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
- 
- }
- */
 
 @end

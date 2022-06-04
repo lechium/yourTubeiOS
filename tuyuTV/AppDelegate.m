@@ -281,11 +281,7 @@
      NSLog(@"[tuyu] app support: %@", [self appSupportFolder]);
     self.tabBar = (UITabBarController *)self.window.rootViewController;
    // self.tabBar.tabBar.translucent = false;
-    NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
-    if (!viewControllers){
-        NSLog(@"[tuyu] vcs: %@", viewControllers);
-        viewControllers = [NSMutableArray new];
-    }
+    NSMutableArray *viewControllers = [NSMutableArray new];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"Fashion & Beauty",@"YouTube",@"Virtual Reality"];
     NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYTFashionAndBeautyID, KBYTSpotlightChannelID, KBYT360ChannelID];
@@ -295,7 +291,9 @@
     [viewControllers insertObject:homeViewController atIndex:0];
     [viewControllers insertObject:searchViewController atIndex:1];
     [viewControllers addObject:[TYSettingsViewController settingsView]];
-    [viewControllers addObject:[AboutViewController new]];
+    AboutViewController *avc = [AboutViewController new];
+    avc.title = @"about";
+    [viewControllers addObject:avc];
     self.tabBar.viewControllers = viewControllers;
     
     if ([[KBYourTube sharedInstance] isSignedIn]) {
@@ -306,12 +304,9 @@
            
            //NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
-            
             TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
-            
             uvc.title = outputResults[@"userName"];
-            if ([[outputResults allKeys]containsObject:@"altUserName"])
-            {
+            if ([[outputResults allKeys]containsObject:@"altUserName"]) {
                 uvc.title = outputResults[@"altUserName"];
             }
             [viewControllers insertObject:uvc atIndex:1];

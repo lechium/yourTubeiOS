@@ -16,14 +16,11 @@
 
 @implementation TYSettingsViewController
 
-- (BOOL)signedIn
-{
+- (BOOL)signedIn {
     return [[TYAuthUserManager sharedInstance] checkAndSetCredential];//[[KBYourTube sharedInstance] isSignedIn];
 }
 
-+ (id)settingsView
-{
-  
++ (id)settingsView {
     TYSettingsViewController *svc = [TYSettingsViewController new];
     NSDictionary *mainMenuItem = nil;
     svc.view.backgroundColor = [UIColor blackColor];
@@ -52,21 +49,17 @@
      */
     svc.items = @[asset, search];
     svc.title = @"settings";
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:svc];
-    return navController;
+    return svc;
+    //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:svc];
+    //return navController;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     DLog(@"dt: %@", [[KBYourTube sharedInstance] userDetails]);
-    
-    
     MetaDataAsset *theAsset = self.items[0];
-    if ([self signedIn] == true)
-    {
+    if ([self signedIn] == true) {
         NSString *ourProfileImage = [[KBYourTube sharedInstance]userDetails][@"profileImage"];
-        if (ourProfileImage != nil)
-        {
+        if (ourProfileImage != nil) {
             theAsset.imagePath = ourProfileImage;
         }
         theAsset.name = @"Sign Out";
@@ -78,10 +71,8 @@
     [self.tableView reloadData];
 }
 
-- (void)toggleSignedIn
-{
-    if ([self signedIn] == true)
-    {
+- (void)toggleSignedIn {
+    if ([self signedIn] == true) {
         [self showSignOutAlert];
     } else {
         [self storeAuth];
@@ -91,45 +82,29 @@
 }
 
 - (void)storeAuth {
-    
     TYAuthUserManager *shared = [TYAuthUserManager sharedInstance];
-    
     [shared startAuthAndGetUserCodeDetails:^(NSDictionary *deviceCodeDict) {
-        
         AuthViewController *avc = [[AuthViewController alloc] initWithUserCodeDetails:deviceCodeDict];
-        
         [self presentViewController:avc animated:true completion:nil];
-        
-        
     } completion:^(NSDictionary *tokenDict, NSError *error) {
-        
         NSLog(@"inside here???");
-        
         if ([[tokenDict allKeys] containsObject:@"access_token"]){
             NSLog(@"we good: %@", tokenDict );
             [self dismissViewControllerAnimated:true completion:nil];
         } else {
-            
             NSLog(@"show error alert here");
             [self dismissViewControllerAnimated:true completion:nil];
-            
         }
-        
     }];
-    
 }
-
-- (void)signOut
-{
+- (void)signOut {
     [self stringFromRequest:@"https://www.youtube.com/logout"];
     AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     [ad updateForSignedOut];
     [[TYAuthUserManager sharedInstance] signOut];
 }
 
-
-- (void)showSignOutAlert
-{
+- (void)showSignOutAlert {
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Sign Out"
                                           message: @"Are you sure you want to sign out?"
@@ -137,12 +112,9 @@
     UIAlertAction *yesAction            = [UIAlertAction
                                            actionWithTitle:@"Yes"
                                            style:UIAlertActionStyleDefault
-                                           handler:^(UIAlertAction *action)
-                                           {
-                                               
-                                               [self signOut];
-                                               
-                                           }];
+                                           handler:^(UIAlertAction *action) {
+        [self signOut];
+    }];
     [alertController addAction:yesAction];
     
     UIAlertAction *noAction         = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
@@ -155,17 +127,14 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     LOG_SELF;
     switch (indexPath.row) {
         case 0:
-            
             [self toggleSignedIn];
             break;
             
         case 1:
-            
             //[self updatePermissions];
             [super tableView:tableView didSelectRowAtIndexPath:indexPath];
             [self handleToggle];
@@ -182,11 +151,9 @@
     [UD setValue:detail forKey:@"filterType"];
 }
 
-- (void)updatePermissions
-{
+- (void)updatePermissions {
     WebViewController *wvc = [TYAuthUserManager OAuthWebViewController];
     [self.navigationController pushViewController:wvc animated:true];
 }
-
 
 @end

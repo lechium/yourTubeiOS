@@ -1725,9 +1725,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         [videoIds addObject:searchItem.videoId];
                         [videos addObject:searchItem];
                     } else {
-                        NSLog(@"[tuyu] no vr: %@", obj);
                         NSString *message = [obj recursiveObjectForKey:@"simpleText"];
-                        NSLog(@"[tuyu] do we have a message?: %@", message);
+                        if (message){
+                            NSLog(@"[tuyu] do we have a message?: %@", message);
+                        } else {
+                            NSLog(@"[tuyu] no vr: %@", obj);
+                        }
                     }
                 }];
                 //playlist.videos = videos;
@@ -1744,9 +1747,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             [videoIds addObject:searchItem.videoId];
                             [videos addObject:searchItem];
                         } else {
-                            NSLog(@"[tuyu] no vr: %@", obj);
                             NSString *message = [obj recursiveObjectForKey:@"simpleText"];
-                            NSLog(@"[tuyu] do we have a message?: %@", message);
+                            if (message){
+                                NSLog(@"[tuyu] do we have a message?: %@", message);
+                            } else {
+                                NSLog(@"[tuyu] no vr: %@", obj);
+                            }
                         }
                     }];
                     //playlist.videos = videos;
