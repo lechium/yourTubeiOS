@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSUInteger, KBBulletinViewType) {
     
     KBBulletinViewTypeDefault,
-    KBBulletinViewTypeBottom
+    KBBulletinViewTypePlayPauseOptions
 };
 
 @interface KBBulletinView : UIView
@@ -23,9 +23,9 @@ typedef NS_ENUM(NSUInteger, KBBulletinViewType) {
 @property (nonatomic, strong) UIImage *bulletinImage;
 @property (readwrite, assign) KBBulletinViewType bulletinType;
 
-+ (instancetype)bulletinWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage * _Nullable)image type:(KBBulletinViewType)type;
++ (instancetype)playPauseOptionBulletin;
 + (instancetype)bulletinWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage * _Nullable)image;
-- (instancetype)initWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage * _Nullable )image type:(KBBulletinViewType)type;
+- (instancetype)initWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage * _Nullable )image;
 - (void)showForTime:(CGFloat)duration;
 - (void)showFromController:(UIViewController *_Nullable)controller forTime:(CGFloat)duration;
 - (void)hideView;

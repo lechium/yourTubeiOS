@@ -97,7 +97,7 @@
 }
 
 - (void)showPlayPauseHint {
-    KBBulletinView *bulletin = [KBBulletinView bulletinWithTitle:@"Press" description:@"for Options" image:[UIImage imageNamed:@"Play-Pause-Glyph-Dark"] type:KBBulletinViewTypeBottom];
+    KBBulletinView *bulletin = [KBBulletinView playPauseOptionBulletin];
     [bulletin showFromController:self forTime:5];
 }
 

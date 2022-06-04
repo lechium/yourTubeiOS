@@ -30,6 +30,9 @@
     _imageView.image = _bulletinImage;
 }
 
++ (instancetype)playPauseOptionBulletin {
+    return [KBBulletinView bulletinWithTitle:@"Press" description:@"for Options" image:[UIImage imageNamed:@"Play-Pause-Glyph"] type:KBBulletinViewTypePlayPauseOptions];
+}
 
 + (instancetype)bulletinWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage * _Nullable)image type:(KBBulletinViewType)type {
     return [[KBBulletinView alloc] initWithTitle:title description:desc image:image type:type];
@@ -37,6 +40,10 @@
 
 + (instancetype)bulletinWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage * _Nullable)image {
     return [[KBBulletinView alloc] initWithTitle:title description:desc image:image type:KBBulletinViewTypeDefault];
+}
+
+- (instancetype)initWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage *_Nullable)image {
+    return [self initWithTitle:title description:desc image:image type:KBBulletinViewTypeDefault];
 }
 
 - (instancetype)initWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage *_Nullable)image type:(KBBulletinViewType)type {
@@ -69,7 +76,6 @@
     width = MAX(355, width);
     width = MIN(660, width);
     self.translatesAutoresizingMaskIntoConstraints = false;
-    [self.widthAnchor constraintEqualToConstant:width].active = true;
     
     backgroundView.translatesAutoresizingMaskIntoConstraints = false;
     [backgroundView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
@@ -78,11 +84,7 @@
     [backgroundView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = true;
     backgroundView.layer.masksToBounds = true;
     backgroundView.layer.cornerRadius = 27;
-    UIBlurEffectStyle style = UIBlurEffectStyleDark;
-    if (_bulletinType == KBBulletinViewTypeBottom) {
-        style = UIBlurEffectStyleLight;
-    }
-    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:style];
+    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
     UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     blurView.translatesAutoresizingMaskIntoConstraints = false;
     UIVibrancyEffect *vibrancyEffect = [UIVibrancyEffect effectForBlurEffect:blurEffect];
@@ -111,6 +113,7 @@
     [_imageView.widthAnchor constraintEqualToConstant:imageDimension].active = true;
     
     if (_bulletinType == KBBulletinViewTypeDefault) {
+        [self.widthAnchor constraintEqualToConstant:width].active = true;
         [self.heightAnchor constraintEqualToConstant:130].active = true;
         _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
         _descriptionLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
@@ -130,20 +133,18 @@
         [_imageView.leftAnchor constraintEqualToAnchor:backgroundView.leftAnchor constant:imageLeading].active = true;
         [self _populateData];
     } else {
+        [self.widthAnchor constraintEqualToConstant:489].active = true;
         [self.heightAnchor constraintEqualToConstant:100].active = true;
-        _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-        _descriptionLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-        _descriptionLabel.textColor = [UIColor blackColor];
-        _titleLabel.textColor = [UIColor blackColor];
+        _titleLabel.font = [UIFont boldSystemFontOfSize:36];
+        _descriptionLabel.font = [UIFont boldSystemFontOfSize:36];
+        _descriptionLabel.textColor = [UIColor colorNamed:@"bulletinTextColor"];
+        _titleLabel.textColor = [UIColor colorNamed:@"bulletinTextColor"];
         _stackView = [[UIStackView alloc] initWithArrangedSubviews:@[_titleLabel, _imageView, _descriptionLabel]];
         _stackView.axis = UILayoutConstraintAxisHorizontal;
         _stackView.translatesAutoresizingMaskIntoConstraints = false;
         _stackView.spacing = 10;
         backgroundView.layer.cornerRadius = 15;
         [backgroundView addSubview:_stackView];
-        //[_stackView.trailingAnchor constraintEqualToAnchor:backgroundView.trailingAnchor constant:-stackTrailing].active = true;
-        //[backgroundView addSubview:_imageView];
-        //[_stackView.leadingAnchor constraintEqualToAnchor:backgroundView.leadingAnchor constant:stackLeading].active = true;
         [_stackView.centerYAnchor constraintEqualToAnchor:backgroundView.centerYAnchor].active = true;
         [_stackView.centerXAnchor constraintEqualToAnchor:backgroundView.centerXAnchor].active = true;
         [self _populateData];
