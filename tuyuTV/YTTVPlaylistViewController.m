@@ -54,6 +54,13 @@
     {
         [coordinator addCoordinatedAnimations:^{
             // self.backgroundColor = [UIColor darkGrayColor];
+            CGRect tlf = self.textLabel.frame;
+            tlf.origin.x += 40;
+            tlf.origin.y += 30;
+            self.textLabel.frame = tlf;
+            self.marqueeTextLabel.frame = tlf;
+            NSLog(@"[tuyu] focused %@ self.textLabel.frame: %@", self.textLabel.text, NSStringFromCGRect(self.textLabel.frame));
+            self.imageView.adjustsImageWhenAncestorFocused = true;
             self.contentView.backgroundColor = self.selectionColor;
             
             //NSLog(@"superview: %@",  self.superview.superview.superview.superview.superview.superview);
@@ -64,6 +71,13 @@
     } else {
         [coordinator addCoordinatedAnimations:^{
             //self.backgroundColor = [UIColor blackColor];
+            CGRect tlf = self.textLabel.frame;
+            tlf.origin.x = 148;
+            tlf.origin.y = -10;
+            self.textLabel.frame = tlf;
+            self.marqueeTextLabel.frame = tlf;
+            NSLog(@"[tuyu] unfocused %@ self.textLabel.frame: %@",self.textLabel.text, NSStringFromCGRect(self.textLabel.frame));
+            self.imageView.adjustsImageWhenAncestorFocused = false;
             self.contentView.backgroundColor = self.viewBackgroundColor;
         } completion:^{
             //
@@ -648,8 +662,7 @@
 
 
 - (void)itemSelectedAtIndexPath:(NSIndexPath *)indexPath {
-    if ([self.selectionDelegate respondsToSelector:@selector(itemSelectedAtIndexPath:fromNavigationController:)])
-    {
+    if ([self.selectionDelegate respondsToSelector:@selector(itemSelectedAtIndexPath:fromNavigationController:)]) {
         [self.selectionDelegate itemSelectedAtIndexPath:indexPath fromNavigationController:self.navigationController];
     }
 }

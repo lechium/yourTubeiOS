@@ -108,6 +108,11 @@
         [[self contentView] addSubview:self.marqueeDetailTextLabel];
         [[self contentView] addSubview:self.marqueeTextLabel];
         if ([self isFocused]){
+            CGRect tlf = self.textLabel.frame;
+            tlf.origin.x += 30;
+            tlf.origin.y += 10;
+            self.textLabel.frame = tlf;
+            self.marqueeTextLabel.frame = tlf;
             self.marqueeTextLabel.holdScrolling = false;
             [self.marqueeTextLabel restartLabel];
         } else {
