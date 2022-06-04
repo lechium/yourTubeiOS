@@ -15,6 +15,7 @@
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UILabel *descriptionLabel;
 @property (nonatomic) UIImageView *imageView;
+@property (nonatomic) UIStackView *stackView;
 
 @end
 
@@ -29,16 +30,22 @@
     _imageView.image = _bulletinImage;
 }
 
-+ (instancetype)bulletinWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage * _Nullable)image {
-    return [[KBBulletinView alloc] initWithTitle:title description:desc image:image];
+
++ (instancetype)bulletinWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage * _Nullable)image type:(KBBulletinViewType)type {
+    return [[KBBulletinView alloc] initWithTitle:title description:desc image:image type:type];
 }
 
-- (instancetype)initWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage *_Nullable)image {
++ (instancetype)bulletinWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage * _Nullable)image {
+    return [[KBBulletinView alloc] initWithTitle:title description:desc image:image type:KBBulletinViewTypeDefault];
+}
+
+- (instancetype)initWithTitle:(NSString *)title description:(NSString *_Nullable)desc image:(UIImage *_Nullable)image type:(KBBulletinViewType)type {
     self = [super init];
     if (self) {
         _bulletinTitle = title;
         _bulletinDescription = desc;
         _bulletinImage = image;
+        _bulletinType = type;
         [self setupView];
     }
     return self;
@@ -62,8 +69,8 @@
     width = MAX(355, width);
     width = MIN(660, width);
     self.translatesAutoresizingMaskIntoConstraints = false;
-    [self.heightAnchor constraintEqualToConstant:130].active = true;
     [self.widthAnchor constraintEqualToConstant:width].active = true;
+    
     backgroundView.translatesAutoresizingMaskIntoConstraints = false;
     [backgroundView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = true;
     [backgroundView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = true;
@@ -71,7 +78,11 @@
     [backgroundView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = true;
     backgroundView.layer.masksToBounds = true;
     backgroundView.layer.cornerRadius = 27;
-    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+    UIBlurEffectStyle style = UIBlurEffectStyleDark;
+    if (_bulletinType == KBBulletinViewTypeBottom) {
+        style = UIBlurEffectStyleLight;
+    }
+    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:style];
     UIVisualEffectView *blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
     blurView.translatesAutoresizingMaskIntoConstraints = false;
     UIVibrancyEffect *vibrancyEffect = [UIVibrancyEffect effectForBlurEffect:blurEffect];
@@ -90,32 +101,55 @@
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.translatesAutoresizingMaskIntoConstraints = false;
     _titleLabel.textColor = [UIColor whiteColor];
-    _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _descriptionLabel = [[UILabel alloc] init];
     _descriptionLabel.translatesAutoresizingMaskIntoConstraints = false;
     _descriptionLabel.textColor = [UIColor whiteColor];
-    _descriptionLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
-    _descriptionLabel.textColor = [UIColor colorWithWhite:1 alpha:0.6];
-    _descriptionLabel.numberOfLines = 2;
-    _descriptionLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    UIStackView *_myStackView = [[UIStackView alloc] initWithArrangedSubviews:@[_titleLabel, _descriptionLabel]];
-    _myStackView.axis = UILayoutConstraintAxisVertical;
-    _myStackView.translatesAutoresizingMaskIntoConstraints = false;
-    _myStackView.spacing = 5;
-    [backgroundView addSubview:_myStackView];
-    [_myStackView.trailingAnchor constraintEqualToAnchor:backgroundView.trailingAnchor constant:-stackTrailing].active = true;
     _imageView = [[UIImageView alloc] init];
-    _imageView.translatesAutoresizingMaskIntoConstraints = false;
     _imageView.contentMode = UIViewContentModeScaleAspectFit;
     _imageView.translatesAutoresizingMaskIntoConstraints = false;
     [_imageView.heightAnchor constraintEqualToConstant:imageDimension].active = true;
     [_imageView.widthAnchor constraintEqualToConstant:imageDimension].active = true;
-    [backgroundView addSubview:_imageView];
-    [_myStackView.leftAnchor constraintEqualToAnchor:_imageView.rightAnchor constant:stackLeading].active = true;
-    [_imageView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = true;
-    [_myStackView.centerYAnchor constraintEqualToAnchor:_imageView.centerYAnchor].active = true;
-    [_imageView.leftAnchor constraintEqualToAnchor:backgroundView.leftAnchor constant:imageLeading].active = true;
-    [self _populateData];
+    
+    if (_bulletinType == KBBulletinViewTypeDefault) {
+        [self.heightAnchor constraintEqualToConstant:130].active = true;
+        _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+        _descriptionLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+        _descriptionLabel.textColor = [UIColor colorWithWhite:1 alpha:0.6];
+        _descriptionLabel.numberOfLines = 2;
+        _descriptionLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        _stackView = [[UIStackView alloc] initWithArrangedSubviews:@[_titleLabel, _descriptionLabel]];
+        _stackView.axis = UILayoutConstraintAxisVertical;
+        _stackView.translatesAutoresizingMaskIntoConstraints = false;
+        _stackView.spacing = 5;
+        [backgroundView addSubview:_stackView];
+        [_stackView.trailingAnchor constraintEqualToAnchor:backgroundView.trailingAnchor constant:-stackTrailing].active = true;
+        [backgroundView addSubview:_imageView];
+        [_stackView.leftAnchor constraintEqualToAnchor:_imageView.rightAnchor constant:stackLeading].active = true;
+        [_imageView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active = true;
+        [_stackView.centerYAnchor constraintEqualToAnchor:_imageView.centerYAnchor].active = true;
+        [_imageView.leftAnchor constraintEqualToAnchor:backgroundView.leftAnchor constant:imageLeading].active = true;
+        [self _populateData];
+    } else {
+        [self.heightAnchor constraintEqualToConstant:100].active = true;
+        _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+        _descriptionLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+        _descriptionLabel.textColor = [UIColor blackColor];
+        _titleLabel.textColor = [UIColor blackColor];
+        _stackView = [[UIStackView alloc] initWithArrangedSubviews:@[_titleLabel, _imageView, _descriptionLabel]];
+        _stackView.axis = UILayoutConstraintAxisHorizontal;
+        _stackView.translatesAutoresizingMaskIntoConstraints = false;
+        _stackView.spacing = 10;
+        backgroundView.layer.cornerRadius = 15;
+        [backgroundView addSubview:_stackView];
+        //[_stackView.trailingAnchor constraintEqualToAnchor:backgroundView.trailingAnchor constant:-stackTrailing].active = true;
+        //[backgroundView addSubview:_imageView];
+        //[_stackView.leadingAnchor constraintEqualToAnchor:backgroundView.leadingAnchor constant:stackLeading].active = true;
+        [_stackView.centerYAnchor constraintEqualToAnchor:backgroundView.centerYAnchor].active = true;
+        [_stackView.centerXAnchor constraintEqualToAnchor:backgroundView.centerXAnchor].active = true;
+        [self _populateData];
+    }
+    
+    
     
 }
 
@@ -143,8 +177,14 @@
         self.alpha = 0;
         self.transform = CGAffineTransformScale(self.transform, 0.01, 0.01);
         [controller.view addSubview:self];
-        [self.rightAnchor constraintEqualToAnchor:controller.view.rightAnchor constant:-80].active = true;
-        [self.topAnchor constraintEqualToAnchor:controller.view.topAnchor constant:60].active = true;
+        if (_bulletinType == KBBulletinViewTypeDefault) {
+            [self.rightAnchor constraintEqualToAnchor:controller.view.rightAnchor constant:-80].active = true;
+            [self.topAnchor constraintEqualToAnchor:controller.view.topAnchor constant:60].active = true;
+        } else {
+            [self.centerXAnchor constraintEqualToAnchor:controller.view.centerXAnchor].active = true;
+            [self.bottomAnchor constraintEqualToAnchor:controller.view.bottomAnchor constant:-45].active = true;
+        }
+        
         __weak __typeof(self) weakSelf = self;
         [UIView animateWithDuration:0.3 animations:^{
             self.alpha = 1.0;

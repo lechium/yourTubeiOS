@@ -7,6 +7,7 @@
 //
 
 #import "TYGridUserViewController.h"
+#import "KBBulletinView.h"
 
 @interface TYGridUserViewController () {
     BOOL _didAdjustTotalHeight;
@@ -95,6 +96,10 @@
     
 }
 
+- (void)showPlayPauseHint {
+    KBBulletinView *bulletin = [KBBulletinView bulletinWithTitle:@"Press" description:@"for Options" image:[UIImage imageNamed:@"Play-Pause-Glyph-Dark"] type:KBBulletinViewTypeBottom];
+    [bulletin showFromController:self forTime:5];
+}
 
 - (void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
@@ -106,6 +111,7 @@
             [self.focusedCollectionCell performSelector:@selector(startJiggling) withObject:nil afterDelay:0];
             NSIndexPath *path = [cv indexPathForCell:self.focusedCollectionCell];
             [cv beginInteractiveMovementForItemAtIndexPath:path];
+            [self showPlayPauseHint];
             //   [cv.visibleCells  makeObjectsPerformSelector:@selector(startJiggling)];
             _jiggling = true;
             menuTapRecognizer.enabled = true;

@@ -64,10 +64,10 @@ static NSString *const KBYTSpotlightChannelID = @"UCBR8-60-B28hp2BmDPdntcQ";
 typedef NS_ENUM(NSUInteger, YTSearchResultType) {
     
     kYTSearchResultTypeUnknown,
-   kYTSearchResultTypeVideo,
-   kYTSearchResultTypePlaylist,
-   kYTSearchResultTypeChannel,
-   kYTSearchResultTypeChannelList,
+    kYTSearchResultTypeVideo,
+    kYTSearchResultTypePlaylist,
+    kYTSearchResultTypeChannel,
+    kYTSearchResultTypeChannelList,
 };
 
 typedef NS_ENUM(NSUInteger, KBYTSearchType) {
@@ -258,7 +258,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 /**
  
- searchQuery is just a basic unescaped search string, this will return a dictionary with 
+ searchQuery is just a basic unescaped search string, this will return a dictionary with
  results, pageCount, resultCount. Beware this is super fragile, if youtube website changes
  this will almost definitely break. that being said its MUCH quicker then getSearchResults
  
@@ -298,12 +298,12 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
             failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getChannelVideosAlt:(NSString *)channelID
-          completionBlock:(void(^)(KBYTChannel *channel))completionBlock
+            completionBlock:(void(^)(KBYTChannel *channel))completionBlock
                failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getChannelVideosAlt:(NSString *)channelID
                continuation:(NSString *)continuationToken
-          completionBlock:(void(^)(KBYTChannel *channel))completionBlock
+            completionBlock:(void(^)(KBYTChannel *channel))completionBlock
                failureBlock:(void(^)(NSString *error))failureBlock;
 
 
