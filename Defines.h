@@ -20,6 +20,7 @@
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
 #define LOG_SELF        NSLog(@"[tuyu] %@ %@", self, NSStringFromSelector(_cmd))
+#define LOG_CMD         NSLog(@"[tuyu] [%@ %@]",[self class], NSStringFromSelector(_cmd))
 #define DLOG_SELF DLog(@"%@ %@", self, NSStringFromSelector(_cmd))
 
 static NSString *const KBYTMessageIdentifier   =  @"org.nito.importscience";

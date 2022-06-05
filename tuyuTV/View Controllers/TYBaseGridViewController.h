@@ -62,6 +62,7 @@
 - (void)reloadCollectionViews;
 - (NSString *)titleForSection:(NSInteger)section;
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView;
+- (UICollectionView *)collectionViewFromCell:(UICollectionViewCell *)cell;
 -(void) handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer;
 - (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell;
 @end

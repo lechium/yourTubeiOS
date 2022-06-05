@@ -733,8 +733,21 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 //datasource method to return the collection based on the view
 
+- (UICollectionView *)collectionViewFromCell:(UICollectionViewCell *)cell {
+    NSInteger sectionCount = [_backingSectionLabels count];
+    UICollectionView *cv = nil;
+    for (NSInteger i = 0; i < sectionCount; i++) {
+        cv = [self.view viewWithTag:60 + i];
+        if ([[cv subviews] containsObject:cell]){
+            return cv;
+        }
+    }
+    return nil;
+}
+
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView {
     KBYTChannel *channel = [self channelForCollectionView:theView];
+    //NSLog(@"[tuyu] channel: %@", channel);
     if ([channel isKindOfClass:KBYTChannel.class]){
         return channel.allSectionItems;
     } else if ([channel isKindOfClass:KBYTPlaylist.class]) {

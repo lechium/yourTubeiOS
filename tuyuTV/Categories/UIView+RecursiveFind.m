@@ -4,30 +4,27 @@
 
 @implementation UICollectionViewCell (Jiggle)
 
-- (void)setOriginalTransform:(CGAffineTransform)originalTransform
-{
+- (void)setOriginalTransform:(CGAffineTransform)originalTransform {
     NSValue *value = [NSValue valueWithCGAffineTransform:originalTransform];
     [self associateValue:value withKey:@selector(originalTransform)];
 }
 
-- (CGAffineTransform)originalTransform
-{
+- (CGAffineTransform)originalTransform {
     NSValue *value = [self associatedValueForKey:@selector(originalTransform)];
     return [value CGAffineTransformValue];
 }
 
-- (void)stopJiggling
-{
+- (void)stopJiggling {
+    LOG_CMD;
     [CATransaction begin];
     [self.layer removeAllAnimations];
     [self.contentView.layer removeAllAnimations];
     [CATransaction commit];
 }
 
-- (void)startJiggling
-{
+- (void)startJiggling {
     //startJiggling
-    
+    LOG_CMD;
     [self setOriginalTransform:self.transform];
     int count = 1;
     CGAffineTransform leftWobble = CGAffineTransformMakeRotation(degreesToRadians( kAnimationRotateDeg * (count%2 ? +1 : -1 ) ));
@@ -48,8 +45,7 @@
 
 @implementation UIApplication (PrintRecursion)
 
-- (void)printWindow
-{
+- (void)printWindow {
     [self.keyWindow.rootViewController.view printRecursiveDescription];
 }
 
@@ -75,14 +71,12 @@
     return nil;
 }
 
-- (void)printRecursiveDescription
-{
+- (void)printRecursiveDescription {
     NSString *recursiveDesc = [self performSelector:@selector(recursiveDescription)];
     NSLog(@"%@", recursiveDesc);
 }
 
-- (void)removeAllSubviews
-{
+- (void)removeAllSubviews {
     for (UIView *view in self.subviews)
     {
         [view removeFromSuperview];

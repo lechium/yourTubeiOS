@@ -4,12 +4,13 @@
 //
 //  Created by Kevin Bradley on 5/15/16.
 //
-//
+//https://stackoverflow.com/questions/33922186/how-to-enable-reordering-a-collection-view-in-tvos
 
 #import "TYGridUserViewController.h"
 #import "KBBulletinView.h"
 
 @interface TYGridUserViewController () {
+    NSInteger _highlightedCell;
     BOOL _didAdjustTotalHeight;
     BOOL _isBeingReordered;
 }
@@ -17,22 +18,119 @@
 
 @implementation TYGridUserViewController
 
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+    [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+
+    if ([context.nextFocusedView isKindOfClass:[YTTVStandardCollectionViewCell class]]) {
+        if (_isBeingReordered) {
+            NSLog(@"[tuyu] This should never happen.");
+        } else {
+            UICollectionView *cv = [self collectionViewFromCell:(UICollectionViewCell *)context.nextFocusedView];
+            NSInteger nextIdx = [cv indexPathForCell:(UICollectionViewCell *)context.nextFocusedView].row;
+
+            if (nextIdx != _highlightedCell) {
+                YTTVStandardCollectionViewCell *prevCell = (YTTVStandardCollectionViewCell*)[cv cellForItemAtIndexPath:[NSIndexPath indexPathForItem:_highlightedCell inSection:0]];
+                if ([prevCell isHighlighted])
+                    prevCell.highlighted = NO;
+            }
+
+            _highlightedCell = nextIdx;
+        }
+    }
+}
+
+- (void)collectionView:(UICollectionView*)cv moveCellFromRow:(NSInteger)artwork offset:(NSInteger)offset {
+    KBYTPlaylist *playlist = (KBYTPlaylist*)[self channelForCollectionView:cv];
+    NSMutableArray *_data = [playlist.videos mutableCopy];
+    if (artwork + offset >= 0 && artwork + offset <= [_data count] - 1) {
+        [cv performBatchUpdates:^{
+            [cv moveItemAtIndexPath:[NSIndexPath indexPathForItem:artwork inSection:0] toIndexPath:[NSIndexPath indexPathForItem:artwork + offset inSection:0]];
+            [cv moveItemAtIndexPath:[NSIndexPath indexPathForItem:artwork + offset inSection:0] toIndexPath:[NSIndexPath indexPathForItem:artwork inSection:0]];
+            _highlightedCell += offset;
+            [_data exchangeObjectAtIndex:artwork withObjectAtIndex:artwork + offset];
+            playlist.videos = _data;
+            NSMutableDictionary *_plMutable = [self.playlistDictionary mutableCopy];
+            _plMutable[playlist.title] = playlist;
+            self.playlistDictionary = _plMutable;
+            //if there are certain elements in the cells that are position dependant, this is the right time to change them
+            //because these cells are not reloaded by default (for example you have idx displayed in your cell... the cells will swap but idxs won't by default)
+        } completion:^(BOOL finished) {
+            [[self focusedCollectionCell] startJiggling];
+            //NSString *temp = _data[artwork + offset];
+            //_data[artwork + offset] = _data[artwork];
+            //_data[artwork] = temp;
+        }];
+    }
+}
+
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldUpdateFocusInContext:(UICollectionViewFocusUpdateContext *)context {
+    if (_isBeingReordered) {
+        //code only supports vertical reording.
+        if (context.focusHeading == UIFocusHeadingRight) {
+            [self collectionView:collectionView moveCellFromRow:_highlightedCell offset:1];
+        }
+        else if (context.focusHeading == UIFocusHeadingLeft) {
+            [self collectionView:collectionView moveCellFromRow:_highlightedCell offset:-1];
+        }
+        return NO;
+    }
+    return YES;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self refreshDataWithProgress:true];
     _pressGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pressed:)];
-        _pressGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu), @(UIPressTypeSelect), @(UIPressTypePlayPause)];
+        _pressGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu), @(UIPressTypeSelect)];
         [self.view addGestureRecognizer:_pressGestureRecognizer];
     _pressGestureRecognizer.enabled = NO;
+    _playPauseGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(playPausePressed:)];
+    _playPauseGestureRecognizer.allowedPressTypes = @[@(UIPressTypePlayPause)];
+        [self.view addGestureRecognizer:_playPauseGestureRecognizer];
+    _pressGestureRecognizer.enabled = NO;
+    _playPauseGestureRecognizer.enabled = NO;
+}
+
+- (void)playPausePressed:(UITapGestureRecognizer *)gestureRecognizer {
+    if (!_isBeingReordered)
+        return;
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    
+    KBYTSearchResult *result = [self searchResultFromFocusedCell];
+    NSLog(@"[tuyu] showing alert for result: %@", result);
+    NSString *title = @"Are you sure you want to delete this video?";
+    NSString *buttonTitle = @"Delete";
+    if (result.resultType == kYTSearchResultTypeChannel){
+        title = @"Are you sure you want to unsubscribe from this channel?";
+        buttonTitle = @"Unsubscribe";
+    }
+    
+    UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:title message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *deleteAction = [UIAlertAction actionWithTitle:buttonTitle style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        NSLog(@"[tuyu] deleting item: %@", result);
+        if (result.resultType == kYTSearchResultTypeChannel) {
+            NSLog(@"unsub a channel?");
+        } else if (result.resultType == kYTSearchResultTypeVideo) {
+            NSLog(@"delete a video from a playlist?");
+        }
+    }];
+    [alertCon addAction:deleteAction];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alertCon addAction:cancel];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self presentViewController:alertCon animated:true completion:nil];
+    });
 }
 
 - (void)pressed:(UITapGestureRecognizer *)gesture {
     if (!_isBeingReordered)
         return;
-
     _isBeingReordered = NO;
     _pressGestureRecognizer.enabled = NO;
+    _playPauseGestureRecognizer.enabled = NO;
 }
 
 
@@ -55,7 +153,7 @@
 
 
 - (void)swipeMethod:(UISwipeGestureRecognizer *)gestureRecognizer {
-    if (_jiggling) {
+    if (_isBeingReordered) {
         //NSLog(@"[tuyu] direction: %lu", (unsigned long)gestureRecognizer.direction);
         CGPoint location = [gestureRecognizer locationInView:gestureRecognizer.view];
         //NSLog(@"[tuyu] location: %@", NSStringFromCGPoint(location));
@@ -68,14 +166,14 @@
 - (void)handleMenuTap:(id)sender {
     LOG_SELF;
     [self.focusedCollectionCell performSelector:@selector(stopJiggling) withObject:nil afterDelay:0];
-    _jiggling = false;
+    _isBeingReordered = false;
     menuTapRecognizer.enabled = false;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self refreshDataWithProgress:false];
-    _jiggling = false;
+    _isBeingReordered = false;
     menuTapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleMenuTap:)];
     menuTapRecognizer.numberOfTapsRequired = 1;
     menuTapRecognizer.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeMenu]];
@@ -85,11 +183,11 @@
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     UIPressType type = presses.allObjects.firstObject.type;
-    if ((_jiggling == true) && (type == UIPressTypeMenu)) {
+    if ((_isBeingReordered == true) && (type == UIPressTypeMenu)) {
         [self.focusedCollectionCell performSelector:@selector(stopJiggling) withObject:nil afterDelay:0];
         UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
-        [cv endInteractiveMovement];
-        _jiggling = false;
+        //[cv endInteractiveMovement];
+        _isBeingReordered = false;
     } else {
         [super pressesBegan:presses withEvent:event];
     }
@@ -107,20 +205,24 @@
     }
     if (self.focusedCollectionCell != nil) {
         UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
-        if (_jiggling == false) {
+        if (_isBeingReordered == false) {
             [self.focusedCollectionCell performSelector:@selector(startJiggling) withObject:nil afterDelay:0];
             NSIndexPath *path = [cv indexPathForCell:self.focusedCollectionCell];
-            [cv beginInteractiveMovementForItemAtIndexPath:path];
+            //[cv beginInteractiveMovementForItemAtIndexPath:path];
             [self showPlayPauseHint];
             //   [cv.visibleCells  makeObjectsPerformSelector:@selector(startJiggling)];
-            _jiggling = true;
+            _isBeingReordered = true;
             menuTapRecognizer.enabled = true;
+            _pressGestureRecognizer.enabled = YES;
+            _playPauseGestureRecognizer.enabled = YES;
         } else {
             
             [self.focusedCollectionCell performSelector:@selector(stopJiggling) withObject:nil afterDelay:0];
             // [cv.visibleCells makeObjectsPerformSelector:@selector(stopJiggling)];
-            _jiggling = false;
+            _isBeingReordered = false;
             menuTapRecognizer.enabled = false;
+            _pressGestureRecognizer.enabled = NO;
+            _playPauseGestureRecognizer.enabled = YES;
         }
     }
     

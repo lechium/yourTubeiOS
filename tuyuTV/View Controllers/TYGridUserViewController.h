@@ -13,5 +13,6 @@
     BOOL _jiggling;
     UITapGestureRecognizer *menuTapRecognizer;
     UITapGestureRecognizer *_pressGestureRecognizer;
+    UITapGestureRecognizer *_playPauseGestureRecognizer;
 }
 @end

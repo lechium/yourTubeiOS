@@ -23,15 +23,13 @@
 @implementation TYAuthUserManager
 
 #if TARGET_OS_TV
-+ (WebViewController *)ytAuthWebViewController
-{
++ (WebViewController *)ytAuthWebViewController {
     WebViewController *webView = [[WebViewController alloc] initWithURL:[self ytAuthURL]];
     webView.viewMode = WebViewControllerAuthMode;
     return webView;
 }
 
-+ (WebViewController *)OAuthWebViewController
-{
++ (WebViewController *)OAuthWebViewController {
     
     WebViewController *webView = [[WebViewController alloc] initWithURL:[self suastring]];
     webView.viewMode = WebViewControllerPermissionMode;
@@ -41,14 +39,12 @@
 #endif
 
 #if TARGET_OS_IOS
-+ (KBYTWebViewController *)ytAuthWebViewController
-{
++ (KBYTWebViewController *)ytAuthWebViewController {
     KBYTWebViewController *webView = [[KBYTWebViewController alloc] initWithURL:[self ytAuthURL] mode:TYWebViewControllerAuthMode ];
     return webView;
 }
 
-+ (KBYTWebViewController *)OAuthWebViewController
-{
++ (KBYTWebViewController *)OAuthWebViewController {
     
     KBYTWebViewController *webView = [[KBYTWebViewController alloc] initWithURL:[self suastring] mode:TYWebViewControllerPermissionMode];
     // webView.viewMode = TYWebViewControllerPermissionMode;
@@ -58,13 +54,11 @@
 
 #endif
 
-+ (NSString *)ytAuthURL
-{
++ (NSString *)ytAuthURL {
     return @"https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Fnext%3D%252F%26hl%3Den%26feature%3Dsign_in_button%26app%3Ddesktop%26action_handle_signin%3Dtrue&hl=en&passive=true&service=youtube&uilel=3";
 }
 
-+ (NSString *)suastring
-{
++ (NSString *)suastring {
     return [NSString stringWithFormat:@"https://accounts.google.com/o/oauth2/auth?client_id=%@&redirect_uri=%@", ytClientID, @"urn:ietf:wg:oauth:2.0:oob:auto&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube.force-ssl+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutubepartner&response_type=code&access_type=offline&pageId=none"];
 }
 
@@ -236,15 +230,13 @@
     
 }
 
-- (void)setCredential:(AFOAuthCredential *)credential
-{
+- (void)setCredential:(AFOAuthCredential *)credential {
     [self.requestSerializer setAuthorizationHeaderFieldWithCredential:credential];
 }
 
 //DELETE https://www.googleapis.com/youtube/v3/subscriptions?id=Y3ufRxVp116IMX8y_Gy1238MBhIUUSvzIfjGlLit6F0&key={YOUR_API_KEY}
 
-- (id)unSubscribeFromChannel:(NSString *)subscriptionID
-{
+- (id)unSubscribeFromChannel:(NSString *)subscriptionID {
     
     //  NSLog(@"unsubscribe with ID: %@", subscriptionID);
     
@@ -295,8 +287,7 @@
     
 }
 
-- (void)copyPlaylist:(KBYTSearchResult *)result completion:(void(^)(NSString *response))completion
-{
+- (void)copyPlaylist:(KBYTSearchResult *)result completion:(void(^)(NSString *response))completion {
     __block  KBYTSearchResult *plResult = [self createPlaylistWithTitle:result.title andPrivacyStatus:@"public"];
     
     [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(KBYTPlaylist *playlistDetails) {
@@ -507,8 +498,67 @@
     
 }
 
-- (id)removeVideo:(NSString *)videoID FromPlaylist:(NSString *)favoriteID
-{
+/*
+ {
+   "id": "YOUR_PLAYLIST_ITEM_ID",
+   "snippet": {
+     "playlistId": "YOUR_PLAYLIST_ID",
+     "position": 1,
+     "resourceId": {
+       "kind": "youtube#video",
+       "videoId": "YOUR_VIDEO_ID"
+     }
+   }
+ }
+ */
+
+- (id)setPosition:(NSInteger)position forVideoID:(NSString *)videoID inPlaylist:(NSString *)playlistID {
+    
+    [self refreshAuthToken];
+    NSError* error;
+    
+    // Create URL request and set url, method, content-length, content-type, and body
+    
+    NSString *urlString = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=%@", ytClientID];
+    
+    //NSLog(@"urlString: %@", urlString);
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
+                                                                cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
+    
+    NSDictionary *postDictionary = @{@"id": playlistID,
+                                     @"snippet": @{@"playlistId": @"",
+                                                   @"position": @(position)},
+                                     @"resourceId": @{@"kind": @"youtube#video",
+                                                      @"videoId": videoID
+                                     }
+                                     
+    };
+    NSLog(@"[tuyu] post: %@", postDictionary);
+    //NSLog(@"postString: %@", [finalDict JSONString]);
+    // Encode post string
+    NSData* postData = [NSJSONSerialization dataWithJSONObject:postDictionary options:NSJSONWritingPrettyPrinted error:nil];
+    AFOAuthCredential *cred = [self defaultCredential];
+    NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
+    [request setValue:authorization forHTTPHeaderField:@"Authorization"];
+    [request setHTTPMethod:@"PUT"];
+    [request setHTTPBody:postData];
+    
+    NSHTTPURLResponse *theResponse = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
+    NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+    //NSLog(@"datString: %@", datString);
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
+    
+    // NSLog(@"jsonDict: %@", jsonDict);
+    if ([jsonDict valueForKey:@"error"] != nil){
+        return datString;
+    }
+    NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
+    NSLog(@"[tuyu] status string: %@", returnString);
+    return jsonDict;
+}
+
+- (id)removeVideo:(NSString *)videoID FromPlaylist:(NSString *)favoriteID {
     
     [self refreshAuthToken];
     NSError* error;
@@ -544,8 +594,7 @@
     
 }
 
-- (id)deletePlaylist:(NSString *)playlistID
-{
+- (id)deletePlaylist:(NSString *)playlistID {
     
     [self refreshAuthToken];
     NSError* error;
@@ -585,8 +634,7 @@
     [UD removeObjectForKey:@"refresh_token"];
 }
 
-- (BOOL)checkAndSetCredential
-{
+- (BOOL)checkAndSetCredential {
     AFOAuthCredential * cred =  [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
     //NSLog(@"[tuyu] cred: %@", cred);
     if (cred) {
@@ -597,8 +645,7 @@
     return NO;
 }
 
-- (id)newcreatePlaylistWithTitle:(NSString *)playlistTitle andPrivacyStatus:(NSString *)privacyStatus
-{
+- (id)newcreatePlaylistWithTitle:(NSString *)playlistTitle andPrivacyStatus:(NSString *)privacyStatus {
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:playlistTitle, @"title", nil];
     NSDictionary *status = [NSDictionary dictionaryWithObjectsAndKeys:privacyStatus, @"privacyStatus", nil];
     
@@ -621,8 +668,7 @@
     }];
     return nil;
 }
-- (id)createPlaylistWithTitle:(NSString *)playlistTitle andPrivacyStatus:(NSString *)privacyStatus
-{
+- (id)createPlaylistWithTitle:(NSString *)playlistTitle andPrivacyStatus:(NSString *)privacyStatus {
     
     [self refreshAuthToken];
     //NSLog(@"creating playlist: %@ with status: %@", playlistTitle, privacyStatus);
@@ -747,8 +793,7 @@
     
 }
 
-- (NSArray *)playlists
-{
+- (NSArray *)playlists {
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
     NSMutableArray *finalArray = [NSMutableArray new];
     NSArray *results = userDetails[@"results"];
@@ -823,8 +868,7 @@
     return jsonDict;
 }
 
-- (void)postOAuth2CodeToGoogle:(NSString *)code completion:(void(^)(NSString *value))block
-{
+- (void)postOAuth2CodeToGoogle:(NSString *)code completion:(void(^)(NSString *value))block {
     NSURL *baseURL = [NSURL URLWithString:@"https://accounts.google.com/o/oauth2"];
     
     
