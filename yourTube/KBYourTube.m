@@ -248,6 +248,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     channel.channelId = channelDict[@"snippet"][@"channelId"];
     channel.title = [channelDict recursiveObjectForKey:@"title"];
     channel.details = [channelDict recursiveObjectForKey:@"description"];
+    channel.stupidId = channelDict[@"id"];
     channel.imagePath = [channelDict recursiveObjectForKey:@"thumbnails"][@"high"][@"url"];
     channel.resultType = kYTSearchResultTypeChannel;
     channel.continuationToken = channelDict[@"nextPageToken"];
@@ -1781,9 +1782,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             //NSLog(@"root info: %@", rootInfo);
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(jsonDict != nil) {
-                    completionBlock(playlist);
+                    if (completionBlock){
+                        completionBlock(playlist);
+                    }
                 } else {
+                    if (failureBlock){
                     failureBlock(errorString);
+                    }
                 }
             });
         }

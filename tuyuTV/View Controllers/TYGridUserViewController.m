@@ -8,6 +8,7 @@
 
 #import "TYGridUserViewController.h"
 #import "KBBulletinView.h"
+#import "TYAuthUserManager.h"
 
 @interface TYGridUserViewController () {
     NSInteger _highlightedCell;
@@ -46,6 +47,41 @@
     menuTapRecognizer.enabled = false;
 }
 
+- (void)removeVideo:(KBYTSearchResult *)searchResult fromPlaylist:(KBYTPlaylist *)playlist inCollectionView:(UICollectionView *)cv {
+    NSLog(@"[tuyu] deleting %@ from %@ in %@", searchResult, playlist, cv);
+    [[TYAuthUserManager sharedInstance] removeVideo:searchResult.videoId FromPlaylist:playlist.playlistID];
+    [cv performBatchUpdates:^{
+        NSMutableDictionary *_pldMutable = [self.playlistDictionary mutableCopy];
+        NSMutableArray *playlistMutable = [playlist.videos mutableCopy];
+        NSIndexPath *ip = [NSIndexPath indexPathForItem:[playlist.videos indexOfObject:searchResult] inSection:0];
+        NSLog(@"[tuyu] ip: %@", ip);
+        [cv deleteItemsAtIndexPaths:@[ip]];
+        [playlistMutable removeObject:searchResult];
+        playlist.videos = playlistMutable;
+        _pldMutable[playlist.title] = playlist;
+        self.playlistDictionary = _pldMutable;
+    } completion:^(BOOL finished) {
+        
+    }];
+}
+
+- (void)removeChannel:(KBYTSearchResult *)searchResult inCollectionView:(UICollectionView *)cv {
+    NSLog(@"[tuyu] deleting %@ in %@", searchResult, cv);
+    [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:searchResult.stupidId];
+    [cv performBatchUpdates:^{
+        NSMutableDictionary *_pldMutable = [self.playlistDictionary mutableCopy];
+        NSMutableArray *channelsMutable = [_pldMutable[@"Channels"] mutableCopy];
+        NSIndexPath *ip = [NSIndexPath indexPathForItem:[channelsMutable indexOfObject:searchResult] inSection:0];
+        NSLog(@"[tuyu] ip: %@", ip);
+        [cv deleteItemsAtIndexPaths:@[ip]];
+        [channelsMutable removeObject:searchResult];
+        _pldMutable[@"Channels"] = channelsMutable;
+        self.playlistDictionary = _pldMutable;
+    } completion:^(BOOL finished) {
+        
+    }];
+}
+
 - (void)collectionView:(UICollectionView*)cv moveCellFromRow:(NSInteger)artwork offset:(NSInteger)offset {
     KBYTPlaylist *playlist = (KBYTPlaylist*)[self channelForCollectionView:cv];
     NSMutableArray *_data = [playlist.videos mutableCopy];
@@ -56,9 +92,9 @@
             _highlightedCell += offset;
             [_data exchangeObjectAtIndex:artwork withObjectAtIndex:artwork + offset];
             playlist.videos = _data;
-            NSMutableDictionary *_plMutable = [self.playlistDictionary mutableCopy];
-            _plMutable[playlist.title] = playlist;
-            self.playlistDictionary = _plMutable;
+            NSMutableDictionary *_pldMutable = [self.playlistDictionary mutableCopy];
+            _pldMutable[playlist.title] = playlist;
+            self.playlistDictionary = _pldMutable;
             //if there are certain elements in the cells that are position dependant, this is the right time to change them
             //because these cells are not reloaded by default (for example you have idx displayed in your cell... the cells will swap but idxs won't by default)
         } completion:^(BOOL finished) {
@@ -115,6 +151,8 @@
         return;
     }
     
+    UICollectionView *view = (UICollectionView*)[[self focusedCollectionCell] superview];
+    KBYTPlaylist *playlist = (KBYTPlaylist*)[self channelForCollectionView:view];
     KBYTSearchResult *result = [self searchResultFromFocusedCell];
     NSLog(@"[tuyu] showing alert for result: %@", result);
     NSString *title = @"Are you sure you want to delete this video?";
@@ -129,8 +167,12 @@
         NSLog(@"[tuyu] deleting item: %@", result);
         if (result.resultType == kYTSearchResultTypeChannel) {
             NSLog(@"unsub a channel?");
+            [self stopReordering];
+            [self removeChannel:result inCollectionView:view];
         } else if (result.resultType == kYTSearchResultTypeVideo) {
             NSLog(@"delete a video from a playlist?");
+            [self stopReordering];
+            [self removeVideo:result fromPlaylist:playlist inCollectionView:view];
         }
     }];
     [alertCon addAction:deleteAction];
@@ -184,11 +226,15 @@
 }
 
 - (void)focusedCellStopJiggling {
-    [self.focusedCollectionCell performSelector:@selector(stopJiggling) withObject:nil afterDelay:0];
+    if ([self.focusedCollectionCell respondsToSelector:@selector(stopJiggling)]){
+        [self.focusedCollectionCell performSelector:@selector(stopJiggling) withObject:nil afterDelay:0];
+    }
 }
 
 - (void)focusedCellStartJiggling {
-    [self.focusedCollectionCell performSelector:@selector(startJiggling) withObject:nil afterDelay:0];
+    if ([self.focusedCollectionCell respondsToSelector:@selector(startJiggling)]){
+        [self.focusedCollectionCell performSelector:@selector(startJiggling) withObject:nil afterDelay:0];
+    }
 }
 
 - (void)handleMenuTap:(id)sender {
@@ -255,6 +301,7 @@
         self.featuredChannel = searchDetails;
         self.featuredVideos = searchDetails.videos;
         [[self featuredVideosCollectionView] reloadData];
+
     } failureBlock:^(NSString *error) {
         //if (_didAdjustTotalHeight == false){
         UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.featuredVideosCollectionView.collectionViewLayout;

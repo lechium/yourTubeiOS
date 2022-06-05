@@ -53,7 +53,7 @@
         
     }];
 }
-/*
+
 - (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell {
     [super focusedCell:focusedCell];
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
@@ -62,13 +62,16 @@
         return;
     }
     KBYTChannel *currentChannel = [self channelForCollectionView:cv];
+    if (!currentChannel.continuationToken) {
+        return;
+    }
     NSIndexPath *indexPath = [cv indexPathForCell:focusedCell];
-    if (indexPath.row+1 == currentChannel.videos.count){
+    if (indexPath.row+1 == currentChannel.allSectionItems.count){
         NSLog(@"[tuyu] get a new page maybe?");
         [self getNextPage:currentChannel inCollectionView:cv];
     }
 }
- */
+ 
 
 - (void)refreshDataWithProgress:(BOOL)progress {
     LOG_CMD;

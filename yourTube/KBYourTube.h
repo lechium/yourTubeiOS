@@ -141,6 +141,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *videoId;
 @property (nonatomic, strong) NSString *channelPath; //what channel does video belong to
 @property (nonatomic, strong) NSString *channelId; //what channel does video belong to
+@property (nonatomic, strong) NSString *stupidId; //youtube specific id to unsubscribe et al
 @property (nonatomic, strong) NSString *duration;
 @property (nonatomic, strong) NSString *imagePath;
 @property (nonatomic, strong) NSString *age;

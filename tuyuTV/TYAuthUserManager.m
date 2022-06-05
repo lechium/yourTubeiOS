@@ -238,7 +238,7 @@
 
 - (id)unSubscribeFromChannel:(NSString *)subscriptionID {
     
-    //  NSLog(@"unsubscribe with ID: %@", subscriptionID);
+    NSLog(@"[tuyu] unsubscribe with ID: %@", subscriptionID);
     
     [self refreshAuthToken];
     NSError* error;
@@ -265,10 +265,10 @@
     
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     
-    //NSLog(@"datString: %@", datString);
+    NSLog(@"[tuyu] datString: %@", datString);
     
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-    NSLog(@"status string: %@", returnString);
+    NSLog(@"[tuyu] status string: %@", returnString);
     
     //JSON data
     
@@ -558,6 +558,33 @@
     return jsonDict;
 }
 
+/*
+ curl \
+   'https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=25&playlistId=PLBCF2DAC6FFB574DE&key=[YOUR_API_KEY]' \
+   --header 'Authorization: Bearer [YOUR_ACCESS_TOKEN]' \
+   --header 'Accept: application/json' \
+   --compressed
+ */
+
+- (void)getPlaylistItems:(NSString *)playlistID completion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock {
+    __block NSMutableArray *channels = [NSMutableArray new];
+    NSString *initialString = @"https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=50&playlistId";
+    NSString *getString = [NSString stringWithFormat:@"%@=%@", initialString, playlistID];
+    [self genericGetCommand:getString completion:^(NSDictionary *jsonResponse, NSString *error) {
+        NSLog(@"[tuyu] jsonResponse: %@", jsonResponse);
+        NSArray *items = jsonResponse[@"items"];
+        [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+        }];
+        //NSLog(@"[tuyu] count: %lu %@", channels.count, channels);
+        if (completionBlock) {
+            completionBlock(channels, error);
+        }
+        
+        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/playlistItemsResponse.plist" atomically:TRUE];
+    }];
+}
+
 - (id)removeVideo:(NSString *)videoID FromPlaylist:(NSString *)favoriteID {
     
     [self refreshAuthToken];
@@ -567,7 +594,7 @@
     
     NSString *urlString = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/playlistItems?id=%@&key=%@", favoriteID, ytClientID];
     
-    //NSLog(@"urlString: %@", urlString);
+    NSLog(@"[tuyu] urlString: %@", urlString);
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
     
@@ -584,10 +611,10 @@
     
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     
-    //NSLog(@"datString: %@", datString);
+    NSLog(@"[tuyu] datString: %@", datString);
     
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-    NSLog(@"status string: %@", returnString);
+    NSLog(@"[tuyu] status string: %@", returnString);
     
     
     return @"Success";

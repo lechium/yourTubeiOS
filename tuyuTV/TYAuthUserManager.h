@@ -62,4 +62,5 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 - (void)getOAuthCodeWithCompletion:(void(^)(NSDictionary *codeDict))block;
 - (void)startAuthAndGetUserCodeDetails:(DeviceCodeBlock)codeBlock completion:(FinishedBlock)finished;
 - (id)setPosition:(NSInteger)position forVideoID:(NSString *)videoID inPlaylist:(NSString *)playlistID;
+- (void)getPlaylistItems:(NSString *)playlistID completion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock;
 @end
