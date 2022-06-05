@@ -608,14 +608,14 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     KBYTSearchResult *currentResult = [self.searchResults objectAtIndex:indexPath.row];
     
-    if (currentResult.resultType ==kYTSearchResultTypeChannel) {
+    if (currentResult.resultType == kYTSearchResultTypeChannel) {
         
-        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:5 withTitle:currentResult.title withId:currentResult.videoId];
+        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypeChannel withTitle:currentResult.title withId:currentResult.videoId];
         [[self navigationController] pushViewController:genericTableView animated:true];
         return;
-    } else if (currentResult.resultType ==kYTSearchResultTypePlaylist) {
+    } else if (currentResult.resultType == kYTSearchResultTypePlaylist) {
         
-        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:6 withTitle:currentResult.title withId:currentResult.videoId];
+        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:currentResult.resultType withTitle:currentResult.title withId:currentResult.videoId];
         [[self navigationController] pushViewController:genericTableView animated:true];
         return;
     }
