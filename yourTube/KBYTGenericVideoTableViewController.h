@@ -31,6 +31,10 @@
 @property (nonatomic, strong) NSString *customTitle;
 @property (nonatomic, strong) NSString *customId;
 @property (nonatomic, strong) NSString *nextHREF;
+@property (nonatomic, strong) NSString *continuationToken;
+@property (nonatomic, strong) KBYTPlaylist *playlist;
+@property (nonatomic, strong) KBYTChannel *channel;
+@property (nonatomic, strong) KBYTSearchResult *searchResult;
 
 @property (nonatomic, strong) KBYTMedia *ytMedia;
 @property (nonatomic, strong) AVQueuePlayer *player;

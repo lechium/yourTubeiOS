@@ -55,10 +55,7 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    [self updateTableForType:self.tableType];
-    
-    
-    
+    [self updateTable];
 }
 
 - (void)addLongPressToCell:(KBYTDownloadCell *)cell {
@@ -252,131 +249,31 @@
 }
 
 - (void)getNextPage {
-    
+    /*
     if (self.currentPage == 1 && self.searchResults.count == 0) {
+        return;
+    }*/
+    if (self.channel.continuationToken == nil || self.playlist.continuationToken == nil) {
         return;
     }
     
     self.currentPage++;
-    if (tableType == 0) //featured
-    {
-        self.navigationItem.title = @"Suggested Videos";
-        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
-            
-            self.pageCount = [outputResults[@"pageCount"] integerValue];
-            self.nextHREF = outputResults[@"loadMoreREF"];
-            [self updateSearchResults:outputResults[@"results"]];
-            self.totalResults = [[self searchResults] count];
-            [self.tableView reloadData];
-            
+    
+    if (self.channel) {
+        [[KBYourTube sharedInstance] getChannelVideosAlt:self.channel.channelID continuation:self.channel.continuationToken completionBlock:^(KBYTChannel *channel) {
+            //[self.channel mergeChannelVideos:channel];
         } failureBlock:^(NSString *error) {
             
-            self.nextHREF = nil;
-            [self.tableView reloadData];
-        }];
-        
-        
-    } else if (tableType == 1) //popular
-    {
-        self.navigationItem.title = @"#PopularOnYouTube";
-        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
-            
-            self.pageCount = [outputResults[@"pageCount"] integerValue];
-            self.nextHREF = outputResults[@"loadMoreREF"];
-            [self updateSearchResults:outputResults[@"results"]];
-            self.totalResults = [[self searchResults] count];
-            [self.tableView reloadData];
-            
-        } failureBlock:^(NSString *error) {
-            
-            self.nextHREF = nil;
-            [self.tableView reloadData];
-        }];
-    }  else if (tableType == 2) //music
-    {
-        self.navigationItem.title = @"#Music";
-        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
-            
-            self.pageCount = [outputResults[@"pageCount"] integerValue];
-            self.nextHREF = outputResults[@"loadMoreREF"];
-            [self updateSearchResults:outputResults[@"results"]];
-            self.totalResults = [[self searchResults] count];
-            [self.tableView reloadData];
-            
-        } failureBlock:^(NSString *error) {
-            
-            self.nextHREF = nil;
-            [self.tableView reloadData];
-        }];
-        
-    } else if (tableType == 3) //sports
-    {
-        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
-            
-            self.pageCount = [outputResults[@"pageCount"] integerValue];
-            self.nextHREF = outputResults[@"loadMoreREF"];
-            [self updateSearchResults:outputResults[@"results"]];
-            self.totalResults = [[self searchResults] count];
-            [self.tableView reloadData];
-            
-        } failureBlock:^(NSString *error) {
-            
-            self.nextHREF = nil;
-            [self.tableView reloadData];
-        }];
-        
-    } else if (tableType == 4) //360
-    {
-        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
-            
-            self.pageCount = [outputResults[@"pageCount"] integerValue];
-            self.nextHREF = outputResults[@"loadMoreREF"];
-            [self updateSearchResults:outputResults[@"results"]];
-            self.totalResults = [[self searchResults] count];
-            [self.tableView reloadData];
-            
-        } failureBlock:^(NSString *error) {
-            
-            self.nextHREF = nil;
-            [self.tableView reloadData];
-        }];
-        
-    }  else if (tableType == 5) //custom channel
-    {
-        self.navigationItem.title = customTitle;
-        [[KBYourTube sharedInstance] loadMoreVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
-            
-            self.pageCount = [outputResults[@"pageCount"] integerValue];
-            self.nextHREF = outputResults[@"loadMoreREF"];
-            [self updateSearchResults:outputResults[@"results"]];
-            [self fetchPlaylistDetailsInBackground:outputResults[@"results"]];
-            self.totalResults = [[self searchResults] count];
-            [self.tableView reloadData];
-            
-        } failureBlock:^(NSString *error) {
-            
-            self.nextHREF = nil;
-            [self.tableView reloadData];
-        }];
-    }   else if (tableType == 6) //custom playlist
-    {
-        self.navigationItem.title = customTitle;
-        [[KBYourTube sharedInstance] loadMorePlaylistVideosFromHREF:self.nextHREF completionBlock:^(NSDictionary *outputResults) {
-            
-            [self updateSearchResults:outputResults[@"results"]];
-            [self fetchPlaylistDetailsInBackground:outputResults[@"results"]];
-            self.totalResults = [[self searchResults] count];
-            self.pageCount = [outputResults[@"pageCount"] integerValue];
-            self.nextHREF = outputResults[@"loadMoreREF"];
-            [self.tableView reloadData];
-            
-        } failureBlock:^(NSString *error) {
-            
-            self.nextHREF = nil;
-            [self.tableView reloadData];
         }];
     }
     
+    if (self.playlist) {
+        [[KBYourTube sharedInstance] getPlaylistVideos:self.playlist.playlistID continuation:self.playlist.continuationToken completionBlock:^(KBYTPlaylist *playlist) {
+            [self updateSearchResults:playlist.videos];
+        } failureBlock:^(NSString *error) {
+            
+        }];
+    }
     
 }
 
@@ -420,202 +317,31 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     return cell;
 }
 
-- (void)updateTableForType:(NSInteger)type {
+- (void)updateTable {
     [SVProgressHUD show];
-    if (type == 0) //featured
-    {
-        self.navigationItem.title = @"Suggested Videos";
-        [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
-            
-            self.currentPage = 1;
-            [SVProgressHUD dismiss];
-            
-            NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
-            
-            if (userDetails != nil)
-            {
-                NSLog(@"include user details!");
-                NSArray *userDetailsArray = userDetails[@"results"];
-                NSArray *channels = userDetails[@"channels"];
-                NSMutableArray *fullArray = nil;
-                
-                if (channels != nil)
-                {
-                    fullArray = [[NSMutableArray alloc] initWithArray:channels];
-                    [fullArray addObjectsFromArray:userDetailsArray];
-                } else {
-                    fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
-                }
-                
-                [fullArray addObjectsFromArray:searchDetails[@"results"]];
-                [self updateSearchResults:fullArray];
-                self.totalResults = [fullArray count];
-            } else {
-                if ([[KBYourTube sharedInstance] isSignedIn] == true)
-                {
-                    [SVProgressHUD show];
-                    [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
-                        [SVProgressHUD dismiss];
-                        [[KBYourTube sharedInstance] setUserDetails:outputResults];
-                        NSLog(@"signed in since launch, add user details!");
-                        // NSArray *userDetailsArray = [[KBYourTube sharedInstance]userDetails][@"results"];
-                        //NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
-                        
-                        NSArray *userDetailsArray = outputResults[@"results"];
-                        NSArray *channels = outputResults[@"channels"];
-                        NSMutableArray *fullArray = nil;
-                        
-                        if (channels != nil)
-                        {
-                            fullArray = [[NSMutableArray alloc] initWithArray:channels];
-                            [fullArray addObjectsFromArray:userDetailsArray];
-                        } else {
-                            fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
-                        }
-                        
-                        
-                        // NSMutableArray *fullArray = [[NSMutableArray alloc] initWithArray:userDetailsArray];
-                        [fullArray addObjectsFromArray:searchDetails[@"results"]];
-                        [self updateSearchResults:fullArray];
-                        self.totalResults = [fullArray count];
-                        self.pageCount = [searchDetails[@"pageCount"] integerValue];
-                        self.nextHREF = searchDetails[@"loadMoreREF"];
-                        [self.tableView reloadData];
-                    } failureBlock:^(NSString *error) {
-                        
-                        [SVProgressHUD dismiss];
-                        [self updateSearchResults:searchDetails[@"results"]];
-                        self.totalResults = [searchDetails[@"resultCount"] integerValue];
-                        self.pageCount = [searchDetails[@"pageCount"] integerValue];
-                        self.nextHREF = searchDetails[@"loadMoreREF"];
-                        [self.tableView reloadData];
-                    }];
-                } else {
-                    [self updateSearchResults:searchDetails[@"results"]];
-                    self.totalResults = [searchDetails[@"resultCount"] integerValue];
-                }
-                
-            }
-            
-            
-            self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self.tableView reloadData];
-            
-            
+    if (self.searchResult.resultType == kYTSearchResultTypeChannel) {
+        [[KBYourTube sharedInstance] getChannelVideosAlt:self.searchResult.videoId continuation:nil completionBlock:^(KBYTChannel *channel) {
+            self.channel = channel;
+            self.searchResults = [self.channel allSectionItems];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView reloadData];
+            });
         } failureBlock:^(NSString *error) {
-            [SVProgressHUD dismiss];
-            
+            NSLog(@"[tuyu] error: %@", error);
         }];
-    } else if (type == 1) //popular
-    {
-        self.navigationItem.title = @"#PopularOnYouTube";
-        [[KBYourTube sharedInstance] getChannelVideos:KBYTPopularChannelID completionBlock:^(KBYTChannel *searchDetails) {
-            
-            self.currentPage = 1;
-            [SVProgressHUD dismiss];
-            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            [self updateSearchResults:searchDetails.videos];
-            //self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self.tableView reloadData];
-            
+    } else if (self.searchResult.resultType == kYTSearchResultTypePlaylist) {
+        [KBYourTube sharedInstance] getPlaylistVideos:self.searchResult.videoId continuation:nil completionBlock:^(KBYTPlaylist *playlist) {
+            self.playlist = playlist;
+            self.searchResults = [self.playlist videos];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView reloadData];
+            });
         } failureBlock:^(NSString *error) {
-            [SVProgressHUD dismiss];
-            
-        }];
-    }  else if (type == 2) //music
-    {
-        self.navigationItem.title = @"#Music";
-        [[KBYourTube sharedInstance] getChannelVideos:KBYTMusicChannelID completionBlock:^(KBYTChannel *searchDetails) {
-            
-            self.currentPage = 1;
-            [SVProgressHUD dismiss];
-            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            //self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self updateSearchResults:searchDetails.videos];
-            [self.tableView reloadData];
-            
-        } failureBlock:^(NSString *error) {
-            [SVProgressHUD dismiss];
-            
-        }];
-    } else if (type == 3) //sports
-    {
-        self.navigationItem.title = @"#Sports";
-        [[KBYourTube sharedInstance] getChannelVideos:KBYTSportsChannelID completionBlock:^(KBYTChannel *searchDetails) {
-            
-            self.currentPage = 1;
-            [SVProgressHUD dismiss];
-            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            //self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self updateSearchResults:searchDetails.videos];
-            [self.tableView reloadData];
-            
-        } failureBlock:^(NSString *error) {
-            [SVProgressHUD dismiss];
-            
-        }];
-    } else if (type == 4) //360
-    {
-        self.navigationItem.title = @"360 Videos";
-        [[KBYourTube sharedInstance] getChannelVideos:KBYT360ChannelID completionBlock:^(KBYTChannel *searchDetails) {
-            
-            self.currentPage = 1;
-            [SVProgressHUD dismiss];
-            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            [self updateSearchResults:searchDetails.videos];
-            //self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self.tableView reloadData];
-            
-        } failureBlock:^(NSString *error) {
-            [SVProgressHUD dismiss];
-            
-        }];
-    }  else if (type == 5) //custom channel
-    {
-        self.navigationItem.title = customTitle;
-        [[KBYourTube sharedInstance] getChannelVideos:self.customId completionBlock:^(KBYTChannel *searchDetails) {
-            
-            self.currentPage = 1;
-            [SVProgressHUD dismiss];
-            //self.totalResults = [searchDetails[@"resultCount"] integerValue];
-            //self.pageCount = [searchDetails[@"pageCount"] integerValue];
-            [self updateSearchResults:searchDetails.videos];
-            //self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self.tableView reloadData];
-            [self fetchPlaylistDetailsInBackground:searchDetails.videos];
-            
-        } failureBlock:^(NSString *error) {
-            [SVProgressHUD dismiss];
-            
-        }];
-    }   else if (type == 6) //custom playlist
-    {
-        self.navigationItem.title = customTitle;
-        [[KBYourTube sharedInstance] getPlaylistVideos:self.customId completionBlock:^(KBYTPlaylist *searchDetails) {
-            
-            self.currentPage = 1;
-            [SVProgressHUD dismiss];
-            NSArray *searchArray = searchDetails.videos;
-            self.totalResults = [searchArray count];
-            self.pageCount = 1;
-            [self updateSearchResults:searchArray];
-            //self.nextHREF = searchDetails[@"loadMoreREF"];
-            [self.tableView reloadData];
-            [self fetchPlaylistDetailsInBackground:searchArray];
-            
-        } failureBlock:^(NSString *error) {
-            [SVProgressHUD dismiss];
-            
+            NSLog(@"[tuyu] error: %@", error);
         }];
     }
-    
-    
 }
+
 
 - (void)fetchPlaylistDetailsInBackground:(NSArray *)resultArray {
     //void start just by fetching the first object so we can start playing as soon as possible

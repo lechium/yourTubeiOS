@@ -115,27 +115,7 @@
             self.searchController.searchBar.text = self.lastSearch;
             [self searchBarSearchButtonClicked:self.searchController.searchBar];
             self.navigationItem.title = @"YouTube Search";
-        } /*else {
-           self.navigationItem.title = @"Suggested Videos";
-           self.showingSuggestedVideos = true;
-           if (self.totalResults > 0) { return; }
-           [SVProgressHUD show];
-           [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
-           
-           [SVProgressHUD dismiss];
-           self.totalResults = [searchDetails[@"resultCount"] integerValue];
-           self.pageCount = [searchDetails[@"pageCount"] integerValue];
-           [self updateSearchResults:searchDetails[@"results"]];
-           [self.tableView reloadData];
-           
-           
-           
-           } failureBlock:^(NSString *error) {
-           [SVProgressHUD dismiss];
-           
-           }];
-           
-           }*/
+        }
         
     }
     
@@ -358,7 +338,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             DLog(@"subscribing to channel: %@", result.channelId);
             [[TYAuthUserManager sharedInstance] subscribeToChannel:result.channelId];
         } else {
-            
+            /*
             [[KBYourTube sharedInstance] getUserVideos:result.channelPath.lastPathComponent completionBlock:^(NSDictionary *searchDetails) {
                 
                 
@@ -367,7 +347,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             } failureBlock:^(NSString *error) {
                 //
             }];
-            
+            */
         }
         
     }];
@@ -589,50 +569,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     //[self getVideoIDDetails:currentResult.videoId];
 }
-
-/*
- // Override to support conditional editing of the table view.
- - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the specified item to be editable.
- return YES;
- }
- */
-
-/*
- // Override to support editing the table view.
- - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
- if (editingStyle == UITableViewCellEditingStyleDelete) {
- // Delete the row from the data source
- [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
- } else if (editingStyle == UITableViewCellEditingStyleInsert) {
- // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
- }
- }
- */
-
-/*
- // Override to support rearranging the table view.
- - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
- }
- */
-
-/*
- // Override to support conditional rearranging of the table view.
- - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the item to be re-orderable.
- return YES;
- }
- */
-
-/*
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- */
 
 
 

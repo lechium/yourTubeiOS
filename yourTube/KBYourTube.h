@@ -244,30 +244,10 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (ONOXMLDocument *)documentFromURL:(NSString *)theURL;
 - (NSDictionary *)channelIDAndWatchLaterCount;
 - (NSString *)videoDescription:(NSString *)videoID;
-- (NSDictionary *)videoDetailsFromID:(NSString *)videoID;
 
 - (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock
                                        failureBlock:(void(^)(NSString *error))failureBlock;
 
-- (void)loadMoreVideosFromHREF:(NSString *)loadMoreLink
-               completionBlock:(void(^)(NSDictionary *outputResults))completionBlock
-                  failureBlock:(void(^)(NSString *error))failureBlock;
-
-- (void)loadMorePlaylistVideosFromHREF:(NSString *)loadMoreLink
-                       completionBlock:(void(^)(NSDictionary *outputResults))completionBlock
-                          failureBlock:(void(^)(NSString *error))failureBlock;
-
-/**
- 
- searchQuery is just a basic unescaped search string, this will return a dictionary with
- results, pageCount, resultCount. Beware this is super fragile, if youtube website changes
- this will almost definitely break. that being said its MUCH quicker then getSearchResults
- 
- */
-
-- (void)getOrganizedChannelData:(NSString *)channelID
-                completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
-                   failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)apiSearch:(NSString *)search
              type:(KBYTSearchType)type
@@ -285,9 +265,6 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
           completionBlock:(void(^)(KBYTPlaylist *playlist))completionBlock
              failureBlock:(void(^)(NSString *error))failureBlock;
 
-- (void)getUserVideos:(NSString *)channelID
-      completionBlock:(void(^)(NSDictionary *searchDetails))completionBlock
-         failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getChannelVideos:(NSString *)channelID
             continuation:(NSString *)continuationToken
@@ -307,9 +284,6 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
             completionBlock:(void(^)(KBYTChannel *channel))completionBlock
                failureBlock:(void(^)(NSString *error))failureBlock;
 
-
-- (void)getFeaturedVideosWithCompletionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
-                                failureBlock:(void(^)(NSString* error))failureBlock;
 
 - (void)getVideoDetailsForSearchResults:(NSArray*)searchResults
                         completionBlock:(void(^)(NSArray* videoArray))completionBlock

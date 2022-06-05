@@ -58,15 +58,14 @@
      //       NSLog(@"cookie: %@", cookie);
         }
     }
-    [[KBYourTube sharedInstance] getFeaturedVideosWithCompletionBlock:^(NSDictionary *searchDetails) {
-        
-        //DLog(@"searchDeets: %@", searchDetails);
-        self.menuItems = searchDetails[@"results"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
-        
+    
+    NSMutableDictionary *channels = [NSMutableDictionary new];
+    [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.menuItems = [channel.allSectionItems mutableCopy];
+        });
     } failureBlock:^(NSString *error) {
         
-        DLog(@"error: %@", error);
     }];
     
     if ([[KBYourTube sharedInstance] isSignedIn] == YES) {
