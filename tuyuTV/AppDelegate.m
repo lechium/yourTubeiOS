@@ -11,7 +11,6 @@
 #import "AppDelegate.h"
 #import "KBYourTube.h"
 #import "KBYourTube+Categories.h"
-#import "KBYTSearchTableViewController.h"
 #import "KBYTSearchResultsViewController.h"
 #import "WebViewController.h"
 #import "AboutViewController.h"

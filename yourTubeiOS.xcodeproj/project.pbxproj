@@ -270,9 +270,7 @@
 		898E935E1C8D62B000B34DAA /* YTPlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 898E935D1C8D62B000B34DAA /* YTPlaceholder.png */; };
 		898E935F1C8D63C900B34DAA /* YTKBPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A83A0E1C877B6900E1987E /* YTKBPlayerViewController.m */; };
 		898E93621C8D74B300B34DAA /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93611C8D74B300B34DAA /* WebViewController.m */; };
-		898E93661C8D8FA900B34DAA /* KBYTSearchTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67021C60125600AE33FA /* KBYTSearchTableViewController.m */; };
 		898E93671C8D8FEC00B34DAA /* KBYTSearchItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67851C62B9BD00AE33FA /* KBYTSearchItemViewController.m */; };
-		898E93681C8D8FF400B34DAA /* KBYTGenericVideoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA601C6FC3EB00FB6D67 /* KBYTGenericVideoTableViewController.m */; };
 		898E93691C8D910500B34DAA /* KBYTDownloadCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */; };
 		898E936A1C8D911700B34DAA /* JGProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */; };
 		898E936E1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */; };
@@ -1955,7 +1953,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				898E93581C8D56D100B34DAA /* UIView+WebCacheOperation.m in Sources */,
-				898E93681C8D8FF400B34DAA /* KBYTGenericVideoTableViewController.m in Sources */,
 				899876721CDEB109006A639E /* TYBaseGridViewController.m in Sources */,
 				898E93461C8D56BB00B34DAA /* SVIndefiniteAnimatedView.m in Sources */,
 				898E93691C8D910500B34DAA /* KBYTDownloadCell.m in Sources */,
@@ -2013,7 +2010,6 @@
 				892A3F4A1CF7AD3F00EA0247 /* TYAuthUserManager.m in Sources */,
 				898E93621C8D74B300B34DAA /* WebViewController.m in Sources */,
 				898E930F1C8D568B00B34DAA /* APDeviceController.m in Sources */,
-				898E93661C8D8FA900B34DAA /* KBYTSearchTableViewController.m in Sources */,
 				898E93101C8D569100B34DAA /* Reachability.m in Sources */,
 				898E93031C8D564100B34DAA /* APDocument.m in Sources */,
 				32B022821E63EB2C002211C3 /* KBYTGridChannelViewController.m in Sources */,

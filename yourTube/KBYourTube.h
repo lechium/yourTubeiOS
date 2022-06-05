@@ -315,11 +315,6 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
                         completionBlock:(void(^)(NSArray* videoArray))completionBlock
                            failureBlock:(void(^)(NSString* error))failureBlock;
 
-- (void)getSearchResults:(NSString *)searchQuery
-              pageNumber:(NSInteger)page
-         completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
-            failureBlock:(void(^)(NSString* error))failureBlock;
-
 - (void)getVideoDetailsForIDs:(NSArray*)videoIDs
               completionBlock:(void(^)(NSArray* videoArray))completionBlock
                  failureBlock:(void(^)(NSString* error))failureBlock;
@@ -328,8 +323,6 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
              completionBlock:(void(^)(KBYTMedia* videoDetails))completionBlock
                 failureBlock:(void(^)(NSString* error))failureBlock;
 
-
-- (NSString *)decodeSignature:(NSString *)theSig;
 
 + (NSDictionary *)formatFromTag:(NSInteger)tag;
 - (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP;

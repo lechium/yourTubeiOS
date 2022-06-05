@@ -269,6 +269,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return playlist;
 }
 
+//potentially obsolete
 - (id)initWithDictionary:(NSDictionary *)resultDict {
     self = [super init];
     title = resultDict[@"title"];
@@ -362,57 +363,35 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (BOOL)processSource:(NSDictionary *)inputSource {
     //NSLog(@"inputSource: %@", inputSource);
     if ([[inputSource allKeys] containsObject:@"url"]) {
-        NSString *signature = nil;
         self.itag = [[inputSource objectForKey:@"itag"] integerValue];
         
         //if you want to limit to mp4 only, comment this if back in
         //  if (fmt == 22 || fmt == 18 || fmt == 37 || fmt == 38)
         //    {
         NSString *url = [[inputSource objectForKey:@"url"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        if ([[inputSource allKeys] containsObject:@"sig"])
-        {
-            self.s = [inputSource objectForKey:@"sig"];
-            signature = [inputSource objectForKey:@"sig"];
-            url = [url stringByAppendingFormat:@"&signature=%@", signature];
-        } else if ([[inputSource allKeys] containsObject:@"s"]) //requires cipher to update the signature
-        {
-            self.s = [inputSource objectForKey:@"s"];
-            signature = [inputSource objectForKey:@"s"];
-            signature = [[KBYourTube sharedInstance] decodeSignature:signature];
-            //NSLog(@"decoded sig: %@", signature);
-            url = [url stringByAppendingFormat:@"&signature=%@", signature];
-        }
-        
         NSDictionary *tags = [KBYourTube formatFromTag:self.itag];
-        
-        
-        if (tags == nil) // unsupported format, return nil
-        {
+        // unsupported format, return nil
+        if (tags == nil) {
             return false;
         }
         
-        if ([[inputSource valueForKey:@"quality"] length] == 0)
-        {
+        if ([[inputSource valueForKey:@"quality"] length] == 0) {
             self.quality = tags[@"quality"];
         } else {
             self.quality = inputSource[@"quality"];
         }
-        
         self.url = [NSURL URLWithString:url];
         self.expireTime = [[self.url parameterDictionary][@"expire"] integerValue];
         self.format = tags[@"format"]; //@{@"format": @"4K MP4", @"height": @2304, @"extension": @"mp4"}
         self.height = tags[@"height"];
         self.extension = tags[@"extension"];
-        
-        if (([self.extension isEqualToString:@"mp4"] || [self.extension isEqualToString:@"3gp"] ))
-        {
+        if (([self.extension isEqualToString:@"mp4"] || [self.extension isEqualToString:@"3gp"] )) {
             self.playable = true;
         } else {
             self.playable = false;
         }
         
-        if (([self.extension isEqualToString:@"m4v"] || [self.extension isEqualToString:@"aac"] ))
-        {
+        if (([self.extension isEqualToString:@"m4v"] || [self.extension isEqualToString:@"aac"] )) {
             self.multiplexed = false;
         } else {
             self.multiplexed = true;
@@ -420,8 +399,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         
         self.type = [[[[inputSource valueForKey:@"type"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@" "] stringByReplacingOccurrencesOfString:@"\"" withString:@""];
         self.title = [[[inputSource valueForKey:@"title"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-        if (self.height == 0)
-        {
+        if (self.height == 0) {
             self.outputFilename = [NSString stringWithFormat:@"%@.%@", self.title,self.extension];
         } else {
             self.outputFilename = [NSString stringWithFormat:@"%@ [%@p].%@", self.title, self.height,self.extension];
@@ -429,8 +407,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         return true;
         // }
     }
-    
-    
     return false;
 }
 
@@ -3385,109 +3361,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 
-
-/**
- 
- This will get ALL the info about EVERY search result. it initially just compiles a list of video ID's scraping
- youtubes search, this scrape should be MUCH less fragile. However, since it runs through get_video_info
- with EVERY video id its a LOT slower then the basic search above. so it would be better to use as a
- fallback if the one above fails.
- 
- */
-
-- (void)getSearchResults:(NSString *)searchQuery
-              pageNumber:(NSInteger)page
-         completionBlock:(void(^)(NSDictionary* searchDetails))completionBlock
-            failureBlock:(void(^)(NSString* error))failureBlock {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        @autoreleasepool {
-            
-            NSString *pageorsm = nil;
-            if (page == 1)
-            {
-                pageorsm = @"sm=1";
-            } else {
-                pageorsm = [NSString stringWithFormat:@"page=%lu", page];
-            }
-            NSString *requestString = [NSString stringWithFormat:@"https://m.youtube.com/results?q=%@&%@", [searchQuery stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], pageorsm];
-            
-            NSString *request = [self stringFromRequest:requestString];
-            NSInteger results = [self resultNumber:request];
-            NSArray *videoIDs = [self ytSearchBasics:request];
-            NSInteger pageCount = results/[videoIDs count];
-            NSMutableDictionary *outputDict = [NSMutableDictionary new];
-            [outputDict setValue:[NSNumber numberWithInteger:results] forKey:@"resultCount"];
-            [outputDict setValue:[NSNumber numberWithInteger:pageCount] forKey:@"pageCount"];
-            NSMutableArray *finalArray = [NSMutableArray new];
-            //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
-            NSString *errorString = nil;
-            
-            //if we already have the timestamp and key theres no reason to fetch them again, should make additional calls quicker.
-            if (self.yttimestamp.length == 0 && self.ytkey.length == 0)
-            {
-                //get the time stamp and cipher key in case we need to decode the signature.
-                [self getTimeStampAndKey:[videoIDs firstObject]];
-            }
-            
-            //a fallback just in case the jsbody is changed and we cant automatically grab current signatures
-            //old ciphers generally continue to work at least temporarily.
-            
-            if (self.yttimestamp.length == 0 || self.ytkey.length == 0)
-            {
-                errorString = @"Failed to decode signature cipher javascript.";
-                self.yttimestamp = hardcodedTimestamp;
-                self.ytkey = hardcodedCipher;
-                
-            }
-            
-            //the url we use to call get_video_info
-            
-            
-            
-            for (NSString *videoID in videoIDs) {
-                
-                NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", videoID, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
-                
-                //get the post body from the url above, gets the initial raw info we work with
-                NSString *body = [self stringFromRequest:url];
-                
-                //turn all of these variables into an nsdictionary by separating elements by =
-                NSDictionary *vars = [self parseFlashVars:body];
-                
-                //  NSLog(@"vars: %@", vars);
-                
-                if ([[vars allKeys] containsObject:@"status"])
-                {
-                    if ([[vars objectForKey:@"status"] isEqualToString:@"ok"])
-                    {
-                        //the call was successful, create our root object.
-                        KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithDictionary:vars];
-                        [finalArray addObject:currentMedia];
-                    }
-                } else {
-                    
-                    errorString = @"get_video_info failed.";
-                    
-                }
-                
-            }
-            [outputDict setValue:finalArray forKey:@"results"];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                if([finalArray count] > 0)
-                {
-                    completionBlock(outputDict);
-                } else {
-                    failureBlock(errorString);
-                }
-            });
-        }
-    });
-    
-}
-
 #pragma mark video details
 
 /*
@@ -3533,47 +3406,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict];
                 [finalArray addObject:currentMedia];
                 
-                //    NSLog(@"processing videoID %@ at index: %lu", result.videoId, i);
-                /*
-                if ([result media] != nil && [[result media] isExpired] == false) //skip it if we've already fetched it.
-                {
-                    [finalArray addObject:[result media]];
-                    continue;
-                }
-                NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", result.videoId, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
-                
-                //get the post body from the url above, gets the initial raw info we work with
-                NSString *body = [self stringFromRequest:url];
-                
-                //turn all of these variables into an nsdictionary by separating elements by =
-                NSDictionary *vars = [self parseFlashVars:body];
-                
-                //  NSLog(@"vars: %@", vars);
-                
-                if ([[vars allKeys] containsObject:@"status"])
-                {
-                    if ([[vars objectForKey:@"status"] isEqualToString:@"ok"])
-                    {
-                        //the call was successful, create our root object.
-                        KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithDictionary:vars];
-                        // NSLog(@"adding media: %@", currentMedia);
-                        result.media = currentMedia;
-                        [finalArray addObject:currentMedia];
-                    } else {
-                        
-                        errorString = [[[vars objectForKey:@"reason"] stringByReplacingOccurrencesOfString:@"+" withString:@" "] stringByRemovingPercentEncoding];
-                        NSLog(@"get_video_info for %@ failed for reason: %@", result.title, errorString);
-                        
-                    }
-                } else {
-                    
-                    errorString = @"get_video_info failed.";
-                    NSLog(@"get video info failed for id: %@", result.videoId);
-                }
-                i++;
-                 */
             }
-            
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
@@ -3614,42 +3447,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
                 KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict];
                 [finalArray addObject:currentMedia];
-                /*
-                NSLog(@"processing videoID %@ at index: %lu", videoID, i);
-                
-                NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/get_video_info?&video_id=%@&%@&sts=%@", videoID, @"eurl=http%3A%2F%2Fwww%2Eyoutube%2Ecom%2F", self.yttimestamp];
-                
-                //get the post body from the url above, gets the initial raw info we work with
-                NSString *body = [self stringFromRequest:url];
-                
-                //turn all of these variables into an nsdictionary by separating elements by =
-                NSDictionary *vars = [self parseFlashVars:body];
-                
-                //  NSLog(@"vars: %@", vars);
-                
-                if ([[vars allKeys] containsObject:@"status"])
-                {
-                    if ([[vars objectForKey:@"status"] isEqualToString:@"ok"])
-                    {
-                        //the call was successful, create our root object.
-                        KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithDictionary:vars];
-                        // NSLog(@"adding media: %@", currentMedia);
-                        [finalArray addObject:currentMedia];
-                    } else {
-                        
-                        errorString = [[[vars objectForKey:@"reason"] stringByReplacingOccurrencesOfString:@"+" withString:@" "] stringByRemovingPercentEncoding];
-                        NSLog(@"get_video_info for %@ failed for reason: %@", videoID, errorString);
-                        
-                    }
-                } else {
-                    
-                    errorString = @"get_video_info failed.";
-                    NSLog(@"get video info failed for id: %@", videoID);
-                }
-                i++;
-                 */
             }
-            
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
@@ -3773,195 +3571,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 
-#pragma mark Signature deciphering
-
-/*
- **
- ***
- 
- Signature cipher notes
- 
- the youtube signature cipher has 3 basic steps (for now) swapping, splicing and reversing
- the notes from youtubedown put it better than i can think to
- 
- # - r  = reverse the string;
- # - sN = slice from character N to the end;
- # - wN = swap 0th and Nth character.
- 
- they store their key a little differently then the clicktoplugin scripts yourTube code was based on
- 
- their "w13 r s3 w2 r s3 w36" is the equivalent to our "13,0,-3,2,0,-3,36"
- 
- the functions below take care of all of these steps.
- 
- Processing a key example:
- 
- 13,0,-3,2,0,-3,36 would be processed the following way
- 
- 13: swap 13 character with character at 0
- 0: reverse
- -3: splice from 3 to the end
- 2: swap 2nd character with character at 0
- 0: reverse
- -3: splice from 3 to the end
- 36: swap 36 character with chracter at 0
- 
- old sig: B52252CF80D5C2877E88D52375768FE00F29CD28A8B.A7322D9C40F39C2E32D30699152165DA9D282501501
- 
- swap 13: B with 2
- swapped: 252252CF80D5CB877E88D52375768FE00F29CD28A8B.A7322D9C40F39C2E32D30699152165DA9D282501501
- 
- reversed: 105105282D9AD56125199603D23E2C93F04C9D2237A.B8A82DC92F00EF86757325D88E778BC5D08FC252252
- 
- sliced at 3: 105282D9AD56125199603D23E2C93F04C9D2237A.B8A82DC92F00EF86757325D88E778BC5D08FC252252
- 
- swap 2: 1 with 5
- swapped: 501282D9AD56125199603D23E2C93F04C9D2237A.B8A82DC92F00EF86757325D88E778BC5D08FC252252
- 
- reversed: 252252CF80D5CB877E88D52375768FE00F29CD28A8B.A7322D9C40F39C2E32D30699152165DA9D282105
- 
- sliced 3: 252CF80D5CB877E88D52375768FE00F29CD28A8B.A7322D9C40F39C2E32D30699152165DA9D282105
- 
- swap 36: 2 with 8
- swapped: 852CF80D5CB877E88D52375768FE00F29CD22A8B.A7322D9C40F39C2E32D30699152165DA9D282105
- 
- newsig: 852CF80D5CB877E88D52375768FE00F29CD22A8B.A7322D9C40F39C2E32D30699152165DA9D282105
- 
- */
-
-/**
- 
- if use_cipher_signature is true the a timestamp and a key are necessary to decipher the signature and re-add it
- to the url for proper playback and download, this method will attempt to grab those values dynamically
- 
- for more details look at https://www.jwz.org/hacks/youtubedown and search for this text
- 
- 24-Jun-2013: When use_cipher_signature=True
- 
- didnt want to plagiarize his whole thesis, and its a good explanation of why this is necessary
- 
- 
- */
-
-
-- (void)getTimeStampAndKey:(NSString *)videoID {
-    NSString *url = [NSString stringWithFormat:@"https://www.youtube.com/embed/%@", videoID];
-    NSString *body = [self stringFromRequest:url];
-    
-    //the timestamp that is needed for signature deciphering
-    
-    self.yttimestamp = [[[[self matchesForString:body withRegex:@"\"sts\":(\\d*)"] lastObject] componentsSeparatedByString:@":"] lastObject];
-    
-    //isolate the base.js file that we need to extract the signature from
-    
-    NSString *baseJS = [NSString stringWithFormat:@"https://youtube.com%@", [[[[[self matchesForString:body withRegex:@"\"js\":\"([^\"]*)\""] lastObject] componentsSeparatedByString:@":"] lastObject] stringByReplacingOccurrencesOfString:@"\\/" withString:@"/"]];
-    
-    //get the raw js source of the decoder file that we need to get the signature cipher from
-    
-    
-    NSString *jsBody = [self stringFromRequest:[baseJS stringByReplacingOccurrencesOfString:@"\"" withString:@""]];
-    
-    //crazy convoluted regex to get a signature section similiar to this
-    //cr.Ww(a,13);cr.W9(a,69);cr.Gz(a,3);cr.Ww(a,2);cr.W9(a,79);cr.Gz(a,3);cr.Ww(a,36);return a.join(
-    
-    //#### IGNORE THE WARNING, if the extra escape is added as expected the regex doesnt work!
-    
-    NSString *keyMatch = [[self matchesForString:jsBody withRegex:@"function[ $_A-Za-z0-9]*\\(a\\)\\{a=a(?:\.split|\\[[$_A-Za-z0-9]+\\])\\(\"\"\\);\\s*([^\"]*)"] lastObject];
-    
-    
-    if ([keyMatch rangeOfString:@"function"].location != NSNotFound) {
-        //find first ; and make substring from there.
-        NSUInteger loc = [keyMatch rangeOfString:@";"].location;
-        //DLog(@"loc: %lu", loc);
-        keyMatch = [keyMatch substringFromIndex:loc+1];
-    }
-    
-    //the jsbody is trimmed down to a smaller section to optimize the search to deobfuscate the signature function names
-    
-    NSString *fnNameMatch = [NSString stringWithFormat:@";var %@={", [[self matchesForString:keyMatch withRegex:@"^[$_A-Za-z0-9]+"] lastObject]];
-    
-    //the index to start the new string range from for said optimization above
-    
-    NSUInteger index = [jsBody rangeOfString:fnNameMatch].location;
-    
-    //smaller string for searching for reverse / splice function names
-    NSString *x = [jsBody substringFromIndex:index];
-    NSString *a, *tmp, *r, *s = nil;
-    
-    //next baffling regex used to cycle through which functions names from the match above are linked to reversing and splicing
-    NSArray *matches = [self matchesForString:x withRegex:@"([$_A-Za-z0-9]+):|reverse|splice"];
-    int i = 0;
-    
-    /*
-     adopted from the javascript version to identify the functions, probably not the most efficient way, but it works!
-     Loop through the matches and if a != reverse | splice then set the value to tmp, the function names are listed
-     prior to their purpose:
-     
-     ie: [Ww,splice,w9,reverse]
-     
-     splice = Ww; & reverse = W9;
-     
-     */
-    
-    for (i = 0; i < [matches count]; i++) {
-        a = [matches objectAtIndex:i];
-        if (r != nil && s != nil)
-        {
-            break;
-        }
-        if([a isEqualToString:@"reverse"])
-        {
-            r = tmp;
-        } else if ([a isEqualToString:@"splice"])
-        {
-            s = tmp;
-        } else {
-            tmp = [a stringByReplacingOccurrencesOfString:@":" withString:@""];
-        }
-    }
-    
-    /*
-     
-     the new signature is made into a key array for easily moving characters around as needed based on the cipher
-     ie cr.Ww(a,13);cr.W9(a,69);cr.Gz(a,3);cr.Ww(a,2);cr.W9(a,79);cr.Gz(a,3);cr.Ww(a,36);return a.join(
-     
-     broken up into chunks like
-     
-     cr.Ww(a,13)
-     
-     this will allow us to take the keyMatch string and actually determine when to reverse, splice or swap
-     
-     */
-    NSMutableArray *keys = [NSMutableArray new];
-    
-    NSArray *keyMatches = [self matchesForString:keyMatch withRegex:@"[$_A-Za-z0-9]+\\.([$_A-Za-z0-9]+)\\(a,(\\d*)\\)"];
-    for (NSString *theMatch in keyMatches) {
-        //fr.Ww(a,13) split this up into something like Ww and 13
-        NSString *importantSection = [[theMatch componentsSeparatedByString:@"."] lastObject];
-        NSString *numberValue = [[[importantSection componentsSeparatedByString:@","] lastObject] stringByReplacingOccurrencesOfString:@")" withString:@""]; //13
-        NSString *fnName = [[importantSection componentsSeparatedByString:@"("] objectAtIndex:0]; // Ww
-        
-        if ([fnName isEqualToString:r]) //reverse
-        {
-            [keys addObject:@"0"]; //0 in our signature key means reverse the string
-        } else if ([fnName isEqualToString:s]) //if its the splice function store it as a negative value
-        {
-            [keys addObject:[NSString stringWithFormat:@"-%@", numberValue]];
-        } else { //were not splicing or reversing, so its going to be a swap value
-            [keys addObject:numberValue];
-        }
-    }
-    
-    //take the final key array and make it into something like 13,0,-3,2,0,-3,36
-    
-    self.ytkey = [keys componentsJoinedByString:@","];
-    
-    DLog(@"timestamp: %@", self.yttimestamp);
-    DLog(@"selfytkey: %@", self.ytkey);
-    
-}
-
-
 /**
  
  this function will take the key array and splice it from the starting index to the end of the string with the value 3
@@ -3997,35 +3606,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     [theArray exchangeObjectAtIndex:0 withObjectAtIndex:theIndex];
     return theArray;
     
-}
-
-
-
-/*
- 
- big encirido to decode the signature, takes a value like 13,0,-3,2,0,-3,36 and a signature
- and spits out usable version of it, only needed wheb use signature cipher is true
- 
- */
-
-- (NSString *)decodeSignature:(NSString *)theSig {
-    NSMutableArray *s = [[theSig splitString] mutableCopy];
-    NSArray *keyArray = [self.ytkey componentsSeparatedByString:@","];
-    int i = 0;
-    for (i = 0; i < [keyArray count]; i++) {
-        int n = [[keyArray objectAtIndex:i] intValue];
-        if (n == 0) //reverse
-        {
-            s = [self reversedArray:s];
-        } else if (n < 0) //slice
-        {
-            s = [self sliceArray:s atIndex:-n];
-            
-        } else {
-            s = [self swapCharacterAtIndex:n inArray:s];
-        }
-    }
-    return[s componentsJoinedByString:@""];
 }
 
 
