@@ -24,6 +24,7 @@
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;
 @property (readwrite, assign) NSInteger lastStartingIndex;
+@property (nonatomic, strong) NSString *continuationToken;
 
 @end
 
@@ -53,37 +54,18 @@
     if (self.currentPage == 1)
         [SVProgressHUD show];
     
-    [[KBYourTube sharedInstance] apiSearch:searchString type:KBYTSearchTypeAll continuation:nil completionBlock:^(KBYTSearchResults *result) {
+    [[KBYourTube sharedInstance] apiSearch:searchString type:KBYTSearchTypeAll continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
         
-        NSLog(@"[yourTubeiOS] result: %@", result.videos);
+        //NSLog(@"[yourTubeiOS] result: %@", result.videos);
         if (self.currentPage == 1)
             [SVProgressHUD dismiss];
         [self updateSearchResults:result.videos];
+        self.continuationToken = result.continuationToken;
         //[self.searchResults addObjectsFromArray:result.videos];
         [self.tableView reloadData];
     } failureBlock:^(NSString *error) {
         [SVProgressHUD dismiss];
     }];
-    /*
-    [[KBYourTube sharedInstance] youTubeSearch:searchString pageNumber:self.currentPage includeAllResults:true completionBlock:^(NSDictionary *searchDetails) {
-        
-        //  NSLog(@"search details: %@", searchDetails);
-        if (self.currentPage == 1)
-            [SVProgressHUD dismiss];
-        
-        self.totalResults = [searchDetails[@"resultCount"] integerValue];
-        self.pageCount = [searchDetails[@"pageCount"] integerValue];
-        //self.searchResults = searchDetails[@"results"];
-        [self updateSearchResults:searchDetails[@"results"]];
-        [self.tableView reloadData];
-        
-        
-    } failureBlock:^(NSString *error) {
-        //
-        [SVProgressHUD dismiss];
-        
-    }];
-    */
     
 }
 
@@ -190,8 +172,7 @@
 - (void)getNextPage {
     
     NSInteger nextPage = self.currentPage + 1;
-    if (self.pageCount > nextPage)
-    {
+    if (self.continuationToken != nil) {
         self.currentPage = nextPage;
         //[self updateSearchResultsForSearchController:self.searchController];
         [self searchBarSearchButtonClicked:self.searchController.searchBar];
@@ -224,8 +205,8 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    if (self.currentPage < self.pageCount)
-    {
+    //if (self.currentPage < self.pageCount) {
+    if (self.continuationToken != nil) {
         return self.searchResults.count + 1;
     }
     return self.searchResults.count;
@@ -558,13 +539,13 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     } else if (currentResult.resultType ==kYTSearchResultTypeChannel)
     {
         
-        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:5 withTitle:currentResult.title withId:currentResult.videoId];
+        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypeChannel withTitle:currentResult.title withId:currentResult.videoId];
         [[self navigationController] pushViewController:genericTableView animated:true];
         
     } else if (currentResult.resultType ==kYTSearchResultTypePlaylist)
     {
         
-        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:6 withTitle:currentResult.title withId:currentResult.videoId];
+        KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypePlaylist withTitle:currentResult.title withId:currentResult.videoId];
         [[self navigationController] pushViewController:genericTableView animated:true];
         
     }

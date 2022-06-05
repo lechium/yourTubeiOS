@@ -557,6 +557,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     self.details = videoDetails[@"shortDescription"];
     NSArray *imageArray = videoDetails[@"thumbnail"][@"thumbnails"];
     self.keywords = [videoDetails[@"keywords"] componentsJoinedByString:@","];
+    if (!self.keywords){
+        self.keywords = @"";
+    }
     NSMutableDictionary *images = [NSMutableDictionary new];
     NSInteger imageCount = imageArray.count; //TODO make sure there are actually that many images
     images[@"high"] = imageArray.lastObject[@"url"];
@@ -1064,43 +1067,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     });
 }
 
-
-- (NSArray *)playlistArrayFromUserName:(NSString *)userName {
-    ONOXMLDocument *xmlDoct = [self documentFromURL:[NSString stringWithFormat:@"https://m.youtube.com/%@/playlists?sort=da&flow=grid&view=1", userName]];
-    ONOXMLElement *root = [xmlDoct rootElement];
-    ONOXMLElement *playlistGroup = [root firstChildWithXPath:@"//ul[contains(@id, 'channels-browse-content-grid')]"];
-    id playlistEnum = [playlistGroup XPath:@".//li[contains(@class, 'channels-content-item')]"];
-    ONOXMLElement *playlistElement = nil;
-    NSMutableArray *finalArray = [NSMutableArray new];
-    while (playlistElement = [playlistEnum  nextObject]) {
-        ONOXMLElement *thumbElement = [[[playlistElement firstChildWithXPath:@".//span[contains(@class, 'yt-thumb-clip')]"] children ] firstObject];
-        ONOXMLElement *playlistTitleElement = [[[playlistElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"]children ] firstObject] ;
-        ONOXMLElement *videoCountElement = [[[playlistElement firstChildWithXPath:@".//*[contains(@class, 'formatted-video-count-label')]"] children] firstObject];
-        NSString *thumbPath = [thumbElement valueForAttribute:@"src"];
-        NSString *playlistTitle = [playlistTitleElement valueForAttribute:@"title"];
-        NSString *playlistURL = [[[playlistTitleElement valueForAttribute:@"href"] componentsSeparatedByString:@"="] lastObject];
-        NSString *videoCount = [videoCountElement stringValue];
-        KBYTSearchResult *result = [KBYTSearchResult new];
-        if ([thumbPath rangeOfString:@"https"].location == NSNotFound)
-        {
-            result.imagePath = [NSString stringWithFormat:@"https:%@", thumbPath];
-        } else {
-            result.imagePath = thumbPath;
-        }
-        //DLog(@"ip: %@", result.imagePath);
-        result.title = playlistTitle;
-        result.author = userName;
-        result.details = videoCount;
-        result.videoId = playlistURL;
-        result.resultType =kYTSearchResultTypePlaylist;
-        //NSDictionary *playlistItem = @{@"thumbURL": [NSString stringWithFormat:@"https:%@", thumbPath], @"title": playlistTitle, @"URL": playlistURL, @"videoCount": videoCount};
-        [finalArray addObject:result];
-        
-    }
-    return finalArray;
-}
-
-
 ///aircontrol code, this is used to play media straight into firecore's youtube appliance on ATV 2
 
 - (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP {
@@ -1406,47 +1372,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
              failureBlock:(void(^)(NSString *error))failureBlock {
     [self getPlaylistVideos:listID continuation:nil completionBlock:completionBlock failureBlock:failureBlock];
 }
-
-- (NSArray *)channelArrayFromChannel:(NSString *)userName {
-    ONOXMLDocument *xmlDoct = [self documentFromURL:[NSString stringWithFormat:@"https://m.youtube.com/channel/%@/channels?view=56&shelf_id=0", userName]];
-    ONOXMLElement *root = [xmlDoct rootElement];
-    // NSLog(@"root: %@", root);
-    ONOXMLElement *playlistGroup = [root firstChildWithXPath:@"//ul[contains(@id, 'channels-browse-content-grid')]"];
-    id playlistEnum = [playlistGroup XPath:@".//li[contains(@class, 'channels-content-item')]"];
-    ONOXMLElement *playlistElement = nil;
-    NSMutableArray *finalArray = [NSMutableArray new];
-    while (playlistElement = [playlistEnum  nextObject]) {
-        ONOXMLElement *thumbElement = [[[playlistElement firstChildWithXPath:@".//span[contains(@class, 'yt-thumb-clip')]"] children ] firstObject];
-        ONOXMLElement *playlistTitleElement = [[[playlistElement firstChildWithXPath:@".//*[contains(@class, 'yt-lockup-title')]"]children ] firstObject] ;
-        NSString *thumbPath = [thumbElement valueForAttribute:@"src"];
-        NSString *playlistTitle = [playlistTitleElement valueForAttribute:@"title"];
-        NSString *playlistURL = [[playlistTitleElement valueForAttribute:@"href"] lastPathComponent];
-        // NSDictionary *playlistItem = @{@"thumbURL": thumbPath, @"title": playlistTitle, @"URL": playlistURL};
-        KBYTSearchResult *result = [KBYTSearchResult new];
-        //DLog(@"thumbPath: %@", thumbPath);
-        if ([thumbPath rangeOfString:@"&w=246&h=138&"].location != NSNotFound)
-        {
-            thumbPath = [thumbPath stringByReplacingOccurrencesOfString:@"&w=246&h=138&" withString:@"&w=640&h=480&"];
-        }
-        if ([thumbPath containsString:@"https"])
-        {
-            result.imagePath = thumbPath;
-        } else {
-            result.imagePath = [NSString stringWithFormat:@"https:%@", thumbPath];
-        }
-        
-        result.title = playlistTitle;
-        result.author = userName;
-        result.videoId = playlistURL;
-        result.resultType =kYTSearchResultTypeChannel;
-        //NSDictionary *playlistItem = @{@"thumbURL": [NSString stringWithFormat:@"https:%@", thumbPath], @"title": playlistTitle, @"URL": playlistURL, @"videoCount": videoCount};
-        [finalArray addObject:result];
-        //[finalArray addObject:playlistItem];
-        
-    }
-    return finalArray;
-}
-
 
 - (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current {
     NSString *lengthText = current[@"lengthText"][@"simpleText"];
@@ -1795,9 +1720,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             channel.playlists = playlists;
             */
             //get the post body from the url above, gets the initial raw info we work with
-            if (completionBlock) {
-                completionBlock(channel);
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (completionBlock) {
+                    completionBlock(channel);
+                }
+            });
+            
         }
     });
     
