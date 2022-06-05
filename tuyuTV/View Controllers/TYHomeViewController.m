@@ -58,8 +58,7 @@
     [super focusedCell:focusedCell];
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
     //if it isnt a collectionView or it IS the top collection view we dont do any adjustments
-    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView )
-    {
+    if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView ) {
         return;
     }
     KBYTChannel *currentChannel = [self channelForCollectionView:cv];
@@ -72,8 +71,8 @@
  */
 
 - (void)refreshDataWithProgress:(BOOL)progress {
-    if (progress == true)
-    {
+    LOG_CMD;
+    if (progress == true) {
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
     }
@@ -109,8 +108,7 @@
     //when to call completionBlock
     
     __block NSInteger currentIndex = 0;
-    for (NSString *result in self.channelIDs)
-    {
+    for (NSString *result in self.channelIDs) {
         [[KBYourTube sharedInstance] getChannelVideosAlt:result completionBlock:^(KBYTChannel *searchDetails) {
             
             NSString *title = searchDetails.title ? searchDetails.title : self.sectionLabels[currentIndex];
