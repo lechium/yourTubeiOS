@@ -13,9 +13,9 @@
 #import "KBYTDownloadManager.h"
 #import "TYAuthUserManager.h"
 
-@interface KBYTDownloadsTableViewController ()
-{
+@interface KBYTDownloadsTableViewController () {
     ScaleAnimation *_scaleAnimationController;
+    NSArray *sidebarArray;
 }
 @end
 
@@ -28,8 +28,7 @@
     self = [super initWithStyle:style];
     NSArray *fullArray = [NSArray arrayWithContentsOfFile:[self downloadFile]];
     NSMutableArray *fileArray = [NSMutableArray new];
-    for (NSDictionary *itemDict in fullArray)
-    {
+    for (NSDictionary *itemDict in fullArray) {
         KBYTLocalMedia *localMedia = [[KBYTLocalMedia alloc] initWithDictionary:itemDict];
         [fileArray addObject:localMedia];
     }
@@ -104,15 +103,32 @@
     [super viewDidLoad];
     self.navigationItem.title = @"Downloads";
     
+    sidebarArray = @[
+    @{@"title": @"Featured",
+                       @"id": @"UCByOQJjav0CUDwxCk-jVNRQ",
+                       @"type": @(kYTSearchResultTypeChannel) },
+    @{@"title": @"Popular",
+      @"id": KBYTPopularChannelID,
+      @"type": @(kYTSearchResultTypeChannel) },
+    @{@"title": @"Music",
+      @"id": KBYTMusicChannelID,
+      @"type": @(kYTSearchResultTypeChannel) },
+    @{@"title": @"Sports",
+      @"id": KBYTSportsChannelID,
+      @"type": @(kYTSearchResultTypeChannel) },
+    @{@"title": @"360",
+      @"id": KBYT360ChannelID,
+      @"type": @(kYTSearchResultTypeChannel) }, 
+    ];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(showSearchView:)];
-     _scaleAnimationController = [[ScaleAnimation alloc] initWithNavigationController:self.navigationController];
+    _scaleAnimationController = [[ScaleAnimation alloc] initWithNavigationController:self.navigationController];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"burger"] style:UIBarButtonItemStylePlain target:self action:@selector(showHamburgerMenu)];
-
+    
 }
 
 - (void)showHamburgerMenu
@@ -166,38 +182,13 @@
                 }
                 [self.navigationController pushViewController:ovc animated:true];
                 
-                /*
-                    UIAlertAction *authTwice = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                       
-                        ovc = [TYAuthUserManager OAuthWebViewController];
-                        [self.navigationController pushViewController:ovc animated:true];
-                    }];
-                    
-                    UIAlertAction *singleAuth = [UIAlertAction actionWithTitle:@"Browsing only" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                        
-                        ovc = [TYAuthUserManager ytAuthWebViewController];
-                        [self.navigationController pushViewController:ovc animated:true];
-                    }];
-                    
-                    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-                    
-                    
-                    UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:@"Authentication" message:@"To enable browsing your authorized content AND to be able to create & edit playlist and channel subscriptions tuyu needs to authorize twice (once for browsing and once for auth token) Choose 'ok' if you agree, otherwise choose browsing only" preferredStyle:UIAlertControllerStyleAlert];
-                    
-                    [alertCon addAction:authTwice];
-                    [alertCon addAction:singleAuth];
-                    [alertCon addAction:cancel];
-                    
-                    
-                    [self presentViewController:alertCon animated:YES completion:nil];
-                    
-                    
-                */
                 
                 return;
             }
+            NSDictionary *currentItem = sidebarArray[index];
+            KBYTGenericVideoTableViewController *secondVC = [[KBYTGenericVideoTableViewController alloc] initForType:[currentItem[@"type"] integerValue] withTitle:currentItem[@"title"] withId:currentItem[@"id"]];
             
-            KBYTGenericVideoTableViewController *secondVC = [[KBYTGenericVideoTableViewController alloc]initForType:index];
+            //KBYTGenericVideoTableViewController *secondVC = [[KBYTGenericVideoTableViewController alloc]initForType:index];
             [self.navigationController pushViewController:secondVC animated:YES];
         }
     }];

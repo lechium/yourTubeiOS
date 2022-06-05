@@ -58,8 +58,8 @@
         NSLog(@"[yourTubeiOS] result: %@", result.videos);
         if (self.currentPage == 1)
             [SVProgressHUD dismiss];
-        
-        [self.searchResults addObjectsFromArray:result.videos];
+        [self updateSearchResults:result.videos];
+        //[self.searchResults addObjectsFromArray:result.videos];
         [self.tableView reloadData];
     } failureBlock:^(NSString *error) {
         [SVProgressHUD dismiss];
@@ -265,6 +265,7 @@
     {
         [[self searchResults] addObjectsFromArray:newResults];
     } else {
+        
         self.searchResults = [newResults mutableCopy];
     }
 }

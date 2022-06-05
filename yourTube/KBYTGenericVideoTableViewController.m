@@ -232,8 +232,13 @@
     
 }
 
+- (id)initWithSearchResult:(KBYTSearchResult *)result {
+    self = [super initWithStyle:UITableViewStylePlain];
+    self.searchResult = result;
+    return self;
+}
 
-- (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier {
+- (id)initForType:(YTSearchResultType)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier {
     self = [super initWithStyle:UITableViewStylePlain];
     tableType = detailsType;
     customTitle = theTitle;
@@ -242,7 +247,7 @@
 }
 
 
-- (id)initForType:(NSInteger)detailsType {
+- (id)initForType:(YTSearchResultType)detailsType {
     self = [super initWithStyle:UITableViewStylePlain];
     tableType = detailsType;
     return self;
@@ -319,20 +324,22 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)updateTable {
     [SVProgressHUD show];
-    if (self.searchResult.resultType == kYTSearchResultTypeChannel) {
-        [[KBYourTube sharedInstance] getChannelVideosAlt:self.searchResult.videoId continuation:nil completionBlock:^(KBYTChannel *channel) {
+    if (self.tableType == kYTSearchResultTypeChannel) {
+        [[KBYourTube sharedInstance] getChannelVideosAlt:self.customId continuation:nil completionBlock:^(KBYTChannel *channel) {
+            [SVProgressHUD dismiss];
             self.channel = channel;
-            self.searchResults = [self.channel allSectionItems];
+            self.searchResults = [[self.channel allSectionItems] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.tableView reloadData];
             });
         } failureBlock:^(NSString *error) {
             NSLog(@"[tuyu] error: %@", error);
         }];
-    } else if (self.searchResult.resultType == kYTSearchResultTypePlaylist) {
-        [KBYourTube sharedInstance] getPlaylistVideos:self.searchResult.videoId continuation:nil completionBlock:^(KBYTPlaylist *playlist) {
+    } else if (self.tableType == kYTSearchResultTypePlaylist) {
+        [[KBYourTube sharedInstance] getPlaylistVideos:self.customId continuation:nil completionBlock:^(KBYTPlaylist *playlist) {
+            [SVProgressHUD dismiss];
             self.playlist = playlist;
-            self.searchResults = [self.playlist videos];
+            self.searchResults = [[self.playlist videos] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.tableView reloadData];
             });

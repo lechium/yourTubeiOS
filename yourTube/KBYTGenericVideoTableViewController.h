@@ -17,7 +17,7 @@
 
 @interface KBYTGenericVideoTableViewController : UITableViewController <KBYTSearchItemViewControllerDelegate>
 
-@property (readwrite, assign) NSInteger tableType;
+@property (readwrite, assign) YTSearchResultType tableType;
 
 @property (nonatomic, strong) NSTimer *airplayTimer;
 @property (nonatomic, strong) NSString *airplayIP;
@@ -44,9 +44,9 @@
 @property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
 @property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 
-
-- (id)initForType:(NSInteger)detailsType;
-- (id)initForType:(NSInteger)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier;
+- (id)initWithSearchResult:(KBYTSearchResult *)result;
+- (id)initForType:(YTSearchResultType)detailsType;
+- (id)initForType:(YTSearchResultType)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier;
 - (void)playFromIndex:(NSInteger)index;
 
 @end
