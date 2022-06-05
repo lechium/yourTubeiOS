@@ -242,7 +242,6 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (BOOL)isSignedIn;
 - (void)documentFromURL:(NSString *)theURL completion:(void(^)(ONOXMLDocument *document))block;
 - (ONOXMLDocument *)documentFromURL:(NSString *)theURL;
-- (NSDictionary *)channelIDAndWatchLaterCount;
 - (NSString *)videoDescription:(NSString *)videoID;
 
 - (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock

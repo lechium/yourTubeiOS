@@ -964,27 +964,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 }
 
-- (NSInteger)videoCountForChannel:(NSString *)channelID {
-    DLog(@"videoCountForChannel: %@", channelID);
-    //channels-browse-content-grid
-    //channels-content-item
-    ONOXMLDocument *xmlDoct = [self documentFromURL:[NSString stringWithFormat:@"https://m.youtube.com/channel/%@/videos", channelID]];
-    ONOXMLElement *root = [xmlDoct rootElement];
-    ONOXMLElement *canon = [root firstChildWithXPath:@"//ul[contains(@id, 'channels-browse-content-grid')]"];
-    NSArray *objects = [(NSEnumerator *)[canon XPath:@".//li[contains(@class, 'channels-content-item')]"] allObjects];
-    return [objects count];
-}
-
-- (NSInteger)videoCountForUserName:(NSString *)channelID {
-    //channels-browse-content-grid
-    //channels-content-item
-    ONOXMLDocument *xmlDoct = [self documentFromURL:[NSString stringWithFormat:@"https://m.youtube.com/user/%@/videos", channelID]];
-    ONOXMLElement *root = [xmlDoct rootElement];
-    ONOXMLElement *canon = [root firstChildWithXPath:@"//ul[contains(@id, 'channels-browse-content-grid')]"];
-    NSArray *objects = [(NSEnumerator *)[canon XPath:@".//li[contains(@class, 'channels-content-item')]"] allObjects];
-    return [objects count];
-}
-
 
 - (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock
                                        failureBlock:(void(^)(NSString *error))failureBlock {
