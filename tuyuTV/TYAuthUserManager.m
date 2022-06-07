@@ -704,6 +704,7 @@
 - (void)signOut {
     [AFOAuthCredential deleteCredentialWithIdentifier:@"default"];
     self.tokenData = nil;
+    self.authorized = NO;
     [UD removeObjectForKey:@"access_token"];
     [UD removeObjectForKey:@"refresh_token"];
 }
@@ -716,6 +717,7 @@
         self.authorized = YES;
         return YES;
     }
+    self.authorized = NO;
     return NO;
 }
 
@@ -865,10 +867,16 @@
         
         DLog(@"newcred: %@", newCred);
         [self setCredential:newCred];
+        self.authorized = true;
         [AFOAuthCredential storeCredential:newCred withIdentifier:@"default"];
         [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         [UD setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
         [UD synchronize];
+        [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+            [[KBYourTube sharedInstance] setUserDetails:outputResults];
+        } failureBlock:^(NSString *error) {
+            
+        }];
         if (block){
             block(jsonDict);
         }

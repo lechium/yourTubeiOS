@@ -160,29 +160,34 @@
     [callout show];
 }
 
+- (UIAlertController *)signOutAlert {
+    UIAlertController *signOut = [UIAlertController alertControllerWithTitle:@"Sign out?" message:@"Would you like to sign out of your YouTube account?" preferredStyle:UIAlertControllerStyleAlert];
+    [signOut addAction:[UIAlertAction actionWithTitle:@"Sign Out" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [[TYAuthUserManager sharedInstance] signOut];
+    }]];
+    [signOut addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    return signOut;
+}
 
 - (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index {
     
     [sidebar dismissAnimated:YES completion:^(BOOL finished) {
         if (finished) {
-            if (![Reachability checkInternetConnectionWithAlert])
-            {
+            if (![Reachability checkInternetConnectionWithAlert]) {
                 return;
             }
-            if (index == 5) //OG web search
-            {
-                KBYTWebViewController *ovc  = nil;
-                if ([[KBYourTube sharedInstance] isSignedIn] && [UD valueForKey:@"access_token"] != nil )
-                {
-                    ovc = [[KBYTWebViewController alloc] init];
-
-                    
+            if (index == 5) { //sign out or in
+                UIViewController *ovc  = nil;
+                if ([[KBYourTube sharedInstance] isSignedIn]) {
+                    ovc = [self signOutAlert];
+                    [self presentViewController:ovc animated:true completion:nil];
+                    return;
                 } else {
                     ovc = (KBYTWebViewController*)[[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:[TYAuthUserManager suastring]]];
                     //ovc = [TYAuthUserManager OAuthWebViewController];
                     [[TYAuthUserManager sharedInstance] createAndStartWebserverWithCompletion:^(BOOL success) {
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [self dismissViewControllerAnimated:true completion:nil];
+                            [[self navigationController] popViewControllerAnimated:true];
                         });
                     }];
                     
