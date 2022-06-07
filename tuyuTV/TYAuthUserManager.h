@@ -37,6 +37,7 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 
 #if TARGET_OS_IOS
 + (KBYTWebViewController *)ytAuthWebViewController;
+- (void)createAndStartWebserver;
 + (KBYTWebViewController *)OAuthWebViewController;
 #endif
 

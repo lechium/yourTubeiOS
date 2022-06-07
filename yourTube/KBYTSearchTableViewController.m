@@ -59,7 +59,7 @@
         //NSLog(@"[yourTubeiOS] result: %@", result.videos);
         if (self.currentPage == 1)
             [SVProgressHUD dismiss];
-        [self updateSearchResults:result.videos];
+        [self updateSearchResults:result.allItems];
         self.continuationToken = result.continuationToken;
         //[self.searchResults addObjectsFromArray:result.videos];
         [self.tableView reloadData];
@@ -519,7 +519,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     //[SVProgressHUD showInfoWithStatus:@"Fetching details"];
     [SVProgressHUD show];
     
-    if (currentResult.resultType ==kYTSearchResultTypeVideo)
+    if (currentResult.resultType == kYTSearchResultTypeVideo)
     {
         [[KBYourTube sharedInstance] getVideoDetailsForID:currentResult.videoId completionBlock:^(KBYTMedia *videoDetails) {
             
@@ -536,13 +536,13 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             [SVProgressHUD dismiss];
             
         }];
-    } else if (currentResult.resultType ==kYTSearchResultTypeChannel)
+    } else if (currentResult.resultType == kYTSearchResultTypeChannel)
     {
         
         KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypeChannel withTitle:currentResult.title withId:currentResult.videoId];
         [[self navigationController] pushViewController:genericTableView animated:true];
         
-    } else if (currentResult.resultType ==kYTSearchResultTypePlaylist)
+    } else if (currentResult.resultType == kYTSearchResultTypePlaylist)
     {
         
         KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypePlaylist withTitle:currentResult.title withId:currentResult.videoId];

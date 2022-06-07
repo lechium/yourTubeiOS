@@ -190,6 +190,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 }
 
+- (NSArray <KBYTSearchResult *> *)allItems {
+    NSMutableArray *_allItems = [self.videos mutableCopy];
+    [_allItems addObjectsFromArray:self.channels];
+    [_allItems addObjectsFromArray:self.playlists];
+    return _allItems;
+}
+
 @end
 
 @implementation KBYTLocalMedia
@@ -555,6 +562,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     self.views = videoDetails[@"viewCount"];
     self.duration = videoDetails[@"lengthSeconds"];
     self.details = videoDetails[@"shortDescription"];
+    self.playlistId = [jsonDict recursiveObjectForKey:@"playlistId"];
+    self.channelId = [videoDetails recursiveObjectForKey:@"channelId"];
     NSArray *imageArray = videoDetails[@"thumbnail"][@"thumbnails"];
     self.keywords = [videoDetails[@"keywords"] componentsJoinedByString:@","];
     if (!self.keywords){
@@ -1383,6 +1392,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (!ownerText) {
         ownerText = longBylineText;
     }
+    NSString *channelId = [current recursiveObjectForKey:@"browseId"];
+    NSString *playlistId = [[current recursiveObjectForKey:@"watchEndpoint"] recursiveObjectForKey:@"playlistId"];
     //current[@"publishedTimeText"][@"simpleText"];
     KBYTSearchResult *searchItem = [KBYTSearchResult new];
     searchItem.details = [longBylineText recursiveObjectForKey:@"text"];
@@ -1393,6 +1404,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     searchItem.views = viewCountText;
     searchItem.age = current[@"publishedTimeText"][@"simpleText"];
     searchItem.imagePath = imagePath;
+    searchItem.channelId = channelId;
+    searchItem.playlistId = playlistId;
     searchItem.resultType = kYTSearchResultTypeVideo;
     return searchItem;
 }

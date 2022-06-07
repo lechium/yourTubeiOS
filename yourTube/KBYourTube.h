@@ -112,7 +112,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (readwrite, assign) NSInteger estimatedResults;
 - (void)processJSON:(NSDictionary *)jsonData;
 - (void)processJSON:(NSDictionary *)jsonDict filter:(KBYTSearchType)filter;
-
+- (NSArray <KBYTSearchResult *> *)allItems;
 @end
 
 @interface KBYTMedia : NSObject <YTPlayerItemProtocol>
@@ -122,6 +122,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *keywords;
 @property (nonatomic, strong) NSString *videoId;
 @property (nonatomic, strong) NSString *channelId; //what channel does video belong to
+@property (nonatomic, strong) NSString *playlistId; //what channel does video belong to
 @property (nonatomic, strong) NSString *views;
 @property (nonatomic, strong) NSString *duration;
 @property (nonatomic, strong) NSDictionary *images;
@@ -141,6 +142,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *videoId;
 @property (nonatomic, strong) NSString *channelPath; //what channel does video belong to
 @property (nonatomic, strong) NSString *channelId; //what channel does video belong to
+@property (nonatomic, strong) NSString *playlistId;
 @property (nonatomic, strong) NSString *stupidId; //youtube specific id to unsubscribe et al
 @property (nonatomic, strong) NSString *duration;
 @property (nonatomic, strong) NSString *imagePath;

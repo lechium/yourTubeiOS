@@ -329,6 +329,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         [[KBYourTube sharedInstance] getChannelVideosAlt:self.customId continuation:nil completionBlock:^(KBYTChannel *channel) {
             [SVProgressHUD dismiss];
             self.channel = channel;
+            self.title = channel.title;
             self.searchResults = [[self.channel allSectionItems] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.tableView reloadData];
@@ -340,6 +341,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         [[KBYourTube sharedInstance] getPlaylistVideos:self.customId continuation:nil completionBlock:^(KBYTPlaylist *playlist) {
             [SVProgressHUD dismiss];
             self.playlist = playlist;
+            self.title = playlist.title;
             self.searchResults = [[self.playlist videos] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.tableView reloadData];

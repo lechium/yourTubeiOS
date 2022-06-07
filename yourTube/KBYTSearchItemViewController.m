@@ -2,6 +2,7 @@
 #import "KBYTSearchItemViewController.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import "KBYTQueuePlayer.h"
+#import "KBYTGenericVideoTableViewController.h"
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 float calcLabelHeight(NSString *string, UIFont *font, float width) {
@@ -42,11 +43,6 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
         self.title = media.title;
         ytMedia = media;
         //NSLog(@"ytmedia: %@", ytMedia);
-        UIButton *scienceButton = [[UIButton alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
-        [scienceButton setTitle:@"Test Science" forState:UIControlStateNormal];
-        [scienceButton addTarget:self action:@selector(doScienceInstall) forControlEvents:UIControlEventTouchUpInside];
-        
-        [self.view addSubview:scienceButton];
         
     }
     return self;
@@ -170,7 +166,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
 		case 0:
-			return 6;
+			return 7;
 		case 1:
 			return ([ytMedia.streams count] > 0) ? [ytMedia.streams count] : 1;
 		case 2:
@@ -276,7 +272,21 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 					cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
 					cell.selectionStyle = UITableViewCellSelectionStyleNone;
 					return cell;
+                    
                 case 5:
+                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+                    if (ytMedia.channelId){
+                        cell.textLabel.text = @"VIEW CHANNEL";
+                    } else if (ytMedia.playlistId) {
+                        cell.textLabel.text = @"VIEW PLAYLIST CONTENTS";
+                    }
+                    cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:13.0f];
+                    cell.textLabel.numberOfLines = 0;
+                    cell.textLabel.lineBreakMode = UILineBreakModeTailTruncation;
+                    cell.textLabel.textAlignment = UITextAlignmentCenter;
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    return cell;
+                case 6:
                     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
                     
                     cell.textLabel.text = @"START PLAYLIST HERE";
@@ -445,6 +455,16 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     [alertView show];
 }
 
+- (void)goToChannel {
+    KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypeChannel withTitle:@"" withId:self.ytMedia.channelId];
+    [[self navigationController] pushViewController:genericTableView animated:true];
+}
+
+- (void)goToPlaylist {
+    KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypePlaylist withTitle:@"" withId:self.ytMedia.playlistId];
+    [[self navigationController] pushViewController:genericTableView animated:true];
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
     KBYTStream *currentStream = nil;
@@ -457,8 +477,18 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             
             DLog(@"indexpath: %@", indexPath);
             
-            if (indexPath.row == 5)
-            {
+            if (indexPath.row == 5) {
+                DLog(@"go to channel or playlist");
+                if (self.ytMedia.playlistId) {
+                    DLog(@"playlist: %@", self.ytMedia.playlistId);
+                    [self goToPlaylist];
+                } else {
+                    DLog(@"playlist: %@", self.ytMedia.channelId);
+                    [self goToChannel];
+                }
+            }
+            
+            if (indexPath.row == 6) {
                 [tableView deselectRowAtIndexPath:indexPath animated:YES];
                 if ([self.delegate respondsToSelector:@selector(playFromIndex:)])
                 {

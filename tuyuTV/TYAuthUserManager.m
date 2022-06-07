@@ -4,13 +4,21 @@
 //
 //  Created by Kevin Bradley on 5/26/16.
 //
-//
+// https://developers.google.com/youtube/v3/guides/auth/installed-apps#ios <-- for 'macOS' / desktop. just dont want to use their crap.
+
 
 #import "TYAuthUserManager.h"
 #import "YTCreds.h"
 #import "KBYourTube.h"
+#if TARGET_OS_IOS
+#import <GCDWebServers/GCDWebServers.h>
+#endif
 
-@interface TYAuthUserManager()
+@interface TYAuthUserManager() {
+#if TARGET_OS_IOS
+    GCDWebServer* _webServer;
+#endif
+}
 @property (nonatomic, strong) NSDictionary *authResponse;
 @property (nonatomic, strong) NSTimer *pollingTimer;
 @property (nonatomic, strong) NSDate *startPollingTime;
@@ -18,6 +26,7 @@
 @property (nonatomic, strong) FinishedBlock finishedBlock;
 @property (nonatomic, strong) PurchaseValidatedBlock purchaseBlock;
 @property (nonatomic, strong) AuthStateUpdatedBlock updateBlock;
+
 @end
 
 @implementation TYAuthUserManager
@@ -51,6 +60,23 @@
     return webView;
 }
 
+- (void)createAndStartWebserver {
+    // Create server
+      _webServer = [[GCDWebServer alloc] init];
+      
+      // Add a handler to respond to GET requests on any URL
+      [_webServer addDefaultHandlerForMethod:@"GET"
+                                requestClass:[GCDWebServerRequest class]
+                                processBlock:^GCDWebServerResponse *(GCDWebServerRequest* request) {
+          NSLog(@"request: %@", request);
+        return [GCDWebServerDataResponse responseWithHTML:@"<html><body><p>Hello World</p></body></html>"];
+        
+      }];
+      
+      // Start server on port 8080
+      [_webServer startWithPort:9004 bonjourName:nil];
+}
+
 
 #endif
 
@@ -59,6 +85,10 @@
 }
 
 + (NSString *)suastring {
+    return [[NSString stringWithFormat:@"https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/youtube.readonly&response_type=code&redirect_uri=http://127.0.0.1:9004&client_id=%@", ytClientID] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+
++ (NSString *)suastringold {
     return [NSString stringWithFormat:@"https://accounts.google.com/o/oauth2/auth?client_id=%@&redirect_uri=%@", ytClientID, @"urn:ietf:wg:oauth:2.0:oob:auto&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube.force-ssl+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutubepartner&response_type=code&access_type=offline&pageId=none"];
 }
 

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -17,6 +17,8 @@
 		3204FFFE1E4F8C8400D3B8B0 /* KBYourTube+Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */; };
 		3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A241C5E8B3D00F50BC2 /* APAttribute.m */; };
 		321DAC012849EA64002D07B6 /* KBBulletinView.m in Sources */ = {isa = PBXBuildFile; fileRef = 321DABFD2849EA64002D07B6 /* KBBulletinView.m */; };
+		323CF8D9284E57AF00559FF7 /* GCDWebServers.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; };
+		323CF8DA284E57AF00559FF7 /* GCDWebServers.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
 		324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 324693A82841EE8A002D91F0 /* AuthViewController.m */; };
 		324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */; };
@@ -365,6 +367,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		323CF8DB284E57B000559FF7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				323CF8DA284E57AF00559FF7 /* GCDWebServers.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		328E338C1E4F868C00C544ED /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -383,6 +396,7 @@
 		320400041E4F8DA000D3B8B0 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		321DABFB2849EA64002D07B6 /* KBBulletinView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBBulletinView.h; sourceTree = "<group>"; };
 		321DABFD2849EA64002D07B6 /* KBBulletinView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBBulletinView.m; sourceTree = "<group>"; };
+		323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GCDWebServers.xcframework; path = yourTube/GCDWebServers.xcframework; sourceTree = SOURCE_ROOT; };
 		324693A028404C65002D91F0 /* AppSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupport.tbd; sourceTree = SOURCE_ROOT; };
 		324693A82841EE8A002D91F0 /* AuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthViewController.m; sourceTree = "<group>"; };
 		324693A92841EE8A002D91F0 /* AuthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AuthViewController.h; sourceTree = "<group>"; };
@@ -813,6 +827,7 @@
 				89A83ACE1C88AB4300E1987E /* Accelerate.framework in Frameworks */,
 				89A83ACC1C88AB3B00E1987E /* WebKit.framework in Frameworks */,
 				89A83ACA1C88AB3400E1987E /* QuartzCore.framework in Frameworks */,
+				323CF8D9284E57AF00559FF7 /* GCDWebServers.xcframework in Frameworks */,
 				89A83AC81C88AB2E00E1987E /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1487,6 +1502,7 @@
 		89B9D4211C44F49F00740BF1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */,
 				324693A028404C65002D91F0 /* AppSupport.tbd */,
 				32D2A1581F424F56006F24B3 /* libz.tbd */,
 				32D2A1561F424F4E006F24B3 /* libz.tbd */,
@@ -1656,6 +1672,7 @@
 				89A83A151C88A89300E1987E /* Sources */,
 				89A83A161C88A89300E1987E /* Frameworks */,
 				89A83A171C88A89300E1987E /* Resources */,
+				323CF8DB284E57B000559FF7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2177,7 +2194,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = tuyuShelf/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV.tuyuShelf;
@@ -2227,7 +2248,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = tuyuShelf/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV.tuyuShelf;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2298,7 +2323,10 @@
 					"$SRCROOT/tuyu/**",
 				);
 				INFOPLIST_FILE = tuyuTV/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
@@ -2362,7 +2390,10 @@
 					"$SRCROOT/tuyu/**",
 				);
 				INFOPLIST_FILE = tuyuTV/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyuTV;
 				PRODUCT_NAME = tuyu;
@@ -2435,7 +2466,10 @@
 				);
 				INFOPLIST_FILE = tuyu/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -2507,7 +2541,10 @@
 				);
 				INFOPLIST_FILE = tuyu/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",

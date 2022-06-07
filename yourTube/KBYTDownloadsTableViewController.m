@@ -178,6 +178,7 @@
                     
                 } else {
                     ovc = [TYAuthUserManager OAuthWebViewController];
+                    [[TYAuthUserManager sharedInstance] createAndStartWebserver];
                     
                 }
                 [self.navigationController pushViewController:ovc animated:true];
