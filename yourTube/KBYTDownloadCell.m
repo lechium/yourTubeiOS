@@ -107,6 +107,7 @@
         self.marqueeDetailTextLabel.text = self.detailTextLabel.text;
         [[self contentView] addSubview:self.marqueeDetailTextLabel];
         [[self contentView] addSubview:self.marqueeTextLabel];
+#if TARGET_OS_TV
         if ([self isFocused]){
             CGRect tlf = self.textLabel.frame;
             tlf.origin.x += 30;
@@ -119,6 +120,9 @@
             self.marqueeTextLabel.holdScrolling = true;
             [self.marqueeTextLabel shutdownLabel];
         }
+#else
+        self.marqueeTextLabel.holdScrolling = false;
+#endif
         self.marqueeDetailTextLabel.frame =  self.detailTextLabel.frame;
         self.detailTextLabel.hidden = true;
         
