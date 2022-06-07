@@ -20,6 +20,7 @@
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
 @property (readwrite, assign) NSInteger pageCount;
 @property (readwrite, assign) NSInteger lastStartingIndex;
+@property (nonatomic, strong) NSDictionary *userData;
 
 @end
 
@@ -239,6 +240,13 @@
     return self;
 }
 
+- (id)initWithForAuthUser {
+    self = [super initWithStyle:UITableViewStylePlain];
+    tableType = kYTSearchResultTypeAuthUser;
+    _userData = [[KBYourTube sharedInstance] userDetails];
+    return self;
+}
+
 - (id)initForType:(YTSearchResultType)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier {
     self = [super initWithStyle:UITableViewStylePlain];
     tableType = detailsType;
@@ -344,6 +352,25 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             self.title = playlist.title;
             self.searchResults = [[self.playlist videos] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView reloadData];
+            });
+        } failureBlock:^(NSString *error) {
+            NSLog(@"[tuyu] error: %@", error);
+        }];
+    } else if (self.tableType == kYTSearchResultTypeAuthUser) {
+        __block NSMutableArray *newResults = [NSMutableArray new];
+        [[KBYourTube sharedInstance] getChannelVideos:self.userData[@"channelID"] completionBlock:^(KBYTChannel *channel) {
+            [newResults addObjectsFromArray:channel.allSectionItems];
+            if (self.userData[@"results"]){
+                [newResults addObjectsFromArray:self.userData[@"results"]];
+            }
+            if (self.userData[@"channels"]){
+                [newResults addObjectsFromArray:self.userData[@"channels"]];
+            }
+            [self updateSearchResults:newResults];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.title = self.userData[@"userName"];
+                [SVProgressHUD dismiss];
                 [self.tableView reloadData];
             });
         } failureBlock:^(NSString *error) {

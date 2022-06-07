@@ -60,15 +60,32 @@
     return webView;
 }
 
-- (void)createAndStartWebserver {
+- (void)stopWebServer {
+    [_webServer stop];
+    _webServer = nil;
+}
+
+- (void)createAndStartWebserverWithCompletion:(void(^)(BOOL success))block {
     // Create server
       _webServer = [[GCDWebServer alloc] init];
       
+    __weak __typeof(self) weakSelf = self;
       // Add a handler to respond to GET requests on any URL
       [_webServer addDefaultHandlerForMethod:@"GET"
                                 requestClass:[GCDWebServerRequest class]
                                 processBlock:^GCDWebServerResponse *(GCDWebServerRequest* request) {
           NSLog(@"request: %@", request);
+          NSString *code = [request query][@"code"];
+          if (code){
+              NSLog(@"we gots a code bruh: %@", code);
+              [weakSelf postCodeToGoogle:code completion:^(NSDictionary *returnData) {
+                  NSLog(@"got data from code postage: %@", returnData);
+                  [weakSelf stopWebServer];
+                  if (block) {
+                      block([[returnData allKeys] containsObject:@"access_token"]);
+                  }
+              }];
+          }
         return [GCDWebServerDataResponse responseWithHTML:@"<html><body><p>Hello World</p></body></html>"];
         
       }];
@@ -85,7 +102,7 @@
 }
 
 + (NSString *)suastring {
-    return [[NSString stringWithFormat:@"https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/youtube.readonly&response_type=code&redirect_uri=http://127.0.0.1:9004&client_id=%@", ytClientID] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return [[NSString stringWithFormat:@"https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/youtube&response_type=code&redirect_uri=http://127.0.0.1:9004&client_id=%@", ytClientID] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
 
 + (NSString *)suastringold {
@@ -800,6 +817,64 @@
     return searchResult;
 }
 
+/*
+ code=4/P7q7W91a-oMsCeLvIaQm6bTrgtp7&
+ client_id=your_client_id&
+ client_secret=your_client_secret&
+ redirect_uri=http%3A//127.0.0.1%3A9004&
+ grant_type=authorization_code
+ */
+
+- (void)postCodeToGoogle:(NSString *)code completion:(void(^)(NSDictionary *returnData))block {
+    
+    // LOG_SELF;
+    NSString* post = [[NSString stringWithFormat:@"code=%@&client_id=%@&client_secret=%@&grant_type=authorization_code&redirect_uri=http://127.0.0.1:9004",code, ytClientID, ytSecretKey] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+     NSLog(@"postString: %@", post);
+    
+    // Encode post string
+    NSData* postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:false];
+    
+    // Calculate length of post data
+    NSString* postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
+    
+    // Create URL request and set url, method, content-length, content-type, and body
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
+    [request setURL:[NSURL URLWithString:@"https://oauth2.googleapis.com/token"]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:postData];
+    NSHTTPURLResponse *theResponse = nil;
+    
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
+    
+    
+    NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
+    
+    //JSON data
+    
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
+    if ([jsonDict valueForKey:@"error"] != nil) {
+        if (block){
+            block(jsonDict);
+        }
+    } else {
+        AFOAuthCredential *newCred = [[AFOAuthCredential alloc] initWithOAuthToken:[jsonDict valueForKey:@"access_token"] tokenType:[jsonDict valueForKey:@"token_type"]];
+        [newCred setRefreshToken:[jsonDict valueForKey:@"refresh_token"]];
+        
+        DLog(@"newcred: %@", newCred);
+        [self setCredential:newCred];
+        [AFOAuthCredential storeCredential:newCred withIdentifier:@"default"];
+        [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
+        [UD setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
+        [UD synchronize];
+        if (block){
+            block(jsonDict);
+        }
+    }
+}
+
 - (id)refreshAuthToken{
     
     // LOG_SELF;
@@ -1053,7 +1128,7 @@
         
         //DLog(@"newcred: %@", newCred);
         [self setCredential:newCred];
-        [AFOAuthCredential storeCredential:newCred withIdentifier:@"default" accessGroup:nil];
+        [AFOAuthCredential storeCredential:newCred withIdentifier:@"default"];
         [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         [UD setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
         [UD synchronize];

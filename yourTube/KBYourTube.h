@@ -68,6 +68,7 @@ typedef NS_ENUM(NSUInteger, YTSearchResultType) {
     kYTSearchResultTypePlaylist,
     kYTSearchResultTypeChannel,
     kYTSearchResultTypeChannelList,
+    kYTSearchResultTypeAuthUser,
 };
 
 typedef NS_ENUM(NSUInteger, KBYTSearchType) {

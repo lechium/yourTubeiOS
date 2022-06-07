@@ -48,5 +48,5 @@
 - (id)initForType:(YTSearchResultType)detailsType;
 - (id)initForType:(YTSearchResultType)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier;
 - (void)playFromIndex:(NSInteger)index;
-
+- (id)initWithForAuthUser;
 @end

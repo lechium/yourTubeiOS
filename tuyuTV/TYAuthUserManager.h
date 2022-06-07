@@ -37,7 +37,7 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 
 #if TARGET_OS_IOS
 + (KBYTWebViewController *)ytAuthWebViewController;
-- (void)createAndStartWebserver;
+- (void)createAndStartWebserverWithCompletion:(void(^)(BOOL success))block;
 + (KBYTWebViewController *)OAuthWebViewController;
 #endif
 
@@ -48,6 +48,7 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 - (void)getPlaylistsWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *playlists, NSString *error))completionBlock;
 - (void)getChannelListWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock;
 + (id)sharedInstance;
+- (void)postCodeToGoogle:(NSString *)code completion:(void(^)(NSDictionary *returnData))block;
 - (id)postOAuth2CodeToGoogle:(NSString *)code;
 - (void)postOAuth2CodeToGoogle:(NSString *)code completion:(void(^)(NSString *value))block;
 - (id)refreshAuthToken;

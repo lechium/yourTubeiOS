@@ -12,8 +12,9 @@
 #import "Animations/ScaleAnimation.h"
 #import "KBYTDownloadManager.h"
 #import "TYAuthUserManager.h"
+#import <SafariServices/SafariServices.h>
 
-@interface KBYTDownloadsTableViewController () {
+@interface KBYTDownloadsTableViewController () <SFSafariViewControllerDelegate> {
     ScaleAnimation *_scaleAnimationController;
     NSArray *sidebarArray;
 }
@@ -177,8 +178,13 @@
 
                     
                 } else {
-                    ovc = [TYAuthUserManager OAuthWebViewController];
-                    [[TYAuthUserManager sharedInstance] createAndStartWebserver];
+                    ovc = (KBYTWebViewController*)[[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:[TYAuthUserManager suastring]]];
+                    //ovc = [TYAuthUserManager OAuthWebViewController];
+                    [[TYAuthUserManager sharedInstance] createAndStartWebserverWithCompletion:^(BOOL success) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self dismissViewControllerAnimated:true completion:nil];
+                        });
+                    }];
                     
                 }
                 [self.navigationController pushViewController:ovc animated:true];
@@ -187,6 +193,12 @@
                 return;
             }
             NSDictionary *currentItem = sidebarArray[index];
+            if (index == 0 && [[KBYourTube sharedInstance] isSignedIn]){
+                DLog(@"signed in, dont show the 'favorites' list, show the auth user");
+                KBYTGenericVideoTableViewController *secondVC = [[KBYTGenericVideoTableViewController alloc] initWithForAuthUser];
+                [self.navigationController pushViewController:secondVC animated:YES];
+                return;
+            }
             KBYTGenericVideoTableViewController *secondVC = [[KBYTGenericVideoTableViewController alloc] initForType:[currentItem[@"type"] integerValue] withTitle:currentItem[@"title"] withId:currentItem[@"id"]];
             
             //KBYTGenericVideoTableViewController *secondVC = [[KBYTGenericVideoTableViewController alloc]initForType:index];
@@ -195,6 +207,22 @@
     }];
 }
 
+- (void)safariViewControllerWillOpenInBrowser:(SFSafariViewController *)controller {
+    LOG_SELF;
+}
+
+- (void)safariViewController:(SFSafariViewController *)controller initialLoadDidRedirectToURL:(NSURL *)URL {
+    LOG_SELF;
+    NSLog(@"url: %@", URL);
+}
+
+- (void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
+    LOG_SELF;
+}
+
+- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    LOG_SELF;
+}
 
 - (void)showSearchView:(id)sender
 {
@@ -311,6 +339,7 @@
     cell.duration = [NSString stringFromTimeInterval:[currentItem.duration integerValue]];
     cell.detailTextLabel.text = currentItem.author;
     cell.textLabel.text = currentItem.title;
+    cell.detailTextLabel.textColor = [UIColor grayColor];
     if (currentItem.format != nil && downloading == false)
     {
         //cell.views = [currentItem[@"views"] stringByAppendingString:@" Views"];

@@ -17,6 +17,7 @@
 		3204FFFE1E4F8C8400D3B8B0 /* KBYourTube+Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */; };
 		3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A241C5E8B3D00F50BC2 /* APAttribute.m */; };
 		321DAC012849EA64002D07B6 /* KBBulletinView.m in Sources */ = {isa = PBXBuildFile; fileRef = 321DABFD2849EA64002D07B6 /* KBBulletinView.m */; };
+		322215E7284FF94200F3EE8A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 322215E6284FF94200F3EE8A /* Launch Screen.storyboard */; };
 		323CF8D9284E57AF00559FF7 /* GCDWebServers.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; };
 		323CF8DA284E57AF00559FF7 /* GCDWebServers.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
@@ -396,6 +397,8 @@
 		320400041E4F8DA000D3B8B0 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = "<group>"; };
 		321DABFB2849EA64002D07B6 /* KBBulletinView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBBulletinView.h; sourceTree = "<group>"; };
 		321DABFD2849EA64002D07B6 /* KBBulletinView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBBulletinView.m; sourceTree = "<group>"; };
+		322215E6284FF94200F3EE8A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		322215EC28500B4900F3EE8A /* tuyu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = tuyu.entitlements; sourceTree = "<group>"; };
 		323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GCDWebServers.xcframework; path = yourTube/GCDWebServers.xcframework; sourceTree = SOURCE_ROOT; };
 		324693A028404C65002D91F0 /* AppSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupport.tbd; sourceTree = SOURCE_ROOT; };
 		324693A82841EE8A002D91F0 /* AuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthViewController.m; sourceTree = "<group>"; };
@@ -1390,6 +1393,7 @@
 		89A83A1A1C88A89300E1987E /* tuyu */ = {
 			isa = PBXGroup;
 			children = (
+				322215EC28500B4900F3EE8A /* tuyu.entitlements */,
 				89A83A271C88A89300E1987E /* Assets.xcassets */,
 				89A83A2C1C88A89300E1987E /* Info.plist */,
 				89A83A1B1C88A89300E1987E /* Supporting Files */,
@@ -1474,6 +1478,7 @@
 		89B9D3B11C44F41300740BF1 = {
 			isa = PBXGroup;
 			children = (
+				322215E6284FF94200F3EE8A /* Launch Screen.storyboard */,
 				32C35AC71F3B173D000D24C7 /* Original Run script */,
 				89E06BC41C499E2300B8D1C4 /* ytiOSBundle */,
 				89A83A1A1C88A89300E1987E /* tuyu */,
@@ -1906,6 +1911,7 @@
 				8926694F1C88B2F500082B31 /* success@2x.png in Resources */,
 				892669391C88B2F500082B31 /* Icon-72.png in Resources */,
 				892669231C88B2F500082B31 /* activityAudio@3x.png in Resources */,
+				322215E7284FF94200F3EE8A /* Launch Screen.storyboard in Resources */,
 				892669221C88B2F500082B31 /* activityAudio@2x.png in Resources */,
 				892669201C88B2F500082B31 /* 360.png in Resources */,
 				892669461C88B2F500082B31 /* info@3x.png in Resources */,
@@ -2423,6 +2429,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = tuyu/tuyu.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -2477,7 +2484,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyu;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2504,6 +2511,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = tuyu/tuyu.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -2551,7 +2559,7 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyu;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nito.tuyus;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";

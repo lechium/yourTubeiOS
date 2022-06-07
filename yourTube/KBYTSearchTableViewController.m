@@ -127,9 +127,9 @@
     self.searchController.dimsBackgroundDuringPresentation = false;
 #endif
     self.tableView.tableHeaderView = self.searchController.searchBar;
-
+    
 #if TARGET_OS_TV
-
+    
     //NEVER DO THE BELOW LINE, LEFT AS REMINDER
     self.definesPresentationContext = YES;
     
@@ -314,22 +314,22 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     UIAlertAction *subscribeToChannel = [UIAlertAction actionWithTitle:@"Subscribe to Video's channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-       
+        
         if ([result channelId] != nil && ![[result channelId] isEqualToString:@"Unavailable"])
         {
             DLog(@"subscribing to channel: %@", result.channelId);
             [[TYAuthUserManager sharedInstance] subscribeToChannel:result.channelId];
         } else {
             /*
-            [[KBYourTube sharedInstance] getUserVideos:result.channelPath.lastPathComponent completionBlock:^(NSDictionary *searchDetails) {
-                
-                
-                DLog(@"subscribing to channel: %@", searchDetails[@"channelID"]);
-                [[TYAuthUserManager sharedInstance] subscribeToChannel:searchDetails[@"channelID"]];
-            } failureBlock:^(NSString *error) {
-                //
-            }];
-            */
+             [[KBYourTube sharedInstance] getUserVideos:result.channelPath.lastPathComponent completionBlock:^(NSDictionary *searchDetails) {
+             
+             
+             DLog(@"subscribing to channel: %@", searchDetails[@"channelID"]);
+             [[TYAuthUserManager sharedInstance] subscribeToChannel:searchDetails[@"channelID"]];
+             } failureBlock:^(NSString *error) {
+             //
+             }];
+             */
         }
         
     }];
@@ -341,7 +341,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                   }];
+    }];
     
     
     
@@ -375,7 +375,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                   }];
+    }];
     [alertController addAction:yesAction];
     [alertController addAction:cancelAction];
     if (self.presentedViewController != nil){
@@ -418,7 +418,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             
         case kYTSearchResultTypePlaylist:
             
-        
+            
             [self showPlaylistCopyAlertForSearchResult:result];
             break;
             
@@ -458,7 +458,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
-                                   }];
+    }];
     [alertController addAction:cancelAction];
     if (self.presentedViewController != nil){
         [self.presentedViewController presentViewController:alertController animated:YES completion:nil];

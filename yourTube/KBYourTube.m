@@ -76,6 +76,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 - (NSArray <KBYTSearchResult *>*)allSectionItems {
+    if (self.sections.count == 0) {
+        return [self allSortedItems];
+    }
     __block NSMutableArray *_newArray = [NSMutableArray new];
     [self.sections enumerateObjectsUsingBlock:^(KBYTSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [_newArray addObjectsFromArray:obj.content];
