@@ -1528,13 +1528,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     NSDictionary *title = [shelf recursiveObjectForKey:@"title"];
                     KBYTSection *section = [KBYTSection new];
                     section.title = title[@"simpleText"] ? title[@"simpleText"] : [title recursiveObjectForKey:@"text"];
-                    NSLog(@"idx %lu shelf: %@", idx, section.title);
+                    //NSLog(@"idx %lu shelf: %@", idx, section.title);
                     
                     NSArray *videos = [shelf recursiveObjectsLikeKey:@"videoRenderer"];
                     //NSLog(@"videos: %@", videos);
                     __block NSMutableArray *content = [NSMutableArray new];
                     if (videos){
-                        NSLog(@"videos: %lu", videos.count);
+                        //NSLog(@"videos: %lu", videos.count);
                         [videos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                             NSString *first = [[obj allKeys] firstObject];
                             NSDictionary *vid = obj[first];
@@ -1547,7 +1547,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     } else {
                         NSArray *stations = [shelf recursiveObjectsLikeKey:@"stationRenderer"];
                         if (stations.count > 0){
-                            NSLog(@"stations: %lu", stations.count);
+                            //NSLog(@"stations: %lu", stations.count);
                             [stations enumerateObjectsUsingBlock:^(id  _Nonnull station, NSUInteger idx, BOOL * _Nonnull stop) {
                                 NSString *firstKey = [[station allKeys] firstObject];
                                 NSDictionary *playlist = station[firstKey];
@@ -1572,7 +1572,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             NSArray *stations = [shelf recursiveObjectsLikeKey:@"playlistRenderer"];
                             if (stations.count > 0){
                                 
-                                NSLog(@"playlists count: %lu", stations.count);
+                                //NSLog(@"playlists count: %lu", stations.count);
                                 [stations enumerateObjectsUsingBlock:^(id  _Nonnull station, NSUInteger idx, BOOL * _Nonnull stop) {
                                     NSString *firstKey = [[station allKeys] firstObject];
                                     NSDictionary *playlist = station[firstKey];
@@ -1596,7 +1596,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             } else {
                                 stations = [shelf recursiveObjectsLikeKey:@"channelRenderer"];
                                 if (stations.count > 0){
-                                    NSLog(@"channels count: %lu", stations.count);
+                                    //NSLog(@"channels count: %lu", stations.count);
                                     [stations enumerateObjectsUsingBlock:^(id  _Nonnull channelObj, NSUInteger idx, BOOL * _Nonnull stop) {
                                         NSString *firstKey = [[channelObj allKeys] firstObject];
                                         NSDictionary *channel = channelObj[firstKey];
@@ -1609,7 +1609,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         NSString *imagePath = thumb[@"url"];
                                         NSInteger width = [thumb[@"height"] integerValue];
                                         if (width < 400){
-                                            NSLog(@"generate thumb manually!");
+                                            //NSLog(@"generate thumb manually!");
                                             imagePath = [self hiRestChannelImageFromDict:thumb];
                                         }
                                         if (![imagePath containsString:@"https:"]){
@@ -1624,14 +1624,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         searchItem.imagePath = imagePath;
                                         searchItem.resultType = kYTSearchResultTypeChannel;
                                         searchItem.details = [channel recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
-                                        NSLog(@"channel: %@ keys: %@", searchItem, channel.allKeys);
+                                        //NSLog(@"channel: %@ keys: %@", searchItem, channel.allKeys);
                                         [content addObject:searchItem];
                                     }];
                                     
                                 } else { //shorts maybe?
                                     //NSLog(@"rend: %@", rend);
                                     stations = [shelf recursiveObjectsLikeKey:@"reelItemRenderer"];
-                                    NSLog(@"reels: %lu", stations.count);
+                                    //NSLog(@"reels: %lu", stations.count);
                                     if (stations.count == 0){
                                         NSLog(@"rend: %@", shelf);
                                     }
@@ -1666,7 +1666,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 
                 
             }];
-            NSLog(@"sections: %@", sections);
+            //NSLog(@"sections: %@", sections);
             //NSLog(@"section count: %lu", sections.count);
             //NSLog(@"one: %@", [sections firstObject]);
             channel.sections = sections;
