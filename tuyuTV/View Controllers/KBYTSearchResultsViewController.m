@@ -37,7 +37,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
     NSString *scope = searchBar.scopeButtonTitles[selectedScope];
-    NSLog(@"[tuyu] scope changed: %lu: %@", selectedScope, scope);
+    TLog(@"scope changed: %lu: %@", selectedScope, scope);
     [UD setValue:scope forKey:@"filterType"];
     _lastSearchResult = nil;
     
@@ -73,7 +73,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         return;
     }
     KBYTSearchResult *searchResult = [self searchResultFromFocusedCell];
-    //NSLog(@"[tuyu] searchResult: %@", searchResult);
+    //TLog(@"searchResult: %@", searchResult);
     switch (searchResult.resultType) {
         case kYTSearchResultTypeVideo:
             
@@ -324,7 +324,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     //check to see if we are on the last row
     NSInteger rowCount = self.searchResults.count / 5;
     NSInteger currentRow = indexPath.row / 5;
-    //NSLog(@"[tuyu] indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
+    //TLog(@"indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
     if (currentRow+1 >= rowCount) {
         [self getNextPage];
     }
@@ -431,9 +431,9 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     _lastSearchResult = self.filterString;
     
     KBYTSearchType type = [self searchTypeForSettings];
-    //NSLog(@"[tuyu] search type: %lu", type);
+    //TLog(@"search type: %lu", type);
     [[KBYourTube sharedInstance] apiSearch:self.filterString type:type continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
-        //NSLog(@"[tuyu] search results: %@", result.videos);
+        //TLog(@"search results: %@", result.videos);
         self.continuationToken = result.continuationToken;
         self.pageCount = 20; //just choosing an arbitrary number
         [self updateSearchResults:result];
@@ -516,8 +516,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         //NSDate *myStart = [NSDate date];
         [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
             
-            //NSLog(@"[tuyu] video details fetched in %@", [myStart timeStringFromCurrentDate]);
-            //NSLog(@"[tuyu] first object: %@", subarray.firstObject);
+            //TLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            //TLog(@"first object: %@", subarray.firstObject);
             [playerView addObjectsToPlayerQueue:videoArray];
             
         } failureBlock:^(NSString *error) {

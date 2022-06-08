@@ -59,7 +59,7 @@
             tlf.origin.y += 30;
             self.textLabel.frame = tlf;
             self.marqueeTextLabel.frame = tlf;
-            NSLog(@"[tuyu] focused %@ self.textLabel.frame: %@", self.textLabel.text, NSStringFromCGRect(self.textLabel.frame));
+            TLog(@"focused %@ self.textLabel.frame: %@", self.textLabel.text, NSStringFromCGRect(self.textLabel.frame));
             self.imageView.adjustsImageWhenAncestorFocused = true;
             self.contentView.backgroundColor = self.selectionColor;
             
@@ -76,7 +76,7 @@
             tlf.origin.y = -10;
             self.textLabel.frame = tlf;
             self.marqueeTextLabel.frame = tlf;
-            NSLog(@"[tuyu] unfocused %@ self.textLabel.frame: %@",self.textLabel.text, NSStringFromCGRect(self.textLabel.frame));
+            TLog(@"unfocused %@ self.textLabel.frame: %@",self.textLabel.text, NSStringFromCGRect(self.textLabel.frame));
             self.imageView.adjustsImageWhenAncestorFocused = false;
             self.contentView.backgroundColor = self.viewBackgroundColor;
         } completion:^{

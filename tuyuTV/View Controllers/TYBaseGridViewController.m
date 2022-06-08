@@ -747,7 +747,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (NSArray *)arrayForCollectionView:(UICollectionView *)theView {
     KBYTChannel *channel = [self channelForCollectionView:theView];
-    //NSLog(@"[tuyu] channel: %@", channel);
+    //TLog(@"channel: %@", channel);
     if ([channel isKindOfClass:KBYTChannel.class]){
         return channel.allSectionItems;
     } else if ([channel isKindOfClass:KBYTPlaylist.class]) {
@@ -774,9 +774,9 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
        
         NSArray *theArray = [self arrayForCollectionView:cv];
-        //NSLog(@"[tuyu] cv: %@ indexPath row: %lu arrayCount: %lu", cv, indexPath.row,theArray.count);
+        //TLog(@"cv: %@ indexPath row: %lu arrayCount: %lu", cv, indexPath.row,theArray.count);
         if (indexPath.row > theArray.count){
-            NSLog(@"[tuyu] bail!!");
+            TLog(@"bail!!");
             return nil;
         }
         KBYTSearchResult *searchResult = [theArray objectAtIndex:indexPath.row];
@@ -836,8 +836,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         NSDate *myStart = [NSDate date];
         [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
             
-            //NSLog(@"[tuyu] video details fetched in %@", [myStart timeStringFromCurrentDate]);
-            //NSLog(@"[tuyu] first object: %@", subarray.firstObject);
+            //TLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            //TLog(@"first object: %@", subarray.firstObject);
             [self.playerView addObjectsToPlayerQueue:videoArray];
             
         } failureBlock:^(NSString *error) {

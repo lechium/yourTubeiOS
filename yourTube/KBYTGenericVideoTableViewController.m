@@ -343,7 +343,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                 [self.tableView reloadData];
             });
         } failureBlock:^(NSString *error) {
-            NSLog(@"[tuyu] error: %@", error);
+            TLog(@"error: %@", error);
         }];
     } else if (self.tableType == kYTSearchResultTypePlaylist) {
         [[KBYourTube sharedInstance] getPlaylistVideos:self.customId continuation:nil completionBlock:^(KBYTPlaylist *playlist) {
@@ -355,7 +355,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                 [self.tableView reloadData];
             });
         } failureBlock:^(NSString *error) {
-            NSLog(@"[tuyu] error: %@", error);
+            TLog(@"error: %@", error);
         }];
     } else if (self.tableType == kYTSearchResultTypeAuthUser) {
         __block NSMutableArray *newResults = [NSMutableArray new];
@@ -374,7 +374,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                 [self.tableView reloadData];
             });
         } failureBlock:^(NSString *error) {
-            NSLog(@"[tuyu] error: %@", error);
+            TLog(@"error: %@", error);
         }];
     }
 }

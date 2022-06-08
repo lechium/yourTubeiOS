@@ -54,8 +54,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 - (void)mergeChannelVideos:(KBYTChannel *)channel {
     NSMutableArray *newVideos = [self.videos mutableCopy];
-    //NSLog(@"[tuyu] new channel: %@", channel.videos);
-    //NSLog(@"[tuyu] current videos: %@", self.videos);
+    //TLog(@"new channel: %@", channel.videos);
+    //TLog(@"current videos: %@", self.videos);
     [newVideos addObjectsFromArray:channel.videos];
     self.continuationToken = channel.continuationToken;
     self.videos = newVideos;
@@ -64,7 +64,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (NSArray <KBYTSearchResult *>*)allSortedItems {
     if (self.videos.count > 0 && self.playlists.count > 0){
         NSMutableArray *_newArray = [[self videos] mutableCopy];
-        //NSLog(@"[tuyu] playlists: %@", self.playlists);
+        //TLog(@"playlists: %@", self.playlists);
         [_newArray addObjectsFromArray:self.playlists];
         NSSortDescriptor *title = [NSSortDescriptor sortDescriptorWithKey:@"title" ascending:true];
         [_newArray sortUsingDescriptors:@[title]];
@@ -109,6 +109,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     [self processJSON:jsonData filter:KBYTSearchTypeAll];
 }
 
+
+
+
 - (void)processJSON:(NSDictionary *)jsonDict filter:(KBYTSearchType)filter {
     
     NSInteger estimatedResults = [[jsonDict recursiveObjectForKey:@"estimatedResults"] integerValue];
@@ -126,7 +129,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         self.videos = videoResults;
     }
     
-    //NSLog(@"[tuyu] playlist count: %lu", playlists.count);
+    //TLog(@"playlist count: %lu", playlists.count);
     if (filter == KBYTSearchTypeAll || filter == KBYTSearchTypePlaylists) {
         __block NSMutableArray *playlistResults = [NSMutableArray new];
         recursiveObjectsFor(@"playlistRenderer", jsonDict, playlists);
@@ -148,13 +151,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             searchItem.resultType = kYTSearchResultTypePlaylist;
             searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"browseId"];
             if (!title){
-                //NSLog(@"[tuyu] weird pl item: %@", current);
-                //NSLog(@"[tuyu] pl item: %@", searchItem);
+                //TLog(@"weird pl item: %@", current);
+                //TLog(@"pl item: %@", searchItem);
             }
             /*
              NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
              [current writeToFile:outputFile atomically:true];
-             NSLog(@"[tuyu] writing playlist: %@", outputFile);
+             TLog(@"writing playlist: %@", outputFile);
              */
             [playlistResults addObject:searchItem];
         }];
@@ -180,12 +183,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             searchItem.resultType = kYTSearchResultTypeChannel;
             searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
             if (!title){
-                //NSLog(@"[tuyu] weird channel item: %@", current);
+                //TLog(@"weird channel item: %@", current);
             }
             /*
              NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
              [current writeToFile:outputFile atomically:true];
-             NSLog(@"[tuyu] writing channel: %@", outputFile);*/
+             TLog(@"writing channel: %@", outputFile);*/
             [channelResults addObject:searchItem];
         }];
         self.channels = channelResults;
@@ -305,7 +308,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             return @"Unknown";
     }
 }
-
+/*
 - (NSDictionary *)dictionaryValue {
     if (self.title == nil)self.title = @"Unavailable";
     if (self.details == nil)self.details = @"Unavailable";
@@ -319,9 +322,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (self.channelPath == nil)self.channelPath = @"Unavailable";
     return @{@"title": self.title, @"author": self.author, @"details": self.details, @"imagePath": self.imagePath, @"videoId": self.videoId, @"duration": self.duration, @"age": self.age, @"views": self.views, @"resultType": [self readableSearchType], @"channelId": self.channelId, @"channelPath": self.channelPath};
 }
-
+*/
 - (NSString *)description {
-    return [[self dictionaryValue] description];
+    return [[self dictionaryRepresentation] description];
 }
 
 
@@ -494,7 +497,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 - (YTPlayerItem *)playerItemRepresentation {
     KBYTStream *firstStream = [[self streams] lastObject];
-    //NSLog(@"[tuyu] firstStream: %@ in %@", [self streams], NSStringFromSelector(_cmd));
+    //TLog(@"firstStream: %@ in %@", [self streams], NSStringFromSelector(_cmd));
    
     YTPlayerItem *mediaItem = [[YTPlayerItem alloc] initWithURL:firstStream.url];
     mediaItem.associatedMedia = self;
@@ -758,6 +761,28 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 #pragma mark convenience methods
 
+- (NSArray *)convertArrayToDictionaries:(NSArray *)inputArray {
+    __block NSMutableArray *_newArray = [NSMutableArray new];
+    [inputArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [_newArray addObject:[obj dictionaryRepresentation]];
+    }];
+    return _newArray;
+}
+
+- (void)cacheUserDetails {
+    NSString *appSupport = [self appSupportFolder];
+    [appSupport stringByAppendingPathComponent:@"user.plist"];
+    NSURL *url = [NSURL fileURLWithPath:[appSupport stringByAppendingPathComponent:@"user.plist"]];
+    NSArray *newResults = [self convertArrayToDictionaries:self.userDetails[@"results"]];
+    NSArray *channels = [self convertArrayToDictionaries:self.userDetails[@"channels"]];
+    NSMutableDictionary *_newDict = [self.userDetails mutableCopy];
+    _newDict[@"results"] = newResults;
+    _newDict[@"channels"] = channels;
+    NSError *error = nil;
+    [_newDict writeToURL:url error:&error];
+    NSLog(@"error: %@", error);
+}
+
 - (void)addChannelToUserDetails:(KBYTSearchResult *)channel {
     NSMutableArray *channels = [self.userDetails[@"channels"] mutableCopy];
     if (!channels){
@@ -1010,7 +1035,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         }
                         NSString *userName = returnDict[@"userName"];
                         NSString *channelID = returnDict[@"channelID"];
-                        //NSLog(@"[tuyu] rd: %@", returnDict);
+                        //TLog(@"rd: %@", returnDict);
                         KBYTSearchResult *userChannel = [KBYTSearchResult new];
                         userChannel.title = @"Your channel";
                         userChannel.author = userName;
@@ -1268,7 +1293,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             KBYTPlaylist *playlist = [KBYTPlaylist new];
             id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
             playlist.playlistID = listID;
-            //NSLog(@"[tuyu] cc: %@", cc);
+            //TLog(@"cc: %@", cc);
             playlist.continuationToken = cc[@"token"];
             NSDictionary *plRoot = [jsonDict recursiveObjectForKey:@"playlist"][@"playlist"];
             __block NSMutableArray* videoIds = [NSMutableArray new];
@@ -1292,10 +1317,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     } else {
                         NSString *message = [obj recursiveObjectForKey:@"simpleText"];
                         if (message){
-                            //NSLog(@"[tuyu] no vr: %@", obj);
-                            //NSLog(@"[tuyu] do we have a message?: %@", message);
+                            //TLog(@"no vr: %@", obj);
+                            //TLog(@"do we have a message?: %@", message);
                         } else {
-                            NSLog(@"[tuyu] no vr: %@", obj);
+                            TLog(@"no vr: %@", obj);
                         }
                     }
                 }];
@@ -1303,7 +1328,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             } else {
                 NSArray *continuationItems = [jsonDict recursiveObjectForKey:@"continuationItems"];
                 if (continuationItems) {
-                    //NSLog(@"[tuyu] we found continuation items: %lu", continuationItems.count);
+                    //TLog(@"we found continuation items: %lu", continuationItems.count);
                     [continuationItems enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                         //NSLog(@"%@", obj[@"playlistPanelVideoRenderer"]);
                         NSDictionary *current = [obj recursiveObjectLikeKey:@"videoRenderer"];
@@ -1313,12 +1338,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             [videoIds addObject:searchItem.videoId];
                             [videos addObject:searchItem];
                         } else {
-                            //NSLog(@"[tuyu] no vr: %@", obj);
+                            //TLog(@"no vr: %@", obj);
                             NSString *message = [obj recursiveObjectForKey:@"simpleText"];
                             if (message){
-                                //NSLog(@"[tuyu] do we have a message?: %@", message);
+                                //TLog(@"do we have a message?: %@", message);
                             } else {
-                                NSLog(@"[tuyu] no vr: %@", obj);
+                                TLog(@"no vr: %@", obj);
                             }
                         }
                     }];
@@ -1434,11 +1459,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSString *body = [self stringFromPostRequest:url withParams:params];
             NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
             NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
-            //NSLog(@"[tuyu] params: %@", params);
+            //TLog(@"params: %@", params);
             //NSLog(@"body: %@ for: %@ %@", jsonDict, url, params);
             //NSMutableArray* arr = [NSMutableArray array];
             //[self obtainKeyPaths:jsonDict intoArray:arr withString:nil];
-            //NSLog(@"[tuyu] file: %@", [NSHomeDirectory() stringByAppendingPathComponent:@"channelAlt.plist"]);
+            //TLog(@"file: %@", [NSHomeDirectory() stringByAppendingPathComponent:@"channelAlt.plist"]);
             
             [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"sports.plist"] atomically:true];
             
@@ -1492,7 +1517,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             if (sect.count == 0) {
                 NSDictionary *richGridRenderer = [jsonDict recursiveObjectLikeKey:@"richGridRenderer"];
                 sect = richGridRenderer[@"contents"];
-                //NSLog(@"[tuyu] no content for some retarded reason");
+                //TLog(@"no content for some retarded reason");
             }
             __block NSMutableArray *sections = [NSMutableArray new];
             __block KBYTSection *backup = nil;
@@ -1507,19 +1532,19 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     if (res.videoId) {
                         [backup addResult:res];
                     } else {
-                        //NSLog(@"[tuyu] no videoRenderer!: %@", obj);
+                        //TLog(@"no videoRenderer!: %@", obj);
                         id cc = [obj recursiveObjectForKey:@"continuationCommand"];
-                        //NSLog(@"[tuyu] cc: %@", cc);
+                        //TLog(@"cc: %@", cc);
                         channel.continuationToken = cc[@"token"];
                         NSDictionary *channelRender = [obj recursiveObjectForKey:@"channelVideoPlayerRenderer"];
                         if (channelRender){
-                            NSLog(@"[tuyu] channel renderer found: %@", [channelRender allKeys]);
+                            TLog(@"channel renderer found: %@", [channelRender allKeys]);
                         }
                         
                     }
-                    //NSLog(@"[tuyu] idx: %lu of %lu", idx, [sect count]);
+                    //TLog(@"idx: %lu of %lu", idx, [sect count]);
                     if (idx+1 == sect.count && backup){
-                        //NSLog(@"[tuyu] adding straggler!");
+                        //TLog(@"adding straggler!");
                         [sections addObject:backup];
                         backup = nil;
                     }
@@ -1762,7 +1787,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             
             //get the post body from the url above, gets the initial raw info we work with
             [self getPlaylistVideos:newChannelID continuation:continuationToken completionBlock:^(KBYTPlaylist *playlist) {
-                //NSLog(@"[tuyu] got playlist: %@", playlist);
+                //TLog(@"got playlist: %@", playlist);
                 channel.videos = playlist.videos;
                 channel.continuationToken = playlist.continuationToken;
                 completionBlock(channel);
@@ -1913,7 +1938,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             for (KBYTSearchResult *result in searchResults) {
                 
                 if (!result.videoId){
-                    NSLog(@"[tuyu] missing video id: %@ bail!", result);
+                    TLog(@"missing video id: %@ bail!", result);
                     continue;;
                 }
                 

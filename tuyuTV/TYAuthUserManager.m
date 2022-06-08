@@ -200,8 +200,8 @@
                     AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
                     credential.refreshToken = refreshToken;
                     [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-                    //NSLog(@"[tuyu] token response: %@", tokenResponse);
-                    //NSLog(@"[tuyu] credential: %@", credential);
+                    //TLog(@"token response: %@", tokenResponse);
+                    //TLog(@"credential: %@", credential);
                     //NSString *userId = tokenResponse[@"UserId"];
                     //[UD setValue:userId forKey:kNTVPortalAuthUserName];
                     self.tokenData = tokenResponse;
@@ -285,7 +285,7 @@
 
 - (id)unSubscribeFromChannel:(NSString *)subscriptionID {
     
-    NSLog(@"[tuyu] unsubscribe with ID: %@", subscriptionID);
+    TLog(@"unsubscribe with ID: %@", subscriptionID);
     
     [self refreshAuthToken];
     NSError* error;
@@ -312,10 +312,10 @@
     
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     
-    NSLog(@"[tuyu] datString: %@", datString);
+    TLog(@"datString: %@", datString);
     
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-    NSLog(@"[tuyu] status string: %@", returnString);
+    TLog(@"status string: %@", returnString);
     
     //JSON data
     
@@ -392,10 +392,10 @@
              playlist.resultType = kYTSearchResultTypePlaylist;
              playlist.continuationToken = obj[@"nextPageToken"]; */
             KBYTSearchResult *playlist = [[KBYTSearchResult alloc] initWithYTPlaylistDictionary:obj];
-            //NSLog(@"[tuyu] playlist: %@", playlist);
+            //TLog(@"playlist: %@", playlist);
             [playlists addObject:playlist];
         }];
-        //NSLog(@"[tuyu] count: %lu %@", playlists.count, playlists);
+        //TLog(@"count: %lu %@", playlists.count, playlists);
         if (completionBlock) {
             completionBlock(playlists, error);
         }
@@ -408,7 +408,7 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         id token = [self refreshAuthToken];
-        //NSLog(@"[tuyu] refreshed token: %@", token);
+        //TLog(@"refreshed token: %@", token);
         NSString *urlString = [NSString stringWithFormat:@"%@&key=%@", command, ytClientID];
         NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                     cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
@@ -426,11 +426,11 @@
         
         NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
         NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-        //NSLog(@"[tuyu] status string: %@", returnString);
+        //TLog(@"status string: %@", returnString);
         
         //JSON data
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
-        //NSLog(@"[tuyu] jsonDict: %@", jsonDict);
+        //TLog(@"jsonDict: %@", jsonDict);
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([jsonDict valueForKey:@"error"] != nil) {
                 if (completionBlock) {
@@ -462,12 +462,12 @@
              channel.imagePath = [obj recursiveObjectForKey:@"thumbnails"][@"high"][@"url"];
              channel.resultType = kYTSearchResultTypeChannel;
              channel.continuationToken = obj[@"nextPageToken"];
-             //NSLog(@"[tuyu] channel: %@", channel);
+             //TLog(@"channel: %@", channel);
              */
             KBYTSearchResult *channel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:obj];
             [channels addObject:channel];
         }];
-        //NSLog(@"[tuyu] count: %lu %@", channels.count, channels);
+        //TLog(@"count: %lu %@", channels.count, channels);
         if (completionBlock) {
             completionBlock(channels, error);
         }
@@ -482,14 +482,14 @@
     if (channel.length == 0) {
         channel = channelId;
     }
-    //NSLog(@"[tuyu] subscribe to channel: %@", channel);
+    //TLog(@"subscribe to channel: %@", channel);
     //[self refreshAuthToken];
     NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
     NSDictionary *resourceId = [NSDictionary dictionaryWithObjectsAndKeys:@"youtube#channel", @"kind", channel, @"channelId", nil];
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:resourceId , @"resourceId", nil];
     [finalDict setObject:dict forKey:@"snippet"];
     
-    //NSLog(@"[tuyu] finalDict: %@", finalDict);
+    //TLog(@"finalDict: %@", finalDict);
     
     NSError* error = nil;
     
@@ -525,21 +525,21 @@
     
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-    //NSLog(@"[tuyu] status string: %@", returnString);
+    //TLog(@"status string: %@", returnString);
     
     
     //JSON data
     
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
     
-    //NSLog(@"[tuyu] jsonDict: %@", jsonDict);
+    //TLog(@"jsonDict: %@", jsonDict);
     if ([jsonDict valueForKey:@"error"] != nil) {
         return datString;
     }
     //NSLog(@"jsonDict: %@", jsonDict);
     //[jsonDict writeToFile:@"/var/mobile/Library/Preferences/channelSubscribeResponse.plist" atomically:TRUE];
     KBYTSearchResult *newChannel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:jsonDict];
-    //NSLog(@"[tuyu] new channel: %@", newChannel);
+    //TLog(@"new channel: %@", newChannel);
     [[KBYourTube sharedInstance] addChannelToUserDetails:newChannel];
     return jsonDict;
     
@@ -580,7 +580,7 @@
                                      }
                                      
     };
-    NSLog(@"[tuyu] post: %@", postDictionary);
+    TLog(@"post: %@", postDictionary);
     //NSLog(@"postString: %@", [finalDict JSONString]);
     // Encode post string
     NSData* postData = [NSJSONSerialization dataWithJSONObject:postDictionary options:NSJSONWritingPrettyPrinted error:nil];
@@ -601,7 +601,7 @@
         return datString;
     }
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-    NSLog(@"[tuyu] status string: %@", returnString);
+    TLog(@"status string: %@", returnString);
     return jsonDict;
 }
 
@@ -618,12 +618,12 @@
     NSString *initialString = @"https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=50&playlistId";
     NSString *getString = [NSString stringWithFormat:@"%@=%@", initialString, playlistID];
     [self genericGetCommand:getString completion:^(NSDictionary *jsonResponse, NSString *error) {
-        NSLog(@"[tuyu] jsonResponse: %@", jsonResponse);
+        TLog(@"jsonResponse: %@", jsonResponse);
         NSArray *items = jsonResponse[@"items"];
         [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             
         }];
-        //NSLog(@"[tuyu] count: %lu %@", channels.count, channels);
+        //TLog(@"count: %lu %@", channels.count, channels);
         if (completionBlock) {
             completionBlock(channels, error);
         }
@@ -641,7 +641,7 @@
     
     NSString *urlString = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/playlistItems?id=%@&key=%@", favoriteID, ytClientID];
     
-    NSLog(@"[tuyu] urlString: %@", urlString);
+    TLog(@"urlString: %@", urlString);
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
     
@@ -658,10 +658,10 @@
     
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     
-    NSLog(@"[tuyu] datString: %@", datString);
+    TLog(@"datString: %@", datString);
     
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-    NSLog(@"[tuyu] status string: %@", returnString);
+    TLog(@"status string: %@", returnString);
     
     
     return @"Success";
@@ -711,7 +711,7 @@
 
 - (BOOL)checkAndSetCredential {
     AFOAuthCredential * cred =  [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
-    //NSLog(@"[tuyu] cred: %@", cred);
+    //TLog(@"cred: %@", cred);
     if (cred) {
         [self setCredential:cred];
         self.authorized = YES;
@@ -925,7 +925,7 @@
         AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[jsonDict valueForKey:@"access_token"] tokenType:[jsonDict valueForKey:@"token_type"]];
         credential.refreshToken = refreshToken;
         [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-        //NSLog(@"[tuyu] refreshed credential: %@", credential);
+        //TLog(@"refreshed credential: %@", credential);
         [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         
     }

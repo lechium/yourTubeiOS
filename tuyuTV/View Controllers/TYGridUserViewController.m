@@ -48,13 +48,13 @@
 }
 
 - (void)removeVideo:(KBYTSearchResult *)searchResult fromPlaylist:(KBYTPlaylist *)playlist inCollectionView:(UICollectionView *)cv {
-    NSLog(@"[tuyu] deleting %@ from %@ in %@", searchResult, playlist, cv);
+    TLog(@"deleting %@ from %@ in %@", searchResult, playlist, cv);
     [[TYAuthUserManager sharedInstance] removeVideo:searchResult.videoId FromPlaylist:playlist.playlistID];
     [cv performBatchUpdates:^{
         NSMutableDictionary *_pldMutable = [self.playlistDictionary mutableCopy];
         NSMutableArray *playlistMutable = [playlist.videos mutableCopy];
         NSIndexPath *ip = [NSIndexPath indexPathForItem:[playlist.videos indexOfObject:searchResult] inSection:0];
-        NSLog(@"[tuyu] ip: %@", ip);
+        TLog(@"ip: %@", ip);
         [cv deleteItemsAtIndexPaths:@[ip]];
         [playlistMutable removeObject:searchResult];
         playlist.videos = playlistMutable;
@@ -66,13 +66,13 @@
 }
 
 - (void)removeChannel:(KBYTSearchResult *)searchResult inCollectionView:(UICollectionView *)cv {
-    NSLog(@"[tuyu] deleting %@ in %@", searchResult, cv);
+    TLog(@"deleting %@ in %@", searchResult, cv);
     [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:searchResult.stupidId];
     [cv performBatchUpdates:^{
         NSMutableDictionary *_pldMutable = [self.playlistDictionary mutableCopy];
         NSMutableArray *channelsMutable = [_pldMutable[@"Channels"] mutableCopy];
         NSIndexPath *ip = [NSIndexPath indexPathForItem:[channelsMutable indexOfObject:searchResult] inSection:0];
-        NSLog(@"[tuyu] ip: %@", ip);
+        TLog(@"ip: %@", ip);
         [cv deleteItemsAtIndexPaths:@[ip]];
         [channelsMutable removeObject:searchResult];
         _pldMutable[@"Channels"] = channelsMutable;
@@ -111,7 +111,7 @@
 
     if ([context.nextFocusedView isKindOfClass:[YTTVStandardCollectionViewCell class]]) {
         if (_isBeingReordered) {
-            NSLog(@"[tuyu] This should never happen.");
+            TLog(@"This should never happen.");
         } else {
             UICollectionView *cv = [self collectionViewFromCell:(UICollectionViewCell *)context.nextFocusedView];
             NSInteger nextIdx = [cv indexPathForCell:(UICollectionViewCell *)context.nextFocusedView].row;
@@ -154,7 +154,7 @@
     UICollectionView *view = (UICollectionView*)[[self focusedCollectionCell] superview];
     KBYTPlaylist *playlist = (KBYTPlaylist*)[self channelForCollectionView:view];
     KBYTSearchResult *result = [self searchResultFromFocusedCell];
-    NSLog(@"[tuyu] showing alert for result: %@", result);
+    TLog(@"showing alert for result: %@", result);
     NSString *title = @"Are you sure you want to delete this video?";
     NSString *buttonTitle = @"Delete";
     if (result.resultType == kYTSearchResultTypeChannel){
@@ -164,7 +164,7 @@
     
     UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:title message:@"" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *deleteAction = [UIAlertAction actionWithTitle:buttonTitle style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        NSLog(@"[tuyu] deleting item: %@", result);
+        TLog(@"deleting item: %@", result);
         if (result.resultType == kYTSearchResultTypeChannel) {
             NSLog(@"unsub a channel?");
             [self stopReordering];
@@ -332,18 +332,18 @@
     __block NSInteger currentIndex = 0;
     for (KBYTSearchResult *result in results) {
         if (result.resultType == kYTSearchResultTypePlaylist) {
-            //NSLog(@"[tuyu] getting details for: %@ id: %@", result.title, result.videoId);
+            //TLog(@"getting details for: %@ id: %@", result.title, result.videoId);
             [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(KBYTPlaylist *searchDetails) {
-                //NSLog(@"[tuyu] got details for: %@", result.title);
-                //NSLog(@"[tuyu] details: %@", searchDetails);
+                //TLog(@"got details for: %@", result.title);
+                //TLog(@"details: %@", searchDetails);
                 playlists[result.title] = searchDetails;
-                //NSLog(@"[tuyu] currentIndex: %lu count: %lu", currentIndex, playlistCount);
+                //TLog(@"currentIndex: %lu count: %lu", currentIndex, playlistCount);
                 currentIndex++;
                 if (currentIndex == playlistCount) {
                     completionBlock(playlists);
                 }
             } failureBlock:^(NSString *error) {
-                //NSLog(@"[tuyu] error: %@", error);
+                //TLog(@"error: %@", error);
                 playlistCount--;
                 if (currentIndex == playlistCount) {
                     completionBlock(playlists);

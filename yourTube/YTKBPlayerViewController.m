@@ -118,7 +118,7 @@
             return;
         }
         //KBYTStream *stream = [[result streams] lastObject];
-        //NSLog(@"[tuyu] playing stream: %@", stream);
+        //TLog(@"playing stream: %@", stream);
         YTPlayerItem *playerItem = [result playerItemRepresentation];//[[YTPlayerItem alloc] initWithURL:[stream url]];
         //playerItem.associatedMedia = result;
         if (playerItem != nil) {

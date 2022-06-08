@@ -40,10 +40,10 @@
 }
 
 - (void)getNextPage:(KBYTChannel *)currentChannel inCollectionView:(UICollectionView *)cv {
-    NSLog(@"[tuyu] currentChannel.continuationToken: %@", currentChannel.continuationToken);
+    TLog(@"currentChannel.continuationToken: %@", currentChannel.continuationToken);
     [[KBYourTube sharedInstance] getChannelVideosAlt:currentChannel.channelID continuation:currentChannel.continuationToken completionBlock:^(KBYTChannel *channel) {
         if (channel.videos.count > 0){
-            NSLog(@"[tuyu] got more channels!");
+            TLog(@"got more channels!");
             [currentChannel mergeChannelVideos:channel];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [cv reloadData];//[self reloadCollectionViews];
@@ -67,7 +67,7 @@
     }
     NSIndexPath *indexPath = [cv indexPathForCell:focusedCell];
     if (indexPath.row+1 == currentChannel.allSectionItems.count){
-        NSLog(@"[tuyu] get a new page maybe?");
+        TLog(@"get a new page maybe?");
         [self getNextPage:currentChannel inCollectionView:cv];
     }
 }
@@ -75,6 +75,7 @@
 
 - (void)refreshDataWithProgress:(BOOL)progress {
     LOG_CMD;
+    [self loadFromSnapshot];
     if (progress == true) {
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
@@ -115,7 +116,7 @@
         [[KBYourTube sharedInstance] getChannelVideosAlt:result completionBlock:^(KBYTChannel *searchDetails) {
             
             NSString *title = searchDetails.title ? searchDetails.title : self.sectionLabels[currentIndex];
-            //NSLog(@"[tuyu] searchDetails title: %@ sections:%@", title, searchDetails.sections);
+            //TLog(@"searchDetails title: %@ sections:%@", title, searchDetails.sections);
             if (searchDetails.sections){
                 channels[title] = searchDetails;
             }
@@ -130,6 +131,61 @@
             //
         }];
     }
+}
+
+- (NSString *)homeCacheFile {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"home.plist"];
+}
+
+- (NSArray *)featuredSnapshot {
+    __block NSMutableArray *newArray = [NSMutableArray new];
+    [self.featuredVideos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        id newObject = [obj dictionaryRepresentation];
+        [newArray addObject:newObject];
+    }];
+    return newArray;
+}
+
+- (void)snapshotResults {
+    NSMutableDictionary *_newDict = [NSMutableDictionary new];
+    [self.playlistDictionary enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        _newDict[key] = [obj dictionaryRepresentation];
+    }];
+    //NSURL *url = [NSURL fileURLWithPath:[[self appSupportFolder] stringByAppendingPathComponent:@"home.plist"]];
+    //NSError *error = nil;
+    //[_newDict writeToURL:url error:&error];
+    NSArray *featured = [self featuredSnapshot];
+    if (featured){
+        _newDict[@"featured"] = featured;
+    }
+    [_newDict writeToFile:[self homeCacheFile] atomically:true];
+}
+
+- (void)loadFromSnapshot {
+    if (![FM fileExistsAtPath:[self homeCacheFile]]){
+        return;
+    }
+    NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:[self homeCacheFile]];
+    __block NSMutableDictionary *newPlDict = [NSMutableDictionary new];
+    [dict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        if ([key isEqualToString:@"featured"]){
+            NSArray *featured = (NSArray *)obj;
+            NSMutableArray *newFeatured = [NSMutableArray new];
+            [featured enumerateObjectsUsingBlock:^(id  _Nonnull fObj, NSUInteger fIdx, BOOL * _Nonnull fStop) {
+                id featuredObj = [NSObject objectFromDictionary:fObj];
+                [newFeatured addObject:featuredObj];
+            }];
+            self.featuredVideos = newFeatured;
+        } else {
+            id newObject = [NSObject objectFromDictionary:obj];
+            newPlDict[key] = newObject;
+        }
+        
+    }];
+    self.playlistDictionary = newPlDict;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self reloadCollectionViews];
+    });
 }
 
 - (void)didReceiveMemoryWarning {

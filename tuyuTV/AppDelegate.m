@@ -266,7 +266,7 @@
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     LOG_SELF;
-     NSLog(@"[tuyu] app support: %@", [self appSupportFolder]);
+     TLog(@"app support: %@", [self appSupportFolder]);
     self.tabBar = (UITabBarController *)self.window.rootViewController;
    // self.tabBar.tabBar.translucent = false;
     NSMutableArray *viewControllers = [NSMutableArray new];

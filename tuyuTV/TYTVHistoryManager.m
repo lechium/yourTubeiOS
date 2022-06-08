@@ -103,7 +103,7 @@
 
 - (void)addVideoToHistory:(NSDictionary *)videoDetails {
     if (!videoDetails) return;
-    //NSLog(@"[tuyu] video history: %@", videoDetails);
+    //TLog(@"video history: %@", videoDetails);
     NSMutableDictionary *video = [videoDetails mutableCopy];
     [video removeObjectForKey:@"streams"];
     NSArray *history = [self videoHistory];
@@ -112,7 +112,7 @@
         [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"VideoHistory"];
     } else {
         if ([history containsObject:video]) {
-            NSLog(@"[tuyu] item already exists");
+            TLog(@"item already exists");
             return;
         }
         NSMutableArray *newArray = [history mutableCopy];

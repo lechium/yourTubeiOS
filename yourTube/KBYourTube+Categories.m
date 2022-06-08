@@ -240,8 +240,40 @@
 }
 
 - (id)valueForUndefinedKey:(NSString *)key {
-    NSLog(@"[tuyu] in value for undefined key: %@", key);
+    TLog(@"in value for undefined key: %@", key);
     return nil;
+}
+
++ (id)objectFromDictionary:(NSDictionary *)dictionary {
+    NSString *className = dictionary[@"___className"];
+    if (!className) {
+        className = [self valueForKey:@"className"];
+    }
+    Class cls = NSClassFromString(className);
+    id object = [cls new];
+    [dictionary enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        if ([object respondsToSelector:NSSelectorFromString(key)]){
+            if ([obj isKindOfClass:NSArray.class]) {
+                NSMutableArray *newArray = [NSMutableArray new];
+                [obj enumerateObjectsUsingBlock:^(id  _Nonnull arrayObj, NSUInteger arrayIdx, BOOL * _Nonnull arrayStop) {
+                    if ([arrayObj isKindOfClass:NSDictionary.class]){
+                        id newObj = [self objectFromDictionary:arrayObj];
+                        [newArray addObject:newObj];
+                    }
+                }];
+                [object setValue:newArray forKey:key];
+            } else if ([obj isKindOfClass:NSDictionary.class]){
+                id newObject = [self objectFromDictionary:obj];
+                [object setValue:newObject forKey:key];
+            } else {
+                
+                [object setValue:obj forKey:key];
+            }
+        } else {
+            //TLog(@"object does NOT respond to: %@", key);
+        }
+    }];
+    return object;
 }
 
 //we'll never care about an items delegate details when saving a dict rep, this prevents an inifinite loop/crash on some classes.
@@ -254,6 +286,7 @@
     Class cls = NSClassFromString([self valueForKey:@"className"]); //this is how we hone in our the properties /just/ for our specific class rather than NSObject's properties.
     NSArray *props = [self propertiesForClass:cls];
     //NSLog(@"props: %@ for %@", props, self);
+    dict[@"___className"] = [self valueForKey:@"className"];
     [props enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         //get the value of the particular property
         id val = [self valueForKey:obj];
@@ -738,7 +771,7 @@
 //TODO: since this particular shadow is ALWAYS the same, can probably cache/reuse a static version
 - (void)shadowify {
     if (!self.text) {
-        //NSLog(@"[tuyu] no text for you!");
+        //TLog(@"no text for you!");
         return;
     }
     NSShadow* shadow = [[NSShadow alloc] init];

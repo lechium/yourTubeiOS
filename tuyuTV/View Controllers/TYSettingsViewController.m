@@ -149,7 +149,7 @@
 - (void)handleToggle {
     MetaDataAsset *asset = [self.items lastObject];
     NSString *detail = [asset detail];
-    NSLog(@"[tuyu] asset detail: %@", detail);
+    TLog(@"asset detail: %@", detail);
     [UD setValue:detail forKey:@"filterType"];
 }
 
