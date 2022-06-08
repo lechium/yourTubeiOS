@@ -75,7 +75,9 @@
 
 - (void)refreshDataWithProgress:(BOOL)progress {
     LOG_CMD;
-    [self loadFromSnapshot];
+    if ([self loadFromSnapshot]) {
+        progress = false;
+    }
     if (progress == true) {
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
@@ -161,9 +163,9 @@
     [_newDict writeToFile:[self homeCacheFile] atomically:true];
 }
 
-- (void)loadFromSnapshot {
+- (BOOL)loadFromSnapshot {
     if (![FM fileExistsAtPath:[self homeCacheFile]]){
-        return;
+        return false;
     }
     NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:[self homeCacheFile]];
     __block NSMutableDictionary *newPlDict = [NSMutableDictionary new];
@@ -176,6 +178,9 @@
                 [newFeatured addObject:featuredObj];
             }];
             self.featuredVideos = newFeatured;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self reloadCollectionViews];
+            });
         } else {
             id newObject = [NSObject objectFromDictionary:obj];
             newPlDict[key] = newObject;
@@ -186,6 +191,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [self reloadCollectionViews];
     });
+    return (self.playlistDictionary.allKeys.count > 0);
 }
 
 - (void)didReceiveMemoryWarning {
