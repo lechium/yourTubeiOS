@@ -89,6 +89,7 @@
             {      [SVProgressHUD dismiss]; }
             self.playlistDictionary = finishedDetails;
             [super reloadCollectionViews];
+            [self snapshotResults];
         });
         
     }];
