@@ -12,6 +12,7 @@
 #import "KBYTSearchItemViewController.h"
 #import "KBYTGenericVideoTableViewController.h"
 #import "TYAuthUserManager.h"
+#import "UIView+RecursiveFind.h"
 
 #define kLoadingCellTag 500
 
@@ -30,17 +31,41 @@
 
 @implementation KBYTSearchTableViewController
 
+- (void)forceShowScopeView {
+    NSString *nombre = [@[@"_UIS", @"earc",@"hBar",@"Scope",@"Contai",@"nerView"] componentsJoinedByString:@""];
+    UIView *view = [self.searchController.searchBar findFirstSubviewWithClass:NSClassFromString(nombre)];
+    if (!view) {
+        view = [self.searchController.searchBar valueForKey:[@[@"_sc",@"opeB",@"arCo",@"ntain",@"erView"] componentsJoinedByString:@""]];
+    }
+    view.hidden = false;
+}
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     // [self resetSearchResults];
+    [self forceShowScopeView];
+    
+}
+
+- (KBYTSearchType)searchTypeForSettings {
+    NSString *filterType = [UD valueForKey:@"filterType"];
+    if (!filterType){
+        return KBYTSearchTypeAll;
+    }
+    if ([filterType isEqualToString:@"All"]) return KBYTSearchTypeAll;
+    else if ([filterType isEqualToString:@"Playlists"]) return KBYTSearchTypePlaylists;
+    else if ([filterType isEqualToString:@"Channels"]) return KBYTSearchTypeChannels;
+    
+    return KBYTSearchTypeAll;
 }
 
 - (void)resetSearchResults {
     self.currentPage = 1;
     self.totalResults = 0;
     self.pageCount = 0;
+    self.continuationToken = nil;
     [self.searchResults removeAllObjects];
     [self.tableView reloadData];
+    [self forceShowScopeView];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
@@ -54,7 +79,7 @@
     if (self.currentPage == 1)
         [SVProgressHUD show];
     
-    [[KBYourTube sharedInstance] apiSearch:searchString type:KBYTSearchTypeAll continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
+    [[KBYourTube sharedInstance] apiSearch:searchString type:[self searchTypeForSettings] continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
         
         //NSLog(@"[yourTubeiOS] result: %@", result.videos);
         if (self.currentPage == 1)
@@ -75,6 +100,16 @@
 
 - (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar {
     
+}
+
+
+- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
+    self.continuationToken = nil;
+    self.currentPage = 1;
+    NSString *scope = searchBar.scopeButtonTitles[selectedScope];
+    DLog(@"scope changed: %lu: %@", selectedScope, scope);
+    [UD setValue:scope forKey:@"filterType"];
+    [self searchBarSearchButtonClicked:searchBar];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -136,6 +171,8 @@
     //[self.view addSubview:self.searchController.searchBar];
     //[self.searchController.searchBar becomeFirstResponder];
 #endif
+    self.searchController.searchBar.showsScopeBar = true;
+    self.searchController.searchBar.scopeButtonTitles = @[@"All", @"Channels", @"Playlists"];
     self.currentPage = 1;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;

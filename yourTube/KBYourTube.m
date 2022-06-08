@@ -195,6 +195,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 - (NSArray <KBYTSearchResult *> *)allItems {
     NSMutableArray *_allItems = [self.videos mutableCopy];
+    if (!_allItems) _allItems = [NSMutableArray new];
     [_allItems addObjectsFromArray:self.channels];
     [_allItems addObjectsFromArray:self.playlists];
     return _allItems;
@@ -1866,7 +1867,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             //NSLog(@"body: %@ for: %@ %@", jsonDict, url, params);
             KBYTSearchResults *results = [KBYTSearchResults new];
             [results processJSON:jsonDict filter:type];
-            NSLog(@"video count: %lu", results.videos.count);
+            NSLog(@"video count: %lu", results.allItems.count);
             [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"search.plist"] atomically:true];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(results != nil) {

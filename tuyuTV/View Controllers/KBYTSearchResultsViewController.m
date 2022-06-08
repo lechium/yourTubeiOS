@@ -18,7 +18,7 @@
 #import "TYAuthUserManager.h"
 #import "KBYTGridChannelViewController.h"
 
-@interface KBYTSearchResultsViewController ()
+@interface KBYTSearchResultsViewController () <UISearchBarDelegate>
 
 @property (readwrite, assign) NSInteger currentPage;
 @property (readwrite, assign) NSInteger rows; //5 items per row
@@ -35,6 +35,14 @@
 
 static NSString * const reuseIdentifier = @"NewStandardCell";
 
+- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
+    NSString *scope = searchBar.scopeButtonTitles[selectedScope];
+    NSLog(@"[tuyu] scope changed: %lu: %@", selectedScope, scope);
+    [UD setValue:scope forKey:@"filterType"];
+    _lastSearchResult = nil;
+    
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     UILongPressGestureRecognizer *longpress
@@ -44,6 +52,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     //longpress.delegate = self;
     longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect], [NSNumber numberWithInteger:UIPressTypePlayPause]];
     [self.collectionView addGestureRecognizer:longpress];
+    
     // Do any additional setup after loading the view.
 }
 
@@ -274,14 +283,22 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
+    UISearchController *sc = [self searchController];
     sc.searchBar.frame = CGRectMake(0, 100, 600, 60);
+    [self syncScopeBarWithDefaults];
 }
 
+- (UISearchController *)searchController {
+    return [(UISearchContainerViewController*)self.presentingViewController searchController];
+}
+
+- (void)syncScopeBarWithDefaults {
+    self.searchController.searchBar.selectedScopeButtonIndex = [self segmentIndexForDefault];
+}
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    UISearchController *sc = [(UISearchContainerViewController*)self.presentingViewController searchController];
+    UISearchController *sc = [self searchController];
     [sc.searchBar resignFirstResponder];
     //NSLog(@"sc: %@", sc);
     
@@ -378,6 +395,14 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     [[self.presentingViewController navigationController] popViewControllerAnimated:true];
 }
 
+- (NSInteger)segmentIndexForDefault {
+    NSString *filterType = [UD valueForKey:@"filterType"];
+    if (!filterType) return 0;
+    if ([filterType isEqualToString:@"All"]) return 0;
+    else if ([filterType isEqualToString:@"Playlists"]) return 1;
+    else if ([filterType isEqualToString:@"Channels"]) return 2;
+    return 0;
+}
 
 - (KBYTSearchType)searchTypeForSettings {
     NSString *filterType = [UD valueForKey:@"filterType"];

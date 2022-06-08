@@ -88,7 +88,7 @@
                                             <rect key="frame" x="0.0" y="30" width="320" height="240"/>
                                         </imageView>
                                         <view hidden="YES" alpha="0.69999999999999996" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o6d-DX-Qul">
-                                            <rect key="frame" x="160" y="30" width="160" height="222"/>
+                                            <rect key="frame" x="160" y="0.0" width="160" height="222"/>
                                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </view>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C5j-Yn-spu">
@@ -134,7 +134,7 @@
                                     <constraint firstAttribute="trailing" secondItem="eIf-nL-IxE" secondAttribute="trailing" id="jAX-33-ZPh"/>
                                     <constraint firstItem="o6d-DX-Qul" firstAttribute="leading" secondItem="8mr-Yk-evk" secondAttribute="leading" constant="160" id="pT1-iS-63D"/>
                                     <constraint firstItem="w8E-Cj-6tO" firstAttribute="top" secondItem="eIf-nL-IxE" secondAttribute="bottom" constant="40" id="r8C-dF-crS"/>
-                                    <constraint firstItem="o6d-DX-Qul" firstAttribute="top" secondItem="eIf-nL-IxE" secondAttribute="top" id="vab-WT-GWB"/>
+                                    <constraint firstItem="o6d-DX-Qul" firstAttribute="top" secondItem="8mr-Yk-evk" secondAttribute="top" id="vab-WT-GWB"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="durationBottomConstraint" destination="7Dc-D2-dTb" id="zmt-mg-Qu5"/>

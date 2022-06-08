@@ -18,6 +18,7 @@
 		3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A241C5E8B3D00F50BC2 /* APAttribute.m */; };
 		321DAC012849EA64002D07B6 /* KBBulletinView.m in Sources */ = {isa = PBXBuildFile; fileRef = 321DABFD2849EA64002D07B6 /* KBBulletinView.m */; };
 		322215E7284FF94200F3EE8A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 322215E6284FF94200F3EE8A /* Launch Screen.storyboard */; };
+		322215F328503F2C00F3EE8A /* UIView+RecursiveFind.m in Sources */ = {isa = PBXBuildFile; fileRef = 8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */; };
 		323CF8D9284E57AF00559FF7 /* GCDWebServers.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; };
 		323CF8DA284E57AF00559FF7 /* GCDWebServers.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
@@ -273,7 +274,6 @@
 		898E935E1C8D62B000B34DAA /* YTPlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 898E935D1C8D62B000B34DAA /* YTPlaceholder.png */; };
 		898E935F1C8D63C900B34DAA /* YTKBPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A83A0E1C877B6900E1987E /* YTKBPlayerViewController.m */; };
 		898E93621C8D74B300B34DAA /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93611C8D74B300B34DAA /* WebViewController.m */; };
-		898E93671C8D8FEC00B34DAA /* KBYTSearchItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67851C62B9BD00AE33FA /* KBYTSearchItemViewController.m */; };
 		898E93691C8D910500B34DAA /* KBYTDownloadCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */; };
 		898E936A1C8D911700B34DAA /* JGProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */; };
 		898E936E1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */; };
@@ -2040,7 +2040,6 @@
 				898E93081C8D565800B34DAA /* KBYTQueuePlayer.m in Sources */,
 				898E93571C8D56D100B34DAA /* UIImageView+WebCache.m in Sources */,
 				898E934E1C8D56D100B34DAA /* SDWebImageDownloader.m in Sources */,
-				898E93671C8D8FEC00B34DAA /* KBYTSearchItemViewController.m in Sources */,
 				32D2A1411F424805006F24B3 /* AFURLRequestSerialization.m in Sources */,
 				8929FCBF1CB44540003D7473 /* tuyuApplication.m in Sources */,
 				899876601CDE77A5006A639E /* NSArray+PureLayout.m in Sources */,
@@ -2124,6 +2123,7 @@
 				32D2A1461F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m in Sources */,
 				89A83ABE1C88AAF200E1987E /* KBYTSearchTableViewController.m in Sources */,
 				89A83ABA1C88AADF00E1987E /* SlideAnimation.m in Sources */,
+				322215F328503F2C00F3EE8A /* UIView+RecursiveFind.m in Sources */,
 				89A83AA61C88A95C00E1987E /* UIImage+GIF.m in Sources */,
 				324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */,
 				89A83A9D1C88A95C00E1987E /* NSData+ImageContentType.m in Sources */,

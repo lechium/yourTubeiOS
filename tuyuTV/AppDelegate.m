@@ -50,6 +50,8 @@
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     KBYTSearchResultsViewController *svc = [sb instantiateViewControllerWithIdentifier:@"SearchResultsViewController"];
     UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:svc];
+    searchController.searchBar.scopeButtonTitles = @[@"All", @"Playlists", @"Channels"];
+    searchController.searchBar.showsScopeBar = true;
     searchController.obscuresBackgroundDuringPresentation = true;
     searchController.hidesNavigationBarDuringPresentation = true;
     searchController.searchResultsUpdater = svc;
@@ -61,7 +63,7 @@
     searchController.automaticallyAdjustsScrollViewInsets = false;
      searchController.extendedLayoutIncludesOpaqueBars = true;
     searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
-    searchController.searchBar.delegate = self;
+    searchController.searchBar.delegate = svc;
     CGRect searchBarFrame = CGRectMake(0, 60, 600, 60);
     searchController.searchBar.frame = searchBarFrame;
     UISearchContainerViewController *searchContainer = [[UISearchContainerViewController alloc] initWithSearchController:searchController];
