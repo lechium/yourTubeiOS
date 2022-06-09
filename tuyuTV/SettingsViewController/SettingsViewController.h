@@ -27,6 +27,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define DEFAULT_TABLE_OFFSET 180
+
 @interface SettingsTableViewCell : UITableViewCell
 {
     UIColor *unfocusedBackgroundColor;
@@ -58,6 +60,12 @@
 @property (nonatomic, strong) UIColor *titleColor;
 @property (nonatomic, strong) UILabel *titleView;
 @property (nonatomic, strong) DetailView *detailView;
-
+@property (readwrite, assign) CGFloat topOffset;
+@property (readwrite, assign) CGFloat metaTopOffset;
+@property (nonatomic, strong) NSIndexPath *focusedIndexPath;
+@property (nonatomic, strong) NSIndexPath *savedIndexPath;
+- (void)safeReloadData;
+- (void)focusedCell:(SettingsTableViewCell *)focusedCell;
+- (void)performLongPressActionForSelectedRow;
 @end
 

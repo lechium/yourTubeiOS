@@ -20,6 +20,7 @@
 		322215E7284FF94200F3EE8A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 322215E6284FF94200F3EE8A /* Launch Screen.storyboard */; };
 		322215F328503F2C00F3EE8A /* UIView+RecursiveFind.m in Sources */ = {isa = PBXBuildFile; fileRef = 8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */; };
 		322215FE2852799900F3EE8A /* KBAirDropHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 322215FC2852799900F3EE8A /* KBAirDropHelper.m */; };
+		32221603285299C300F3EE8A /* TYManageFeaturedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32221602285299C300F3EE8A /* TYManageFeaturedViewController.m */; };
 		323CF8D9284E57AF00559FF7 /* GCDWebServers.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; };
 		323CF8DA284E57AF00559FF7 /* GCDWebServers.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
@@ -402,6 +403,8 @@
 		322215EC28500B4900F3EE8A /* tuyu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = tuyu.entitlements; sourceTree = "<group>"; };
 		322215FC2852799900F3EE8A /* KBAirDropHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAirDropHelper.m; sourceTree = "<group>"; };
 		322215FD2852799900F3EE8A /* KBAirDropHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAirDropHelper.h; sourceTree = "<group>"; };
+		32221601285299C300F3EE8A /* TYManageFeaturedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYManageFeaturedViewController.h; sourceTree = "<group>"; };
+		32221602285299C300F3EE8A /* TYManageFeaturedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYManageFeaturedViewController.m; sourceTree = "<group>"; };
 		323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GCDWebServers.xcframework; path = yourTube/GCDWebServers.xcframework; sourceTree = SOURCE_ROOT; };
 		324693A028404C65002D91F0 /* AppSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupport.tbd; sourceTree = SOURCE_ROOT; };
 		324693A82841EE8A002D91F0 /* AuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthViewController.m; sourceTree = "<group>"; };
@@ -874,6 +877,8 @@
 				899876711CDEB109006A639E /* TYBaseGridViewController.m */,
 				899877A71CE99CB3006A639E /* TYGridUserViewController.h */,
 				899877A81CE99CB3006A639E /* TYGridUserViewController.m */,
+				32221601285299C300F3EE8A /* TYManageFeaturedViewController.h */,
+				32221602285299C300F3EE8A /* TYManageFeaturedViewController.m */,
 				899877AA1CE9A006006A639E /* TYHomeViewController.h */,
 				899877AB1CE9A006006A639E /* TYHomeViewController.m */,
 				892A3F451CF7483800EA0247 /* TYSettingsViewController.h */,
@@ -2012,6 +2017,7 @@
 				898E93541C8D56D100B34DAA /* UIImage+MultiFormat.m in Sources */,
 				898E930A1C8D566000B34DAA /* KBYTDownloadStream.m in Sources */,
 				899876671CDE78BA006A639E /* CollectionViewLayout.m in Sources */,
+				32221603285299C300F3EE8A /* TYManageFeaturedViewController.m in Sources */,
 				898E927F1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.m in Sources */,
 				892A3F431CF7471100EA0247 /* MetadataPreviewView.m in Sources */,
 				892A3F471CF7483800EA0247 /* TYSettingsViewController.m in Sources */,

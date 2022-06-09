@@ -13,6 +13,7 @@
 #import "AppDelegate.h"
 #import "TYAuthUserManager.h"
 #import "AuthViewController.h"
+#import "TYManageFeaturedViewController.h"
 
 @implementation TYSettingsViewController
 
@@ -27,9 +28,9 @@
     
     
     if ([svc signedIn] == true) {
-        mainMenuItem = @{@"name": @"Sign Out", @"imagePath": @"YTPlaceholder.png", @"detail": @"", @"detailOptions": @[],  @"description": @"Sign out of your YouTube account."};
+        mainMenuItem = @{@"name": @"Sign Out", @"imagePath": @"YTPlaceholder", @"detail": @"", @"detailOptions": @[],  @"description": @"Sign out of your YouTube account."};
     } else {
-        mainMenuItem = @{@"name": @"Sign In", @"imagePath": @"YTPlaceholder.png", @"detail": @"", @"detailOptions": @[], @"description": @"Sign in to your YouTube account."};
+        mainMenuItem = @{@"name": @"Sign In", @"imagePath": @"YTPlaceholder", @"detail": @"", @"detailOptions": @[], @"description": @"Sign in to your YouTube account."};
     }
     
     NSString *filterType = [UD valueForKey:@"filterType"];
@@ -39,6 +40,10 @@
     
     
     MetaDataAsset *asset = [[MetaDataAsset alloc] initWithDictionary:mainMenuItem];
+    MetaDataAsset *manageFeaturedChannels = [MetaDataAsset new];
+    manageFeaturedChannels.name = @"Manage Featured Channels";
+    manageFeaturedChannels.imagePath = @"YTPlaceholder.png";
+    manageFeaturedChannels.assetDescription = @"Manage the channels listed in the tuyu home view";
     /*
     NSDictionary *searchSettings = @{@"name": @"Search Filter", @"imagePath": @"YTPlaceholder.png", @"detail": filterType, @"detailOptions": @[@"All", @"Playlists", @"Channels"],  @"description": @"Filter what results come back from searches."};
     
@@ -49,7 +54,7 @@
     updatePermissions.imagePath = @"YTPlaceholder.png";
     updatePermissions.assetDescription = @"Update authentication permissions so it's possible to add videos to playlists and subscribe to channels";
      */
-    svc.items = @[asset];
+    svc.items = @[asset, manageFeaturedChannels];
     svc.title = @"settings";
     return svc;
     //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:svc];
@@ -137,13 +142,36 @@
             break;
             
         case 1:
+            [self showManageChannelsView];
             //[self updatePermissions];
-            [super tableView:tableView didSelectRowAtIndexPath:indexPath];
-            [self handleToggle];
+            //[super tableView:tableView didSelectRowAtIndexPath:indexPath];
+            //[self handleToggle];
             break;
         default:
             break;
     }
+}
+
+- (NSString *)sectionsFile {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"sections.plist"];
+}
+
+- (void)showManageChannelsView {
+    
+    NSDictionary *data =[NSDictionary dictionaryWithContentsOfFile:[self sectionsFile]];
+    __block NSMutableArray *sections = [NSMutableArray new];
+    [data[@"sections"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        MetaDataAsset *asset = [MetaDataAsset new];
+        asset.name = obj[@"name"];
+        asset.imagePath = @"YTPlaceholder";
+        [sections addObject:asset];
+    }];
+    TYManageFeaturedViewController *featuredVC = [[TYManageFeaturedViewController alloc] initWithNames:sections];
+    featuredVC.defaultImageName = @"YTPlaceholder";
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:featuredVC];
+    [self presentViewController:navController animated:true completion:nil];
+    
+    //[self.navigationController pushViewController:featuredVC animated:true];
 }
 
 - (void)handleToggle {

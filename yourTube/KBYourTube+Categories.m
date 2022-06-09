@@ -27,6 +27,31 @@
 
 @end
 
+@implementation UIWindow (Additions)
+
+
+- (UIViewController *)visibleViewController {
+    UIViewController *rootViewController = self.rootViewController;
+    return [UIWindow getVisibleViewControllerFrom:rootViewController];
+}
+
++ (UIViewController *) getVisibleViewControllerFrom:(UIViewController *) vc {
+    if ([vc isKindOfClass:[UINavigationController class]]) {
+        return [UIWindow getVisibleViewControllerFrom:[((UINavigationController *) vc) visibleViewController]];
+    } else if ([vc isKindOfClass:[UITabBarController class]]) {
+        return [UIWindow getVisibleViewControllerFrom:[((UITabBarController *) vc) selectedViewController]];
+    } else {
+        if (vc.presentedViewController) {
+            return [UIWindow getVisibleViewControllerFrom:vc.presentedViewController];
+        } else {
+            return vc;
+        }
+    }
+}
+
+
+@end
+
 
 @implementation UITableView (completion)
 
@@ -255,6 +280,24 @@
  */
 
 @implementation NSObject (convenience)
+
+#ifndef SHELF_EXT
+- (UIViewController *)topViewController {
+    return [[[UIApplication sharedApplication] keyWindow] visibleViewController];
+}
+#endif
+
+#if TARGET_OS_TV
+
+- (BOOL)darkMode {
+    
+    if ([self topViewController].view.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+        return TRUE;
+    }
+    return FALSE;
+}
+
+#endif
 
 - (NSArray *)propertiesForClass:(Class)clazz {
     u_int count;

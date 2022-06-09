@@ -8,8 +8,11 @@
 
 #import "MetadataPreviewView.h"
 #import "PureLayout.h"
-#import "UIView+RecursiveFind.h"
 #import "UIImageView+WebCache.h"
+#import "KBYourTube+Categories.h"
+//#import "UIViewController+Additions.h"
+//#import "NSObject+Additions.h"
+#import "UIView+RecursiveFind.h"
 
 @interface UIWindow (AutoLayoutDebug)
 + (UIWindow *)keyWindow;
@@ -18,24 +21,44 @@
 
 @implementation MetaDataAsset
 
-@synthesize name, assetDescription, metaDictionary, imagePath, detail, detailOptions;
+@synthesize name, assetDescription, metaDictionary, imagePath, detail, detailOptions, selectorName, tag, imagePathDark;
+
+- (id)init {
+    
+    self = [super init];
+    _accessory = true;
+    return self;
+}
 
 - (id)initWithDictionary:(NSDictionary *)dict
 {
-    self = [super init];
+    self = [self init];
     NSMutableDictionary *mutableDict = [dict mutableCopy];
     name = mutableDict[@"name"];
+    _accessory = true;
     assetDescription = mutableDict[@"description"];
     imagePath = mutableDict[@"imagePath"];
+    imagePathDark = mutableDict[@"imagePathDark"];
     detail = mutableDict[@"detail"];
     detailOptions = mutableDict[@"detailOptions"];
+    selectorName = mutableDict[@"selectorName"];
+    tag = [mutableDict[@"tag"] integerValue];
     [mutableDict removeObjectForKey:@"name"];
     [mutableDict removeObjectForKey:@"description"];
     [mutableDict removeObjectForKey:@"imagePath"];
+    [mutableDict removeObjectForKey:@"imagePathDark"];
     [mutableDict removeObjectForKey:@"detail"];
     [mutableDict removeObjectForKey:@"detailOptions"];
+    [mutableDict removeObjectForKey:@"selectorName"];
+    [mutableDict removeObjectForKey:@"tag"];
+    [mutableDict removeObjectForKey:@"accessory"];
     metaDictionary = mutableDict;
     return self;
+}
+
+- (SEL)ourSelector
+{
+    return NSSelectorFromString(self.selectorName);
 }
 
 @end
@@ -98,7 +121,9 @@
     if (!_valueLayer)
     {
         _valueLayer = [[UILabel alloc] initForAutoLayout];
-        if (self.backgroundColor == [UIColor blackColor])
+        [_valueLayer setFont:[UIFont systemFontOfSize:17]];
+        //if (self.backgroundColor == [UIColor blackColor])
+        if ([self darkMode])
         {
             [_valueLayer setTextColor:[UIColor whiteColor]];
         } else {
@@ -136,7 +161,8 @@
         
         UIColor *valueColor = [UIColor blackColor];
         
-        if (self.superview.superview.superview.backgroundColor == [UIColor blackColor])
+        //if (self.superview.superview.superview.backgroundColor == [UIColor blackColor])
+        if ([self darkMode])
         {
             valueColor = [UIColor whiteColor];
             //NSLog(@"is black bg");
@@ -265,6 +291,7 @@
     self = [self initForAutoLayout];
     self.coverArt = [UIImage imageNamed:coverArt];
     self.imageView.image = self.coverArt;
+    self.topOffset = DEFAULT_TOP_OFFSET;
     return self;
 }
 
@@ -276,6 +303,7 @@
     self.metadataAsset = [[MetaDataAsset alloc] initWithDictionary:meta];
     NSString *coverArt = meta[@"imagePath"];
     self.coverArt = [UIImage imageNamed:coverArt];
+    self.topOffset = DEFAULT_TOP_OFFSET;
     return self;
 }
 
@@ -285,6 +313,7 @@
     self = [super initForAutoLayout];
     [self addSubview:self.imageView];
     [self addSubview:self.metaContainerView];
+    self.topOffset = DEFAULT_TOP_OFFSET;
     //[self updateConstraintsIfNeeded];
     return self;
 }
@@ -362,6 +391,7 @@
         _descriptionLabel = [UILabel newAutoLayoutView];
         _descriptionLabel.lineBreakMode = NSLineBreakByWordWrapping;
         _descriptionLabel.numberOfLines = 0;
+        _descriptionLabel.font = [UIFont systemFontOfSize:24];
     }
     return _descriptionLabel;
 }
@@ -380,6 +410,19 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+    if ([[[self.metadataAsset metaDictionary] allKeys] count] == 0)
+    {
+        self.linesView.alpha = 0;
+    } else {
+        self.linesView.alpha = 1;
+    }
+    
+    if (self.metadataAsset.assetDescription.length == 0 && ([[[self.metadataAsset metaDictionary] allKeys] count] == 0))
+    {
+        self.topDividerView.alpha = 0;
+    } else {
+        self.topDividerView.alpha = 1;
+    }
     // NSString *recursiveDesc = [self performSelector:@selector(recursiveDescription)];
     //NSLog(@"%@", recursiveDesc);
     
@@ -408,7 +451,7 @@
     self.hasMetaConstraints = [NSLayoutConstraint autoCreateConstraintsWithoutInstalling:^{
         
         [self.imageView autoAlignAxisToSuperviewAxis:ALAxisVertical];
-        [self.imageView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.superview withOffset:264];
+        [self.imageView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.superview withOffset:self.topOffset];
     }];
     
     if (!self.hasMeta)
@@ -554,8 +597,8 @@
         [self.descriptionConstraints autoRemoveConstraints];
         [self.noDescriptionConstraints autoInstallConstraints];
     }
-    //[self updateConstraintsIfNeeded];
-    //[self updateConstraints];
+    [self updateConstraintsIfNeeded];
+    [self updateConstraints];
    // [self layoutIfNeeded];
 }
 

@@ -12,6 +12,10 @@
 
 @end
 
+@interface UIWindow (Additions)
+- (UIViewController *)visibleViewController;
+@end
+
 @interface UITableView (completion)
 
 - (void)reloadDataWithCompletion:(void(^)(void))completionBlock;
@@ -58,6 +62,10 @@
 @end
 
 @interface NSObject  (convenience)
+- (UIViewController *)topViewController;
+#if TARGET_OS_TV
+- (BOOL)darkMode;
+#endif
 + (id)objectFromDictionary:(NSDictionary *)dictionary;
 - (NSDictionary *)dictionaryRepresentation;
 - (void)recursiveInspectObjectLikeKey:(NSString *)desiredKey saving:(NSMutableArray *)array;

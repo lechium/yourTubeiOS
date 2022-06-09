@@ -36,10 +36,17 @@
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *assetDescription;
 @property (nonatomic, strong) NSString *imagePath;
+@property (nonatomic, strong) NSString *imagePathDark; //optional
 @property (nonatomic, strong) NSString *detail;
 @property (nonatomic, strong) NSArray *detailOptions;
 @property (nonatomic, strong) NSDictionary *metaDictionary;
+@property (nonatomic, strong) NSString *selectorName;
+@property (readwrite, assign) NSInteger tag;
+@property (nonatomic, strong) NSString *fullImagePath; //optional
+@property (nonatomic, strong) NSString *defaultImageName; //optional
+@property (readwrite, assign) BOOL accessory;
 
+- (SEL)ourSelector;
 
 - (id)initWithDictionary:(NSDictionary *)dict;
 
@@ -80,7 +87,7 @@
 
 @property (nonatomic, strong) UIImage *coverArt;
 
-
+#define DEFAULT_TOP_OFFSET 264
 
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIView *metaContainerView;
@@ -91,7 +98,7 @@
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *descriptionLabel;
 @property (nonatomic, strong) MetadataLinesView *linesView;
-
+@property (readwrite, assign) CGFloat topOffset;
 //image view constraints for when there is no meta visible
 @property (nonatomic, strong) NSArray *centeredImageConstraints;
 
