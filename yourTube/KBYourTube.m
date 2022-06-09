@@ -761,15 +761,24 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 #pragma mark convenience methods
 
+- (NSString *)userDetailsCache {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"user.plist"];
+}
+
+- (BOOL)loadUserDetailsFromCache {
+    if (![FM fileExistsAtPath:[self userDetailsCache]]) return FALSE;
+    NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:[self userDetailsCache]];
+    self.userDetails = [dict convertDictionaryToObjects];
+    return true;
+}
 
 - (void)cacheUserDetails {
-    NSString *appSupport = [self appSupportFolder];
     NSArray *newResults = [self.userDetails[@"results"] convertArrayToDictionaries];
     NSArray *channels = [self.userDetails[@"channels"] convertArrayToDictionaries];
     NSMutableDictionary *_newDict = [self.userDetails mutableCopy];
     _newDict[@"results"] = newResults;
     _newDict[@"channels"] = channels;
-    [_newDict writeToFile:[appSupport stringByAppendingPathComponent:@"user.plist"] atomically:true];
+    [_newDict writeToFile:[self userDetailsCache] atomically:true];
 }
 
 - (void)addChannelToUserDetails:(KBYTSearchResult *)channel {

@@ -64,7 +64,13 @@
 - (NSMutableDictionary *)convertDictionaryToObjects {
     NSMutableDictionary *_newDict = [NSMutableDictionary new];
     [self enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        _newDict[key] = [NSObject objectFromDictionary:obj];
+        if ([obj isKindOfClass:NSDictionary.class]) {
+            _newDict[key] = [NSObject objectFromDictionary:obj];
+        } else if ([obj isKindOfClass:NSNumber.class] || [obj isKindOfClass:NSString.class]) {
+            _newDict[key] = obj;
+        } else if ([obj isKindOfClass:NSArray.class]){
+            _newDict[key] = [obj convertArrayToObjects];
+        }
     }];
     return _newDict;
 }
