@@ -215,9 +215,15 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [self.view removeObserver:self forKeyPath:@"backgroundColor" context:NULL];
-    [self removeObserver:self forKeyPath:@"titleColor" context:NULL];
-    [self removeObserver:self forKeyPath:@"title" context:NULL];
+    @try {
+        [self.view removeObserver:self forKeyPath:@"backgroundColor" context:NULL];
+        [self removeObserver:self forKeyPath:@"titleColor" context:NULL];
+        [self removeObserver:self forKeyPath:@"title" context:NULL];
+    }
+    @catch ( NSException *e ) {
+          TLog(@"exception: %@", e);
+    }
+   
     _observersRegistered = false;
 }
 
