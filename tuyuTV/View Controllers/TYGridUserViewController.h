@@ -15,4 +15,6 @@
     UITapGestureRecognizer *_pressGestureRecognizer;
     UITapGestureRecognizer *_playPauseGestureRecognizer;
 }
+
+- (void)updateUserData:(NSDictionary *)userData;
 @end

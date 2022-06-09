@@ -256,6 +256,35 @@
 
 }
 
+- (NSString *)sectionsFile {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"sections.plist"];
+}
+
+- (NSDictionary *)createDefaultSections {
+    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"Fashion & Beauty",@"YouTube",@"Virtual Reality"];
+    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYTFashionAndBeautyID, KBYTSpotlightChannelID, KBYT360ChannelID];
+    __block NSMutableDictionary *dict = [NSMutableDictionary new];
+    __block NSMutableArray *array = [NSMutableArray new];
+    [sectionArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        //dict[obj] = idArray[idx];
+        [array addObject:@{@"name": obj, @"channel": idArray[idx]}];
+    }];
+    dict[@"sections"] = array;
+    dict[@"featured"] = @"UCByOQJjav0CUDwxCk-jVNRQ";
+    return dict;
+}
+
+- (NSDictionary *)homeScreenData {
+    if ([FM fileExistsAtPath:[self sectionsFile]]) {
+        TLog(@"loading from saved file");
+        return [NSDictionary dictionaryWithContentsOfFile:[self sectionsFile]];
+    }
+    NSDictionary *def = [self createDefaultSections];
+    [def writeToFile:[self sectionsFile] atomically:true];
+    return def;
+}
+
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
@@ -271,9 +300,8 @@
    // self.tabBar.tabBar.translucent = false;
     NSMutableArray *viewControllers = [NSMutableArray new];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"Fashion & Beauty",@"YouTube",@"Virtual Reality"];
-    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYTFashionAndBeautyID, KBYTSpotlightChannelID, KBYT360ChannelID];
-    TYHomeViewController *homeViewController = [[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
+    
+    TYHomeViewController *homeViewController = [[TYHomeViewController alloc] initWithData:[self homeScreenData]];//[[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
     UIViewController *searchViewController = [self packagedSearchController];
     //[viewControllers removeObjectAtIndex:0];
     [viewControllers insertObject:homeViewController atIndex:0];
@@ -283,27 +311,46 @@
     avc.title = @"about";
     [viewControllers addObject:avc];
     self.tabBar.viewControllers = viewControllers;
-    
-    if ([[KBYourTube sharedInstance] isSignedIn]) {
+    KBYourTube *kbyt = [KBYourTube sharedInstance];
+    if ([kbyt isSignedIn]) {
         //DLog(@"%@", [TYAuthUserManager suastring]);
         [[TYAuthUserManager sharedInstance] checkAndSetCredential];
-        
-        [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
-           
-           //NSLog(@"userdeets : %@", outputResults);
-            [[KBYourTube sharedInstance] setUserDetails:outputResults];
-            TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
-            uvc.title = outputResults[@"userName"];
-            if ([[outputResults allKeys]containsObject:@"altUserName"]) {
-                uvc.title = outputResults[@"altUserName"];
+        if ([kbyt loadUserDetailsFromCache]) {
+            [kbyt setUserDetails:kbyt.userDetails];
+            TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:kbyt.userDetails];
+            uvc.title = kbyt.userDetails[@"userName"];
+            if ([[kbyt.userDetails allKeys]containsObject:@"altUserName"]) {
+                uvc.title = kbyt.userDetails[@"altUserName"];
             }
             [viewControllers insertObject:uvc atIndex:1];
             self.tabBar.viewControllers = viewControllers;
             
-            
-        } failureBlock:^(NSString *error) {
-            //
-        }];
+            //still want to fetch fresh after this..
+            [kbyt getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+                [kbyt setUserDetails:outputResults];
+                [uvc updateUserData:outputResults];
+            } failureBlock:^(NSString *error) {
+                
+            }];
+        } else {
+            [kbyt getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+               
+               //NSLog(@"userdeets : %@", outputResults);
+                [kbyt setUserDetails:outputResults];
+                TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
+                uvc.title = outputResults[@"userName"];
+                if ([[outputResults allKeys]containsObject:@"altUserName"]) {
+                    uvc.title = outputResults[@"altUserName"];
+                }
+                [viewControllers insertObject:uvc atIndex:1];
+                self.tabBar.viewControllers = viewControllers;
+                
+                
+            } failureBlock:^(NSString *error) {
+                //
+            }];
+        }
+        
     }
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"MobileMode"]) {
         NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (iPad; CPU OS 9_1 like Mac OS X) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0 Mobile/12B410 Safari/601.2.7", @"UserAgent", nil];

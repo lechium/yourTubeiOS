@@ -14,4 +14,5 @@
 
 
 - (id)initWithSections:(NSArray *)sections andChannelIDs:(NSArray *)channelIds;
+- (id)initWithData:(NSDictionary *)data;
 @end

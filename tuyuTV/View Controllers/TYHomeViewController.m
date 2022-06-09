@@ -10,14 +10,31 @@
 
 @interface TYHomeViewController () {
     BOOL firstLoad;
+    NSString *featuredId;
 }
 @end
 
 @implementation TYHomeViewController
 
+- (id)initWithData:(NSDictionary *)data {
+    __block NSMutableArray *sections = [NSMutableArray new];
+    __block NSMutableArray *channels = [NSMutableArray new];
+    [data[@"sections"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [channels addObject:obj[@"channel"]];
+        [sections addObject:obj[@"name"]];
+    }];
+    self = [super initWithSections:sections];
+    featuredId = data[@"featured"];
+    self.channelIDs = channels;
+    return self;
+}
+
+
+
 - (id)initWithSections:(NSArray *)sections andChannelIDs:(NSArray *)channelIds {
     
     self = [super initWithSections:sections];
+    featuredId = @"UCByOQJjav0CUDwxCk-jVNRQ";
     self.channelIDs = channelIds;
     return self;
 }
@@ -99,7 +116,7 @@
 - (void)fetchChannelDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock {
     //
     NSMutableDictionary *channels = [NSMutableDictionary new];
-    [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
+    [[KBYourTube sharedInstance] getChannelVideosAlt:featuredId completionBlock:^(KBYTChannel *channel) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.featuredChannel = channel;
             self.featuredVideos = channel.allSectionItems;

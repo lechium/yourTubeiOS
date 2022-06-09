@@ -293,11 +293,37 @@
     self.playlistDictionary = [initial convertDictionaryToObjects];
     self.featuredVideos = self.playlistDictionary[@"Featured"];
     //TLog(@"set featured videos: %@", self.featuredVideos);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.featuredVideosCollectionView reloadData];
-        [super reloadCollectionViews];
-    });
+    if ([self isViewLoaded]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.featuredVideosCollectionView reloadData];
+            [super reloadCollectionViews];
+        });
+    }
     return TRUE;
+}
+
+- (void)updateUserData:(NSDictionary *)userData {
+    if (![self isViewLoaded]) {
+        TLog(@"view isnt loaded yet, dont worry about syncing the data");
+        return;
+    }
+    NSArray *channels = userData[@"channels"];
+    NSArray *results = userData[@"results"];
+    NSArray *currentChannels = self.playlistDictionary[@"Channels"];
+    if (channels.count == currentChannels.count) {
+        TLog(@"channel count remains unchanged");
+    }
+    NSMutableArray *allKeys = [self.playlistDictionary.allKeys mutableCopy];
+    [allKeys removeObject:@"Channels"];
+    [allKeys removeObject:@"Channel History"];
+    [allKeys removeObject:@"Video History"];
+    TLog(@"allKey count: %lu result count: %lu keys: %@", allKeys.count, results.count, allKeys);
+    if (allKeys.count + 1 == results.count) {
+        TLog(@"result count is unchanged, dont do sheeeat");
+        return;
+    }
+    
+    //TODO update whatever data requires it.
 }
 
 - (void)newCacheDetails {

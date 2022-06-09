@@ -236,6 +236,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *lastSearch;
 @property (nonatomic, strong) NSDictionary *userDetails; 
 
+- (BOOL)loadUserDetailsFromCache;
 - (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current;
 + (YTSearchResultType)resultTypeForString:(NSString *)string;
 + (id)sharedInstance;
