@@ -209,6 +209,11 @@
 }
 
 - (void)refreshDataWithProgress:(BOOL)progress {
+    
+    if ([self loadCacheIfPossible]) {
+        progress = false;
+    }
+    
     if (progress == true){
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
@@ -220,7 +225,7 @@
             [SVProgressHUD dismiss];
         }
         self.playlistDictionary = finishedDetails;
-        
+        [self cacheDetails];
         [super reloadCollectionViews];
     }];
 }
@@ -267,6 +272,32 @@
         }
     }
     
+}
+
+- (NSString *)userCacheFile {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"userGrid.plist"];
+}
+
+- (BOOL)cacheDetails {
+    NSMutableDictionary *dict = [self.playlistDictionary convertObjectsToDictionaryRepresentations];
+    dict[@"Featured"] = [self.featuredVideos convertArrayToDictionaries];
+    //TLog(@"dict all keys: %@", dict.allKeys);
+    return [dict writeToFile:[self userCacheFile] atomically:true];
+}
+
+- (BOOL)loadCacheIfPossible {
+    if (![FM fileExistsAtPath:[self userCacheFile]]) {
+        return FALSE;
+    }
+    NSDictionary *initial = [NSDictionary dictionaryWithContentsOfFile:[self userCacheFile]];
+    self.playlistDictionary = [initial convertDictionaryToObjects];
+    self.featuredVideos = self.playlistDictionary[@"Featured"];
+    //TLog(@"set featured videos: %@", self.featuredVideos);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.featuredVideosCollectionView reloadData];
+        [super reloadCollectionViews];
+    });
+    return TRUE;
 }
 
 - (void)newCacheDetails {

@@ -168,6 +168,7 @@
             }];
             self.featuredVideos = newFeatured;
             dispatch_async(dispatch_get_main_queue(), ^{
+                [self.featuredVideosCollectionView reloadData];
                 [self reloadCollectionViews];
             });
         } else {

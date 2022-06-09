@@ -19,6 +19,7 @@
 		321DAC012849EA64002D07B6 /* KBBulletinView.m in Sources */ = {isa = PBXBuildFile; fileRef = 321DABFD2849EA64002D07B6 /* KBBulletinView.m */; };
 		322215E7284FF94200F3EE8A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 322215E6284FF94200F3EE8A /* Launch Screen.storyboard */; };
 		322215F328503F2C00F3EE8A /* UIView+RecursiveFind.m in Sources */ = {isa = PBXBuildFile; fileRef = 8998766E1CDEA423006A639E /* UIView+RecursiveFind.m */; };
+		322215FE2852799900F3EE8A /* KBAirDropHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 322215FC2852799900F3EE8A /* KBAirDropHelper.m */; };
 		323CF8D9284E57AF00559FF7 /* GCDWebServers.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; };
 		323CF8DA284E57AF00559FF7 /* GCDWebServers.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
@@ -399,6 +400,8 @@
 		321DABFD2849EA64002D07B6 /* KBBulletinView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBBulletinView.m; sourceTree = "<group>"; };
 		322215E6284FF94200F3EE8A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		322215EC28500B4900F3EE8A /* tuyu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = tuyu.entitlements; sourceTree = "<group>"; };
+		322215FC2852799900F3EE8A /* KBAirDropHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAirDropHelper.m; sourceTree = "<group>"; };
+		322215FD2852799900F3EE8A /* KBAirDropHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAirDropHelper.h; sourceTree = "<group>"; };
 		323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GCDWebServers.xcframework; path = yourTube/GCDWebServers.xcframework; sourceTree = SOURCE_ROOT; };
 		324693A028404C65002D91F0 /* AppSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupport.tbd; sourceTree = SOURCE_ROOT; };
 		324693A82841EE8A002D91F0 /* AuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthViewController.m; sourceTree = "<group>"; };
@@ -1169,6 +1172,8 @@
 		898E92671C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXGroup;
 			children = (
+				322215FD2852799900F3EE8A /* KBAirDropHelper.h */,
+				322215FC2852799900F3EE8A /* KBAirDropHelper.m */,
 				898E926B1C8D056700B34DAA /* AppDelegate.h */,
 				898E926C1C8D056700B34DAA /* AppDelegate.m */,
 				898E92771C8D056700B34DAA /* Assets.xcassets */,
@@ -2001,6 +2006,7 @@
 				898E93591C8D56D400B34DAA /* KBYTPreferences.m in Sources */,
 				32D2A13F1F424805006F24B3 /* AFSecurityPolicy.m in Sources */,
 				898E93471C8D56BD00B34DAA /* SVProgressHUD.m in Sources */,
+				322215FE2852799900F3EE8A /* KBAirDropHelper.m in Sources */,
 				898E93111C8D569600B34DAA /* UIColor+Additions.m in Sources */,
 				324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */,
 				898E93541C8D56D100B34DAA /* UIImage+MultiFormat.m in Sources */,

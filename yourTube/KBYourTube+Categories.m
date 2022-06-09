@@ -78,7 +78,11 @@
 - (NSMutableDictionary *)convertObjectsToDictionaryRepresentations {
     NSMutableDictionary *_newDict = [NSMutableDictionary new];
     [self enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        _newDict[key] = [obj dictionaryRepresentation];
+        if ([obj isKindOfClass:NSArray.class]){
+            _newDict[key] = [obj convertArrayToDictionaries];
+        } else {
+            _newDict[key] = [obj dictionaryRepresentation];
+        }
     }];
     return _newDict;
 }
@@ -324,7 +328,7 @@
     __block NSMutableDictionary *dict = [NSMutableDictionary new];
     Class cls = NSClassFromString([self valueForKey:@"className"]); //this is how we hone in our the properties /just/ for our specific class rather than NSObject's properties.
     NSArray *props = [self propertiesForClass:cls];
-    //NSLog(@"props: %@ for %@", props, self);
+    //TLog(@"props: %@ for %@", props, self);
     dict[@"___className"] = [self valueForKey:@"className"];
     [props enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         //get the value of the particular property
@@ -333,7 +337,7 @@
             [dict setValue:val forKey:obj];
         } else { //not a string or a number
             if ([val isKindOfClass:NSArray.class]) {
-                //NSLog(@"processing: %@ for %@", obj, [self valueForKey:@"className"]);
+                //TLog(@"processing: %@ for %@", obj, [self valueForKey:@"className"]);
                 __block NSMutableArray *_newArray = [NSMutableArray new]; //new array will hold the dictionary reps of each item inside said array.
                 [val enumerateObjectsUsingBlock:^(id  _Nonnull arrayObj, NSUInteger arrayIdx, BOOL * _Nonnull arrayStop) {
                     [_newArray addObject:[arrayObj dictionaryRepresentation]]; //call ourselves again, but with the current subarray object.
@@ -344,7 +348,7 @@
             } else { //not an NSString, NSNumber of NSArray, try setting its dict rep for the key.
                 //NSString* class = NSStringFromClass(self.class);
                 if (val && ![[self valueForKey:@"className"] isEqualToString:@"NSObject"] && !([excluding containsObject:obj])) {
-                    //NSLog(@"processing: %@ for %@", val, obj);
+                    //TLog(@"processing: %@ for %@", val, obj);
                     [dict setValue:[val dictionaryRepresentation] forKey:obj];
                 }
             }
