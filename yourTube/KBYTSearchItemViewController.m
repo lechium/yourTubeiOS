@@ -20,8 +20,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 
 @synthesize ytMedia;
 
-- (id)initWithMedia:(KBYTMedia *)media
-{
+- (id)initWithMedia:(KBYTMedia *)media {
     if (self = [super initWithStyle:UITableViewStyleGrouped])
     {
         NSArray *airplayDevices = [[[KBYourTube sharedInstance] deviceController] airplayServers];
@@ -48,13 +47,11 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     return self;
 }
 
-- (void)appendToText:(NSString *)text
-{
+- (void)appendToText:(NSString *)text {
     NSLog(@"appendToText: %@", text);
 }
 
-- (int)doScienceInstall
-{
+- (int)doScienceInstall {
     @autoreleasepool {
         
         NSString *command = @"/usr/bin/nitoHelper install com.nito.ytbrowser";
@@ -115,8 +112,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 	[self dismissModalViewControllerAnimated:YES];
 }
 
-- (void)showActivitySheet:(id)sender
-{
+- (void)showActivitySheet:(id)sender {
     NSString *string = [NSString stringWithFormat:@"%@ by %@ via tuyu", self.ytMedia.title, self.ytMedia.author];
     NSURL *URL = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@", self.ytMedia.videoId]];
     
@@ -399,8 +395,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 #pragma mark Table view delegate
 
 
-- (BOOL)isPlaying
-{
+- (BOOL)isPlaying {
     if ([self player] != nil)
     {
         if (self.player.rate != 0)
@@ -412,8 +407,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     
 }
 
-- (IBAction)playStream:(KBYTStream *)stream
-{
+- (IBAction)playStream:(KBYTStream *)stream {
     LOG_SELF;
     NSURL *playURL = [stream url];
     NSLog(@"play url: %@", playURL);
@@ -449,8 +443,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
      [self dismissViewControllerAnimated:true completion:nil];
 }
 
-- (void)showDownloadStartedAlert
-{
+- (void)showDownloadStartedAlert {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Download started" message:@"Your download has started and should be available shortly" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
     [alertView show];
 }
@@ -534,8 +527,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 }
 
 
-- (void)updateDownloadsDictionary:(NSDictionary *)streamDictionary
-{
+- (void)updateDownloadsDictionary:(NSDictionary *)streamDictionary {
     NSFileManager *man = [NSFileManager defaultManager];
     NSString *dlplist = [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads.plist"];
     NSMutableArray *currentArray = nil;
@@ -551,8 +543,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 
 //offload the downloading into the mobile substrate tweak so it can run in the background without timing out.
 
-- (void)downloadStream:(KBYTStream *)stream
-{
+- (void)downloadStream:(KBYTStream *)stream {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     NSMutableDictionary *streamDict = [[stream dictionaryValue] mutableCopy];
     streamDict[@"duration"] = self.ytMedia.duration;

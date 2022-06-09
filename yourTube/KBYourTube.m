@@ -761,26 +761,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 #pragma mark convenience methods
 
-- (NSArray *)convertArrayToDictionaries:(NSArray *)inputArray {
-    __block NSMutableArray *_newArray = [NSMutableArray new];
-    [inputArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [_newArray addObject:[obj dictionaryRepresentation]];
-    }];
-    return _newArray;
-}
 
 - (void)cacheUserDetails {
     NSString *appSupport = [self appSupportFolder];
-    [appSupport stringByAppendingPathComponent:@"user.plist"];
-    NSURL *url = [NSURL fileURLWithPath:[appSupport stringByAppendingPathComponent:@"user.plist"]];
-    NSArray *newResults = [self convertArrayToDictionaries:self.userDetails[@"results"]];
-    NSArray *channels = [self convertArrayToDictionaries:self.userDetails[@"channels"]];
+    NSArray *newResults = [self.userDetails[@"results"] convertArrayToDictionaries];
+    NSArray *channels = [self.userDetails[@"channels"] convertArrayToDictionaries];
     NSMutableDictionary *_newDict = [self.userDetails mutableCopy];
     _newDict[@"results"] = newResults;
     _newDict[@"channels"] = channels;
-    NSError *error = nil;
-    [_newDict writeToURL:url error:&error];
-    NSLog(@"error: %@", error);
+    [_newDict writeToFile:[appSupport stringByAppendingPathComponent:@"user.plist"] atomically:true];
 }
 
 - (void)addChannelToUserDetails:(KBYTSearchResult *)channel {

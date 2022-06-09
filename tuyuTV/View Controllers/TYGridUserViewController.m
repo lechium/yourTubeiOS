@@ -269,6 +269,21 @@
     
 }
 
+- (void)newCacheDetails {
+    NSString *appSupport = [self appSupportFolder];
+    NSArray *featured = [self.featuredVideos convertArrayToDictionaries];
+    NSMutableDictionary *_newDict = [self.playlistDictionary mutableCopy];
+    NSArray *channels = [self.playlistDictionary[@"Channels"] convertArrayToDictionaries];
+    [_newDict removeObjectForKey:@"Channels"];
+    [_newDict removeObjectForKey:@"Channel History"];
+    [_newDict removeObjectForKey:@"Video History"];
+    _newDict = [_newDict convertObjectsToDictionaryRepresentations];
+    _newDict[@"Featured"] = featured;
+    _newDict[@"Channels"] = channels;
+    TLog(@"newDict keys: %@", [_newDict allKeys]);
+    [_newDict writeToFile:[appSupport stringByAppendingPathComponent:@"user2.plist"] atomically:true];
+}
+
 - (void)fetchUserDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock {
     NSMutableDictionary *playlists = [NSMutableDictionary new];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];

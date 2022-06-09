@@ -27,8 +27,7 @@
     
 }
 
-- (void)registerDownloadListener
-{
+- (void)registerDownloadListener {
     /*
      messages for download progress are relayed through current progress messages to track download percentage
     and download completion
@@ -49,8 +48,7 @@
  
  */
 
-- (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo
-{
+- (NSDictionary *)handleMessageName:(NSString *)name userInfo:(NSDictionary *)userInfo {
     //easiest way to get at the top/visible view controller without another property/ivar is to reference delegate
     yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
     /*
@@ -104,66 +102,56 @@
 }
 
 //kicks off the downloadlistener so we can receive messages about download progress
-- (void)startDownloadListener
-{
+- (void)startDownloadListener {
     [[self downloadCenter] runServerOnCurrentThread];
 }
 
 //shuts the listener down, if this isnt done with the App is inactive EVERYTHING goes haywire.
-- (void)stopDownloadListener
-{
+- (void)stopDownloadListener {
     [[self downloadCenter] stopServer];
 }
 
 //send a message to our tweak to add a new download
-- (void)addDownload:(NSDictionary *)streamDict
-{
+- (void)addDownload:(NSDictionary *)streamDict {
     LOG_SELF;
     [[self center] sendMessageName:[KBYTMessageIdentifier stringByAppendingPathExtension:KBYTAddDownloadMessage] userInfo:streamDict];
 }
 
 //send a message to cancel a download that is currently in progress
-- (void)stopDownload:(NSDictionary *)dictionaryMedia
-{
+- (void)stopDownload:(NSDictionary *)dictionaryMedia {
   
     [[self center] sendMessageName:[KBYTMessageIdentifier stringByAppendingPathExtension:KBYTStopDownloadMessage] userInfo:dictionaryMedia];
 }
 
 //the center for download progress / audio import completion
-- (CPDistributedMessagingCenter *)downloadCenter
-{
+- (CPDistributedMessagingCenter *)downloadCenter {
     return [CPDistributedMessagingCenter centerNamed:KBYTDownloadIdentifier];
 }
 
 
 //the center we use to send messages to start/stop downloads and airplay
-- (CPDistributedMessagingCenter *)center
-{
+- (CPDistributedMessagingCenter *)center {
     return [CPDistributedMessagingCenter centerNamed:KBYTMessageIdentifier];
 }
 
 //receives a URL in string format and a deviceIP to play the stream on via AirPlay
-- (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP
-{
+- (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP {
     NSDictionary *info = @{@"deviceIP": deviceIP, @"videoURL": stream};
     [[self center] sendMessageName:[KBYTMessageIdentifier stringByAppendingPathExtension:KBYTStartAirplayMessage] userInfo:info];
 }
 
 //pause current airplay stream
-- (void)pauseAirplay
-{
+- (void)pauseAirplay {
     [[self center] sendMessageName:[KBYTMessageIdentifier stringByAppendingPathExtension:KBYTPauseAirplayMessage] userInfo:nil];
 }
 
 //stop current airplay stream
-- (void)stopAirplay
-{
+- (void)stopAirplay {
     [[self center] sendMessageName:[KBYTMessageIdentifier stringByAppendingPathExtension:KBYTStopAirplayMessage] userInfo:nil];
 }
 
 //find out if there are any airplay streams currently active
-- (NSInteger)airplayStatus
-{
+- (NSInteger)airplayStatus {
     NSDictionary *response = [[self center] sendMessageAndReceiveReplyName:[KBYTMessageIdentifier stringByAppendingPathExtension:KBYTAirplayStateMessage] userInfo:nil];
     // NSLog(@"response: %@", response);
     return [[response valueForKey:@"playbackState"] integerValue];

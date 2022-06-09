@@ -25,15 +25,16 @@
 @end
 
 @interface NSDictionary (strings)
-
+- (NSMutableDictionary *)convertDictionaryToObjects;
 - (NSString *)stringValue;
 - (NSString *)JSONStringRepresentation;
+- (NSMutableDictionary *)convertObjectsToDictionaryRepresentations;
 @end
 
 @interface NSArray (strings)
-
+- (NSMutableArray *)convertArrayToObjects;
 - (NSString *)stringFromArray;
-
+- (NSMutableArray *)convertArrayToDictionaries;
 @end
 
 @interface NSString (TSSAdditions)

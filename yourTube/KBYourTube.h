@@ -225,12 +225,9 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 #import "Ono/ONOXMLDocument.h"
 
-@interface KBYourTube : NSObject
-{
+@interface KBYourTube : NSObject {
     NSInteger bestTag;
 }
-
-
 
 @property (nonatomic, strong) APDeviceController *deviceController;
 @property (nonatomic, strong) NSString *yttimestamp;
@@ -302,8 +299,10 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 + (NSDictionary *)formatFromTag:(NSInteger)tag;
 - (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP;
+- (void)addChannelToUserDetails:(KBYTSearchResult *)channel;
+#if TARGET_OS_IOS
 - (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP;
 - (void)pauseAirplay;
 - (NSInteger)airplayStatus;
-- (void)addChannelToUserDetails:(KBYTSearchResult *)channel;
+#endif
 @end

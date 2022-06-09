@@ -140,24 +140,12 @@
     return [[self appSupportFolder] stringByAppendingPathComponent:@"home.plist"];
 }
 
-- (NSArray *)featuredSnapshot {
-    __block NSMutableArray *newArray = [NSMutableArray new];
-    [self.featuredVideos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        id newObject = [obj dictionaryRepresentation];
-        [newArray addObject:newObject];
-    }];
-    return newArray;
-}
-
 - (void)snapshotResults {
-    NSMutableDictionary *_newDict = [NSMutableDictionary new];
-    [self.playlistDictionary enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        _newDict[key] = [obj dictionaryRepresentation];
-    }];
+    NSMutableDictionary *_newDict = [self.playlistDictionary convertObjectsToDictionaryRepresentations];
     //NSURL *url = [NSURL fileURLWithPath:[[self appSupportFolder] stringByAppendingPathComponent:@"home.plist"]];
     //NSError *error = nil;
     //[_newDict writeToURL:url error:&error];
-    NSArray *featured = [self featuredSnapshot];
+    NSArray *featured = [self.featuredVideos convertArrayToDictionaries];
     if (featured){
         _newDict[@"featured"] = featured;
     }

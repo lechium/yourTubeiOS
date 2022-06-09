@@ -61,6 +61,22 @@
 
 @implementation NSDictionary (strings)
 
+- (NSMutableDictionary *)convertDictionaryToObjects {
+    NSMutableDictionary *_newDict = [NSMutableDictionary new];
+    [self enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        _newDict[key] = [NSObject objectFromDictionary:obj];
+    }];
+    return _newDict;
+}
+
+- (NSMutableDictionary *)convertObjectsToDictionaryRepresentations {
+    NSMutableDictionary *_newDict = [NSMutableDictionary new];
+    [self enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        _newDict[key] = [obj dictionaryRepresentation];
+    }];
+    return _newDict;
+}
+
 - (NSString *)stringValue {
     NSString *error = nil;
     NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:NSPropertyListXMLFormat_v1_0 errorDescription:&error];
@@ -77,11 +93,28 @@
 
 @implementation NSArray (strings)
 
+- (NSMutableArray *)convertArrayToObjects {
+    __block NSMutableArray *_newArray = [NSMutableArray new];
+    [self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        id newOjb = [NSObject objectFromDictionary:obj];
+        [_newArray addObject:newOjb];
+    }];
+    return _newArray;
+}
+
 - (NSString *)stringFromArray {
     NSString *error = nil;
     NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:NSPropertyListXMLFormat_v1_0 errorDescription:&error];
     NSString *s=[[NSString alloc] initWithData:xmlData encoding: NSUTF8StringEncoding];
     return s;
+}
+
+- (NSMutableArray *)convertArrayToDictionaries {
+    __block NSMutableArray *_newArray = [NSMutableArray new];
+    [self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [_newArray addObject:[obj dictionaryRepresentation]];
+    }];
+    return _newArray;
 }
 
 @end
