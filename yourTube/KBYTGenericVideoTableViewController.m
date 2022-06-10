@@ -181,7 +181,6 @@
         
         
     }];
-    [alertController addAction:yesAction];
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel

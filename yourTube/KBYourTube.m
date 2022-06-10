@@ -11,6 +11,7 @@
 #import "Ono/ONOXMLDocument.h"
 #import "KBYourTube+Categories.h"
 #import <CoreMedia/CoreMedia.h>
+#import "MetadataPreviewView.h"
 #ifndef SHELF_EXT
 #import "TYAuthUserManager.h"
 #endif
@@ -760,6 +761,75 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 @synthesize ytkey, yttimestamp, deviceController, airplayIP, lastSearch, userDetails;
 
 #pragma mark convenience methods
+
+- (void)postHomeDataChangedNotification {
+    [[NSNotificationCenter defaultCenter] postNotificationName:KBYTHomeDataChangedNotification object:nil];
+}
+
+- (void)removeHomeSection:(MetaDataAsset *)asset {
+    NSMutableDictionary *dict = [[[NSDictionary alloc] initWithContentsOfFile:[self sectionsFile]] mutableCopy];
+    NSMutableArray *sections = [dict[@"sections"] mutableCopy];
+    NSDictionary *item = [[sections filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"channel == %@", asset.uniqueID]] firstObject];
+    TLog(@"found item: %@", item);
+    [sections removeObject:item];
+    dict[@"sections"] = sections;
+    [dict writeToFile:[self sectionsFile] atomically:true];
+    [self postHomeDataChangedNotification];
+    
+}
+
+- (void)setFeaturedResult:(KBYTSearchResult *)channel {
+    NSMutableDictionary *dict = [[[NSDictionary alloc] initWithContentsOfFile:[self sectionsFile]] mutableCopy];
+    dict[@"featured"] = channel.videoId;
+    [dict writeToFile:[self sectionsFile] atomically:true];
+    [self postHomeDataChangedNotification];
+}
+
+- (void)addHomeSection:(KBYTSearchResult *)channel {
+    NSMutableDictionary *dict = [[[NSDictionary alloc] initWithContentsOfFile:[self sectionsFile]] mutableCopy];
+    NSMutableArray *sections = [dict[@"sections"] mutableCopy];
+    NSDictionary *item = [[sections filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"channel == %@", channel.videoId]] firstObject];
+    if (item) {
+        TLog(@"already found!");
+        return;
+    }
+    NSDictionary *newItem = @{@"name": channel.title, @"channel": channel.videoId};
+    TLog(@"adding new item: %@", newItem);
+    [sections addObject:newItem];
+    dict[@"sections"] = sections;
+    TLog(@"sections: %@", sections);
+    [dict writeToFile:[self sectionsFile] atomically:true];
+    [self postHomeDataChangedNotification];
+}
+
+- (NSString *)sectionsFile {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"sections.plist"];
+}
+
+- (NSDictionary *)createDefaultSections {
+    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"Fashion & Beauty",@"YouTube",@"Virtual Reality"];
+    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYTFashionAndBeautyID, KBYTSpotlightChannelID, KBYT360ChannelID];
+    __block NSMutableDictionary *dict = [NSMutableDictionary new];
+    __block NSMutableArray *array = [NSMutableArray new];
+    [sectionArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        //dict[obj] = idArray[idx];
+        [array addObject:@{@"name": obj, @"channel": idArray[idx]}];
+    }];
+    dict[@"sections"] = array;
+    dict[@"featured"] = @"UCByOQJjav0CUDwxCk-jVNRQ";
+    return dict;
+}
+
+- (NSDictionary *)homeScreenData {
+    if ([FM fileExistsAtPath:[self sectionsFile]]) {
+        TLog(@"loading from saved file");
+        return [NSDictionary dictionaryWithContentsOfFile:[self sectionsFile]];
+    }
+    NSDictionary *def = [self createDefaultSections];
+    [def writeToFile:[self sectionsFile] atomically:true];
+    return def;
+}
+
 
 - (NSString *)userDetailsCache {
     return [[self appSupportFolder] stringByAppendingPathComponent:@"user.plist"];

@@ -59,6 +59,7 @@ static int headerTagOffset = 70;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
+    //TLog(@"frame: %@", NSStringFromCGRect(frame));
     if (self) {
         // Initialization code
         
@@ -105,6 +106,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     return self;
 }
 
+- (void)updateSectionLabels:(NSArray *)sectionLabels {
+    self.sectionLabels = sectionLabels;
+    [_backingSectionLabels removeAllObjects];
+    _backingSectionLabels = [sectionLabels mutableCopy];
+}
 /*
  
  The fundamental way this view works is there is a list of sectionLabels that we cycle through for
@@ -512,13 +518,31 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         });
         
     }];
+    [alertController addAction:yesAction];
+    UIAlertAction *homeScreenAction = [UIAlertAction actionWithTitle:@"Add to Home screen" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [[KBYourTube sharedInstance] addHomeSection:result];
+        });
+        
+    }];
+    [alertController addAction:homeScreenAction];
+    
+    UIAlertAction *featuredAction = [UIAlertAction actionWithTitle:@"Set as Featured channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [[KBYourTube sharedInstance] setFeaturedResult:result];
+        });
+        
+    }];
+    [alertController addAction:featuredAction];
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
                                    }];
-    [alertController addAction:yesAction];
+   
     [alertController addAction:cancelAction];
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -596,10 +620,13 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     _focusedCollectionView = cv.tag;
     //actually get the header
     TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
+    //TLog(@"header frame: %@", NSStringFromCGRect(header.frame));
+    //TLog(@"cell frame: %@", NSStringFromCGRect(focusedCell.frame));
+    BOOL intersect = (CGRectIntersectsRect(header.frame, focusedCell.frame));
     //always changed the focused headers text color to white
     [header.title setTextColor:[UIColor whiteColor]];
     //if we are the first object we want to shift the header up to prevent overlapping
-    if (indexPath.row == 0) {
+    if (indexPath.row == 0 || intersect) {
         [header updateTopOffset:-20];
         
     } else {

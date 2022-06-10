@@ -45,6 +45,7 @@
 @property (nonatomic, strong) NSString *fullImagePath; //optional
 @property (nonatomic, strong) NSString *defaultImageName; //optional
 @property (readwrite, assign) BOOL accessory;
+@property (nonatomic, strong) NSString *uniqueID;
 
 - (SEL)ourSelector;
 

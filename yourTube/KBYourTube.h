@@ -18,7 +18,7 @@
 #import "YTKBPlayerViewController.h"
 #import "KBYTQueuePlayer.h"
 
-@class KBYTSearchResult;
+@class KBYTSearchResult, MetaDataAsset;
 
 // Logging
 
@@ -235,6 +235,14 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *airplayIP;
 @property (nonatomic, strong) NSString *lastSearch;
 @property (nonatomic, strong) NSDictionary *userDetails; 
+
+- (void)postHomeDataChangedNotification;
+- (void)removeHomeSection:(MetaDataAsset *)asset;
+- (void)setFeaturedResult:(KBYTSearchResult *)channel;
+- (void)addHomeSection:(KBYTSearchResult *)channel;
+- (NSDictionary *)homeScreenData;
+- (NSDictionary *)createDefaultSections;
+- (NSString *)sectionsFile;
 
 - (BOOL)loadUserDetailsFromCache;
 - (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current;

@@ -256,35 +256,6 @@
 
 }
 
-- (NSString *)sectionsFile {
-    return [[self appSupportFolder] stringByAppendingPathComponent:@"sections.plist"];
-}
-
-- (NSDictionary *)createDefaultSections {
-    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"Fashion & Beauty",@"YouTube",@"Virtual Reality"];
-    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYTFashionAndBeautyID, KBYTSpotlightChannelID, KBYT360ChannelID];
-    __block NSMutableDictionary *dict = [NSMutableDictionary new];
-    __block NSMutableArray *array = [NSMutableArray new];
-    [sectionArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        //dict[obj] = idArray[idx];
-        [array addObject:@{@"name": obj, @"channel": idArray[idx]}];
-    }];
-    dict[@"sections"] = array;
-    dict[@"featured"] = @"UCByOQJjav0CUDwxCk-jVNRQ";
-    return dict;
-}
-
-- (NSDictionary *)homeScreenData {
-    if ([FM fileExistsAtPath:[self sectionsFile]]) {
-        TLog(@"loading from saved file");
-        return [NSDictionary dictionaryWithContentsOfFile:[self sectionsFile]];
-    }
-    NSDictionary *def = [self createDefaultSections];
-    [def writeToFile:[self sectionsFile] atomically:true];
-    return def;
-}
-
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
@@ -301,7 +272,7 @@
     NSMutableArray *viewControllers = [NSMutableArray new];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
-    TYHomeViewController *homeViewController = [[TYHomeViewController alloc] initWithData:[self homeScreenData]];//[[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
+    TYHomeViewController *homeViewController = [[TYHomeViewController alloc] initWithData:[[KBYourTube sharedInstance] homeScreenData]];//[[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
     UIViewController *searchViewController = [self packagedSearchController];
     //[viewControllers removeObjectAtIndex:0];
     [viewControllers insertObject:homeViewController atIndex:0];

@@ -251,13 +251,29 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         });
         
     }];
+    [alertController addAction:yesAction];
+    UIAlertAction *homeScreenAction = [UIAlertAction actionWithTitle:@"Add to Home screen" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [[KBYourTube sharedInstance] addHomeSection:result];
+        });
+        
+    }];
+    [alertController addAction:homeScreenAction];
+    UIAlertAction *featuredAction = [UIAlertAction actionWithTitle:@"Set as Featured channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [[KBYourTube sharedInstance] setFeaturedResult:result];
+        });
+        
+    }];
+    [alertController addAction:featuredAction];
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel
                                    handler:^(UIAlertAction *action)
                                    {
     }];
-    [alertController addAction:yesAction];
     [alertController addAction:cancelAction];
     [self presentViewController:alertController animated:YES completion:nil];
 }

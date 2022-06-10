@@ -8,8 +8,13 @@
 
 #import "TYHomeViewController.h"
 
+@interface TYBaseGridViewController (private)
+- (void)setupViews;
+@end
+
 @interface TYHomeViewController () {
     BOOL firstLoad;
+    BOOL _homeDataChanged;
     NSString *featuredId;
 }
 @end
@@ -29,6 +34,20 @@
     return self;
 }
 
+- (void)syncWithCachedData {
+    NSDictionary *data = [NSDictionary dictionaryWithContentsOfFile:[[KBYourTube sharedInstance] sectionsFile]];
+    __block NSMutableArray *sections = [NSMutableArray new];
+    __block NSMutableArray *channels = [NSMutableArray new];
+    [data[@"sections"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [channels addObject:obj[@"channel"]];
+        [sections addObject:obj[@"name"]];
+    }];
+    featuredId = data[@"featured"];
+    [self updateSectionLabels:sections];
+    self.channelIDs = channels;
+    [self.scrollView removeAllSubviews];
+    [self setupViews];
+}
 
 
 - (id)initWithSections:(NSArray *)sections andChannelIDs:(NSArray *)channelIds {
@@ -39,20 +58,46 @@
     return self;
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    LOG_CMD;
+    [super viewDidAppear:animated];
+    if (_homeDataChanged) {
+        [self refreshDataWithProgress:true loadingFromSnapshot:false];
+        _homeDataChanged = false;
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     //[self refreshDataWithProgress:false];
     firstLoad = true;
     self.title = @"tuyu";
+    _homeDataChanged = false;
+    [self listenForHomeNotification];
+}
+
+- (void)listenForHomeNotification {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(homeDataChanged:) name:KBYTHomeDataChangedNotification object:nil];
+}
+
+- (void)homeDataChanged:(NSNotification *)n {
+    _homeDataChanged = true;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self syncWithCachedData];
+        if ([self topViewController] == self) {
+            [self refreshDataWithProgress:true loadingFromSnapshot:false];
+            _homeDataChanged = false;
+        }
+    });
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (firstLoad){
-        [self refreshDataWithProgress:true];
+        [self refreshDataWithProgress:true loadingFromSnapshot:true];
         firstLoad = false;
     } else {
-        [self refreshDataWithProgress:false];
+        [self refreshDataWithProgress:false loadingFromSnapshot:true];
     }
 }
 
@@ -90,10 +135,12 @@
 }
  
 
-- (void)refreshDataWithProgress:(BOOL)progress {
+- (void)refreshDataWithProgress:(BOOL)progress loadingFromSnapshot:(BOOL)snapshotLoading {
     LOG_CMD;
-    if ([self loadFromSnapshot]) {
-        progress = false;
+    if (snapshotLoading) {
+        if ([self loadFromSnapshot]) {
+            progress = false;
+        }
     }
     if (progress == true) {
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];

@@ -152,18 +152,15 @@
     }
 }
 
-- (NSString *)sectionsFile {
-    return [[self appSupportFolder] stringByAppendingPathComponent:@"sections.plist"];
-}
-
 - (void)showManageChannelsView {
     
-    NSDictionary *data =[NSDictionary dictionaryWithContentsOfFile:[self sectionsFile]];
+    NSDictionary *data =[NSDictionary dictionaryWithContentsOfFile:[[KBYourTube sharedInstance] sectionsFile]];
     __block NSMutableArray *sections = [NSMutableArray new];
     [data[@"sections"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         MetaDataAsset *asset = [MetaDataAsset new];
         asset.name = obj[@"name"];
         asset.imagePath = @"YTPlaceholder";
+        asset.uniqueID = obj[@"channel"];
         [sections addObject:asset];
     }];
     TYManageFeaturedViewController *featuredVC = [[TYManageFeaturedViewController alloc] initWithNames:sections];

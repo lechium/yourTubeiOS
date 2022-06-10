@@ -6,6 +6,7 @@
 //
 
 #import "TYManageFeaturedViewController.h"
+#import "KBYourTube.h"
 
 @interface TYManageFeaturedViewController ()
 
@@ -36,9 +37,21 @@
     return UITableViewCellEditingStyleDelete;
 }
 
-- (void)refreshList {
-    [self.tableView reloadData];
+- (void)deleteItem:(MetaDataAsset *)asset {
+    TLog(@"delete item: %@ id: %@", asset.name, asset.uniqueID);
+    NSMutableArray *newItems = [self.items mutableCopy];
+    [newItems removeObject:asset];
+    TLog(@"newItems: %@", newItems);
+    self.items = newItems;
+    [[KBYourTube sharedInstance] removeHomeSection:asset];
 }
+
+- (void)refreshList {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
+    });
+}
+
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     MetaDataAsset  *mda = self.items[indexPath.row];
@@ -46,9 +59,8 @@
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Delete Item?" message:messageString preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *action = [UIAlertAction actionWithTitle:@"Delete" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        
+        [self deleteItem:mda];
         [self refreshList];
-        //DLog(@"do it");
     }];
     
     UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];

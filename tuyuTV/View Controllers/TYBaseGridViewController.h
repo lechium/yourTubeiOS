@@ -52,6 +52,7 @@
 @property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 @property (nonatomic, strong) NSLayoutConstraint *featuredHeightConstraint;
 
+- (void)updateSectionLabels:(NSArray *)sectionLabels;
 - (KBYTChannel *)channelForCollectionView:(UICollectionView *)theView;
 - (KBYTSearchResult *)searchResultFromFocusedCell;
 - (KBYTChannelHeaderView *)headerview;

@@ -38,6 +38,8 @@ static NSString *const KBYTStopDownloadMessage =  @"stopDownload";
 static NSString *const KBYTDownloadProgressMessage    = @"currentProgress";
 static NSString *const KBYTAudioImportFinishedMessage = @"audioImported";
 
+static NSString * const KBYTHomeDataChangedNotification = @"KBYTHomeDataChangedNotification";
+
 #define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
 #define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
