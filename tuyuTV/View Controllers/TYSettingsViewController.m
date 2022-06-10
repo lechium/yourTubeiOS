@@ -136,6 +136,11 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     LOG_SELF;
+    TLog(@"ip: %@", indexPath);
+    if (indexPath.section == 1){
+        [self doScience];
+        return;
+    }
     switch (indexPath.row) {
         case 0:
             [self toggleSignedIn];
@@ -152,6 +157,10 @@
     }
 }
 
+- (void)doScience {
+    LOG_CMD;
+}
+
 - (void)showManageChannelsView {
     
     NSDictionary *data =[NSDictionary dictionaryWithContentsOfFile:[[KBYourTube sharedInstance] sectionsFile]];
@@ -165,10 +174,19 @@
     }];
     TYManageFeaturedViewController *featuredVC = [[TYManageFeaturedViewController alloc] initWithNames:sections];
     featuredVC.defaultImageName = @"YTPlaceholder";
+    MetaDataAsset *extraItemOne = [MetaDataAsset new];
+    extraItemOne.name = @"Restore default settings";
+    extraItemOne.selectorName = @"restoreDefaultSettings";
+    extraItemOne.accessory = false;
+    featuredVC.extraItems = @[extraItemOne];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:featuredVC];
     [self presentViewController:navController animated:true completion:nil];
     
     //[self.navigationController pushViewController:featuredVC animated:true];
+}
+
+- (void)restoreDefaultSettings {
+    LOG_CMD;
 }
 
 - (void)handleToggle {

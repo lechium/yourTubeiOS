@@ -26,6 +26,18 @@
     // Do any additional setup after loading the view.
 }
 
+
+- (void)restoreDefaultSettings {
+    LOG_CMD;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 1) {
+        TLog(@"all you need is one");
+        [self restoreDefaultSettings];
+    }
+}
+
 - (void)editSettings:(id)sender {
     [self.tableView setEditing:!self.tableView.editing animated:true];
 }

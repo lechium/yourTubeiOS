@@ -355,11 +355,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.defaultImageName = @"folder";
+    self.defaultImageName = @"YTPlaceholder";
     //self.tableView.remembersLastFocusedIndexPath = true;
     [self registerObservers];
-    
-    
 }
 
 
@@ -372,7 +370,9 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    
+    if (_extraItems.count > 0) {
+        return 2;
+    }
     return 1;
 }
 
@@ -385,7 +385,12 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    return self.items.count;
+    if (section == 0){
+        return self.items.count;
+    } else if (section == 1) {
+        return self.extraItems.count;
+    }
+    return 0;
 }
 
 - (void)focusedCell:(SettingsTableViewCell *)focusedCell
@@ -432,7 +437,12 @@
 {
     
     self.savedIndexPath = indexPath;
-    MetaDataAsset *currentAsset = self.items[indexPath.row];
+    MetaDataAsset *currentAsset = nil;
+    if (indexPath.row == 0){
+        currentAsset = self.items[indexPath.row];
+    } else {
+        currentAsset = self.extraItems[indexPath.row];
+    }
     SEL assetSelector = [currentAsset ourSelector];
     
     if ([self respondsToSelector:assetSelector]) {
@@ -442,7 +452,7 @@
         [self performSelector:assetSelector];
 #pragma clang diagnostic pop
     } else {
-        NSLog(@"doesnt respond to selector: %@", currentAsset.selectorName);
+        TLog(@"%@ %@ doesnt respond to selector: %@", self, currentAsset, currentAsset.selectorName);
     }
     
     
@@ -472,11 +482,15 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     SettingsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SettingsCell" forIndexPath:indexPath];
-    
     // Configure the cell...
     
-    MetaDataAsset *currentAsset = self.items[indexPath.row];
-
+    MetaDataAsset *currentAsset = nil;
+    if (indexPath.section == 1) {
+        TLog(@"extra items instead!");
+        currentAsset = self.extraItems[indexPath.row];
+    } else {
+        currentAsset = self.items[indexPath.row];
+    }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.textLabel.text = currentAsset.name;
     cell.detailTextLabel.text = currentAsset.detail;
