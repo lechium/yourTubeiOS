@@ -9,7 +9,6 @@
 #import "TYSettingsViewController.h"
 #import "KBYourTube.h"
 #import "KBYourTube+Categories.h"
-#import "WebViewController.h"
 #import "AppDelegate.h"
 #import "TYAuthUserManager.h"
 #import "AuthViewController.h"
@@ -49,10 +48,6 @@
     
     MetaDataAsset *search = [[MetaDataAsset alloc] initWithDictionary:searchSettings];
     
-    MetaDataAsset *updatePermissions = [MetaDataAsset new];
-    updatePermissions.name = @"Update permissions";
-    updatePermissions.imagePath = @"YTPlaceholder.png";
-    updatePermissions.assetDescription = @"Update authentication permissions so it's possible to add videos to playlists and subscribe to channels";
      */
     svc.items = @[asset, manageFeaturedChannels];
     svc.title = @"settings";
@@ -83,8 +78,6 @@
         [self showSignOutAlert];
     } else {
         [self storeAuth];
-        //WebViewController *wvc = [TYAuthUserManager OAuthWebViewController];
-        //[self.navigationController pushViewController:wvc animated:true];
     }
 }
 
@@ -148,7 +141,6 @@
             
         case 1:
             [self showManageChannelsView];
-            //[self updatePermissions];
             //[super tableView:tableView didSelectRowAtIndexPath:indexPath];
             //[self handleToggle];
             break;
@@ -196,9 +188,5 @@
     [UD setValue:detail forKey:@"filterType"];
 }
 
-- (void)updatePermissions {
-    WebViewController *wvc = [TYAuthUserManager OAuthWebViewController];
-    [self.navigationController pushViewController:wvc animated:true];
-}
 
 @end

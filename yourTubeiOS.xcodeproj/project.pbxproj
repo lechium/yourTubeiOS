@@ -27,6 +27,17 @@
 		324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 324693A82841EE8A002D91F0 /* AuthViewController.m */; };
 		324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */; };
 		324CDA4A1FC24B4F003B3A0F /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93611C8D74B300B34DAA /* WebViewController.m */; };
+		3258A2912853D270009BBDB3 /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12A1F424805006F24B3 /* AFSecurityPolicy.m */; };
+		3258A2922853D270009BBDB3 /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12C1F424805006F24B3 /* AFURLRequestSerialization.m */; };
+		3258A2932853D270009BBDB3 /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1301F424805006F24B3 /* AFURLSessionManager.m */; };
+		3258A2942853D270009BBDB3 /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12E1F424805006F24B3 /* AFURLResponseSerialization.m */; };
+		3258A2952853D270009BBDB3 /* AFgzipRequestSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1231F424805006F24B3 /* AFgzipRequestSerializer.m */; };
+		3258A2962853D270009BBDB3 /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1281F424805006F24B3 /* AFNetworkReachabilityManager.m */; };
+		3258A2972853D270009BBDB3 /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1251F424805006F24B3 /* AFHTTPSessionManager.m */; };
+		3258A29A2853D277009BBDB3 /* AFOAuth2Manager.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1351F424805006F24B3 /* AFOAuth2Manager.m */; };
+		3258A29B2853D277009BBDB3 /* AFHTTPRequestSerializer+OAuth2.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1331F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m */; };
+		3258A29C2853D277009BBDB3 /* AFOAuthCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1371F424805006F24B3 /* AFOAuthCredential.m */; };
+		3258A29F2853D28A009BBDB3 /* TYAuthUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */; };
 		328E33801E4F868C00C544ED /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 328E337F1E4F868C00C544ED /* TVServices.framework */; };
 		328E33841E4F868C00C544ED /* ServiceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 328E33831E4F868C00C544ED /* ServiceProvider.m */; };
 		328E33881E4F868C00C544ED /* tuyuShelf.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 328E337E1E4F868C00C544ED /* tuyuShelf.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -275,7 +286,6 @@
 		898E935B1C8D5B4F00B34DAA /* MarqueeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8926691A1C88B1A900082B31 /* MarqueeLabel.m */; };
 		898E935E1C8D62B000B34DAA /* YTPlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 898E935D1C8D62B000B34DAA /* YTPlaceholder.png */; };
 		898E935F1C8D63C900B34DAA /* YTKBPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A83A0E1C877B6900E1987E /* YTKBPlayerViewController.m */; };
-		898E93621C8D74B300B34DAA /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93611C8D74B300B34DAA /* WebViewController.m */; };
 		898E93691C8D910500B34DAA /* KBYTDownloadCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 899F73E91C6BED2A0088B434 /* KBYTDownloadCell.m */; };
 		898E936A1C8D911700B34DAA /* JGProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A2C3B1C6A8CB1003724D6 /* JGProgressView.m */; };
 		898E936E1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E936D1C8E17CF00B34DAA /* KBYTSearchResultsViewController.m */; };
@@ -1972,11 +1982,22 @@
 				3204FFFE1E4F8C8400D3B8B0 /* KBYourTube+Categories.m in Sources */,
 				320400011E4F8CA400D3B8B0 /* APElement.m in Sources */,
 				3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */,
+				3258A29F2853D28A009BBDB3 /* TYAuthUserManager.m in Sources */,
 				328E33841E4F868C00C544ED /* ServiceProvider.m in Sources */,
 				320400061E4F8E4800D3B8B0 /* APDeviceController.m in Sources */,
+				3258A29C2853D277009BBDB3 /* AFOAuthCredential.m in Sources */,
+				3258A2942853D270009BBDB3 /* AFURLResponseSerialization.m in Sources */,
 				3204FFFD1E4F8C8200D3B8B0 /* KBYourTube.m in Sources */,
+				3258A2972853D270009BBDB3 /* AFHTTPSessionManager.m in Sources */,
+				3258A29B2853D277009BBDB3 /* AFHTTPRequestSerializer+OAuth2.m in Sources */,
+				3258A2962853D270009BBDB3 /* AFNetworkReachabilityManager.m in Sources */,
+				3258A2912853D270009BBDB3 /* AFSecurityPolicy.m in Sources */,
+				3258A2922853D270009BBDB3 /* AFURLRequestSerialization.m in Sources */,
 				320400021E4F8CA600D3B8B0 /* ONOXMLDocument.m in Sources */,
+				3258A2932853D270009BBDB3 /* AFURLSessionManager.m in Sources */,
+				3258A29A2853D277009BBDB3 /* AFOAuth2Manager.m in Sources */,
 				320400071E4F8E5700D3B8B0 /* Reachability.m in Sources */,
+				3258A2952853D270009BBDB3 /* AFgzipRequestSerializer.m in Sources */,
 				320400001E4F8CA100D3B8B0 /* APDocument.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2043,7 +2064,6 @@
 				898E93501C8D56D100B34DAA /* SDWebImageManager.m in Sources */,
 				898E93551C8D56D100B34DAA /* UIImage+WebP.m in Sources */,
 				892A3F4A1CF7AD3F00EA0247 /* TYAuthUserManager.m in Sources */,
-				898E93621C8D74B300B34DAA /* WebViewController.m in Sources */,
 				898E930F1C8D568B00B34DAA /* APDeviceController.m in Sources */,
 				898E93101C8D569100B34DAA /* Reachability.m in Sources */,
 				898E93031C8D564100B34DAA /* APDocument.m in Sources */,

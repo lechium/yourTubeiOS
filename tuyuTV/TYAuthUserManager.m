@@ -31,6 +31,7 @@
 
 @implementation TYAuthUserManager
 
+/*
 #if TARGET_OS_TV
 + (WebViewController *)ytAuthWebViewController {
     WebViewController *webView = [[WebViewController alloc] initWithURL:[self ytAuthURL]];
@@ -46,7 +47,7 @@
 }
 
 #endif
-
+*/
 #if TARGET_OS_IOS
 + (KBYTWebViewController *)ytAuthWebViewController {
     KBYTWebViewController *webView = [[KBYTWebViewController alloc] initWithURL:[self ytAuthURL] mode:TYWebViewControllerAuthMode ];

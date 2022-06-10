@@ -8,10 +8,11 @@
 
 #import "AFNetworking.h"
 #import <Foundation/Foundation.h>
+/*
 #if TARGET_OS_TV
 #import "WebViewController.h"
 #endif
-
+*/
 #if TARGET_OS_IOS
 #import "KBYTWebViewController.h"
 #endif
@@ -40,11 +41,12 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 - (void)createAndStartWebserverWithCompletion:(void(^)(BOOL success))block;
 + (KBYTWebViewController *)OAuthWebViewController;
 #endif
-
+/*
 #if TARGET_OS_TV
 + (WebViewController *)ytAuthWebViewController;
 + (WebViewController *)OAuthWebViewController;
 #endif
+ */
 - (void)getPlaylistsWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *playlists, NSString *error))completionBlock;
 - (void)getChannelListWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock;
 + (id)sharedInstance;
