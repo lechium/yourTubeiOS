@@ -10,8 +10,6 @@
 #import "PureLayout.h"
 #import "UIImageView+WebCache.h"
 #import "KBYourTube+Categories.h"
-//#import "UIViewController+Additions.h"
-//#import "NSObject+Additions.h"
 #import "UIView+RecursiveFind.h"
 
 @interface UIWindow (AutoLayoutDebug)
@@ -30,8 +28,7 @@
     return self;
 }
 
-- (id)initWithDictionary:(NSDictionary *)dict
-{
+- (id)initWithDictionary:(NSDictionary *)dict {
     self = [self init];
     NSMutableDictionary *mutableDict = [dict mutableCopy];
     name = mutableDict[@"name"];
@@ -56,8 +53,7 @@
     return self;
 }
 
-- (SEL)ourSelector
-{
+- (SEL)ourSelector {
     return NSSelectorFromString(self.selectorName);
 }
 
@@ -67,16 +63,14 @@
 
 @synthesize value, label;
 
-- (id)initForAutoLayout
-{
+- (id)initForAutoLayout {
     self = [super initForAutoLayout];
     [self addSubview:[self labelLayer]];
     [self addSubview:[self valueLayer]];
     return self;
 }
 
-- (id)initWithLabel:(id)theLabel value:(id)theValue minimumLabelWidth:(CGFloat)width
-{
+- (id)initWithLabel:(id)theLabel value:(id)theValue minimumLabelWidth:(CGFloat)width {
     self = [self initForAutoLayout];
     _minLabelWidth = width;
     self.label = [[theLabel capitalizedString] stringByAppendingString:@":"];
@@ -86,27 +80,17 @@
     return self;
 }
 
-- (void)updateConstraints
-{
-    //CGRectMake(4, 8, 798, 21) label
-    //CGRectMake(93, 154, 705, 21)
+- (void)updateConstraints {
     [NSLayoutConstraint deactivateConstraints:self.constraints];
-    
-    //   [self autoCenterInSuperview];
     [self.labelLayer autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:95];
-    //[self.labelLayer autoSetDimension:ALDimensionHeight toSize:21];
     [self.labelLayer autoSetDimensionsToSize:CGSizeMake(_minLabelWidth, 21)];
     [self.valueLayer autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.labelLayer withOffset:15];
-    //[self autoPinEdgesToSuperviewEdges];
     [self.valueLayer autoSetDimension:ALDimensionHeight toSize:21];
-    //[self.valueLayer autoSetDimensionsToSize:CGSizeMake(705, 21)];
     [super updateConstraints];
 }
 
-- (UILabel *)labelLayer
-{
-    if (!_labelLayer)
-    {
+- (UILabel *)labelLayer {
+    if (!_labelLayer) {
         _labelLayer = [[UILabel alloc] initForAutoLayout];
         [_labelLayer setFont:[UIFont boldSystemFontOfSize:17]];
         _labelLayer.textAlignment = NSTextAlignmentRight;
@@ -115,16 +99,12 @@
     return _labelLayer;
 }
 
-
-- (UILabel *)valueLayer
-{
-    if (!_valueLayer)
-    {
+- (UILabel *)valueLayer {
+    if (!_valueLayer) {
         _valueLayer = [[UILabel alloc] initForAutoLayout];
         [_valueLayer setFont:[UIFont systemFontOfSize:17]];
         //if (self.backgroundColor == [UIColor blackColor])
-        if ([self darkMode])
-        {
+        if ([self darkMode]) {
             [_valueLayer setTextColor:[UIColor whiteColor]];
         } else {
             [_valueLayer setTextColor:[UIColor blackColor]];
@@ -133,51 +113,41 @@
     return _valueLayer;
 }
 
-
 @end
 
 @implementation MetadataLinesView
 
 @synthesize lineArray, values, labels;
 
-- (void)layoutSubviews
-{
+- (void)layoutSubviews {
     [super layoutSubviews];
     //CGFloat startingY = self.superview.frame.origin.y + self.superview.subviews.lastObject.frame.origin.y + 25;
     CGFloat startingY = 10;
     NSInteger currentIndex = 0;
-    for (MetadataLineView *lineView in self.subviews)
-    {
+    for (MetadataLineView *lineView in self.subviews) {
         CGRect currentFrame = [lineView frame];
         //currentFrame.origin.x = 4;
         currentFrame.origin.y = startingY;
         [lineView setFrame:currentFrame];
         startingY+=21;
         currentIndex++;
-        if (currentIndex == self.subviews.count-1)
-        {
+        if (currentIndex == self.subviews.count-1) {
             startingY+=15;
         }
         
         UIColor *valueColor = [UIColor blackColor];
         
-        //if (self.superview.superview.superview.backgroundColor == [UIColor blackColor])
-        if ([self darkMode])
-        {
+        if ([self darkMode]) {
             valueColor = [UIColor whiteColor];
             //NSLog(@"is black bg");
         }
-        if ([lineView respondsToSelector:@selector(valueLayer)])
-        {
+        if ([lineView respondsToSelector:@selector(valueLayer)]) {
             [lineView.valueLayer setTextColor:valueColor];
         }
        
     }
-    //[self printRecursiveDescription];
 }
-
-- (id)initWithMetadata:(id)theMeta withLabels:(id)theLabels
-{
+- (id)initWithMetadata:(id)theMeta withLabels:(id)theLabels {
     
     self = [super initForAutoLayout];
     self.values = theMeta;
@@ -186,8 +156,7 @@
     return self;
 }
 
-- (void)_layoutLines
-{
+- (void)_layoutLines {
     [self removeAllSubviews];
     
     int i = 0;
@@ -216,11 +185,9 @@
     UIView *theView = [[UIView alloc] initWithFrame:CGRectMake(-4, 0, 806, 1)];
     [theView setBackgroundColor:[UIColor darkGrayColor]];
     [self addSubview:theView];
-    
 }
 
-- (void)setMetadata:(MetaDataAsset *)metadata
-{
+- (void)setMetadata:(MetaDataAsset *)metadata {
     NSMutableArray *valueArray = [NSMutableArray new];
     NSMutableArray *keyArray = [NSMutableArray new];
     NSString *currentKey = nil;
@@ -233,39 +200,17 @@
     self.values = valueArray;
     self.labels = keyArray;
     [self _layoutLines];
-    // [self updateConstraintsIfNeeded];
 }
 
-- (void)setMetadata:(id)metadata withLabels:(id)theLabels frameWidth:(float)width maxHeight:(float)height
-{
+- (void)setMetadata:(id)metadata withLabels:(id)theLabels frameWidth:(float)width maxHeight:(float)height {
     self.values = metadata;
     self.labels = theLabels;
     _frameWidth = width;
     _lineHeight = height / values.count;
     [self _layoutLines];
-    // [self updateConstraintsIfNeeded];
 }
-//
-//- (void)updateConstraints
-//{
-//
-//    //[NSLayoutConstraint deactivateConstraints:self.constraints];
-//    [super updateConstraints];
-//
-//   /*
-//    for (MetadataLineView *lineView in lineArray)
-//    {
-//        //CGRectMake(4, 8, 798, 21) label
-//        //CGRectMake(93, 154, 705, 21)
-//    }
-//    */
-//
-//}
-
 
 @end
-
-//self.metadataView = [[MetadataView alloc] initWithFrame:CGRectMake(100, 809, 806, 265)];
 
 @interface MetadataPreviewView ()
 
@@ -275,10 +220,7 @@
 
 @implementation MetadataPreviewView
 
-
-
-- (BOOL)hasMeta
-{
+- (BOOL)hasMeta {
     if (self.metadataAsset != nil)
     {
         return true;
@@ -286,8 +228,7 @@
     return false;
 }
 
-- (id)initWithCoverArtNamed:(NSString *)coverArt
-{
+- (id)initWithCoverArtNamed:(NSString *)coverArt {
     self = [self initForAutoLayout];
     self.coverArt = [UIImage imageNamed:coverArt];
     self.imageView.image = self.coverArt;
@@ -295,9 +236,7 @@
     return self;
 }
 
-
-- (id)initWithMetadata:(NSDictionary *)meta
-{
+- (id)initWithMetadata:(NSDictionary *)meta {
     self = [self initForAutoLayout];
     // metadataDict = meta;
     self.metadataAsset = [[MetaDataAsset alloc] initWithDictionary:meta];
@@ -307,8 +246,7 @@
     return self;
 }
 
-- (id)initForAutoLayout
-{
+- (id)initForAutoLayout {
     
     self = [super initForAutoLayout];
     [self addSubview:self.imageView];
@@ -318,24 +256,16 @@
     return self;
 }
 
-
-- (MetadataLinesView *)linesView
-{
-    
-    if (!_linesView)
-    {
-        
+- (MetadataLinesView *)linesView {
+    if (!_linesView) {
         _linesView = [[MetadataLinesView alloc] initForAutoLayout];
-        
         _linesView.autoresizesSubviews = true;
     }
     return _linesView;
 }
 
-- (UIView *)metaContainerView
-{
-    if (!_metaContainerView)
-    {
+- (UIView *)metaContainerView {
+    if (!_metaContainerView) {
         _metaContainerView = [UIView newAutoLayoutView];
         [_metaContainerView addSubview:self.topDividerView];
         [_metaContainerView addSubview:self.middleDividerView];
@@ -348,8 +278,7 @@
     return _metaContainerView;
 }
 
-- (UIView *)topDividerView
-{
+- (UIView *)topDividerView {
     if (!_topDividerView) {
         _topDividerView = [UIView newAutoLayoutView];
         _topDividerView.backgroundColor = [UIColor darkGrayColor];
@@ -357,8 +286,7 @@
     return _topDividerView;
 }
 
-- (UIView *)bottomDividerView
-{
+- (UIView *)bottomDividerView {
     if (!_bottomDividerView) {
         _bottomDividerView = [UIView newAutoLayoutView];
         _bottomDividerView.backgroundColor = [UIColor redColor];
@@ -366,9 +294,7 @@
     return _bottomDividerView;
 }
 
-
-- (UIView *)middleDividerView
-{
+- (UIView *)middleDividerView {
     if (!_middleDividerView) {
         _middleDividerView = [UIView newAutoLayoutView];
         _middleDividerView.backgroundColor = [UIColor darkGrayColor];
@@ -376,8 +302,7 @@
     return _middleDividerView;
 }
 
-- (UILabel *)titleLabel
-{
+- (UILabel *)titleLabel {
     if (!_titleLabel) {
         _titleLabel = [UILabel newAutoLayoutView];
         _titleLabel.font = [UIFont boldSystemFontOfSize:17];
@@ -385,8 +310,7 @@
     return _titleLabel;
 }
 
-- (UILabel *)descriptionLabel
-{
+- (UILabel *)descriptionLabel {
     if (!_descriptionLabel) {
         _descriptionLabel = [UILabel newAutoLayoutView];
         _descriptionLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -396,9 +320,7 @@
     return _descriptionLabel;
 }
 
-
-- (UIImageView *)imageView
-{
+- (UIImageView *)imageView {
     if (!_imageView) {
         _imageView = [UIImageView newAutoLayoutView];
         _imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -407,40 +329,21 @@
     return _imageView;
 }
 
-- (void)layoutSubviews
-{
+- (void)layoutSubviews {
     [super layoutSubviews];
-    if ([[[self.metadataAsset metaDictionary] allKeys] count] == 0)
-    {
+    if ([[[self.metadataAsset metaDictionary] allKeys] count] == 0) {
         self.linesView.alpha = 0;
     } else {
         self.linesView.alpha = 1;
     }
-    
-    if (self.metadataAsset.assetDescription.length == 0 && ([[[self.metadataAsset metaDictionary] allKeys] count] == 0))
-    {
+    if (self.metadataAsset.assetDescription.length == 0 && ([[[self.metadataAsset metaDictionary] allKeys] count] == 0)) {
         self.topDividerView.alpha = 0;
     } else {
         self.topDividerView.alpha = 1;
     }
-    // NSString *recursiveDesc = [self performSelector:@selector(recursiveDescription)];
-    //NSLog(@"%@", recursiveDesc);
-    
-    //NSString *autolayoutTrace = [[UIWindow keyWindow] _autolayoutTrace];
-    //NSLog(@"alt: %@", autolayoutTrace);
 }
 
-
-
-- (void)updateConstraints
-{
-    //[NSLayoutConstraint deactivateConstraints:self.constraints];
-    
-    // if (!self.didSetupConstraints)
-    //{
-    //NSLog(@"superview frame: %@", NSStringFromCGRect(self.superview.frame));
-    //[self autoCenterInSuperview];
-    //[self autoPinEdgesToSuperviewEdges];
+- (void)updateConstraints {
     [self.imageView autoSetDimensionsToSize:CGSizeMake(512, 512)];
     
     self.centeredImageConstraints = [NSLayoutConstraint autoCreateConstraintsWithoutInstalling:^{
@@ -454,8 +357,7 @@
         [self.imageView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.superview withOffset:self.topOffset];
     }];
     
-    if (!self.hasMeta)
-    {
+    if (!self.hasMeta) {
         [self.centeredImageConstraints autoInstallConstraints];
         
     } else {
@@ -464,14 +366,9 @@
         [self.metaContainerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.imageView withOffset:10];
         [self.metaContainerView autoSetDimensionsToSize:CGSizeMake(806, 265)];
         [self.metaContainerView autoAlignAxisToSuperviewAxis:ALAxisVertical];
-        // [self.metaContainerView setBackgroundColor:[UIColor redColor]];
-        //UIView *lineViewGuide = nil;
-        
         [self.titleLabel autoSetDimensionsToSize:CGSizeMake(504, 21)];
         [self.titleLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:4];
         [self.titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:8];
-        
-        //self.titleLabel.text = self.metadataDict[@"Name"];
         self.titleLabel.text = self.metadataAsset.name;
         
         [self.topDividerView autoSetDimensionsToSize:CGSizeMake(806, 1)];
@@ -490,107 +387,46 @@
             [self.descriptionLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.topDividerView withOffset:15];
             [self.descriptionLabel autoSetDimension:ALDimensionWidth toSize:798];
             self.descriptionLabel.text = self.metadataAsset.assetDescription;
-            
             [self.middleDividerView autoSetDimensionsToSize:CGSizeMake(806, 1)];
             [self.middleDividerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
             [self.middleDividerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
             [self.middleDividerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.descriptionLabel withOffset:15];
-            
             [self.linesView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.middleDividerView withOffset:5];
-            
-            
-            
         }];
         
-        if ([self.metadataAsset.assetDescription length] > 0)
-        {
-            //[self.noDescriptionConstraints autoRemoveConstraints];
+        if ([self.metadataAsset.assetDescription length] > 0) {
             [self.descriptionConstraints autoInstallConstraints];
-            
         } else {
-        
             [self.noDescriptionConstraints autoInstallConstraints];
-            
         }
-        
-        //[self.linesView setClipsToBounds:true];
-        //[self.linesView autoSetDimension:ALDimensionHeight toSize:150];
-        //[self.linesView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lineViewGuide withOffset:5];
         [self.linesView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:4];
         [self.linesView autoAlignAxisToSuperviewAxis:ALAxisVertical];
-        
         [self.linesView setMetadata:self.metadataAsset];
-        //[self.linesView setMetadata:self.metadataDict[@"Values"] withLabels:self.metadataDict[@"Labels"] frameWidth:0 maxHeight:0];
-        /*
-         [self.bottomDividerView autoSetDimensionsToSize:CGSizeMake(806, 1)];
-        [self.bottomDividerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
-        [self.bottomDividerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
-        [self.bottomDividerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.linesView withOffset:20];
-        */
-        
-        
-        
-        
-        
-        
-        // NSArray *subviews = self.linesView.subviews;
-        /*
-         int i = 0;
-         MetadataLineView *previousView = nil;
-         for (MetadataLineView *lineView in self.linesView.subviews)
-         {
-         if (i == 0)
-         {
-         //[lineView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.middleDividerView withOffset:5];
-         [lineView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:5];
-         } else {
-         previousView = self.linesView.subviews[i-1];
-         NSLog(@"previousView: %@", previousView);
-         [lineView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:previousView withOffset:21];
-         }
-         i++;
-         }
-         */
-     //   [self.linesView.subviews autoDistributeViewsAlongAxis:ALAxisVertical alignedTo:ALAttributeVertical withFixedSpacing:21 insetSpacing:NO matchedSizes:NO];
         [self.linesView autoAlignAxisToSuperviewAxis:ALAxisVertical];
-        // [self.linesView.subviews autoDistributeViewsAlongAxis:ALAxisVertical alignedTo:ALAttributeVertical withFixedSpacing:10 insetSpacing:false];
-        ;
-        
-        
         
     }
-    //   self.didSetupConstraints = true;
-    
-    // }
-    //   [NSLayoutConstraint deactivateConstraints:self.constraints];
     [super updateConstraints];
 }
 
-- (void)updateAsset:(MetaDataAsset *)asset
-{
+- (void)updateAsset:(MetaDataAsset *)asset {
     
     self.metadataAsset = asset;
     self.titleLabel.text = asset.name;
     self.descriptionLabel.text = asset.assetDescription;
     [self.linesView setMetadata:asset];
     
-    if ([[[asset metaDictionary] allKeys] count] == 0)
-    {
+    if ([[[asset metaDictionary] allKeys] count] == 0) {
         self.linesView.alpha = 0;
     } else {
         self.linesView.alpha = 1;
     }
-    
-    if (asset.assetDescription.length == 0 && ([[[asset metaDictionary] allKeys] count] == 0))
-    {
+    if (asset.assetDescription.length == 0 && ([[[asset metaDictionary] allKeys] count] == 0)) {
         self.topDividerView.alpha = 0;
     } else {
         self.topDividerView.alpha = 1;
     }
-    
     //[self.linesView setMetadata:self.metadataDict[@"Values"] withLabels:self.metadataDict[@"Labels"] frameWidth:0 maxHeight:0];
-    if ([asset.assetDescription length] > 0)
-    {
+    if ([asset.assetDescription length] > 0) {
         [self.noDescriptionConstraints autoRemoveConstraints];
         [self.descriptionConstraints autoInstallConstraints];
     } else {
@@ -602,15 +438,5 @@
    // [self layoutIfNeeded];
 }
 
-
-
-
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code
- }
- */
 
 @end

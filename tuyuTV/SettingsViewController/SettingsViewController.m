@@ -30,21 +30,15 @@
 
 @implementation SettingsTableViewCell
 
-
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     unfocusedBackgroundColor = [UIColor colorWithWhite:1 alpha:0.2];
     self = [super initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:reuseIdentifier];
-
     return self;
 }
 
-- (void)layoutSubviews
-{
+- (void)layoutSubviews {
     [super layoutSubviews];
     self.accessoryView.backgroundColor = unfocusedBackgroundColor;
-    
 }
 
 - (void)awakeFromNib {
@@ -54,7 +48,6 @@
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-    
     // Configure the view for the selected state
 }
 
@@ -68,8 +61,7 @@
 
 @implementation DetailView
 
-- (id)initForAutoLayout
-{
+- (id)initForAutoLayout {
     self = [super initForAutoLayout];
     [self addSubview:self.previewView];
     //[self addSubview:self.imageView];
@@ -77,14 +69,11 @@
 }
 
 - (void)updateConstraints{
-    
-
     [self.previewView autoCenterInSuperview];
     [super updateConstraints];
 }
 
-- (void)updateMetaColor
-{
+- (void)updateMetaColor {
     UIColor *newColor = [UIColor blackColor];
     if ([self darkMode]) {
         newColor = [UIColor whiteColor];
@@ -92,22 +81,17 @@
     for (MetadataLineView *lineView in self.previewView.linesView.subviews) {
         
         NSLog(@"lineView: %@", lineView);
-        if ([lineView isKindOfClass:[MetadataLineView class]])
-        {
+        if ([lineView isKindOfClass:[MetadataLineView class]]) {
             [lineView.valueLayer setTextColor:newColor];
         }
-        
     }
     [self.previewView.titleLabel setTextColor:newColor];
     [self.previewView.descriptionLabel setTextColor:newColor];
 }
 
 #pragma mark •• bootstrap data, change here for base data layout.
-- (MetadataPreviewView *)previewView
-{
+- (MetadataPreviewView *)previewView {
     if (!_previewView) {
-        
-        
         //NOTE: this is a bit of a hack im not sure why its necessary right now, apparently even a blank imagePath prevents
         //layout issues.
         _previewView = [[MetadataPreviewView alloc] initWithMetadata:@{@"imagePath": @""}];
@@ -116,8 +100,7 @@
     return _previewView;
 }
 
-- (UIImageView *)imageView
-{
+- (UIImageView *)imageView {
     if (!_imageView) {
         _imageView = [UIImageView newAutoLayoutView];
         _imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -126,28 +109,22 @@
     return _imageView;
 }
 
-
 @end
-
 
 @interface SettingsViewController ()
 
-
 @property (nonatomic, strong) UIView *tableWrapper;
 @property (nonatomic, assign) BOOL didSetupConstraints;
-
 
 @end
 
 @implementation SettingsViewController
 
-- (void)performLongPressActionForSelectedRow
-{
+- (void)performLongPressActionForSelectedRow {
     
 }
 
-- (void)loadView
-{
+- (void)loadView {
     self.view = [UIView new];
     self.topOffset = DEFAULT_TABLE_OFFSET;
     [self.view addSubview:self.detailView];
@@ -158,26 +135,19 @@
     longPress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
     [self.tableView addGestureRecognizer:longPress];
     //self.title = @"Settings";
-    
-    
     [self.view setNeedsUpdateConstraints]; // bootstrap Auto Layout
 }
 
 - (void)longPress:(UILongPressGestureRecognizer*)gesture {
     if ( gesture.state == UIGestureRecognizerStateBegan) {
-        
-        
     }
     else if ( gesture.state == UIGestureRecognizerStateEnded) {
-        
         //NSLog(@"long press on cell: %@", gesture.view);
         [self performLongPressActionForSelectedRow];
     }
 }
 
-
-- (void)updateViewConstraints
-{
+- (void)updateViewConstraints {
     CGRect viewBounds = self.view.bounds;
     
     //use this variable to keep track of whether or not initial constraints were already set up
@@ -189,32 +159,24 @@
         [self.detailView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.view];
         
         //half the size of our total view / pinned to the right
-        
         [self.tableWrapper autoSetDimensionsToSize:CGSizeMake(viewBounds.size.width/2, viewBounds.size.height)];
         [self.tableWrapper autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.view];
         
         //position the tableview inside its wrapper view
-        
         [self.tableView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.tableWrapper withOffset:50];
         [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:80];
         [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.tableWrapper withOffset:self.topOffset];
         [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:50];
         
-        
         //set up our title view
-        
         [self.titleView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:56];
         [self.titleView autoAlignAxisToSuperviewAxis:ALAxisVertical];
-        
         self.didSetupConstraints = YES;
     }
-    
     [super updateViewConstraints];
-    
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     @try {
         [self.view removeObserver:self forKeyPath:@"backgroundColor" context:NULL];
         [self removeObserver:self forKeyPath:@"titleColor" context:NULL];
@@ -227,8 +189,7 @@
     _observersRegistered = false;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     //self.titleView.text = _backingTitle;
     [self registerObservers];
@@ -237,8 +198,7 @@
     // DLog(@"insets : %i", self.view.translatesAutoresizingMaskIntoConstraints);
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
+- (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.detailView updateMetaColor];
     // NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
@@ -248,8 +208,7 @@
 
 //its necessary to create a title view in case you are the first view inside a navigation controller
 //which doesnt show a title view for the root controller iirc
-- (UILabel *)titleView
-{
+- (UILabel *)titleView {
     if (!_titleView) {
         _titleView = [UILabel newAutoLayoutView];
         _titleView.font = [UIFont fontWithName:@".SFUIDisplay-Medium" size:57.00];
@@ -258,8 +217,7 @@
     return _titleView;
 }
 
-- (UIView *)tableWrapper;
-{
+- (UIView *)tableWrapper; {
     if (!_tableWrapper) {
         _tableWrapper = [UIView newAutoLayoutView];
         _tableWrapper.autoresizesSubviews = true;
@@ -275,8 +233,7 @@
     return _tableWrapper;
 }
 
-- (UIView *)detailView
-{
+- (UIView *)detailView {
     if (!_detailView) {
         _detailView = [[DetailView alloc] initForAutoLayout];
         _detailView.backgroundColor = self.view.backgroundColor;
@@ -284,19 +241,14 @@
     return _detailView;
 }
 
-- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
-{
+- (void)observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context {
     id newValue = change[@"new"];
     
     //a bit of a hack to hide the navigationItem title view when title is set
     //and to use our own titleView that can have different colors
-    
-    if ([keyPath isEqualToString:@"title"])
-    {
-        if (newValue != [NSNull null])
-        {
-            if ([newValue length] > 0)
-            {
+    if ([keyPath isEqualToString:@"title"]) {
+        if (newValue != [NSNull null]) {
+            if ([newValue length] > 0) {
                 //keep a backup copy of the title
                 _backingTitle = newValue;
                 self.titleView.text = newValue;
@@ -304,10 +256,8 @@
             }
         }
     }
-    
     //change subviews to have the same background color
-    if ([keyPath isEqualToString:@"backgroundColor"])
-    {
+    if ([keyPath isEqualToString:@"backgroundColor"]) {
         self.detailView.backgroundColor = newValue;
         self.tableWrapper.backgroundColor = newValue;
         self.tableView.backgroundColor = newValue;
@@ -316,17 +266,13 @@
     
     //change titleView to a different text color
     
-    if ([keyPath isEqualToString:@"titleColor"])
-    {
+    if ([keyPath isEqualToString:@"titleColor"]) {
         self.titleView.textColor = newValue;
     }
     
-    
 }
 
-
-- (void)registerObservers
-{
+- (void)registerObservers {
     if (_observersRegistered == true) return;
     //use KVO to update subview backgroundColor to mimic the superview backgroundColor
     
@@ -360,8 +306,6 @@
     [self registerObservers];
 }
 
-
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -378,8 +322,7 @@
 
 //keep track of cells being focused so we can change the contents of the DetailView
 
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [self focusedCell:(SettingsTableViewCell*)context.nextFocusedView];
 }
 
@@ -393,26 +336,19 @@
     return 0;
 }
 
-- (void)focusedCell:(SettingsTableViewCell *)focusedCell
-{
+- (void)focusedCell:(SettingsTableViewCell *)focusedCell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:focusedCell];
     self.focusedIndexPath = indexPath;
     MetaDataAsset *currentAsset = self.items[indexPath.row];
     //NSLog(@"currentAsset image: %@", currentAsset.imagePath);
-    if (currentAsset.imagePath.length == 0)
-    {
-        if (self.defaultImageName.length > 0)
-        {
+    if (currentAsset.imagePath.length == 0) {
+        if (self.defaultImageName.length > 0) {
             currentAsset.imagePath = self.defaultImageName;
         }
     }
-    
     self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.imagePath];
-    
     [self.detailView.previewView updateAsset:currentAsset];
-    
 }
-
 
 - (nullable NSIndexPath *)indexPathForPreferredFocusedViewInTableView:(UITableView *)tableView {
     
@@ -428,13 +364,7 @@
     self.savedIndexPath = nil;
 }
 
-
-
-
-
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     self.savedIndexPath = indexPath;
     MetaDataAsset *currentAsset = nil;
@@ -457,10 +387,8 @@
     
     
     NSString *currentDetail = currentAsset.detail;
-    if (currentDetail.length > 0)
-    {
-        if ([currentAsset detailOptions].count > 0)
-        {
+    if (currentDetail.length > 0) {
+        if ([currentAsset detailOptions].count > 0) {
             NSInteger currentIndex = [[currentAsset detailOptions] indexOfObject:currentDetail];
             currentIndex++;
             if ([currentAsset detailOptions].count > currentIndex)
@@ -474,11 +402,8 @@
                 [self.tableView reloadData];
             }
         }
-        
     }
-    
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     SettingsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"SettingsCell" forIndexPath:indexPath];
@@ -500,8 +425,6 @@
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
-    
-    
     return cell;
 }
 
