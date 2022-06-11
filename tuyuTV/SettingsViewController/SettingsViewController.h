@@ -64,7 +64,8 @@
 @property (readwrite, assign) CGFloat metaTopOffset;
 @property (nonatomic, strong) NSIndexPath *focusedIndexPath;
 @property (nonatomic, strong) NSIndexPath *savedIndexPath;
-@property (nonatomic, strong) NSArray <MetaDataAsset *>*extraItems;
+@property (nonatomic, strong) NSArray <MetaDataAsset *>*extraItems; //optional
+@property (nonatomic, strong) NSString *extraTitle; //optional
 - (void)safeReloadData;
 - (void)focusedCell:(SettingsTableViewCell *)focusedCell;
 - (void)performLongPressActionForSelectedRow;

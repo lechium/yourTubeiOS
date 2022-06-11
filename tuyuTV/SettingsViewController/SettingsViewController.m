@@ -339,14 +339,24 @@
 - (void)focusedCell:(SettingsTableViewCell *)focusedCell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:focusedCell];
     self.focusedIndexPath = indexPath;
-    MetaDataAsset *currentAsset = self.items[indexPath.row];
+    MetaDataAsset *currentAsset = nil;
+    if (indexPath.section == 0) {
+        currentAsset = self.items[indexPath.row];
+    } else if (indexPath.section == 1) {
+        currentAsset = self.extraItems[indexPath.row];
+    }
     //NSLog(@"currentAsset image: %@", currentAsset.imagePath);
     if (currentAsset.imagePath.length == 0) {
         if (self.defaultImageName.length > 0) {
             currentAsset.imagePath = self.defaultImageName;
         }
     }
-    self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.imagePath];
+    if ([currentAsset.imagePath containsString:@"https:"]){
+        TLog(@"we got HTTPS");
+        [self.detailView.previewView.imageView sd_setImageWithURL:[NSURL URLWithString:currentAsset.imagePath]];
+    } else {
+        self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.imagePath];
+    }
     [self.detailView.previewView updateAsset:currentAsset];
 }
 
@@ -403,6 +413,17 @@
             }
         }
     }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    LOG_SELF;
+    if (section == 0) { return 5;}
+    return 0;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (section == 0) return nil;
+    return self.extraTitle;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

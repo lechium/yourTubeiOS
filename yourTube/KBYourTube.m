@@ -806,7 +806,73 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return [[self appSupportFolder] stringByAppendingPathComponent:@"sections.plist"];
 }
 
+/*
+ name: YouTube
+ image: https://yt3.ggpht.com/584JjRp5QMuKbyduM_2k5RlXFqHJtQ0qLIPZpwbUjMJmgzZngHcam5JMuZQxyzGMV5ljwJRl0Q=s900-c-k-c0x00ffffff-no-rj
+ banner: https://yt3.ggpht.com/uxTVoONZDHfInEuR4Uspk-rtR_eqBAbmaOj2-xgXhs1I87k_QKaNqFOLkhB2omQp2C74vgNx=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj
+ name: Sports
+ image: https://yt3.ggpht.com/Q4LNAquvFLgrqCSuKglF_EF3wghkG5AyutxrlMAFGctQn8rFZFAg-AhDaaci0tWYUBwLya1C5A=s176-c-k-c0x00ffffff-no-rj-mo
+ banner: (null)
+ 2022-06-11 15:33:52.093307-0700 yourTube[2278:40123] channels count: 12
+ name: Gaming
+ image: https://yt3.ggpht.com/drsoZuCe8u-2JarqCZ-Z9oJh4Td5t1faAMjrOVSjjDpPX27Os0qLWNiGOuS-973r7jKU65L5IA=s176-c-k-c0x00ffffff-no-rj-mo
+ banner: (null)
+ 2022-06-11 15:33:52.208370-0700 yourTube[2278:40123] channels count: 12
+ name: Fashion & Beauty
+ image: https://yt3.ggpht.com/Cw_5o8wcghBvDl-oCq9-ehGBezoxo3gOdz2yE5jt74ZdAWpvH6UyADqtQLxql9Ud_NRU4sYV4g=s176-c-k-c0x00ffffff-no-rj-mo
+ banner: (null)
+ name: Music
+ image: https://yt3.ggpht.com/nCOmA7RfWNA-UU-4HsTXkWt2LWZHvU-3E2sHc-vJV0H981_J5oH8zmnisUjElCMUni-nDrbvwOU=s176-c-k-c0x00ffffff-no-rj-mo
+ banner: (null)
+ 2022-06-11 15:33:52.354633-0700 yourTube[2278:40115] channels count: 7
+ name: Popular on YouTube
+ image: https://yt3.ggpht.com/_lhig9VVBeYLLZ0uEDUdoQsOBiGmWh8LxEB3VStXiBP3Xw2_HaFUldbGP_BEBVpBBJogHTA_eA=s900-c-k-c0x00ffffff-no-rj
+ banner: https://yt3.ggpht.com/ihYyB3RUEhSjt5Pn7IwTjh1Pv4KouGOzYL51-Dk_cvGH_f2WkuL7as0kV1J091afqb5Fg8rz1Q=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj
+ name: Virtual Reality
+ image: https://yt3.ggpht.com/qmYIeA3vVO5m2dmSgL1n3VR2QNmcFhmurVRhxy_wQ6jGd35OoVFnwWrUf0Wn-_TrJ88s-jWX1EM=s900-c-k-c0x00ffffff-no-rj
+ banner: https://yt3.ggpht.com/5VQ4RrTfG7iC2xoPdMwKw1950v8SvuP8lEZiVjjqxlpOMIBEMP7RXCPnBxR-rvwaTSPuvHj-=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj
+ */
+
 - (NSDictionary *)createDefaultSections {
+    
+    NSArray *items = @[@{@"name": @"Popular on YouTube",
+                         @"channel": KBYTPopularChannelID,
+                         @"description": @"The pulse of what's popular on YouTube. Check out the latest music videos, trailers, comedy clips, and everything else that people are watching right now.",
+                         @"imagePath": @"https://yt3.ggpht.com/_lhig9VVBeYLLZ0uEDUdoQsOBiGmWh8LxEB3VStXiBP3Xw2_HaFUldbGP_BEBVpBBJogHTA_eA=s900-c-k-c0x00ffffff-no-rj"},
+                       
+                       @{@"name": @"Music",
+                         @"channel": KBYTMusicChannelID,
+                         @"description": @"Visit the YouTube Music Channel to find today’s top talent, featured artists, and playlists. Subscribe to see the latest in the music world.\nThis channel was generated automatically by YouTube's video discovery system.",
+                         @"imagePath": @"https://yt3.ggpht.com/nCOmA7RfWNA-UU-4HsTXkWt2LWZHvU-3E2sHc-vJV0H981_J5oH8zmnisUjElCMUni-nDrbvwOU=s900-c-k-c0x00ffffff-no-rj-mo"},
+                       
+                       @{@"name": @"Sports",
+                         @"channel": KBYTSportsChannelID,
+                         @"description": @"YouTube's featured Sports channel.",
+                         @"imagePath": @"https://yt3.ggpht.com/Q4LNAquvFLgrqCSuKglF_EF3wghkG5AyutxrlMAFGctQn8rFZFAg-AhDaaci0tWYUBwLya1C5A=s900-c-k-c0x00ffffff-no-rj-mo"},
+                       
+                       @{@"name": @"Gaming",
+                         @"channel": KBYTGamingChannelID,
+                         @"description": @"YouTube's featured Gaming channel.",
+                         @"imagePath": @"https://yt3.ggpht.com/drsoZuCe8u-2JarqCZ-Z9oJh4Td5t1faAMjrOVSjjDpPX27Os0qLWNiGOuS-973r7jKU65L5IA=s900-c-k-c0x00ffffff-no-rj-mo"},
+                       
+                       @{@"name": @"Fashion & Beauty",
+                         @"channel": KBYTFashionAndBeautyID,
+                         @"description": @"YouTube's featured Fashion & Beauty channel.",
+                         @"imagePath": @"https://yt3.ggpht.com/Cw_5o8wcghBvDl-oCq9-ehGBezoxo3gOdz2yE5jt74ZdAWpvH6UyADqtQLxql9Ud_NRU4sYV4g=s900-c-k-c0x00ffffff-no-rj-mo"},
+                       
+                       @{@"name": @"YouTube",
+                         @"channel": KBYTSpotlightChannelID,
+                         @"description": @"YouTube's Official Channel helps you discover what's new & trending globally. Watch must-see videos, from music to culture to Internet phenomena.",
+                         @"imagePath": @"https://yt3.ggpht.com/584JjRp5QMuKbyduM_2k5RlXFqHJtQ0qLIPZpwbUjMJmgzZngHcam5JMuZQxyzGMV5ljwJRl0Q=s900-c-k-c0x00ffffff-no-rj"},
+                       
+                       @{@"name": @"Virtual Reality",
+                         @"channel": KBYT360ChannelID,
+                         @"description": @"Learn more at https://vr.youtube.com",
+                         @"imagePath": @"https://yt3.ggpht.com/qmYIeA3vVO5m2dmSgL1n3VR2QNmcFhmurVRhxy_wQ6jGd35OoVFnwWrUf0Wn-_TrJ88s-jWX1EM=s900-c-k-c0x00ffffff-no-rj"},
+                       
+    ];
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    /*
     NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"Fashion & Beauty",@"YouTube",@"Virtual Reality"];
     NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYTFashionAndBeautyID, KBYTSpotlightChannelID, KBYT360ChannelID];
     __block NSMutableDictionary *dict = [NSMutableDictionary new];
@@ -814,8 +880,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     [sectionArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         //dict[obj] = idArray[idx];
         [array addObject:@{@"name": obj, @"channel": idArray[idx]}];
-    }];
-    dict[@"sections"] = array;
+    }];*/
+    dict[@"sections"] = items;
     dict[@"featured"] = @"UCByOQJjav0CUDwxCk-jVNRQ";
     return dict;
 }

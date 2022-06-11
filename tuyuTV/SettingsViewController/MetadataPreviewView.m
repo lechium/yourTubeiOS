@@ -40,6 +40,7 @@
     detailOptions = mutableDict[@"detailOptions"];
     selectorName = mutableDict[@"selectorName"];
     tag = [mutableDict[@"tag"] integerValue];
+    _uniqueID = mutableDict[@"uniqueID"];
     [mutableDict removeObjectForKey:@"name"];
     [mutableDict removeObjectForKey:@"description"];
     [mutableDict removeObjectForKey:@"imagePath"];
@@ -49,6 +50,7 @@
     [mutableDict removeObjectForKey:@"selectorName"];
     [mutableDict removeObjectForKey:@"tag"];
     [mutableDict removeObjectForKey:@"accessory"];
+    [mutableDict removeObjectForKey:@"uniqueID"];
     metaDictionary = mutableDict;
     return self;
 }
@@ -344,6 +346,7 @@
 }
 
 - (void)updateConstraints {
+    LOG_CMD;
     [self.imageView autoSetDimensionsToSize:CGSizeMake(512, 512)];
     
     self.centeredImageConstraints = [NSLayoutConstraint autoCreateConstraintsWithoutInstalling:^{
@@ -358,10 +361,22 @@
     }];
     
     if (!self.hasMeta) {
+        TLog(@"doesn't have meta");
         [self.centeredImageConstraints autoInstallConstraints];
-        
+        if ([self.metadataAsset.assetDescription length] > 0) {
+            [self.descriptionLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:4];
+            [self.descriptionLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.topDividerView withOffset:15];
+            [self.descriptionLabel autoSetDimension:ALDimensionWidth toSize:798];
+            self.descriptionLabel.text = self.metadataAsset.assetDescription;
+            [self.middleDividerView autoSetDimensionsToSize:CGSizeMake(806, 1)];
+            [self.middleDividerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+            [self.middleDividerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+            [self.middleDividerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.descriptionLabel withOffset:15];
+            [self.linesView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.middleDividerView withOffset:5];
+        }
     } else {
         
+        TLog(@"does have meta");
         [self.hasMetaConstraints autoInstallConstraints];
         [self.metaContainerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.imageView withOffset:10];
         [self.metaContainerView autoSetDimensionsToSize:CGSizeMake(806, 265)];
@@ -409,7 +424,7 @@
 }
 
 - (void)updateAsset:(MetaDataAsset *)asset {
-    
+    TLog(@"asset: %@ %@", asset.name, asset.assetDescription);
     self.metadataAsset = asset;
     self.titleLabel.text = asset.name;
     self.descriptionLabel.text = asset.assetDescription;

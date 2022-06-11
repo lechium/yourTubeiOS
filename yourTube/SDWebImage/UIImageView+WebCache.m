@@ -175,7 +175,7 @@ static char TAG_ACTIVITY_SHOW;
     if (!self.activityIndicator) {
        // self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:[self getIndicatorStyle]];
         self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        self.activityIndicator.color = [UIColor colorFromHex:@"0080ff"];
+        self.activityIndicator.color = [UIColor colorFromHex:@"FF0000"];
         self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
         //self.activityIndicator
         dispatch_main_async_safe(^{
