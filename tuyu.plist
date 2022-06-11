@@ -9,6 +9,7 @@
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.com.tuyu</string>
+		<string>group.com.nito.tuyuTV</string>
 	</array>
 	<key>get-task-allow</key>
 	<true/>

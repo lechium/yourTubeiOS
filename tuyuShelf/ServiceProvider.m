@@ -49,13 +49,20 @@
 }
 
 - (void)testGetYTScience {
-   // NSLog(@"appCookies: %@", [[ServiceProvider sharedUserDefaults] valueForKey:@"ApplicationCookie"]);
+    TLog(@"app support: %@", [self appSupportFolder]);
+    [[KBYourTube sharedUserDefaults] setObject:@"brosive" forKey:@"bruh"];
+    NSArray *keys = [[[KBYourTube sharedUserDefaults] dictionaryRepresentation] allKeys];
+    [keys enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        TLog(@"key: %@", obj);
+    }];
+    TLog(@"testKey: %@", [[[KBYourTube sharedUserDefaults] dictionaryRepresentation] allKeys]);
+    //TLog(@"appCookies: %@", [[ServiceProvider sharedUserDefaults] valueForKey:@"ApplicationCookie"]);
     NSData *cookieData = [[ServiceProvider sharedUserDefaults] objectForKey:@"ApplicationCookie"];
     if ([cookieData length] > 0) {
         NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
         for (NSHTTPCookie *cookie in cookies) {
             [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
-     //       NSLog(@"cookie: %@", cookie);
+            //TLog(@"cookie: %@", cookie);
         }
     }
     
@@ -69,9 +76,10 @@
     }];
     
     if ([[KBYourTube sharedInstance] isSignedIn] == YES) {
-        DLog(@"is signed in, get those sciences too!");
+        TLog(@"is signed in, get those sciences too!");
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
             
+            //TLog(@"got outputResults: %@", outputResults);
             NSArray <KBYTSearchResult *> *results = outputResults[@"results"];
             NSArray <KBYTSearchResult *> *rChannels = outputResults[@"channels"];
             [results enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -111,9 +119,10 @@ private func urlForIdentifier(identifier: String) -> NSURL {
 
 
 - (NSArray *)topShelfItems {
+    LOG_SELF;
     // Create an array of TVContentItems.
     
-    if (self.menuItems.count == 0) {
+    if (self.menuItems.count == 0 || self.menuItems == nil) {
         [self testGetYTScience];
     }
    // [self testGetYTScience];
@@ -124,6 +133,7 @@ private func urlForIdentifier(identifier: String) -> NSURL {
     __block NSMutableArray *sectionItems = [NSMutableArray new];
     
     if (self.channels.count > 0) {
+        TLog(@"channels are greater than 0: %lu", self.channels.count);
         TVContentIdentifier *csection = [[TVContentIdentifier alloc] initWithIdentifier:@"channels" container:nil];
         TVContentItem * cItem = [[TVContentItem alloc] initWithContentIdentifier:csection];
         cItem.title = @"Channels";
@@ -143,6 +153,7 @@ private func urlForIdentifier(identifier: String) -> NSURL {
     }
     
     if (self.playlists.count > 0) {
+        TLog(@"playlists are greater than 0: %lu", self.playlists.count);
         TVContentIdentifier *psection = [[TVContentIdentifier alloc] initWithIdentifier:@"playlists" container:nil];
         TVContentItem * pItem = [[TVContentItem alloc] initWithContentIdentifier:psection];
         pItem.title = @"Playlists";
@@ -156,7 +167,7 @@ private func urlForIdentifier(identifier: String) -> NSURL {
             
             NSURLComponents *comp = [NSURLComponents componentsWithString:[NSString stringWithFormat:@"tuyu://%@/%@", result.readableSearchType, result.videoId]];
             comp.query = [NSString stringWithFormat:@"title=%@", result.title];
-            DLog(@"url: %@", comp.URL);
+            TLog(@"url: %@", comp.URL);
             ci.displayURL = comp.URL;
             [playlistItems addObject:ci];
         
@@ -180,10 +191,9 @@ private func urlForIdentifier(identifier: String) -> NSURL {
         [suggestedItems addObject:ci];
         
     }];
-
     sectionItem.topShelfItems = suggestedItems;
     [sectionItems addObject:sectionItem];
-    
+    TLog(@"sectionItems: %@", sectionItem);
     return sectionItems;
 }
 

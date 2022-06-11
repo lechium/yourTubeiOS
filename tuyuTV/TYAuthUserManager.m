@@ -404,10 +404,28 @@
         [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/getPlaylists.plist" atomically:TRUE];
     }];
 }
+//https://www.googleapis.com/youtube/v3/channels?part=snippet&id='+commaSeperatedList+'&fields=items(id%2Csnippet%2Fthumbnails)&key={YOUR_API_KEY}
+- (void)getProfileThumbnail:(NSString *)profileID completion:(void(^)(NSString *thumbURL, NSString *error)) completionBlock {
+    NSString *initialString = @"https://www.googleapis.com/youtube/v3/channels?part=snippet&fields=items%2Fsnippet%2Fthumbnails&id";
+    NSString *formattedString = [NSString stringWithFormat:@"%@=%@", initialString, profileID];
+    [self genericGetCommand:formattedString completion:^(NSDictionary *jsonResponse, NSString *error) {
+        NSDictionary *thumbs = [jsonResponse recursiveObjectForKey:@"thumbnails"];
+        NSDictionary *thumb = thumbs[@"high"];
+        if (!thumb) {
+            thumb = thumbs[@"medium"];
+        }
+        NSString *url = thumb[@"url"];
+        TLog(@"url: %@", url);
+        if (completionBlock) {
+            completionBlock(url, error);
+        }
+        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/profile.plist" atomically:TRUE];
+    }];
+}
 
 - (void)genericGetCommand:(NSString *)command completion:(void(^)(NSDictionary *jsonResponse, NSString *error))completionBlock {
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         id token = [self refreshAuthToken];
         //TLog(@"refreshed token: %@", token);
         NSString *urlString = [NSString stringWithFormat:@"%@&key=%@", command, ytClientID];
@@ -432,7 +450,7 @@
         //JSON data
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
         //TLog(@"jsonDict: %@", jsonDict);
-        dispatch_async(dispatch_get_main_queue(), ^{
+        //dispatch_async(dispatch_get_main_queue(), ^{
             if ([jsonDict valueForKey:@"error"] != nil) {
                 if (completionBlock) {
                     completionBlock(nil, datString);
@@ -444,9 +462,9 @@
             if (completionBlock){
                 completionBlock(jsonDict, nil);
             }
-        });
+        //});
         
-    });
+    //});
 }
 
 - (void)getChannelListWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock {

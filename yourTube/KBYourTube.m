@@ -12,9 +12,9 @@
 #import "KBYourTube+Categories.h"
 #import <CoreMedia/CoreMedia.h>
 #import "MetadataPreviewView.h"
-#ifndef SHELF_EXT
+//#ifndef SHELF_EXT
 #import "TYAuthUserManager.h"
-#endif
+//#endif
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -830,6 +830,16 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return def;
 }
 
++ (NSUserDefaults *)sharedUserDefaults {
+    static dispatch_once_t pred;
+    static NSUserDefaults* shared = nil;
+    
+    dispatch_once(&pred, ^{
+        shared = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.nito.tuyuTV"];
+    });
+    
+    return shared;
+}
 
 - (NSString *)userDetailsCache {
     return [[self appSupportFolder] stringByAppendingPathComponent:@"user.plist"];
@@ -849,6 +859,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     _newDict[@"results"] = newResults;
     _newDict[@"channels"] = channels;
     [_newDict writeToFile:[self userDetailsCache] atomically:true];
+    [[KBYourTube sharedUserDefaults] setObject:_newDict forKey:@"testKey"];
 }
 
 - (void)addChannelToUserDetails:(KBYTSearchResult *)channel {
@@ -1053,9 +1064,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 - (BOOL)isSignedIn {
-#ifndef SHELF_EXT
+//#ifndef SHELF_EXT
     return [[TYAuthUserManager sharedInstance] authorized];
-#endif
+//#endif
     ONOXMLDocument *xmlDoc = [self documentFromURL:@"https://www.youtube.com/feed/history"];
     ONOXMLElement *root = [xmlDoc rootElement];
     ONOXMLElement * displayMessage = [root firstChildWithXPath:@"//div[contains(@class, 'display-message')]"];
@@ -1083,9 +1094,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             __block NSMutableArray *itemArray = [NSMutableArray new];
             if (signedIn == true) {
                 
-#ifndef SHELF_EXT
+//#ifndef SHELF_EXT
                 TYAuthUserManager *authManager = [TYAuthUserManager sharedInstance];
                 [authManager getPlaylistsWithCompletion:^(NSArray<KBYTSearchResult *> *playlists, NSString *error) {
+                    TLog(@"got playlists");
                     if (playlists.count > 0) {
                         [itemArray addObjectsFromArray:playlists];
                         if (![[returnDict allKeys] containsObject:@"channelID"]){
@@ -1095,41 +1107,45 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         
                     }
                     [authManager getChannelListWithCompletion:^(NSArray<KBYTSearchResult *> *channels, NSString *error) {
+                        TLog(@"got channels");
                         if (channels.count > 0) {
                             returnDict[@"channels"] = channels;
                             if (![[returnDict allKeys] containsObject:@"channelID"]){
                                 returnDict[@"channelID"] = [channels firstObject].channelId;
                             }
                         }
-                        NSString *userName = returnDict[@"userName"];
-                        NSString *channelID = returnDict[@"channelID"];
-                        //TLog(@"rd: %@", returnDict);
-                        KBYTSearchResult *userChannel = [KBYTSearchResult new];
-                        userChannel.title = @"Your channel";
-                        userChannel.author = userName;
-                        userChannel.videoId = channelID;
-                        //userChannel.details = [NSString stringWithFormat:@"%lu videos", channelVideoCount];
-                        //userChannel.imagePath = ourUserDetails[@"profileImage"];
-                        userChannel.resultType =kYTSearchResultTypeChannel;
-                        [itemArray addObject:userChannel];
-                        returnDict[@"results"] = itemArray;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            
-                            if (returnDict != nil)
-                            {
-                                completionBlock(returnDict);
-                            } else {
-                                failureBlock(errorString);
-                            }
-                            
-                            
-                        });
+                        [authManager getProfileThumbnail:returnDict[@"channelID"] completion:^(NSString *thumbURL, NSString *error) {
+                            NSString *userName = returnDict[@"userName"];
+                            NSString *channelID = returnDict[@"channelID"];
+                            //TLog(@"rd: %@", returnDict);
+                            KBYTSearchResult *userChannel = [KBYTSearchResult new];
+                            userChannel.title = @"Your channel";
+                            userChannel.author = userName;
+                            userChannel.videoId = channelID;
+                            //userChannel.details = [NSString stringWithFormat:@"%lu videos", channelVideoCount];
+                            userChannel.imagePath = thumbURL;
+                            userChannel.resultType =kYTSearchResultTypeChannel;
+                            [itemArray addObject:userChannel];
+                            returnDict[@"results"] = itemArray;
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                
+                                if (returnDict != nil)
+                                {
+                                    completionBlock(returnDict);
+                                } else {
+                                    failureBlock(errorString);
+                                }
+                                
+                                
+                            });
+                        }];
+                        
                     }];
                 }];
                 
                 return;
                                
-#endif
+//#endif
                 
             } else {
                 errorString = @"Not signed in";

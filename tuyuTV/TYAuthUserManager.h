@@ -47,6 +47,7 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 + (WebViewController *)OAuthWebViewController;
 #endif
  */
+- (void)getProfileThumbnail:(NSString *)profileID completion:(void(^)(NSString *thumbURL, NSString *error)) completionBlock;
 - (void)getPlaylistsWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *playlists, NSString *error))completionBlock;
 - (void)getChannelListWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock;
 + (id)sharedInstance;

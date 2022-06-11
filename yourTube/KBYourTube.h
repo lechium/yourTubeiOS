@@ -236,6 +236,8 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *lastSearch;
 @property (nonatomic, strong) NSDictionary *userDetails; 
 
++ (NSUserDefaults *)sharedUserDefaults;
+
 - (void)postHomeDataChangedNotification;
 - (void)removeHomeSection:(MetaDataAsset *)asset;
 - (void)setFeaturedResult:(KBYTSearchResult *)channel;
