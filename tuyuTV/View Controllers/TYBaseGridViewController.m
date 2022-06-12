@@ -290,7 +290,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
         //add the total height of a table view to the overall height so we can set the contentView height when
         //necessary
-        _totalHeight+=520;
+        _totalHeight+=680; // 520 + the spacing in between + more buffer
         
         [collectionView autoSetDimension:ALDimensionHeight toSize:520];
         

@@ -361,7 +361,7 @@
     }];
     
     if (!self.hasMeta) {
-        TLog(@"doesn't have meta");
+        //TLog(@"doesn't have meta");
         [self.centeredImageConstraints autoInstallConstraints];
         if ([self.metadataAsset.assetDescription length] > 0) {
             [self.descriptionLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:4];
@@ -376,7 +376,7 @@
         }
     } else {
         
-        TLog(@"does have meta");
+        //TLog(@"does have meta");
         [self.hasMetaConstraints autoInstallConstraints];
         [self.metaContainerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.imageView withOffset:10];
         [self.metaContainerView autoSetDimensionsToSize:CGSizeMake(806, 265)];
@@ -424,7 +424,7 @@
 }
 
 - (void)updateAsset:(MetaDataAsset *)asset {
-    TLog(@"asset: %@ %@", asset.name, asset.assetDescription);
+    //TLog(@"asset: %@ %@", asset.name, asset.assetDescription);
     self.metadataAsset = asset;
     self.titleLabel.text = asset.name;
     self.descriptionLabel.text = asset.assetDescription;

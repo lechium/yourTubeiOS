@@ -52,9 +52,9 @@
     }];
     
     
-#if TARGET_OS_IOS
+//#if TARGET_OS_IOS
     self.titleTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(setNowPlayingInfo) userInfo:nil repeats:true];
-#endif 
+//#endif
     
 }
 
@@ -171,9 +171,16 @@
         usableDuration = [numFormatter numberFromString:duration];
     }
     if (currentItem == nil) { return; }
-    
+#if TARGET_OS_IOS
     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: usableDuration, MPNowPlayingInfoPropertyElapsedPlaybackTime: [NSNumber numberWithDouble:currentTime] }; //, MPMediaItemPropertyArtwork: artwork };
-    
+#elif TARGET_OS_TV
+    if (currentTime + 5 >= currentPlayerItem.durationDouble && currentPlayerItem.durationDouble > 0){
+        TLog(@"near the end: %.0f for %@", currentTime, currentItem.videoId);
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:currentItem.videoId];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithDouble:currentTime] forKey:currentItem.videoId];
+    }
+#endif
     
 }
 
@@ -186,6 +193,11 @@
     KBYTMedia *theMedia = (KBYTMedia*)[(YTPlayerItem *)item associatedMedia];
     if (theMedia){
         [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
+        CGFloat duration = [[[NSUserDefaults standardUserDefaults] valueForKey:theMedia.videoId] floatValue];
+        TLog(@"current time offset for %@: %.0f", theMedia.videoId, duration);
+        CMTime newtime = CMTimeMakeWithSeconds(duration, 600);
+        [player seekToTime:newtime];
+        
     }
     //NSLog(@"theMedia: %@", theMedia);
     //[[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];

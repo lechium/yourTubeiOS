@@ -451,6 +451,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 @synthesize associatedMedia;
 
+- (double)doubleTime {
+    return self.currentTime.value/self.currentTime.timescale;
+}
+
+- (double)durationDouble {
+    return self.duration.value/self.duration.timescale;
+}
+
 - (NSString *)description {
     return self.associatedMedia.title;
 }
@@ -889,6 +897,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     dict[@"sections"] = items;
     dict[@"featured"] = @"UCByOQJjav0CUDwxCk-jVNRQ";
     return dict;
+}
+
+- (void)resetHomeScreenToDefaults {
+    [FM removeItemAtPath:[self sectionsFile] error:nil];
+    [self homeScreenData]; //write the new data
+    [self postHomeDataChangedNotification];
 }
 
 - (NSDictionary *)homeScreenData {

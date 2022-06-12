@@ -101,7 +101,8 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @interface YTPlayerItem: AVPlayerItem
 
 @property (nonatomic, strong) NSObject <YTPlayerItemProtocol> *associatedMedia;
-
+-(double)doubleTime;
+- (double)durationDouble;
 @end
 
 @interface KBYTSearchResults: NSObject
@@ -238,7 +239,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSDictionary *userDetails; 
 
 + (NSUserDefaults *)sharedUserDefaults;
-
+- (void)resetHomeScreenToDefaults;
 - (void)postHomeDataChangedNotification;
 - (void)removeHomeSection:(MetaDataAsset *)asset;
 - (void)setFeaturedResult:(KBYTSearchResult *)channel;

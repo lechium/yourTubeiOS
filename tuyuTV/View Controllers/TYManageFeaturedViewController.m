@@ -20,21 +20,55 @@
     return self;
 }
 
+- (void)refreshData {
+    NSDictionary *data =[NSDictionary dictionaryWithContentsOfFile:[[KBYourTube sharedInstance] sectionsFile]];
+    __block NSMutableArray *sections = [NSMutableArray new];
+    [data[@"sections"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSDictionary *assetDict = @{@"name": obj[@"name"], @"imagePath": obj[@"imagePath"],  @"uniqueID": obj[@"channel"], @"channel": obj[@"channel"]};
+        NSString *objDesc = obj[@"description"];
+        if (objDesc != nil){
+            assetDict = @{@"name": obj[@"name"], @"imagePath": obj[@"imagePath"],  @"uniqueID": obj[@"channel"], @"channel": obj[@"channel"], @"description": objDesc};
+        }
+        MetaDataAsset *asset = [[MetaDataAsset alloc] initWithDictionary:assetDict];
+        [sections addObject:asset];
+    }];
+    self.items = sections;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[self tableView] reloadData];
+    });
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editSettings:)];
     // Do any additional setup after loading the view.
 }
 
+- (void)showRestoreDefaultWarningAlert {
+    NSString *messageString = [NSString stringWithFormat:@"Are you sure you want to reset to the default settings? This cannot be undone."];
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"Reset to Defaults" message:messageString preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *action = [UIAlertAction actionWithTitle:@"Reset" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [self restoreDefaultSettings];
+    }];
+    
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];
+    
+    [ac addAction: cancel];
+    [ac addAction:action];
+    [self presentViewController:ac animated:TRUE completion:nil];
+}
 
 - (void)restoreDefaultSettings {
     LOG_CMD;
+    [[KBYourTube sharedInstance] resetHomeScreenToDefaults];
+    [self refreshData];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 1) {
         TLog(@"all you need is one");
-        [self restoreDefaultSettings];
+        [self showRestoreDefaultWarningAlert];
     }
 }
 
