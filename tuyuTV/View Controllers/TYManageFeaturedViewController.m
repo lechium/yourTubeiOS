@@ -7,6 +7,7 @@
 
 #import "TYManageFeaturedViewController.h"
 #import "KBYourTube.h"
+#import "KBYTGridChannelViewController.h"
 
 @interface TYManageFeaturedViewController ()
 
@@ -40,6 +41,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor blackColor];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editSettings:)];
     // Do any additional setup after loading the view.
 }
@@ -60,15 +62,17 @@
 }
 
 - (void)restoreDefaultSettings {
-    LOG_CMD;
     [[KBYourTube sharedInstance] resetHomeScreenToDefaults];
     [self refreshData];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 1) {
-        TLog(@"all you need is one");
         [self showRestoreDefaultWarningAlert];
+    } else {
+        MetaDataAsset *searchResult = self.items[indexPath.row];
+        KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.uniqueID];
+        [self presentViewController:cv animated:true completion:nil];
     }
 }
 
@@ -77,7 +81,7 @@
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (![self.tableView isEditing]){
+    if (![self.tableView isEditing] || indexPath.section == 1){
         return UITableViewCellEditingStyleNone;
     }
     return UITableViewCellEditingStyleDelete;

@@ -168,6 +168,19 @@
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] clearAllCookies];
 }
 
+void UncaughtExceptionHandler(NSException *exception) {
+    @try {
+        TLog(@"an exception occured: %@", exception);
+        TLog(@"trace: %@", [NSThread callStackSymbols]);
+    }
+    @catch (NSException *exception) {
+        TLog(@"caught exception: %@", exception);
+    }
+    @finally {
+        @throw exception;
+    }
+}
+
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
     DLog(@"url: %@ path: %@", url.host, url.path.lastPathComponent);
     
@@ -260,7 +273,7 @@
     // Override point for customization after application launch.
     
    // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
- 
+    NSSetUncaughtExceptionHandler (&UncaughtExceptionHandler);
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (iPad; CPU OS 9_1 like Mac OS X) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0 Mobile/12B410 Safari/601.2.7", @"UserAgent", nil];
     [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];

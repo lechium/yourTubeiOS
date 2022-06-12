@@ -150,7 +150,6 @@
 }
 
 - (void)doScience {
-    LOG_CMD;
 }
 
 - (void)showManageChannelsView {

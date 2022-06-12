@@ -701,7 +701,13 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             KBYTSearchResult *currentItem = [self.featuredVideos objectAtIndex:indexPath.row];
             NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
             UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
-            [cell.featuredImage sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+            [cell.featuredImage sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                if (error) {
+                    //TLog(@"error: %@ url: %@, hr: %@", error, imageURL, [imageURL highResVideoURL]);
+                    [cell.featuredImage sd_setImageWithURL:[imageURL highResVideoURL] placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+                }
+            }];
+            //[cell.featuredImage sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
             cell.featuredTitle.text = currentItem.title;
             [cell.featuredTitle shadowify];
         } else {
@@ -717,7 +723,13 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         KBYTSearchResult *currentItem = [detailsArray objectAtIndex:indexPath.row];
         NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
         UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
-        [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+        //[cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+        [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+            if (error) {
+                //TLog(@"error: %@ url: %@, hr: %@", error, imageURL, [imageURL highResVideoURL]);
+                [cell.image sd_setImageWithURL:[imageURL highResVideoURL] placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+            }
+        }];
         cell.title.text = currentItem.title;
         cell.durationLabel.text = currentItem.duration;
         return cell;

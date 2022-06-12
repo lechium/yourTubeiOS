@@ -59,7 +59,6 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    LOG_CMD;
     [super viewDidAppear:animated];
     if (_homeDataChanged) {
         [self refreshDataWithProgress:true loadingFromSnapshot:false];
@@ -136,7 +135,6 @@
  
 
 - (void)refreshDataWithProgress:(BOOL)progress loadingFromSnapshot:(BOOL)snapshotLoading {
-    LOG_CMD;
     if (snapshotLoading) {
         if ([self loadFromSnapshot]) {
             progress = false;

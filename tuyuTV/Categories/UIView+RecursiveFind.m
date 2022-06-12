@@ -15,7 +15,6 @@
 }
 
 - (void)stopJiggling {
-    LOG_CMD;
     [CATransaction begin];
     [self.layer removeAllAnimations];
     [self.contentView.layer removeAllAnimations];
@@ -24,7 +23,6 @@
 
 - (void)startJiggling {
     //startJiggling
-    LOG_CMD;
     [self setOriginalTransform:self.transform];
     int count = 1;
     CGAffineTransform leftWobble = CGAffineTransformMakeRotation(degreesToRadians( kAnimationRotateDeg * (count%2 ? +1 : -1 ) ));

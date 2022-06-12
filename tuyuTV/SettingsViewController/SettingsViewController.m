@@ -352,7 +352,6 @@
         }
     }
     if ([currentAsset.imagePath containsString:@"https:"]){
-        TLog(@"we got HTTPS");
         [self.detailView.previewView.imageView sd_setImageWithURL:[NSURL URLWithString:currentAsset.imagePath]];
     } else {
         self.detailView.previewView.imageView.image = [UIImage imageNamed:currentAsset.imagePath];

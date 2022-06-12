@@ -1578,9 +1578,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     //https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg
     NSDictionary *thumb = thumbnails.lastObject;
     NSString *imagePath = thumb[@"url"];
-    NSInteger width = [thumb[@"width"] integerValue];
-    if (width < 300){
-        imagePath = [NSString stringWithFormat:@"https://i.ytimg.com/vi/%@/hqdefault.jpg", vid];
+    //NSInteger width = [thumb[@"width"] integerValue];
+    if (!imagePath){
+        imagePath = [NSString stringWithFormat:@"https://i.ytimg.com/vi/%@/maxresdefault.jpg", vid];
+    } else {
+        imagePath = [imagePath maxResVideoURL];
     }
     NSDictionary *longBylineText = [current recursiveObjectForKey:@"longBylineText"];
     if (!longBylineText) {
@@ -1699,7 +1701,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         channel.continuationToken = cc[@"token"];
                         NSDictionary *channelRender = [obj recursiveObjectForKey:@"channelVideoPlayerRenderer"];
                         if (channelRender){
-                            TLog(@"channel renderer found: %@", [channelRender allKeys]);
+                            //TLog(@"channel renderer found: %@", [channelRender allKeys]);
+                            KBYTSearchResult *res = [self searchResultFromVideoRenderer:channelRender];
+                            if (res.videoId) {
+                                //TLog(@"found video: %@", res);
+                                [backup addResult:res];
+                            }
                         }
                         
                     }
@@ -1820,7 +1827,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         } else {
                                             //try subscriberCountText
                                             searchItem.itemDescription = channel[@"subscriberCountText"][@"simpleText"];
-                                            TLog(@"desc: %@", searchItem.itemDescription);
+                                            //TLog(@"desc: %@", searchItem.itemDescription);
                                         }
                                         //NSLog(@"channel: %@ keys: %@", searchItem, channel.allKeys);
                                         [content addObject:searchItem];

@@ -6,6 +6,10 @@
 //
 //
 
+@interface NSData(MD5)
+- (NSString*)MD5;
+@end
+
 @interface NSHTTPCookieStorage (ClearAllCookies)
 
 - (void)clearAllCookies;
@@ -58,6 +62,7 @@
 
 
 @interface NSURL (QSParameters)
+- (NSURL *)highResVideoURL;
 - (NSArray *)parameterArray;
 - (NSDictionary *)parameterDictionary;
 @end
@@ -89,11 +94,13 @@
 
 @end
 
+
 @interface NSString  (SplitString)
 
 - (NSArray *)splitString;
 - (NSString *)highResChannelURL;
-
+- (NSString *)maxResVideoURL;
+- (NSString *)highResVideoURL;
 @end
 
 @interface UILabel (Additions)

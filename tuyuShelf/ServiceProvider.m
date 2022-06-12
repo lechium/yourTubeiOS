@@ -53,9 +53,9 @@
     [[KBYourTube sharedUserDefaults] setObject:@"brosive" forKey:@"bruh"];
     NSArray *keys = [[[KBYourTube sharedUserDefaults] dictionaryRepresentation] allKeys];
     [keys enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        TLog(@"key: %@", obj);
+        //TLog(@"key: %@", obj);
     }];
-    TLog(@"testKey: %@", [[[KBYourTube sharedUserDefaults] dictionaryRepresentation] allKeys]);
+    //TLog(@"testKey: %@", [[[KBYourTube sharedUserDefaults] dictionaryRepresentation] allKeys]);
     //TLog(@"appCookies: %@", [[ServiceProvider sharedUserDefaults] valueForKey:@"ApplicationCookie"]);
     NSData *cookieData = [[ServiceProvider sharedUserDefaults] objectForKey:@"ApplicationCookie"];
     if ([cookieData length] > 0) {
