@@ -97,6 +97,11 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     
 }
 
+- (void)goToChannelOfResult:(KBYTSearchResult *)searchResult {
+    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.channelId];
+    [self presentViewController:cv animated:true completion:nil];
+}
+
 - (void)promptForNewPlaylistForVideo:(KBYTSearchResult *)searchResult {
     
     UIAlertController *alertController = [UIAlertController
@@ -228,6 +233,10 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         [self promptForNewPlaylistForVideo:result];
     }];
     [alertController addAction:newPlAction];
+    UIAlertAction *goToChannel = [UIAlertAction actionWithTitle:@"Go To Channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self goToChannelOfResult:result];
+    }];
+    [alertController addAction:goToChannel];
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel

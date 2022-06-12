@@ -43,7 +43,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (void)initialSetup {
     NSInteger i = 0;
     self.totalHeight = 0;
-    self.featuredHeightConstraint.constant = 200;
+    self.featuredHeightConstraint.constant = 0;
     for (i = 0; i < [_backingSectionLabels count]; i++)
     {
         UILongPressGestureRecognizer *longpress

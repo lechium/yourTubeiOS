@@ -9,6 +9,7 @@
 #import "TYGridUserViewController.h"
 #import "KBBulletinView.h"
 #import "TYAuthUserManager.h"
+#import "KBYTGridChannelViewController.h"
 
 @interface TYGridUserViewController () {
     NSInteger _highlightedCell;
@@ -144,6 +145,17 @@
     return true;
 }
 
+- (void)goToChannelOfResult:(KBYTSearchResult *)searchResult {
+    TLog(@"searchResult: %@", searchResult.channelId);
+    if (!searchResult.channelId) {
+        TLog(@"searchResult: %@", searchResult);
+        return;
+    }
+    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.channelId];
+    [self presentViewController:cv animated:true completion:nil];
+}
+
+
 - (void)playPausePressed:(UITapGestureRecognizer *)gestureRecognizer {
     if (!_isBeingReordered)
         return;
@@ -176,6 +188,21 @@
         }
     }];
     [alertCon addAction:deleteAction];
+    if (result.resultType == kYTSearchResultTypeChannel) {
+        UIAlertAction *addToHome = [UIAlertAction actionWithTitle:@"Add to Home screen" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [[KBYourTube sharedInstance] addHomeSection:result];
+        }];
+        [alertCon addAction:addToHome];
+        UIAlertAction *featured = [UIAlertAction actionWithTitle:@"Set as Featured channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [[KBYourTube sharedInstance] setFeaturedResult:result];
+        }];
+        [alertCon addAction:featured];
+    } else if (result.resultType == kYTSearchResultTypeVideo) {
+        UIAlertAction *goToChannel = [UIAlertAction actionWithTitle:@"Go to Channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self goToChannelOfResult:result];
+        }];
+        [alertCon addAction:goToChannel];
+    }
     UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
     [alertCon addAction:cancel];
     dispatch_async(dispatch_get_main_queue(), ^{

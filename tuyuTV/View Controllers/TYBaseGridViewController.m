@@ -89,7 +89,7 @@ static int headerTagOffset = 70;
 
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTQueuePlayer *player;
-
+@property (nonatomic, strong) NSLayoutConstraint *headerHeightConstraint;
 
 @end
 
@@ -171,7 +171,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
         [headerView setupView];
-        [headerView autoSetDimension:ALDimensionHeight toSize:175];
+        self.headerHeightConstraint = [headerView autoSetDimension:ALDimensionHeight toSize:175];
         [self.scrollView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:headerView];
         //[self.scrollView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0];
     } else {
@@ -452,6 +452,17 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     [[TYAuthUserManager sharedInstance] addVideo:video.videoId toPlaylistWithID:playlist];
 }
 
+- (void)goToChannelOfResult:(KBYTSearchResult *)searchResult {
+    TLog(@"searchResult: %@", searchResult.channelId);
+    if (!searchResult.channelId) {
+        TLog(@"searchResult: %@", searchResult);
+        return;
+    }
+    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.channelId];
+    [self presentViewController:cv animated:true completion:nil];
+}
+
+
 - (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     UIAlertController *alertController = [UIAlertController
@@ -488,8 +499,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         
     }];
     [alertController addAction:newPlAction];
-    
-    
+    UIAlertAction *goToChannel = [UIAlertAction actionWithTitle:@"Go To Channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self goToChannelOfResult:result];
+    }];
+    [alertController addAction:goToChannel];
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel
@@ -605,9 +618,45 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
      [header.title setTextColor:[UIColor lightTextColor]];
 }
 
+- (void)expandHeaderAnimated:(BOOL)animated {
+    if (animated) {
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.headerHeightConstraint.constant = 175;
+            self.headerview.alpha = 1.0;
+            [self.view layoutIfNeeded];
+            //[self layoutIfNeeded];
+        } completion:nil];
+    } else {
+        self.headerHeightConstraint.constant = 175;
+        self.headerview.alpha = 1.0;
+        [self.view layoutIfNeeded];
+    }
+}
+
+- (void)collapseHeaderAnimated:(BOOL)animated {
+    if (animated) {
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.headerHeightConstraint.constant = -50;
+            self.headerview.alpha = 0;
+            [self.view layoutIfNeeded];
+            //[self layoutIfNeeded];
+        } completion:nil];
+    } else {
+        self.headerview.alpha = 0;
+        self.headerHeightConstraint.constant = -50;
+        [self.view layoutIfNeeded];
+    }
+}
+
+
 - (void)focusedCell:(YTTVStandardCollectionViewCell *)focusedCell {
     //the superview of a CollectionViewCell is its respective collectionView
     UICollectionView *cv = (UICollectionView*)[focusedCell superview];
+    if (cv.tag > 60) {
+        [self collapseHeaderAnimated:true];
+    } else if (cv.tag == 60) {
+        [self expandHeaderAnimated:true];
+    }
     //if it isnt a collectionView or it IS the top collection view we dont do any adjustments
     if (![cv isKindOfClass:[UICollectionView class]] || cv == self.featuredVideosCollectionView ) {
         return;
