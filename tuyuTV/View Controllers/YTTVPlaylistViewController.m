@@ -135,7 +135,11 @@
 - (void)selectedItemAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < self.imageURLs.count)
     {
-        [self.imageView sd_setImageWithURL:self.imageURLs[indexPath.row] placeholderImage:[UIImage imageNamed:@"YTPlaceholder"] options:SDWebImageAllowInvalidSSLCertificates];
+        [self.imageView sd_setImageWithURL:self.imageURLs[indexPath.row] placeholderImage:[UIImage imageNamed:@"YTPlaceholder"] options:SDWebImageAllowInvalidSSLCertificates completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+            if (error) {
+                [self.imageView sd_setImageWithURL:imageURL.highResVideoURL placeholderImage:[UIImage imageNamed:@"YTPlaceholder"] options:SDWebImageAllowInvalidSSLCertificates];
+            }
+        }];
         //UIImage *theImage = [UIImage imageNamed:imageURLs[indexPath.row]];
         //[self.imageView setImage:theImage];
     }
@@ -508,7 +512,13 @@
     // UIImage *theImage = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"YTPlaceHolderImage" ofType:@"png"]];
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
     cell.imageView.autoresizingMask = ( UIViewAutoresizingNone );
-    [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+    [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+        if (error) {
+            //TLog(@"error: %@ url: %@, hr: %@", error, imageURL, [imageURL highResVideoURL]);
+            [cell.imageView sd_setImageWithURL:[imageURL highResVideoURL] placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+        }
+    }];
+    //[cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
     cell.viewBackgroundColor = self.view.backgroundColor;
     if (self.view.backgroundColor == [UIColor blackColor])
     {

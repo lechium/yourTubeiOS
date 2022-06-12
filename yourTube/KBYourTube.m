@@ -875,12 +875,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                          @"channel": KBYTFashionAndBeautyID,
                          @"description": @"YouTube's featured Fashion & Beauty channel.",
                          @"imagePath": @"https://yt3.ggpht.com/Cw_5o8wcghBvDl-oCq9-ehGBezoxo3gOdz2yE5jt74ZdAWpvH6UyADqtQLxql9Ud_NRU4sYV4g=s900-c-k-c0x00ffffff-no-rj-mo"},
-                       
+                       /*
                        @{@"name": @"YouTube",
                          @"channel": KBYTSpotlightChannelID,
                          @"description": @"YouTube's Official Channel helps you discover what's new & trending globally. Watch must-see videos, from music to culture to Internet phenomena.",
                          @"imagePath": @"https://yt3.ggpht.com/584JjRp5QMuKbyduM_2k5RlXFqHJtQ0qLIPZpwbUjMJmgzZngHcam5JMuZQxyzGMV5ljwJRl0Q=s900-c-k-c0x00ffffff-no-rj"},
-                       
+                       */
                        @{@"name": @"Virtual Reality",
                          @"channel": KBYT360ChannelID,
                          @"description": @"Learn more at https://vr.youtube.com",
@@ -898,7 +898,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         [array addObject:@{@"name": obj, @"channel": idArray[idx]}];
     }];*/
     dict[@"sections"] = items;
-    dict[@"featured"] = @"UCByOQJjav0CUDwxCk-jVNRQ";
+    dict[@"featured"] = KBYTSpotlightChannelID;//@"UCByOQJjav0CUDwxCk-jVNRQ";
     return dict;
 }
 
@@ -1741,7 +1741,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             NSDictionary *vid = obj[first];
                             if (vid){
                                 KBYTSearchResult *video = [self searchResultFromVideoRenderer:vid];
-                                TLog(@"here: %@", channel.channelID);
                                 video.channelId = channel.channelID;
                                 //NSLog(@"video: %@", video);
                                 [content addObject:video];
@@ -1763,7 +1762,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 searchItem.title = title[@"simpleText"] ? title[@"simpleText"] : [title recursiveObjectForKey:@"text"];;
                                 searchItem.duration = [playlist[@"videoCountText"] recursiveObjectForKey:@"text"];
                                 searchItem.videoId = cis;
-                                TLog(@"here: %@", channel.channelID);
                                 searchItem.channelId = channel.channelID;
                                 searchItem.imagePath = last;
                                 searchItem.author = channel.title;
@@ -1791,7 +1789,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                     searchItem.duration = playlist[@"videoCountShortText"][@"simpleText"];
                                     searchItem.videoId = cis;
                                     searchItem.imagePath = last;
-                                    TLog(@"here: %@", channel.channelID);
                                     searchItem.channelId = channel.channelID;
                                     searchItem.age = playlist[@"publishedTimeText"][@"simpleText"];
                                     searchItem.author = channel.title;
@@ -1828,7 +1825,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         searchItem.author = title[@"simpleText"];
                                         searchItem.duration = [channel[@"videoCountText"] recursiveObjectForKey:@"text"];
                                         searchItem.videoId = cis;
-                                        TLog(@"here: %@", channelID);
                                         searchItem.channelId = channelID;
                                         searchItem.imagePath = imagePath;
                                         searchItem.resultType = kYTSearchResultTypeChannel;
@@ -1864,7 +1860,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         searchItem.views = reelObject[@"viewCountText"][@"simpleText"];
                                         searchItem.resultType = kYTSearchResultTypeVideo;
                                         searchItem.imagePath = last;
-                                        TLog(@"here: %@", channelID);
                                         searchItem.channelId = channelID;
                                         searchItem.age = [reelObject recursiveObjectForKey:@"timestampText"][@"simpleText"];
                                         searchItem.author = channel.title;
