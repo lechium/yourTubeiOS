@@ -97,6 +97,7 @@
 
 @interface NSString  (SplitString)
 
+- (NSString *)firstPathComponent;
 - (NSArray *)splitString;
 - (NSString *)highResChannelURL;
 - (NSString *)maxResVideoURL;

@@ -1171,6 +1171,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 }
 
+- (NSString *)shelfFile {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"shelf.plist"];
+}
+
 
 - (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock
                                        failureBlock:(void(^)(NSString *error))failureBlock {
@@ -1221,6 +1225,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 
                                 if (returnDict != nil)
                                 {
+                                    [[returnDict convertObjectsToDictionaryRepresentations] writeToFile:[self shelfFile] atomically:true];
                                     completionBlock(returnDict);
                                 } else {
                                     failureBlock(errorString);
@@ -1462,7 +1467,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
             //NSLog(@"body: %@ for: %@ %@", jsonDict, url, params);
             //        DLog(@"array: %lu", vrArray.count);
-            [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"drake.plist"] atomically:true];
+            //[jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"drake.plist"] atomically:true];
             __block NSMutableArray *videos = [NSMutableArray new];
             KBYTPlaylist *playlist = [KBYTPlaylist new];
             id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
@@ -1565,7 +1570,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 - (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current {
-    LOG_CMD;
     NSString *lengthText = current[@"lengthText"][@"simpleText"];
     if (!lengthText){
         lengthText = [[current recursiveObjectForKey:@"thumbnailOverlayTimeStatusRenderer"] recursiveObjectForKey:@"simpleText"];
@@ -1578,7 +1582,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (!fullTitle) {
         fullTitle = [title recursiveObjectForKey:@"simpleText"];
         if (fullTitle.length == 0) {
-            TLog(@"current: %@", current);
+            //TLog(@"current: %@", current);
         }
     }
     NSString *vid = [current recursiveObjectForKey:@"videoId"];//current[@"videoId"];
@@ -1616,10 +1620,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     searchItem.channelId = channelId;
     searchItem.playlistId = playlistId;
     searchItem.resultType = kYTSearchResultTypeVideo;
-    if ([searchItem.videoId isEqualToString:@"z3JmMF6dGGk"]){
-        TLog(@"current: %@", current);
-        TLog(@"self title: %@", searchItem.title);
-    }
     return searchItem;
 }
 

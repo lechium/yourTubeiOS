@@ -48,8 +48,35 @@
     return TVTopShelfContentStyleSectioned;
 }
 
+- (NSString *)shelfFile {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"shelf.plist"];
+}
+
+- (void)loadDetailsFromDictionary:(NSDictionary *)dictionary {
+    NSArray <KBYTSearchResult *> *results = dictionary[@"results"];
+    NSArray <KBYTSearchResult *> *rChannels = dictionary[@"channels"];
+    [results enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        if (obj.resultType ==kYTSearchResultTypeChannel)
+        {
+            [self.channels addObject:obj];
+            
+        } else if (obj.resultType ==kYTSearchResultTypePlaylist)
+        {
+            [self.playlists addObject:obj];
+        }
+        
+    }];
+    [self.channels addObjectsFromArray:rChannels];
+    [[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+}
+
 - (void)testGetYTScience {
     TLog(@"app support: %@", [self appSupportFolder]);
+    NSString *fileTest = @"/var/mobile/Documents/test.txt";
+    //[@"bro" writeToFile:fileTest atomically:true];
+    NSString *string = [NSString stringWithContentsOfFile:fileTest];
+    TLog(@"%@ contents: %@", fileTest, string);
     [[KBYourTube sharedUserDefaults] setObject:@"brosive" forKey:@"bruh"];
     NSArray *keys = [[[KBYourTube sharedUserDefaults] dictionaryRepresentation] allKeys];
     [keys enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -76,25 +103,16 @@
     
     if ([[KBYourTube sharedInstance] isSignedIn] == YES) {
         TLog(@"is signed in, get those sciences too!");
+        if ([FM fileExistsAtPath:[self shelfFile]]) {
+        NSDictionary *loadCache = [NSDictionary dictionaryWithContentsOfFile:[self shelfFile]];
+            [self loadDetailsFromDictionary:[loadCache convertDictionaryToObjects]];
+        }
+        
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
             
-            //TLog(@"got outputResults: %@", outputResults);
-            NSArray <KBYTSearchResult *> *results = outputResults[@"results"];
-            NSArray <KBYTSearchResult *> *rChannels = outputResults[@"channels"];
-            [results enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                
-                if (obj.resultType ==kYTSearchResultTypeChannel)
-                {
-                    [self.channels addObject:obj];
-                    
-                } else if (obj.resultType ==kYTSearchResultTypePlaylist)
-                {
-                    [self.playlists addObject:obj];
-                }
-                
-            }];
-            [self.channels addObjectsFromArray:rChannels];
-            [[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+            TLog(@"got outputResults: %@", outputResults);
+            [[outputResults convertObjectsToDictionaryRepresentations] writeToFile:[self shelfFile] atomically:true];
+            [self loadDetailsFromDictionary:outputResults];
             
         } failureBlock:^(NSString *error) {
             //

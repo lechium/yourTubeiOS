@@ -779,6 +779,9 @@
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:
                                                 0] : NSTemporaryDirectory();
     //NSLog(@"basePath: %@", basePath);
+    NSString *appContainer = [[NSBundle.mainBundle bundlePath] firstPathComponent];
+    //TLog(@"appcontainer: %@", appContainer);
+    if ([appContainer isEqualToString:@"Applications"]) return false;
     return ![basePath isEqualToString:@"/var/mobile/Library/Application Support"];
    
 }
@@ -881,6 +884,14 @@
 //split a string into an NSArray of characters
 
 @implementation NSString (SplitString)
+
+- (NSString *)firstPathComponent {
+    NSArray *comp = [self pathComponents];
+    if (comp.count > 0) {
+        return comp[1];
+    }
+    return comp.firstObject;
+}
 
 - (NSArray *)splitString {
     NSUInteger index = 0;

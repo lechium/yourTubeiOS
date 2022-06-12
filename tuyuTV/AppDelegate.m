@@ -269,6 +269,13 @@ void UncaughtExceptionHandler(NSException *exception) {
 
 }
 
+- (void)broTest {
+    NSString *fileTest = @"/var/mobile/Documents/test.txt";
+    [@"brosive" writeToFile:fileTest atomically:true];
+    NSString *string = [NSString stringWithContentsOfFile:fileTest];
+    TLog(@"%@ contents: %@", fileTest, string);
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
@@ -280,6 +287,7 @@ void UncaughtExceptionHandler(NSException *exception) {
     [[NSUserDefaults standardUserDefaults] synchronize];
     LOG_SELF;
      TLog(@"app support: %@", [self appSupportFolder]);
+    [self broTest];
     self.tabBar = (UITabBarController *)self.window.rootViewController;
    // self.tabBar.tabBar.translucent = false;
     NSMutableArray *viewControllers = [NSMutableArray new];
