@@ -373,8 +373,16 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     }
     NSURL *imageURL = [NSURL URLWithString:currentItem.imagePath];
     UIImage *theImage = [UIImage imageNamed:@"YTPlaceholder"];
-    [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
-    cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
+    [cell.image sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+        if (error) {
+            [cell.image sd_setImageWithURL:imageURL.highResVideoURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
+        }
+    }];
+    if (currentItem.author.length > 0){
+        cell.title.text = [NSString stringWithFormat:@"%@ - %@", currentItem.author, currentItem.title];
+    } else {
+        cell.title.text = currentItem.title;
+    }
     
     return cell;
 }
@@ -442,7 +450,6 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
-    LOG_SELF;
     self.currentPage = 1; //reset for new search
     self.continuationToken = nil;
     if ([_lastSearchResult isEqualToString:searchController.searchBar.text] || searchController.searchBar.text.length == 0) {

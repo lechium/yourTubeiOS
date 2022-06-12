@@ -125,7 +125,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         recursiveObjectsLike(@"videoRenderer", jsonDict, videos);
         [videos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             KBYTSearchResult *searchItem = [[KBYourTube sharedInstance] searchResultFromVideoRenderer:obj];
-            [videoResults addObject:searchItem];
+            if (searchItem.title.length > 0 && searchItem.videoId.length > 0){
+                [videoResults addObject:searchItem];
+            }
         }];
         self.videos = videoResults;
     }
@@ -1563,6 +1565,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 - (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current {
+    LOG_CMD;
     NSString *lengthText = current[@"lengthText"][@"simpleText"];
     if (!lengthText){
         lengthText = [[current recursiveObjectForKey:@"thumbnailOverlayTimeStatusRenderer"] recursiveObjectForKey:@"simpleText"];
@@ -1574,6 +1577,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     NSString *fullTitle = [title recursiveObjectForKey:@"text"];
     if (!fullTitle) {
         fullTitle = [title recursiveObjectForKey:@"simpleText"];
+        if (fullTitle.length == 0) {
+            TLog(@"current: %@", current);
+        }
     }
     NSString *vid = [current recursiveObjectForKey:@"videoId"];//current[@"videoId"];
     NSString *viewCountText = current[@"viewCountText"][@"simpleText"];
@@ -1610,6 +1616,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     searchItem.channelId = channelId;
     searchItem.playlistId = playlistId;
     searchItem.resultType = kYTSearchResultTypeVideo;
+    if ([searchItem.videoId isEqualToString:@"z3JmMF6dGGk"]){
+        TLog(@"current: %@", current);
+        TLog(@"self title: %@", searchItem.title);
+    }
     return searchItem;
 }
 

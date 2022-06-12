@@ -66,7 +66,6 @@
         }
     }
     
-    NSMutableDictionary *channels = [NSMutableDictionary new];
     [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.menuItems = [channel.allSectionItems mutableCopy];
@@ -83,7 +82,7 @@
             NSArray <KBYTSearchResult *> *results = outputResults[@"results"];
             NSArray <KBYTSearchResult *> *rChannels = outputResults[@"channels"];
             [results enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-               
+                
                 if (obj.resultType ==kYTSearchResultTypeChannel)
                 {
                     [self.channels addObject:obj];
@@ -105,13 +104,13 @@
 }
 
 /*
-
-private func urlForIdentifier(identifier: String) -> NSURL {
-    let components = NSURLComponents()
-    components.scheme = "newsapp"
-    components.queryItems = [NSURLQueryItem(name: "identifier",
-                                            value: identifier)] return components.URL!
-}*/
+ 
+ private func urlForIdentifier(identifier: String) -> NSURL {
+ let components = NSURLComponents()
+ components.scheme = "newsapp"
+ components.queryItems = [NSURLQueryItem(name: "identifier",
+ value: identifier)] return components.URL!
+ }*/
 
 - (NSURL *)urlForIdentifier:(NSString*)identifier type:(NSString *)type {
     return [NSURL URLWithString:[NSString stringWithFormat:@"tuyu://%@/%@", type, identifier]];
@@ -125,8 +124,8 @@ private func urlForIdentifier(identifier: String) -> NSURL {
     if (self.menuItems.count == 0 || self.menuItems == nil) {
         [self testGetYTScience];
     }
-   // [self testGetYTScience];
-   
+    // [self testGetYTScience];
+    
     __block NSMutableArray *suggestedItems = [NSMutableArray new];
     __block NSMutableArray *channelItems = [NSMutableArray new];
     __block NSMutableArray *playlistItems = [NSMutableArray new];
@@ -170,7 +169,7 @@ private func urlForIdentifier(identifier: String) -> NSURL {
             TLog(@"url: %@", comp.URL);
             ci.displayURL = comp.URL;
             [playlistItems addObject:ci];
-        
+            
         }];
         pItem.topShelfItems = playlistItems;
         [sectionItems addObject:pItem];

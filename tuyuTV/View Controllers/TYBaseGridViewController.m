@@ -166,7 +166,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     if (headerView != nil) {
         [self.view addSubview:headerView];
         //[headerView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-        [headerView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+        self.headerTopConstraint = [headerView autoPinEdgeToSuperviewMargin:ALEdgeTop];
         //[headerView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:40];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
@@ -621,13 +621,12 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (void)expandHeaderAnimated:(BOOL)animated {
     if (animated) {
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            self.headerHeightConstraint.constant = 175;
+            self.headerTopConstraint.constant = 0;
             self.headerview.alpha = 1.0;
             [self.view layoutIfNeeded];
-            //[self layoutIfNeeded];
         } completion:nil];
     } else {
-        self.headerHeightConstraint.constant = 175;
+        self.headerTopConstraint.constant = 0;
         self.headerview.alpha = 1.0;
         [self.view layoutIfNeeded];
     }
@@ -636,14 +635,13 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 - (void)collapseHeaderAnimated:(BOOL)animated {
     if (animated) {
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            self.headerHeightConstraint.constant = -50;
+            self.headerTopConstraint.constant = -175;
             self.headerview.alpha = 0;
             [self.view layoutIfNeeded];
-            //[self layoutIfNeeded];
         } completion:nil];
     } else {
         self.headerview.alpha = 0;
-        self.headerHeightConstraint.constant = -50;
+        self.headerTopConstraint.constant = -175;
         [self.view layoutIfNeeded];
     }
 }
