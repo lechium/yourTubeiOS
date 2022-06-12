@@ -182,7 +182,7 @@ void UncaughtExceptionHandler(NSException *exception) {
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
-    DLog(@"url: %@ path: %@", url.host, url.path.lastPathComponent);
+    TLog(@"openURL url: %@ path: %@", url.host, url.path.lastPathComponent);
     
     YTSearchResultType type = [KBYourTube resultTypeForString:url.host];
     
@@ -253,9 +253,11 @@ void UncaughtExceptionHandler(NSException *exception) {
 
 
 - (void)showChannel:(NSString *)videoId {
-    
     KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:videoId];
-    [self presentViewController:cv animated:true completion:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self presentViewController:cv animated:true completion:nil];
+    });
+    
 }
 
 - (void)itemDidFinishPlaying:(NSNotification *)n {
@@ -269,12 +271,6 @@ void UncaughtExceptionHandler(NSException *exception) {
 
 }
 
-- (void)broTest {
-    NSString *fileTest = @"/var/mobile/Documents/test.txt";
-    [@"brosive" writeToFile:fileTest atomically:true];
-    NSString *string = [NSString stringWithContentsOfFile:fileTest];
-    TLog(@"%@ contents: %@", fileTest, string);
-}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
@@ -287,7 +283,6 @@ void UncaughtExceptionHandler(NSException *exception) {
     [[NSUserDefaults standardUserDefaults] synchronize];
     LOG_SELF;
      TLog(@"app support: %@", [self appSupportFolder]);
-    [self broTest];
     self.tabBar = (UITabBarController *)self.window.rootViewController;
    // self.tabBar.tabBar.translucent = false;
     NSMutableArray *viewControllers = [NSMutableArray new];

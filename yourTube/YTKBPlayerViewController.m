@@ -14,11 +14,32 @@
 
 #import "YTKBPlayerViewController.h"
 
+@interface YTKBPlayerViewController () {
+    NSURL *_mediaURL;
+}
 
+@end
 
 @implementation YTKBPlayerViewController
 
 @synthesize mediaIsLocal, titleTimer;
+
+- (NSURL *)mediaURL {
+    return _mediaURL;
+}
+
+- (BOOL)setMediaURL:(NSURL *)mediaURL {
+    _mediaURL = mediaURL;
+    AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:mediaURL];
+    if (![[singleItem asset] isPlayable]){
+        TLog(@"this is not playable!!");
+        singleItem = nil;
+        return false;
+    }
+    self.player = [KBYTQueuePlayer playerWithPlayerItem:singleItem];
+    [self.player play];
+    return true;
+}
 
 /*
  
@@ -313,5 +334,6 @@
 - (BOOL)shouldAutorotate {
     return TRUE;
 }
+
 
 @end

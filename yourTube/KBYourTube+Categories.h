@@ -6,6 +6,16 @@
 //
 //
 
+NS_ASSUME_NONNULL_BEGIN
+
+@interface UIColor (copy)
+- (UIColor *)copyWithAlpha:(CGFloat)alpha;
+@end
+
+@interface UIViewController (Presentation)
+- (void)safePresentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^__nullable)(void))completion;
+@end
+
 @interface NSData(MD5)
 - (NSString*)MD5;
 @end
@@ -114,3 +124,5 @@
 - (void)weaklyAssociateValue:(id)value withKey:(void *)key;
 - (id)associatedValueForKey:(void *)key;
 @end
+
+NS_ASSUME_NONNULL_END

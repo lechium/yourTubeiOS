@@ -237,6 +237,16 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         [self goToChannelOfResult:result];
     }];
     [alertController addAction:goToChannel];
+    if ([[KBYourTube sharedInstance] isSignedIn]) {
+        UIAlertAction *subToChannel = [UIAlertAction actionWithTitle:@"Subscribe To Channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                [[TYAuthUserManager sharedInstance] subscribeToChannel:result.channelId];
+            });
+        }];
+        [alertController addAction:subToChannel];
+    }
+    
+    
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel

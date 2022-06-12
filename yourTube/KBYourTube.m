@@ -1936,6 +1936,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             channel.playlists = playlists;
             */
             //get the post body from the url above, gets the initial raw info we work with
+            
+            if (channel.allSectionItems.count == 0) {
+                TLog(@"no items found!");
+            }
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completionBlock) {
                     completionBlock(channel);

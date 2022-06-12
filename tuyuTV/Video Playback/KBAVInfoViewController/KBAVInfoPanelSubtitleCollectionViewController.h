@@ -1,0 +1,5 @@
+#import "KBAVInfoPanelMediaOptionCollectionViewController.h"
+
+@interface KBAVInfoPanelSubtitleCollectionViewController: KBAVInfoPanelMediaOptionCollectionViewController
+
+@end

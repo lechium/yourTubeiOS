@@ -14,18 +14,18 @@
 //  Note also that this classrequires that the AVFoundation framework be included in your project.
 
 #import <AVFoundation/AVFoundation.h>
-
+#import "KBVideoPlaybackProtocol.h"
 
 @class KBYTQueuePlayer;
 
-@protocol KBYTQueuePlayerDelegate <NSObject>
+@protocol KBYTQueuePlayerDelegate <KBVideoPlayerProtocol, NSObject>
 @optional
 
 - (void)queuePlayer:(KBYTQueuePlayer *)player didStartPlayingItem:(AVPlayerItem *)item;
 - (void)queuePlayerHasMultipleItems:(KBYTQueuePlayer *)player;
 @end
 
-@interface KBYTQueuePlayer : AVQueuePlayer
+@interface KBYTQueuePlayer : AVQueuePlayer <KBVideoPlayerProtocol>
 {
 }
 @property (readwrite, assign) BOOL multipleItemsDelegateCalled;

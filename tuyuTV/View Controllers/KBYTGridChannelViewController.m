@@ -20,8 +20,8 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 @implementation KBYTGridChannelViewController
 
 - (void)viewDidLoad {
+    LOG_CMD;
     [super viewDidLoad];
-    [self refreshDataWithProgress:YES];
     // Do any additional setup after loading the view.
 }
 
@@ -37,6 +37,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [self refreshDataWithProgress:YES];
     [super viewWillAppear:animated];
 }
 
@@ -120,9 +121,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
         [SVProgressHUD show];
     }
-    
+    TLog(@"channelID: -%@-", self.channelID);
     [[KBYourTube sharedInstance] getChannelVideosAlt:self.channelID continuation:nil completionBlock:^(KBYTChannel *channel) {
         
+        TLog(@"channelData: %@", channel);
         dispatch_async(dispatch_get_main_queue(), ^{
             
             UIImage *banner = [UIImage imageNamed:@"Banner"];

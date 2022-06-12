@@ -415,7 +415,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    LOG_SELF;
+    //LOG_SELF;
     if (section == 0) { return 5;}
     return 0;
 }
@@ -431,7 +431,7 @@
     
     MetaDataAsset *currentAsset = nil;
     if (indexPath.section == 1) {
-        TLog(@"extra items instead!");
+        //TLog(@"extra items instead!");
         currentAsset = self.extraItems[indexPath.row];
     } else {
         currentAsset = self.items[indexPath.row];

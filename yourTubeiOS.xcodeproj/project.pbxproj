@@ -25,6 +25,8 @@
 		323CF8DA284E57AF00559FF7 /* GCDWebServers.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
 		324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 324693A82841EE8A002D91F0 /* AuthViewController.m */; };
+		3246AF8A28569686008678D4 /* EXTScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 3246AF8628569686008678D4 /* EXTScope.m */; };
+		3246AF8B28569686008678D4 /* EXTRuntimeExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3246AF8728569686008678D4 /* EXTRuntimeExtensions.m */; };
 		324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 892A3F491CF7AD3F00EA0247 /* TYAuthUserManager.m */; };
 		324CDA4A1FC24B4F003B3A0F /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 898E93611C8D74B300B34DAA /* WebViewController.m */; };
 		3258A2912853D270009BBDB3 /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A12A1F424805006F24B3 /* AFSecurityPolicy.m */; };
@@ -70,6 +72,35 @@
 		32D2A1551F424F1C006F24B3 /* NSFileManager+Godzippa.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D2A1511F424F1C006F24B3 /* NSFileManager+Godzippa.m */; };
 		32D2A1571F424F4E006F24B3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32D2A1561F424F4E006F24B3 /* libz.tbd */; };
 		32D2A1591F424F56006F24B3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32D2A1581F424F56006F24B3 /* libz.tbd */; };
+		32D6A621285695CC006BF25C /* KBSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5D4285695CC006BF25C /* KBSlider.m */; };
+		32D6A622285695CC006BF25C /* KBSliderImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5DC285695CC006BF25C /* KBSliderImages.m */; };
+		32D6A623285695CC006BF25C /* KBMediaAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5E4285695CC006BF25C /* KBMediaAsset.m */; };
+		32D6A624285695CC006BF25C /* KBPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5E5285695CC006BF25C /* KBPlayerViewController.m */; };
+		32D6A625285695CC006BF25C /* KBButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5E8285695CC006BF25C /* KBButton.m */; };
+		32D6A626285695CC006BF25C /* KBContextMenuRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5EA285695CC006BF25C /* KBContextMenuRepresentation.m */; };
+		32D6A627285695CC006BF25C /* KBContextMenuViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5EC285695CC006BF25C /* KBContextMenuViewCell.m */; };
+		32D6A628285695CC006BF25C /* KBMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5EE285695CC006BF25C /* KBMenu.m */; };
+		32D6A629285695CC006BF25C /* KBContextMenuSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5EF285695CC006BF25C /* KBContextMenuSection.m */; };
+		32D6A62A285695CC006BF25C /* KBMenuElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5F1285695CC006BF25C /* KBMenuElement.m */; };
+		32D6A62B285695CC006BF25C /* KBContextMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5F2285695CC006BF25C /* KBContextMenuView.m */; };
+		32D6A62C285695CC006BF25C /* KBAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5F5285695CC006BF25C /* KBAction.m */; };
+		32D6A62D285695CC006BF25C /* KBContextCollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5F8285695CC006BF25C /* KBContextCollectionHeaderView.m */; };
+		32D6A62E285695CC006BF25C /* KBAVMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5FD285695CC006BF25C /* KBAVMetaData.m */; };
+		32D6A62F285695CC006BF25C /* KBAVInfoPanelCollectionViewTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5FE285695CC006BF25C /* KBAVInfoPanelCollectionViewTextCell.m */; };
+		32D6A630285695CC006BF25C /* KBAVInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A601285695CC006BF25C /* KBAVInfoViewController.m */; };
+		32D6A631285695CC006BF25C /* KBAVInfoPanelSubtitlesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A603285695CC006BF25C /* KBAVInfoPanelSubtitlesViewController.m */; };
+		32D6A632285695CC006BF25C /* KBAVInfoPanelMediaOptionCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A604285695CC006BF25C /* KBAVInfoPanelMediaOptionCollectionViewController.m */; };
+		32D6A633285695CC006BF25C /* KBAVInfoPanelContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A605285695CC006BF25C /* KBAVInfoPanelContentViewController.m */; };
+		32D6A634285695CC006BF25C /* KBAVInfoPanelMediaOption.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A606285695CC006BF25C /* KBAVInfoPanelMediaOption.m */; };
+		32D6A635285695CC006BF25C /* KBAVInfoPanelSubtitleCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A607285695CC006BF25C /* KBAVInfoPanelSubtitleCollectionViewController.m */; };
+		32D6A636285695CC006BF25C /* KBAVInfoPanelDescriptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A608285695CC006BF25C /* KBAVInfoPanelDescriptionViewController.m */; };
+		32D6A637285695CC006BF25C /* UIStackView+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A60C285695CC006BF25C /* UIStackView+Helper.m */; };
+		32D6A638285695CC006BF25C /* AVAsset+Extras.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A60E285695CC006BF25C /* AVAsset+Extras.m */; };
+		32D6A639285695CC006BF25C /* UIImage+Template.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A60F285695CC006BF25C /* UIImage+Template.m */; };
+		32D6A63A285695CC006BF25C /* UIView+AL.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A610285695CC006BF25C /* UIView+AL.m */; };
+		32D6A63B285695CC006BF25C /* KBTextPresentationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A616285695CC006BF25C /* KBTextPresentationViewController.m */; };
+		32D6A63D285695CC006BF25C /* NSString+Truncate.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A61C285695CC006BF25C /* NSString+Truncate.m */; };
+		32D6A63E285695CC006BF25C /* KBMoreButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A61D285695CC006BF25C /* KBMoreButton.m */; };
 		892669151C88AD5200082B31 /* libxml2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 892669141C88AD5200082B31 /* libxml2.2.dylib */; };
 		8926691D1C88B1A900082B31 /* MarqueeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8926691A1C88B1A900082B31 /* MarqueeLabel.m */; };
 		8926691E1C88B1BB00082B31 /* KBYTPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */; };
@@ -363,6 +394,12 @@
 		324693A028404C65002D91F0 /* AppSupport.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupport.tbd; sourceTree = SOURCE_ROOT; };
 		324693A82841EE8A002D91F0 /* AuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthViewController.m; sourceTree = "<group>"; };
 		324693A92841EE8A002D91F0 /* AuthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AuthViewController.h; sourceTree = "<group>"; };
+		3246AF8428569686008678D4 /* EXTRuntimeExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTRuntimeExtensions.h; sourceTree = "<group>"; };
+		3246AF8528569686008678D4 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metamacros.h; sourceTree = "<group>"; };
+		3246AF8628569686008678D4 /* EXTScope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTScope.m; sourceTree = "<group>"; };
+		3246AF8728569686008678D4 /* EXTRuntimeExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTRuntimeExtensions.m; sourceTree = "<group>"; };
+		3246AF8828569686008678D4 /* EXTScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTScope.h; sourceTree = "<group>"; };
+		3246AF8928569686008678D4 /* EXTKeyPathCoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTKeyPathCoding.h; sourceTree = "<group>"; };
 		328411781E4FA763002B1310 /* tuyuShelf.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = tuyuShelf.entitlements; sourceTree = "<group>"; };
 		328411791E4FDFFE002B1310 /* tuyu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = tuyu.entitlements; sourceTree = "<group>"; };
 		328E337E1E4F868C00C544ED /* tuyuShelf.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = tuyuShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -403,6 +440,76 @@
 		32D2A1511F424F1C006F24B3 /* NSFileManager+Godzippa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+Godzippa.m"; sourceTree = "<group>"; };
 		32D2A1561F424F4E006F24B3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS10.1.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
 		32D2A1581F424F56006F24B3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.2.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
+		32D6A5D4285695CC006BF25C /* KBSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBSlider.m; sourceTree = "<group>"; };
+		32D6A5D6285695CC006BF25C /* tvhifi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tvhifi.h; sourceTree = "<group>"; };
+		32D6A5D7285695CC006BF25C /* backward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = backward.h; sourceTree = "<group>"; };
+		32D6A5D8285695CC006BF25C /* hd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hd.h; sourceTree = "<group>"; };
+		32D6A5D9285695CC006BF25C /* goforward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = goforward.h; sourceTree = "<group>"; };
+		32D6A5DA285695CC006BF25C /* audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio.h; sourceTree = "<group>"; };
+		32D6A5DB285695CC006BF25C /* cc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cc.h; sourceTree = "<group>"; };
+		32D6A5DC285695CC006BF25C /* KBSliderImages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBSliderImages.m; sourceTree = "<group>"; };
+		32D6A5DD285695CC006BF25C /* appletv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = appletv.h; sourceTree = "<group>"; };
+		32D6A5DE285695CC006BF25C /* captions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = captions.h; sourceTree = "<group>"; };
+		32D6A5DF285695CC006BF25C /* gobackward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gobackward.h; sourceTree = "<group>"; };
+		32D6A5E0285695CC006BF25C /* checkmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = checkmark.h; sourceTree = "<group>"; };
+		32D6A5E1285695CC006BF25C /* KBSliderImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBSliderImages.h; sourceTree = "<group>"; };
+		32D6A5E2285695CC006BF25C /* forward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = forward.h; sourceTree = "<group>"; };
+		32D6A5E3285695CC006BF25C /* KBSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBSlider.h; sourceTree = "<group>"; };
+		32D6A5E4285695CC006BF25C /* KBMediaAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBMediaAsset.m; sourceTree = "<group>"; };
+		32D6A5E5285695CC006BF25C /* KBPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBPlayerViewController.m; sourceTree = "<group>"; };
+		32D6A5E7285695CC006BF25C /* KBAVInfoPanelSubtitlesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelSubtitlesViewController.h; sourceTree = "<group>"; };
+		32D6A5E8285695CC006BF25C /* KBButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBButton.m; sourceTree = "<group>"; };
+		32D6A5EA285695CC006BF25C /* KBContextMenuRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBContextMenuRepresentation.m; sourceTree = "<group>"; };
+		32D6A5EB285695CC006BF25C /* KBContextMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBContextMenuView.h; sourceTree = "<group>"; };
+		32D6A5EC285695CC006BF25C /* KBContextMenuViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBContextMenuViewCell.m; sourceTree = "<group>"; };
+		32D6A5ED285695CC006BF25C /* KBAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAction.h; sourceTree = "<group>"; };
+		32D6A5EE285695CC006BF25C /* KBMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBMenu.m; sourceTree = "<group>"; };
+		32D6A5EF285695CC006BF25C /* KBContextMenuSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBContextMenuSection.m; sourceTree = "<group>"; };
+		32D6A5F0285695CC006BF25C /* KBContextCollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBContextCollectionHeaderView.h; sourceTree = "<group>"; };
+		32D6A5F1285695CC006BF25C /* KBMenuElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBMenuElement.m; sourceTree = "<group>"; };
+		32D6A5F2285695CC006BF25C /* KBContextMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBContextMenuView.m; sourceTree = "<group>"; };
+		32D6A5F3285695CC006BF25C /* KBContextMenuRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBContextMenuRepresentation.h; sourceTree = "<group>"; };
+		32D6A5F4285695CC006BF25C /* KBMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBMenu.h; sourceTree = "<group>"; };
+		32D6A5F5285695CC006BF25C /* KBAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAction.m; sourceTree = "<group>"; };
+		32D6A5F6285695CC006BF25C /* KBContextMenuViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBContextMenuViewCell.h; sourceTree = "<group>"; };
+		32D6A5F7285695CC006BF25C /* KBMenuElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBMenuElement.h; sourceTree = "<group>"; };
+		32D6A5F8285695CC006BF25C /* KBContextCollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBContextCollectionHeaderView.m; sourceTree = "<group>"; };
+		32D6A5F9285695CC006BF25C /* KBContextMenuSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBContextMenuSection.h; sourceTree = "<group>"; };
+		32D6A5FA285695CC006BF25C /* KBAVInfoPanelMediaOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelMediaOption.h; sourceTree = "<group>"; };
+		32D6A5FB285695CC006BF25C /* KBAVInfoPanelContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelContentViewController.h; sourceTree = "<group>"; };
+		32D6A5FC285695CC006BF25C /* KBAVInfoPanelMediaOptionCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelMediaOptionCollectionViewController.h; sourceTree = "<group>"; };
+		32D6A5FD285695CC006BF25C /* KBAVMetaData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVMetaData.m; sourceTree = "<group>"; };
+		32D6A5FE285695CC006BF25C /* KBAVInfoPanelCollectionViewTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelCollectionViewTextCell.m; sourceTree = "<group>"; };
+		32D6A5FF285695CC006BF25C /* KBAVInfoPanelDescriptionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelDescriptionViewController.h; sourceTree = "<group>"; };
+		32D6A600285695CC006BF25C /* KBAVInfoPanelSubtitleCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelSubtitleCollectionViewController.h; sourceTree = "<group>"; };
+		32D6A601285695CC006BF25C /* KBAVInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoViewController.m; sourceTree = "<group>"; };
+		32D6A602285695CC006BF25C /* KBButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBButton.h; sourceTree = "<group>"; };
+		32D6A603285695CC006BF25C /* KBAVInfoPanelSubtitlesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelSubtitlesViewController.m; sourceTree = "<group>"; };
+		32D6A604285695CC006BF25C /* KBAVInfoPanelMediaOptionCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelMediaOptionCollectionViewController.m; sourceTree = "<group>"; };
+		32D6A605285695CC006BF25C /* KBAVInfoPanelContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelContentViewController.m; sourceTree = "<group>"; };
+		32D6A606285695CC006BF25C /* KBAVInfoPanelMediaOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelMediaOption.m; sourceTree = "<group>"; };
+		32D6A607285695CC006BF25C /* KBAVInfoPanelSubtitleCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelSubtitleCollectionViewController.m; sourceTree = "<group>"; };
+		32D6A608285695CC006BF25C /* KBAVInfoPanelDescriptionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBAVInfoPanelDescriptionViewController.m; sourceTree = "<group>"; };
+		32D6A609285695CC006BF25C /* KBAVInfoPanelCollectionViewTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoPanelCollectionViewTextCell.h; sourceTree = "<group>"; };
+		32D6A60A285695CC006BF25C /* KBAVMetaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVMetaData.h; sourceTree = "<group>"; };
+		32D6A60C285695CC006BF25C /* UIStackView+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIStackView+Helper.m"; sourceTree = "<group>"; };
+		32D6A60D285695CC006BF25C /* UIView+AL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+AL.h"; sourceTree = "<group>"; };
+		32D6A60E285695CC006BF25C /* AVAsset+Extras.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVAsset+Extras.m"; sourceTree = "<group>"; };
+		32D6A60F285695CC006BF25C /* UIImage+Template.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Template.m"; sourceTree = "<group>"; };
+		32D6A610285695CC006BF25C /* UIView+AL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+AL.m"; sourceTree = "<group>"; };
+		32D6A611285695CC006BF25C /* UIStackView+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIStackView+Helper.h"; sourceTree = "<group>"; };
+		32D6A612285695CC006BF25C /* AVAsset+Extras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AVAsset+Extras.h"; sourceTree = "<group>"; };
+		32D6A613285695CC006BF25C /* UIImage+Template.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Template.h"; sourceTree = "<group>"; };
+		32D6A614285695CC006BF25C /* KBAVInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBAVInfoViewController.h; sourceTree = "<group>"; };
+		32D6A616285695CC006BF25C /* KBTextPresentationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBTextPresentationViewController.m; sourceTree = "<group>"; };
+		32D6A617285695CC006BF25C /* KBTextPresentationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBTextPresentationViewController.h; sourceTree = "<group>"; };
+		32D6A619285695CC006BF25C /* KBMediaAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBMediaAsset.h; sourceTree = "<group>"; };
+		32D6A61B285695CC006BF25C /* KBMoreButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBMoreButton.h; sourceTree = "<group>"; };
+		32D6A61C285695CC006BF25C /* NSString+Truncate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Truncate.m"; sourceTree = "<group>"; };
+		32D6A61D285695CC006BF25C /* KBMoreButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBMoreButton.m; sourceTree = "<group>"; };
+		32D6A61E285695CC006BF25C /* NSString+Truncate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Truncate.h"; sourceTree = "<group>"; };
+		32D6A61F285695CC006BF25C /* KBPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBPlayerViewController.h; sourceTree = "<group>"; };
+		32D6A620285695CC006BF25C /* KBVideoPlaybackProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBVideoPlaybackProtocol.h; sourceTree = "<group>"; };
 		8912FA4F1C6E731D00FB6D67 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		8912FA501C6E731D00FB6D67 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		8912FA551C6EE29400FB6D67 /* ONOXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ONOXMLDocument.h; sourceTree = "<group>"; };
@@ -759,6 +866,19 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
+		3246AF8328569686008678D4 /* extobjc */ = {
+			isa = PBXGroup;
+			children = (
+				3246AF8428569686008678D4 /* EXTRuntimeExtensions.h */,
+				3246AF8528569686008678D4 /* metamacros.h */,
+				3246AF8628569686008678D4 /* EXTScope.m */,
+				3246AF8728569686008678D4 /* EXTRuntimeExtensions.m */,
+				3246AF8828569686008678D4 /* EXTScope.h */,
+				3246AF8928569686008678D4 /* EXTKeyPathCoding.h */,
+			);
+			path = extobjc;
+			sourceTree = "<group>";
+		};
 		3249B8A6284B032000E72333 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -848,6 +968,139 @@
 			);
 			name = Godzippa;
 			path = yourTube/Godzippa;
+			sourceTree = "<group>";
+		};
+		32D6A5D1285695CC006BF25C /* Video Playback */ = {
+			isa = PBXGroup;
+			children = (
+				32D6A5E6285695CC006BF25C /* KBAVInfoViewController */,
+				32D6A619285695CC006BF25C /* KBMediaAsset.h */,
+				32D6A5E4285695CC006BF25C /* KBMediaAsset.m */,
+				32D6A61A285695CC006BF25C /* KBMoreButton */,
+				32D6A61F285695CC006BF25C /* KBPlayerViewController.h */,
+				32D6A5E5285695CC006BF25C /* KBPlayerViewController.m */,
+				32D6A5D3285695CC006BF25C /* KBSlider */,
+				32D6A615285695CC006BF25C /* KBTextPresentationViewController */,
+				32D6A620285695CC006BF25C /* KBVideoPlaybackProtocol.h */,
+			);
+			path = "Video Playback";
+			sourceTree = "<group>";
+		};
+		32D6A5D3285695CC006BF25C /* KBSlider */ = {
+			isa = PBXGroup;
+			children = (
+				32D6A5D4285695CC006BF25C /* KBSlider.m */,
+				32D6A5D5285695CC006BF25C /* Images */,
+				32D6A5E3285695CC006BF25C /* KBSlider.h */,
+			);
+			path = KBSlider;
+			sourceTree = "<group>";
+		};
+		32D6A5D5285695CC006BF25C /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				32D6A5D6285695CC006BF25C /* tvhifi.h */,
+				32D6A5D7285695CC006BF25C /* backward.h */,
+				32D6A5D8285695CC006BF25C /* hd.h */,
+				32D6A5D9285695CC006BF25C /* goforward.h */,
+				32D6A5DA285695CC006BF25C /* audio.h */,
+				32D6A5DB285695CC006BF25C /* cc.h */,
+				32D6A5DC285695CC006BF25C /* KBSliderImages.m */,
+				32D6A5DD285695CC006BF25C /* appletv.h */,
+				32D6A5DE285695CC006BF25C /* captions.h */,
+				32D6A5DF285695CC006BF25C /* gobackward.h */,
+				32D6A5E0285695CC006BF25C /* checkmark.h */,
+				32D6A5E1285695CC006BF25C /* KBSliderImages.h */,
+				32D6A5E2285695CC006BF25C /* forward.h */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
+		32D6A5E6285695CC006BF25C /* KBAVInfoViewController */ = {
+			isa = PBXGroup;
+			children = (
+				32D6A5E7285695CC006BF25C /* KBAVInfoPanelSubtitlesViewController.h */,
+				32D6A5E8285695CC006BF25C /* KBButton.m */,
+				32D6A5E9285695CC006BF25C /* Context */,
+				32D6A5FA285695CC006BF25C /* KBAVInfoPanelMediaOption.h */,
+				32D6A5FB285695CC006BF25C /* KBAVInfoPanelContentViewController.h */,
+				32D6A5FC285695CC006BF25C /* KBAVInfoPanelMediaOptionCollectionViewController.h */,
+				32D6A5FD285695CC006BF25C /* KBAVMetaData.m */,
+				32D6A5FE285695CC006BF25C /* KBAVInfoPanelCollectionViewTextCell.m */,
+				32D6A5FF285695CC006BF25C /* KBAVInfoPanelDescriptionViewController.h */,
+				32D6A600285695CC006BF25C /* KBAVInfoPanelSubtitleCollectionViewController.h */,
+				32D6A601285695CC006BF25C /* KBAVInfoViewController.m */,
+				32D6A602285695CC006BF25C /* KBButton.h */,
+				32D6A603285695CC006BF25C /* KBAVInfoPanelSubtitlesViewController.m */,
+				32D6A604285695CC006BF25C /* KBAVInfoPanelMediaOptionCollectionViewController.m */,
+				32D6A605285695CC006BF25C /* KBAVInfoPanelContentViewController.m */,
+				32D6A606285695CC006BF25C /* KBAVInfoPanelMediaOption.m */,
+				32D6A607285695CC006BF25C /* KBAVInfoPanelSubtitleCollectionViewController.m */,
+				32D6A608285695CC006BF25C /* KBAVInfoPanelDescriptionViewController.m */,
+				32D6A609285695CC006BF25C /* KBAVInfoPanelCollectionViewTextCell.h */,
+				32D6A60A285695CC006BF25C /* KBAVMetaData.h */,
+				32D6A60B285695CC006BF25C /* Categories */,
+				32D6A614285695CC006BF25C /* KBAVInfoViewController.h */,
+			);
+			path = KBAVInfoViewController;
+			sourceTree = "<group>";
+		};
+		32D6A5E9285695CC006BF25C /* Context */ = {
+			isa = PBXGroup;
+			children = (
+				32D6A5EA285695CC006BF25C /* KBContextMenuRepresentation.m */,
+				32D6A5EB285695CC006BF25C /* KBContextMenuView.h */,
+				32D6A5EC285695CC006BF25C /* KBContextMenuViewCell.m */,
+				32D6A5ED285695CC006BF25C /* KBAction.h */,
+				32D6A5EE285695CC006BF25C /* KBMenu.m */,
+				32D6A5EF285695CC006BF25C /* KBContextMenuSection.m */,
+				32D6A5F0285695CC006BF25C /* KBContextCollectionHeaderView.h */,
+				32D6A5F1285695CC006BF25C /* KBMenuElement.m */,
+				32D6A5F2285695CC006BF25C /* KBContextMenuView.m */,
+				32D6A5F3285695CC006BF25C /* KBContextMenuRepresentation.h */,
+				32D6A5F4285695CC006BF25C /* KBMenu.h */,
+				32D6A5F5285695CC006BF25C /* KBAction.m */,
+				32D6A5F6285695CC006BF25C /* KBContextMenuViewCell.h */,
+				32D6A5F7285695CC006BF25C /* KBMenuElement.h */,
+				32D6A5F8285695CC006BF25C /* KBContextCollectionHeaderView.m */,
+				32D6A5F9285695CC006BF25C /* KBContextMenuSection.h */,
+			);
+			path = Context;
+			sourceTree = "<group>";
+		};
+		32D6A60B285695CC006BF25C /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				32D6A60C285695CC006BF25C /* UIStackView+Helper.m */,
+				32D6A60D285695CC006BF25C /* UIView+AL.h */,
+				32D6A60E285695CC006BF25C /* AVAsset+Extras.m */,
+				32D6A60F285695CC006BF25C /* UIImage+Template.m */,
+				32D6A610285695CC006BF25C /* UIView+AL.m */,
+				32D6A611285695CC006BF25C /* UIStackView+Helper.h */,
+				32D6A612285695CC006BF25C /* AVAsset+Extras.h */,
+				32D6A613285695CC006BF25C /* UIImage+Template.h */,
+			);
+			path = Categories;
+			sourceTree = "<group>";
+		};
+		32D6A615285695CC006BF25C /* KBTextPresentationViewController */ = {
+			isa = PBXGroup;
+			children = (
+				32D6A616285695CC006BF25C /* KBTextPresentationViewController.m */,
+				32D6A617285695CC006BF25C /* KBTextPresentationViewController.h */,
+			);
+			path = KBTextPresentationViewController;
+			sourceTree = "<group>";
+		};
+		32D6A61A285695CC006BF25C /* KBMoreButton */ = {
+			isa = PBXGroup;
+			children = (
+				32D6A61B285695CC006BF25C /* KBMoreButton.h */,
+				32D6A61C285695CC006BF25C /* NSString+Truncate.m */,
+				32D6A61D285695CC006BF25C /* KBMoreButton.m */,
+				32D6A61E285695CC006BF25C /* NSString+Truncate.h */,
+			);
+			path = KBMoreButton;
 			sourceTree = "<group>";
 		};
 		8912FA4E1C6E731D00FB6D67 /* Reachability */ = {
@@ -1075,6 +1328,8 @@
 		898E92671C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXGroup;
 			children = (
+				3246AF8328569686008678D4 /* extobjc */,
+				32D6A5D1285695CC006BF25C /* Video Playback */,
 				322215FD2852799900F3EE8A /* KBAirDropHelper.h */,
 				322215FC2852799900F3EE8A /* KBAirDropHelper.m */,
 				898E926B1C8D056700B34DAA /* AppDelegate.h */,
@@ -1786,8 +2041,11 @@
 				899876721CDEB109006A639E /* TYBaseGridViewController.m in Sources */,
 				898E93461C8D56BB00B34DAA /* SVIndefiniteAnimatedView.m in Sources */,
 				898E93691C8D910500B34DAA /* KBYTDownloadCell.m in Sources */,
+				32D6A638285695CC006BF25C /* AVAsset+Extras.m in Sources */,
+				32D6A621285695CC006BF25C /* KBSlider.m in Sources */,
 				32D2A1391F424805006F24B3 /* AFgzipRequestSerializer.m in Sources */,
 				898E93711C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m in Sources */,
+				32D6A632285695CC006BF25C /* KBAVInfoPanelMediaOptionCollectionViewController.m in Sources */,
 				898E92821C8D162800B34DAA /* YTTVStandardCollectionViewCell.m in Sources */,
 				898E93041C8D564300B34DAA /* APElement.m in Sources */,
 				898E936A1C8D911700B34DAA /* JGProgressView.m in Sources */,
@@ -1795,32 +2053,42 @@
 				8929758C1CB026B3003D7473 /* AboutViewController.m in Sources */,
 				898E926D1C8D056700B34DAA /* AppDelegate.m in Sources */,
 				32D2A1431F424805006F24B3 /* AFURLResponseSerialization.m in Sources */,
+				32D6A626285695CC006BF25C /* KBContextMenuRepresentation.m in Sources */,
 				898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */,
 				898E934F1C8D56D100B34DAA /* SDWebImageDownloaderOperation.m in Sources */,
 				32D2A14B1F424805006F24B3 /* AFOAuthCredential.m in Sources */,
 				321DAC012849EA64002D07B6 /* KBBulletinView.m in Sources */,
+				32D6A63A285695CC006BF25C /* UIView+AL.m in Sources */,
 				32D2A1531F424F1C006F24B3 /* NSData+Godzippa.m in Sources */,
 				32B022851E63EB82002211C3 /* KBYTChannelHeaderView.m in Sources */,
 				899876621CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,
+				32D6A62E285695CC006BF25C /* KBAVMetaData.m in Sources */,
 				898E93511C8D56D100B34DAA /* SDWebImagePrefetcher.m in Sources */,
 				898E93061C8D565300B34DAA /* KBYTDownloadOperation.m in Sources */,
 				8998766F1CDEA423006A639E /* UIView+RecursiveFind.m in Sources */,
 				898E93591C8D56D400B34DAA /* KBYTPreferences.m in Sources */,
 				32D2A13F1F424805006F24B3 /* AFSecurityPolicy.m in Sources */,
 				898E93471C8D56BD00B34DAA /* SVProgressHUD.m in Sources */,
+				32D6A634285695CC006BF25C /* KBAVInfoPanelMediaOption.m in Sources */,
 				322215FE2852799900F3EE8A /* KBAirDropHelper.m in Sources */,
 				898E93111C8D569600B34DAA /* UIColor+Additions.m in Sources */,
 				324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */,
+				32D6A63B285695CC006BF25C /* KBTextPresentationViewController.m in Sources */,
+				3246AF8B28569686008678D4 /* EXTRuntimeExtensions.m in Sources */,
 				898E93541C8D56D100B34DAA /* UIImage+MultiFormat.m in Sources */,
 				898E930A1C8D566000B34DAA /* KBYTDownloadStream.m in Sources */,
+				32D6A630285695CC006BF25C /* KBAVInfoViewController.m in Sources */,
 				899876671CDE78BA006A639E /* CollectionViewLayout.m in Sources */,
 				32221603285299C300F3EE8A /* TYManageFeaturedViewController.m in Sources */,
 				898E927F1C8D074A00B34DAA /* YTTVFeaturedCollectionViewCell.m in Sources */,
+				32D6A62C285695CC006BF25C /* KBAction.m in Sources */,
+				32D6A625285695CC006BF25C /* KBButton.m in Sources */,
 				892A3F431CF7471100EA0247 /* MetadataPreviewView.m in Sources */,
 				892A3F471CF7483800EA0247 /* TYSettingsViewController.m in Sources */,
 				892A3F441CF7471100EA0247 /* SettingsViewController.m in Sources */,
 				32D2A13D1F424805006F24B3 /* AFNetworkReachabilityManager.m in Sources */,
 				898E93521C8D56D100B34DAA /* UIButton+WebCache.m in Sources */,
+				32D6A637285695CC006BF25C /* UIStackView+Helper.m in Sources */,
 				898E93531C8D56D100B34DAA /* UIImage+GIF.m in Sources */,
 				898E93131C8D569C00B34DAA /* URLCredential.m in Sources */,
 				898E93141C8D569E00B34DAA /* URLDownloader.m in Sources */,
@@ -1831,15 +2099,23 @@
 				898E926A1C8D056700B34DAA /* main.m in Sources */,
 				32D2A13B1F424805006F24B3 /* AFHTTPSessionManager.m in Sources */,
 				898E93021C8D563E00B34DAA /* APAttribute.m in Sources */,
+				32D6A623285695CC006BF25C /* KBMediaAsset.m in Sources */,
 				32D2A1451F424805006F24B3 /* AFURLSessionManager.m in Sources */,
 				898E935A1C8D56D800B34DAA /* RNFrostedSidebar.m in Sources */,
 				898E934B1C8D56D100B34DAA /* SDImageCache.m in Sources */,
 				899877A91CE99CB3006A639E /* TYGridUserViewController.m in Sources */,
 				898E935F1C8D63C900B34DAA /* YTKBPlayerViewController.m in Sources */,
+				32D6A62B285695CC006BF25C /* KBContextMenuView.m in Sources */,
+				32D6A635285695CC006BF25C /* KBAVInfoPanelSubtitleCollectionViewController.m in Sources */,
+				32D6A633285695CC006BF25C /* KBAVInfoPanelContentViewController.m in Sources */,
+				32D6A622285695CC006BF25C /* KBSliderImages.m in Sources */,
+				32D6A62F285695CC006BF25C /* KBAVInfoPanelCollectionViewTextCell.m in Sources */,
 				898E93481C8D56BF00B34DAA /* SVRadialGradientLayer.m in Sources */,
 				898E93501C8D56D100B34DAA /* SDWebImageManager.m in Sources */,
+				32D6A628285695CC006BF25C /* KBMenu.m in Sources */,
 				898E93551C8D56D100B34DAA /* UIImage+WebP.m in Sources */,
 				892A3F4A1CF7AD3F00EA0247 /* TYAuthUserManager.m in Sources */,
+				3246AF8A28569686008678D4 /* EXTScope.m in Sources */,
 				898E930F1C8D568B00B34DAA /* APDeviceController.m in Sources */,
 				898E93101C8D569100B34DAA /* Reachability.m in Sources */,
 				898E93031C8D564100B34DAA /* APDocument.m in Sources */,
@@ -1852,12 +2128,22 @@
 				8929FCBF1CB44540003D7473 /* tuyuApplication.m in Sources */,
 				899876601CDE77A5006A639E /* NSArray+PureLayout.m in Sources */,
 				898E93091C8D565B00B34DAA /* KBYourTube.m in Sources */,
+				32D6A629285695CC006BF25C /* KBContextMenuSection.m in Sources */,
+				32D6A631285695CC006BF25C /* KBAVInfoPanelSubtitlesViewController.m in Sources */,
 				899877AF1CEA43DE006A639E /* TYTVHistoryManager.m in Sources */,
+				32D6A63E285695CC006BF25C /* KBMoreButton.m in Sources */,
+				32D6A636285695CC006BF25C /* KBAVInfoPanelDescriptionViewController.m in Sources */,
 				898E935B1C8D5B4F00B34DAA /* MarqueeLabel.m in Sources */,
+				32D6A627285695CC006BF25C /* KBContextMenuViewCell.m in Sources */,
+				32D6A62D285695CC006BF25C /* KBContextCollectionHeaderView.m in Sources */,
 				898E930B1C8D566200B34DAA /* KBYourTube+Categories.m in Sources */,
+				32D6A624285695CC006BF25C /* KBPlayerViewController.m in Sources */,
 				899877AC1CE9A006006A639E /* TYHomeViewController.m in Sources */,
 				8998765E1CDE77A5006A639E /* ALView+PureLayout.m in Sources */,
+				32D6A62A285695CC006BF25C /* KBMenuElement.m in Sources */,
+				32D6A639285695CC006BF25C /* UIImage+Template.m in Sources */,
 				898E934D1C8D56D100B34DAA /* SDWebImageDecoder.m in Sources */,
+				32D6A63D285695CC006BF25C /* NSString+Truncate.m in Sources */,
 				898E934C1C8D56D100B34DAA /* SDWebImageCompat.m in Sources */,
 				898E93561C8D56D100B34DAA /* UIImageView+HighlightedWebCache.m in Sources */,
 				32D2A1471F424805006F24B3 /* AFHTTPRequestSerializer+OAuth2.m in Sources */,
@@ -2134,6 +2420,7 @@
 					$SRCROOT/tuyu/RNFrostedSidebar,
 					$SRCROOT/tuyu/SDWebImage,
 					$SRCROOT/tuyu/APDocument,
+					"$SRCROOT/tuyuTV/include/**",
 					"$SRCROOT/tuyu/**",
 				);
 				INFOPLIST_FILE = tuyuTV/Info.plist;
@@ -2201,6 +2488,7 @@
 					$SRCROOT/tuyu/RNFrostedSidebar,
 					$SRCROOT/tuyu/SDWebImage,
 					$SRCROOT/tuyu/APDocument,
+					"$SRCROOT/tuyuTV/include/**",
 					"$SRCROOT/tuyu/**",
 				);
 				INFOPLIST_FILE = tuyuTV/Info.plist;

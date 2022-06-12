@@ -501,14 +501,14 @@
     if (channel.length == 0) {
         channel = channelId;
     }
-    //TLog(@"subscribe to channel: %@", channel);
-    //[self refreshAuthToken];
+    TLog(@"subscribe to channel: %@", channel);
+    [self refreshAuthToken];
     NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
     NSDictionary *resourceId = [NSDictionary dictionaryWithObjectsAndKeys:@"youtube#channel", @"kind", channel, @"channelId", nil];
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:resourceId , @"resourceId", nil];
     [finalDict setObject:dict forKey:@"snippet"];
     
-    //TLog(@"finalDict: %@", finalDict);
+    TLog(@"finalDict: %@", finalDict);
     
     NSError* error = nil;
     
@@ -551,17 +551,16 @@
     
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
     
-    //TLog(@"jsonDict: %@", jsonDict);
+    TLog(@"jsonDict: %@", jsonDict);
     if ([jsonDict valueForKey:@"error"] != nil) {
         return datString;
     }
     //NSLog(@"jsonDict: %@", jsonDict);
     //[jsonDict writeToFile:@"/var/mobile/Library/Preferences/channelSubscribeResponse.plist" atomically:TRUE];
     KBYTSearchResult *newChannel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:jsonDict];
-    //TLog(@"new channel: %@", newChannel);
+    TLog(@"new channel: %@", newChannel);
     [[KBYourTube sharedInstance] addChannelToUserDetails:newChannel];
     return jsonDict;
-    
 }
 
 /*

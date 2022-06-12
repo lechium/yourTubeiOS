@@ -576,8 +576,11 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     
     if (kind == UICollectionElementKindSectionHeader) { //safety...
         TYBaseGridCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
-        
-        headerView.title.text = theTitle;
+        if ([theTitle isEqualToString:@"0"]) {
+            headerView.title.text = @"";
+        } else {
+            headerView.title.text = theTitle;
+        }
         reusableview = headerView;
         //use this tag later to re-adjust the top offset when we need to
         //i dont like this, but it works

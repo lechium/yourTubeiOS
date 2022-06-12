@@ -10,12 +10,48 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import "KBYourTube+Categories.h"
-//#ifndef SHELF_EXT
+
 #import "TYAuthUserManager.h"
-//#endif
 #import <CommonCrypto/CommonDigest.h>
+#ifndef SHELF_EXT
+#import "KBPlayerViewController.h"
+#endif
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
+@implementation UIColor (copy)
+
+- (UIColor *)copyWithAlpha:(CGFloat)alpha {
+    CGFloat red, green, blue, oldAlpha;
+    [self getRed:&red green:&green blue:&blue alpha:&oldAlpha];
+    return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
+}
+
+@end
+
+@implementation UIViewController (Presentation)
+- (void)safePresentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^__nullable)(void))completion {
+#ifndef SHELF_EXT
+    if ([self isKindOfClass:KBPlayerViewController.class]){
+        TLog(@"this should never be presenting another view...., bail");
+        return;
+    }
+    if (self.presentedViewController == viewControllerToPresent) {
+        TLog(@"hey dummy: %@ is already presenting", viewControllerToPresent);
+    } else {
+        if ([NSThread isMainThread]) {
+            [self presentViewController:viewControllerToPresent animated:true completion:completion];
+        } else {
+            TLog(@"not on the main thread!!");
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentViewController:viewControllerToPresent animated:true completion:completion];
+            });
+        }
+    }
+#endif
+}
+
+@end
 
 @implementation NSData(MD5)
 

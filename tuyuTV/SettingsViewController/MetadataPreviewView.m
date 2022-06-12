@@ -346,7 +346,7 @@
 }
 
 - (void)updateConstraints {
-    LOG_CMD;
+    //LOG_CMD;
     [self.imageView autoSetDimensionsToSize:CGSizeMake(512, 512)];
     
     self.centeredImageConstraints = [NSLayoutConstraint autoCreateConstraintsWithoutInstalling:^{
