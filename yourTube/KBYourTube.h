@@ -152,6 +152,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *details;
 @property (nonatomic, strong) KBYTMedia *media;
 @property (nonatomic, strong) NSString *continuationToken;
+@property (nonatomic, strong) NSString *itemDescription;
 @property (readwrite, assign) YTSearchResultType resultType;
 @property (nonatomic, strong) NSArray *items; //only relevant for channel list
 

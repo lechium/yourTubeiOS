@@ -158,7 +158,11 @@
     NSDictionary *data =[NSDictionary dictionaryWithContentsOfFile:[[KBYourTube sharedInstance] sectionsFile]];
     __block NSMutableArray *sections = [NSMutableArray new];
     [data[@"sections"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSDictionary *assetDict = @{@"name": obj[@"name"], @"imagePath": obj[@"imagePath"],  @"uniqueID": obj[@"channel"], @"channel": obj[@"channel"], @"description": obj[@"description"]};
+        NSDictionary *assetDict = @{@"name": obj[@"name"], @"imagePath": obj[@"imagePath"],  @"uniqueID": obj[@"channel"], @"channel": obj[@"channel"]};
+        NSString *objDesc = obj[@"description"];
+        if (objDesc != nil){
+            assetDict = @{@"name": obj[@"name"], @"imagePath": obj[@"imagePath"],  @"uniqueID": obj[@"channel"], @"channel": obj[@"channel"], @"description": objDesc};
+        }
         MetaDataAsset *asset = [[MetaDataAsset alloc] initWithDictionary:assetDict];
         [sections addObject:asset];
     }];

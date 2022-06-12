@@ -151,6 +151,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             searchItem.imagePath = imagePath;
             searchItem.resultType = kYTSearchResultTypePlaylist;
             searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"browseId"];
+            NSArray *itemDesc = [current recursiveObjectForKey:@"descriptionSnippet"][@"runs"];
+            searchItem.itemDescription = [itemDesc runsToString];
             if (!title){
                 //TLog(@"weird pl item: %@", current);
                 //TLog(@"pl item: %@", searchItem);
@@ -183,6 +185,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             searchItem.imagePath = imagePath;
             searchItem.resultType = kYTSearchResultTypeChannel;
             searchItem.details = [current recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
+            NSArray *itemDesc = [current recursiveObjectForKey:@"descriptionSnippet"][@"runs"];
+            searchItem.itemDescription = [itemDesc runsToString];
             if (!title){
                 //TLog(@"weird channel item: %@", current);
             }
@@ -793,8 +797,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         TLog(@"already found!");
         return;
     }
-    NSDictionary *newItem = @{@"name": channel.title, @"channel": channel.videoId};
+    NSDictionary *newItem = @{@"name": channel.title, @"channel": channel.videoId, @"imagePath": channel.imagePath, @"description": channel.itemDescription};
     TLog(@"adding new item: %@", newItem);
+    //TLog(@"itemDesc: %@", channel.itemDescription);
     [sections addObject:newItem];
     dict[@"sections"] = sections;
     TLog(@"sections: %@", sections);
@@ -1633,16 +1638,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSDictionary *subtitle = [details recursiveObjectForKey:@"subtitle"];
             NSArray *thumbnails = [details recursiveObjectForKey:@"thumbnails"];
             NSDictionary *thumb = [thumbnails lastObject];
-            NSInteger width = [thumb[@"height"] integerValue];
-            NSString *imagePath = thumb[@"url"];
-            
-            if (width < 400){
-                NSLog(@"generate thumb manually!");
-                imagePath = [self hiRestChannelImageFromDict:thumb];
-            }
-            if (![imagePath containsString:@"https:"]){
-                imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
-            }
+            //NSInteger width = [thumb[@"height"] integerValue];
+            NSString *imagePath = [thumb[@"url"] highResChannelURL];
             __block KBYTChannel *channel = [KBYTChannel new];
             if ([title isKindOfClass:[NSDictionary class]]){
                 channel.title = title[@"simpleText"];
@@ -1803,6 +1800,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         searchItem.imagePath = imagePath;
                                         searchItem.resultType = kYTSearchResultTypeChannel;
                                         searchItem.details = [channel recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
+                                        NSArray *itemDesc = [channel recursiveObjectForKey:@"videoCountText"][@"runs"];
+                                        if (itemDesc){
+                                            searchItem.itemDescription = [itemDesc runsToString];
+                                        } else {
+                                            //try subscriberCountText
+                                            searchItem.itemDescription = channel[@"subscriberCountText"][@"simpleText"];
+                                            TLog(@"desc: %@", searchItem.itemDescription);
+                                        }
                                         //NSLog(@"channel: %@ keys: %@", searchItem, channel.allKeys);
                                         [content addObject:searchItem];
                                     }];

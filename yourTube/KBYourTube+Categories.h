@@ -36,6 +36,7 @@
 @end
 
 @interface NSArray (strings)
+- (NSString *)runsToString;
 - (NSMutableArray *)convertArrayToObjects;
 - (NSString *)stringFromArray;
 - (NSMutableArray *)convertArrayToDictionaries;
@@ -91,6 +92,7 @@
 @interface NSString  (SplitString)
 
 - (NSArray *)splitString;
+- (NSString *)highResChannelURL;
 
 @end
 

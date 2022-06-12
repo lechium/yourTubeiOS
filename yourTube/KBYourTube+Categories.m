@@ -128,6 +128,23 @@
 
 @implementation NSArray (strings)
 
+- (NSString *)runsToString {
+    __block NSMutableString *newString = [NSMutableString new];
+    [self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isKindOfClass:NSDictionary.class]){
+            NSString *text = obj[@"text"];
+            if (text) {
+                [newString appendString:text];
+            }
+        }
+    }];
+    if (newString.length == 0 || newString == nil) {
+        TLog(@"aso: %@", self);
+    }
+    //TLog(@"newString: %@", newString);
+    return newString;
+}
+
 - (NSMutableArray *)convertArrayToObjects {
     __block NSMutableArray *_newArray = [NSMutableArray new];
     [self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -852,6 +869,20 @@
     return array;
 }
 
+- (NSString *)highResChannelURL {
+    //=s([\d]*)
+    //NSString *lowRes = @"https://yt3.ggpht.com/nCOmA7RfWNA-UU-4HsTXkWt2LWZHvU-3E2sHc-vJV0H981_J5oH8zmnisUjElCMUni-nDrbvwOU=s176-c-k-c0x00ffffff-no-rj-mo";
+    NSString *original = self;
+    if ([self rangeOfString:@"https:"].location == NSNotFound) {
+        original = [NSString stringWithFormat:@"https:%@", self];
+    }
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"=s([\\d]*)" options:NSRegularExpressionCaseInsensitive | NSRegularExpressionAnchorsMatchLines error:&error];
+    NSRange range = NSMakeRange(0, original.length);
+    NSArray *matches = [regex matchesInString:original options:NSMatchingReportProgress range:range];
+    NSTextCheckingResult *first = [matches firstObject];
+    return [regex stringByReplacingMatchesInString:original options:0 range:[first range] withTemplate:[NSString stringWithFormat:@"=s%d",900]];
+}
 
 @end
 
