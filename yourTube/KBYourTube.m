@@ -12,6 +12,9 @@
 #import "KBYourTube+Categories.h"
 #import <CoreMedia/CoreMedia.h>
 #import "MetadataPreviewView.h"
+#ifndef SHELF_EXT
+#import "KBAVMetaData.h"
+#endif
 //#ifndef SHELF_EXT
 #import "TYAuthUserManager.h"
 //#endif

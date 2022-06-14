@@ -140,11 +140,9 @@
         }
         //KBYTStream *stream = [[result streams] lastObject];
         //TLog(@"playing stream: %@", stream);
-        YTPlayerItem *playerItem = [result playerItemRepresentation];//[[YTPlayerItem alloc] initWithURL:[stream url]];
-        //playerItem.associatedMedia = result;
+        YTPlayerItem *playerItem = [result playerItemRepresentation];
         if (playerItem != nil) {
             [(KBYTQueuePlayer *)self.player addItemToQueue:playerItem];
-            //[avPlayerItemArray addObject:playerItem];
         }
     }
 }
@@ -163,7 +161,7 @@
         [avPlayerItemArray addObject:playerItem];
     }
     
-    KBYTLocalMedia *file = [localMediaArray objectAtIndex:0];
+    KBYTLocalMedia *file = [localMediaArray firstObject];
     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };
     self.showsPlaybackControls = true;
     self.player = [KBYTQueuePlayer queuePlayerWithItems:avPlayerItemArray];
@@ -220,9 +218,6 @@
         [player seekToTime:newtime];
         
     }
-    //NSLog(@"theMedia: %@", theMedia);
-    //[[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
-    
     
 #endif
     /*

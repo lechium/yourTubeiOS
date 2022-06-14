@@ -145,6 +145,7 @@
     return true;
 }
 
+
 - (void)goToChannelOfResult:(KBYTSearchResult *)searchResult {
     TLog(@"searchResult: %@", searchResult.channelId);
     if (!searchResult.channelId) {

@@ -18,7 +18,7 @@
 
 @class KBYTQueuePlayer;
 
-@protocol KBYTQueuePlayerDelegate <KBVideoPlayerProtocol, NSObject>
+@protocol KBYTQueuePlayerDelegate <KBVideoPlaybackProtocol, NSObject>
 @optional
 
 - (void)queuePlayer:(KBYTQueuePlayer *)player didStartPlayingItem:(AVPlayerItem *)item;

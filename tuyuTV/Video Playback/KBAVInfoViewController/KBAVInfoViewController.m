@@ -135,6 +135,7 @@
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
+    LOG_CMD;
     if ([keyPath isEqualToString:@"status"]) {
         AVPlayerItemStatus status = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
         if (self.playbackStatusChanged){
