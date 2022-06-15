@@ -33,6 +33,7 @@ typedef NS_ENUM(NSInteger, KBAVInfoStyle) {
 @optional
 - (void)willShowAVViewController;
 - (void)willHideAVViewController;
+- (void)subtitlesChangedVisibility:(BOOL)subtitleState;
 @end
 
 @interface KBAVInfoViewController : UIViewController <UITabBarDelegate>
@@ -46,7 +47,7 @@ typedef NS_ENUM(NSInteger, KBAVInfoStyle) {
 @property (readwrite, assign) KBAVInfoStyle infoStyle;
 @property (nonatomic, strong) NSArray <KBAVInfoPanelMediaOption *> *vlcSubtitleData;
 @property (nonatomic, strong) NSArray <KBAVInfoPanelMediaOption *> *vlcAudioData;
-
+- (KBMenu *)createSubtitleMenu;
 @property (nonatomic, strong, nullable) NSLayoutConstraint *descriptionViewLeadingAnchor;
 
 - (void)attachToView:(KBSlider *)theView inController:(UIViewController *)pvc;

@@ -1091,8 +1091,8 @@
 		32D6A615285695CC006BF25C /* KBTextPresentationViewController */ = {
 			isa = PBXGroup;
 			children = (
-				32D6A616285695CC006BF25C /* KBTextPresentationViewController.m */,
 				32D6A617285695CC006BF25C /* KBTextPresentationViewController.h */,
+				32D6A616285695CC006BF25C /* KBTextPresentationViewController.m */,
 			);
 			path = KBTextPresentationViewController;
 			sourceTree = "<group>";

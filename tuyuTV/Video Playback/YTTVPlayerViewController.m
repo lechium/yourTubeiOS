@@ -70,10 +70,10 @@
         return @[_visibleContextView];
     }
     if ([self avInfoPanelShowing]) {
-        return @[_avInfoViewController.tempTabBar, self.transportSlider];
+        return @[self.transportSlider];
     }
-    return @[self.transportSlider];
-    //return @[self.transportSlider, self.subtitleButton, self.audioButton];
+    //return @[self.transportSlider];
+    return @[self.transportSlider, self.subtitleButton, self.audioButton];
 }
 
 - (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
@@ -135,31 +135,13 @@
 - (void)menuHidden:(KBContextMenuView *)menu from:(KBButton *)button {
     [self destroyContextView];
     if (button == self.subtitleButton) {
-        self.subtitleButton.menu = [self createSubtitleMenu];
+        self.subtitleButton.menu = [_avInfoViewController createSubtitleMenu];
     } else if (button == self.audioButton) {
         self.audioButton.menu = [self createAudioMenu];
     }
 }
 
-- (KBMenu *)createSubtitleMenu {
-    NSArray<KBAVInfoPanelMediaOption *> *vlcSubtitleData = [_avInfoViewController vlcSubtitleData];
-    __block NSMutableArray *menuArray = [NSMutableArray new];
-    [vlcSubtitleData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        KBAction *action = [KBAction actionWithTitle:obj.displayName image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
-            action.state = KBMenuElementStateOn;
-            if (obj.selectedBlock){
-                obj.selectedBlock(obj);
-            }
-        }];
-        action.state = KBMenuElementStateOff;
-        if (obj.selected){
-            action.state = KBMenuElementStateOn;
-        }
-        [menuArray addObject:action];
-    }];
-    KBMenu *menu = [KBMenu menuWithTitle:@"Subtitles" image:[KBSliderImages captionsImage] identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:menuArray];
-    return menu;
-}
+
 
 - (KBMenu *)createAudioMenu {
     KBAction *testItemOne = [KBAction actionWithTitle:@"Full Dynamic Range" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
@@ -346,13 +328,14 @@
     _transportSlider.fadeOutTransport = true;
     [_transportSlider setIsContinuous:false];
     [_transportSlider setAvPlayer:self.player];
-    /*
+    
     _subtitleButton = [KBButton buttonWithType:KBButtonTypeImage];
     _subtitleButton.alpha = 0;
     _subtitleButton.showsMenuAsPrimaryAction = true;
     [_subtitleButton autoConstrainToSize:CGSizeMake(68, 68)];
     [self.view addSubview:_subtitleButton];
-    
+    _subtitleButton.menu = [_avInfoViewController createSubtitleMenu];
+    _subtitleButton.menuDelegate = self;
     _audioButton = [KBButton buttonWithType:KBButtonTypeImage];
     _audioButton.alpha = 0;
     _audioButton.showsMenuAsPrimaryAction = true;
@@ -372,7 +355,7 @@
     _audioButton.menu = [self createAudioMenu];
     _audioButton.menuDelegate = self;
     [_audioButton.leftAnchor constraintEqualToAnchor:_subtitleButton.rightAnchor constant:0].active = true;
-    */
+    
     @weakify(self);
     _transportSlider.sliderFading = ^(CGFloat direction, BOOL animated) {
         [self_weak_ dismissContextViewIfNecessary];

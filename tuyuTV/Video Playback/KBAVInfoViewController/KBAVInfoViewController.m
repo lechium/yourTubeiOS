@@ -15,6 +15,7 @@
 #import "KBMoreButton.h"
 #import "KBTextPresentationViewController.h"
 #import "EXTScope.h"
+#import "KBAction.h"
 #import "KBSliderImages.h"
 #import "KBVideoPlaybackProtocol.h"
 #import "KBAVInfoPanelContentViewController.h"
@@ -444,29 +445,27 @@
     MACaptionAppearanceDisplayType type = MACaptionAppearanceGetDisplayType(kMACaptionAppearanceDomainUser);
     NSMutableArray *opts = [NSMutableArray new];
     AVAsset *asset = [_playerItem asset];
-    /*
-    if (!_playerItem) {
-        if (self.subtitleData) {
-            KBAVInfoPanelMediaOption *off = [KBAVInfoPanelMediaOption optionOff];
-            @weakify(self);
-            off.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
-                TLog(@"off selected block??");
-                PlayerViewController *ffAVP = (PlayerViewController *)[self_weak_ parentViewController];
-                FFAVPlayerController *player = (FFAVPlayerController*)[ffAVP player];
-                if ([player respondsToSelector:@selector(switchSubtitleStream:)]){
-                    [player setEnableBuiltinSubtitleRender:false];
-                }
-            };
-            [opts addObject:off];
-            [opts addObjectsFromArray:self.subtitleData];
-            return opts;
-        } else {
-            return opts;
-        }
-    }*/
-    [opts addObject:[KBAVInfoPanelMediaOption optionOff]];
-    [opts addObject:[KBAVInfoPanelMediaOption optionAuto]];
     AVMediaSelectionGroup *group = [asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
+    KBAVInfoPanelMediaOption *off = [KBAVInfoPanelMediaOption optionOff];
+    off.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
+        [selected setIsSelected:true];
+        [self.playerItem selectMediaOption:nil inMediaSelectionGroup:group];
+        MACaptionAppearanceSetDisplayType(kMACaptionAppearanceDomainUser, kMACaptionAppearanceDisplayTypeForcedOnly);
+        if ([self.delegate respondsToSelector:@selector(subtitlesChangedVisibility:)]) {
+            [self.delegate subtitlesChangedVisibility:false];
+        }
+    };
+    KBAVInfoPanelMediaOption *autoOpt = [KBAVInfoPanelMediaOption optionAuto];
+    autoOpt.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
+        [selected setIsSelected:true];
+        [self.playerItem selectMediaOptionAutomaticallyInMediaSelectionGroup:group];
+        MACaptionAppearanceSetDisplayType(kMACaptionAppearanceDomainUser, kMACaptionAppearanceDisplayTypeAutomatic);
+        if ([self.delegate respondsToSelector:@selector(subtitlesChangedVisibility:)]) {
+            [self.delegate subtitlesChangedVisibility:false];
+        }
+    };
+    [opts addObject:off];
+    [opts addObject:autoOpt];
     if (group) {
         
         AVMediaSelectionOption *opt = [group defaultOption];
@@ -477,10 +476,41 @@
         if (type == kMACaptionAppearanceDisplayTypeAlwaysOn) {
             [sub setIsSelected:true];
         }
+        sub.selectedBlock = ^(KBAVInfoPanelMediaOption * _Nonnull selected) {
+            DLog(@"selected block: %@", selected);
+            [selected setIsSelected:true];
+            [self.playerItem selectMediaOption:selected.mediaSelectionOption inMediaSelectionGroup:group];
+            MACaptionAppearanceSetDisplayType(kMACaptionAppearanceDomainUser, kMACaptionAppearanceDisplayTypeAlwaysOn);
+            if ([self.delegate respondsToSelector:@selector(subtitlesChangedVisibility:)]) {
+                [self.delegate subtitlesChangedVisibility:true];
+            }
+        };
+        
         [opts addObject:sub];
     }
     return opts;
 }
+
+- (KBMenu *)createSubtitleMenu {
+    NSArray<KBAVInfoPanelMediaOption *> *vlcSubtitleData = [self subtitleOptions];
+    __block NSMutableArray *menuArray = [NSMutableArray new];
+    [vlcSubtitleData enumerateObjectsUsingBlock:^(KBAVInfoPanelMediaOption * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        KBAction *action = [KBAction actionWithTitle:obj.displayName image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+            action.state = KBMenuElementStateOn;
+            if (obj.selectedBlock){
+                obj.selectedBlock(obj);
+            }
+        }];
+        action.state = KBMenuElementStateOff;
+        if (obj.selected){
+            action.state = KBMenuElementStateOn;
+        }
+        [menuArray addObject:action];
+    }];
+    KBMenu *menu = [KBMenu menuWithTitle:@"Subtitles" image:[KBSliderImages captionsImage] identifier:nil options:KBMenuOptionsDisplayInline | KBMenuOptionsSingleSelection children:menuArray];
+    return menu;
+}
+
 
 - (void)addSubtitleViewController {
     if (!_subtitleViewController) {
