@@ -11,7 +11,7 @@
 #import "KBYourTube.h"
 #import "KBVideoPlaybackProtocol.h"
 
-@interface YTTVPlayerViewController: UIViewController <KBYTQueuePlayerDelegate, KBVideoPlaybackProtocol>
+@interface YTTVPlayerViewController: UIViewController <KBYTQueuePlayerDelegate, KBVideoPlaybackProtocol, UIGestureRecognizerDelegate>
 {
     AVPlayerLayer *_layerToRestore;
 }

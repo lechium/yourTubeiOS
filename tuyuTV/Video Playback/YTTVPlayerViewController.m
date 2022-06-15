@@ -43,6 +43,8 @@
 @property BOOL wasPlaying; //keeps track if we were playing when scrubbing started
 @property AVPlayerLayer *playerLayer;
 @property KBAVInfoViewController *avInfoViewController;
+@property UITapGestureRecognizer *leftTap;
+@property UITapGestureRecognizer *rightTap;
 
 @end
 
@@ -449,9 +451,92 @@
     menuTap.numberOfTapsRequired = 1;
     menuTap.allowedPressTypes = @[@(UIPressTypeMenu)];
     [self.view addGestureRecognizer:menuTap];
-    _avInfoViewController.delegate = self;
     
+    _leftTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftTapHandler:)];
+    _leftTap.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
+    _leftTap.delegate = self;
+    [self.view addGestureRecognizer:_leftTap];
+    
+    _rightTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightTapHandler:)];
+    _rightTap.allowedPressTypes = @[@(UIPressTypeRightArrow)];
+    _rightTap.delegate = self;
+    [self.view addGestureRecognizer:_rightTap];
+    
+    _avInfoViewController.delegate = self;
+    UILongPressGestureRecognizer *longRightPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleRightLongPress:)];
+    longRightPress.allowedPressTypes = @[@(UIPressTypeRightArrow)];
+    [longRightPress requireGestureRecognizerToFail:_rightTap];
+    [self.view addGestureRecognizer:longRightPress];
+    
+    UILongPressGestureRecognizer *longLeftPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLeftLongPress:)];
+    longLeftPress.allowedPressTypes = @[@(UIPressTypeLeftArrow)];
+    [longLeftPress requireGestureRecognizerToFail:_leftTap];
+    [self.view addGestureRecognizer:longLeftPress];
 }
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceivePress:(UIPress *)press {
+    //ELog(@"shouldReceivePress: %@", gestureRecognizer);
+    if (gestureRecognizer == _leftTap || gestureRecognizer == _rightTap){
+        if ([press kb_isSynthetic]){
+            //ELog(@"no synth for you!");
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+- (void)leftTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
+    LOG_CMD;
+    if (!_transportSlider.isFocused) {
+        return;
+    }
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
+            KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeLeftArrow];
+            if (speed == KBSeekSpeedNone) {
+                [_rewindTimer invalidate];
+                [_ffTimer invalidate];
+            }
+        } else {
+            [self stepVideoBackwards];
+        }
+    }
+}
+
+- (void)rightTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
+    LOG_CMD;
+    if (!_transportSlider.isFocused) {
+        return;
+    }
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        if (_transportSlider.currentSeekSpeed != KBSeekSpeedNone) {
+            KBSeekSpeed speed = [_transportSlider handleSeekingPressType:UIPressTypeRightArrow];
+            if (speed == KBSeekSpeedNone) {
+                [_rewindTimer invalidate];
+                [_ffTimer invalidate];
+            }
+        } else {
+            [self stepVideoForwards];
+        }
+    }
+}
+
+- (void)handleRightLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [_ffTimer invalidate];
+        [_rewindTimer invalidate];
+        [self startFastForwarding];
+    }
+}
+
+- (void)handleLeftLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [_ffTimer invalidate];
+        [_rewindTimer invalidate];
+        [self startRewinding];
+    }
+}
+
 
 - (void)setCurrentTime:(CGFloat)currentTime {
     //_transportSlider.value = currentTime;
