@@ -229,10 +229,12 @@
     } completion:nil];
 }
 
-- (void)createAndSetMeta {
+- (void)createAndSetMeta:(KBYTMedia *)item {
     LOG_CMD;
     KBAVMetaData *meta = [KBAVMetaData new];
-    KBYTMedia *item = (KBYTMedia*)[[_player currentItem] associatedMedia];
+    if (!item){
+        item = (KBYTMedia*)[[_player currentItem] associatedMedia];
+    }
     meta.title = item.title;
     meta.subtitle = item.author;
     meta.duration = [item.duration timeFromDuration];
@@ -250,7 +252,7 @@
     if (self.avInfoPanelShowing) return;
     if (!_avInfoViewController){
         _avInfoViewController = [KBAVInfoViewController new];
-        [self createAndSetMeta];
+        [self createAndSetMeta:nil];
     }
     if (_avInfoViewController.infoStyle == KBAVInfoStyleNew) {
         [self slideUpInfo];
@@ -386,7 +388,7 @@
             YTPlayerItem *playerItem = (YTPlayerItem*)[self_weak_.player currentItem];
             KBYTMedia *media = (KBYTMedia*)[playerItem associatedMedia];
             if (media){
-                [self_weak_ createAndSetMeta];
+                [self_weak_ createAndSetMeta:media];
                 [self_weak_.transportSlider setTotalDuration:playerItem.durationDouble];
                 self_weak_.transportSlider.title = media.title;
                 self_weak_.transportSlider.subtitle = media.author;
@@ -573,7 +575,7 @@
     _transportSlider.avPlayer = _player;
     _playerLayer.player = _player;
     [self.player play];
-    [self createAndSetMeta];
+    [self createAndSetMeta:nil];
     return true;
 }
 
@@ -657,7 +659,7 @@
                 [avPlayerItemArray addObject:playerItem];
                 if (idx == 0){
                     self.avInfoViewController.playerItem = playerItem;
-                    [self createAndSetMeta];
+                    [self createAndSetMeta:[result media]];
                 }
             }
         }
@@ -791,13 +793,17 @@
 #if TARGET_OS_IOS
     [self setNowPlayingInfo];
 #elif TARGET_OS_TV
-    
-    KBYTMedia *theMedia = (KBYTMedia*)[(YTPlayerItem *)item associatedMedia];
+    YTPlayerItem *playerItem = (YTPlayerItem *)item;
+    KBYTMedia *theMedia = (KBYTMedia*)[playerItem associatedMedia];
     if (theMedia){
         if ([_lastStarted isEqualToString:theMedia.videoId]) {
             return;
         } else {
             _lastStarted = theMedia.videoId;
+            [self.transportSlider setTotalDuration:playerItem.durationDouble];
+            self.transportSlider.title = theMedia.title;
+            self.transportSlider.subtitle = theMedia.author;
+            [self createAndSetMeta:theMedia];
         }
     
         
