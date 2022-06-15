@@ -32,6 +32,7 @@
     KBContextMenuView *_visibleContextView;
     NSObject *_periodicTimeToken;
     KBAVMetaData *_meta;
+    NSString *_lastStarted;
 }
 
 @property UIActivityIndicatorView *loadingSpinner;
@@ -294,7 +295,7 @@
             
         case AVPlayerTimeControlStatusPaused:
             
-            [self updateProgress:_player.currentTime];
+            //[self updateProgress:_player.currentTime];
             [_player play];
             _transportSlider.isPlaying = true;
             _transportSlider.isScrubbing = false;
@@ -467,6 +468,13 @@
     
 }
 
+- (void)setCurrentTime:(CGFloat)currentTime {
+    //_transportSlider.value = currentTime;
+    //[self sliderMoved:_transportSlider];
+    CMTime time = CMTimeMakeWithSeconds(currentTime, 600);
+    [_player seekToTime:time];
+}
+
 - (void)removePeriodicTimeObserver {
     [_player removeTimeObserver:_periodicTimeToken];
     _periodicTimeToken = nil;
@@ -487,15 +495,17 @@
 }
 
 - (void)sliderMoved:(KBSlider *)slider {
-    CMTime newTime = CMTimeMake(slider.value, 600);
-    [_player seekToTime:newTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    TLog(@"sliderMoved: %.0f", slider.value);
+    CMTime newTime = CMTimeMakeWithSeconds(slider.value, 600);
+    [_player seekToTime:newTime];
+    _transportSlider.currentTime = slider.value;
 }
 
 - (void)stepVideoBackwards {
     self.transportSlider.scrubMode = KBScrubModeSkippingBackwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value - 10;
-    CMTime time = CMTimeMake(newValue, 600);
+    CMTime time = CMTimeMakeWithSeconds(newValue, 600);
     [_player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     @weakify(self);
     [self.transportSlider setValue:newValue animated:false completion:^{
@@ -509,7 +519,7 @@
     self.transportSlider.scrubMode = KBScrubModeSkippingForwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value + 10;
-    CMTime time = CMTimeMake(newValue, 600);
+    CMTime time = CMTimeMakeWithSeconds(newValue, 600);
     [_player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     @weakify(self);
     [self.transportSlider setValue:newValue animated:false completion:^{
@@ -536,7 +546,7 @@
 - (void)stopFastForwarding {
     _ffActive = false;
     [_ffTimer invalidate];
-    CMTime time = CMTimeMake(self.transportSlider.value, 600);
+    CMTime time = CMTimeMakeWithSeconds(self.transportSlider.value, 600);
     [_player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     [_player play];
 }
@@ -558,7 +568,7 @@
 - (void)stopRewinding {
     _rwActive = false;
     [_rewindTimer invalidate];
-    CMTime time = CMTimeMake(self.transportSlider.value, 600);
+    CMTime time = CMTimeMakeWithSeconds(self.transportSlider.value, 600);
     [_player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     [_player play];
 }
@@ -726,6 +736,42 @@
     return self;
 }
 
+- (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+    //ELog(@"pressesEnded: %@", presses);
+    //AVPlayerState currentState = _avplayController.playerState;
+    for (UIPress *press in presses) {
+        if ([press kb_isSynthetic]) {
+            return;
+        }
+        //ELog(@"presstype: %lu", press.type);
+        switch (press.type){
+                
+            case UIPressTypeMenu:
+                break;
+           
+            case UIPressTypeSelect:
+                if ([_transportSlider isFocused]){
+                    TLog(@"togglePlayPause");
+                    [self togglePlayPause];
+                }
+                break;
+                
+            case UIPressTypePlayPause:
+           
+                //ELog(@"play pause");
+                [self togglePlayPause];
+                break;
+            
+            default:
+                TLog(@"unhandled type: %lu", press.type);
+                [super pressesEnded:presses withEvent:event];
+                break;
+                
+        }
+        
+    }
+}
+
 - (void)setNowPlayingInfo {
     NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
     YTPlayerItem *currentPlayerItem = [playerItems firstObject];
@@ -765,12 +811,18 @@
     
     KBYTMedia *theMedia = (KBYTMedia*)[(YTPlayerItem *)item associatedMedia];
     if (theMedia){
+        if ([_lastStarted isEqualToString:theMedia.videoId]) {
+            return;
+        } else {
+            _lastStarted = theMedia.videoId;
+        }
+    
+        
         [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
         CGFloat duration = [[[NSUserDefaults standardUserDefaults] valueForKey:theMedia.videoId] floatValue];
         TLog(@"current time offset for %@: %.0f", theMedia.videoId, duration);
         CMTime newtime = CMTimeMakeWithSeconds(duration, 600);
         [player seekToTime:newtime];
-        
     }
     
 #endif

@@ -88,7 +88,7 @@ static int headerTagOffset = 70;
     NSInteger _focusedCollectionView;
 }
 
-@property (nonatomic, strong) YTKBPlayerViewController *playerView;
+@property (nonatomic, strong) YTTVPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTQueuePlayer *player;
 @property (nonatomic, strong) NSLayoutConstraint *headerHeightConstraint;
 
@@ -925,7 +925,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
         
         [SVProgressHUD dismiss];
-        self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
+        self.playerView = [[YTTVPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
         [self.playerView addObjectsToPlayerQueue:videoArray];
         [self presentViewController:self.playerView animated:YES completion:nil];
         [[self.playerView player] play];
