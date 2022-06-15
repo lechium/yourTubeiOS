@@ -33,6 +33,7 @@
     NSObject *_periodicTimeToken;
     KBAVMetaData *_meta;
     NSString *_lastStarted;
+    NSInteger _tempDuration;
 }
 
 @property UIActivityIndicatorView *loadingSpinner;
@@ -53,7 +54,7 @@
 @synthesize mediaIsLocal, titleTimer;
 
 - (void)menuShown:(KBContextMenuView *)menu from:(KBButton *)button {
-    TLog(@"menu: %@ show from: %@", menu, button);
+    //TLog(@"menu: %@ show from: %@", menu, button);
     _visibleContextView = menu;
     self.audioButton.userInteractionEnabled = false;
     self.transportSlider.userInteractionEnabled = false;
@@ -63,7 +64,7 @@
 }
 
 - (void)itemSelected:(KBMenuElement *)item menu:(KBContextMenuView *)menu from:(KBButton *)button {
-    LOG_CMD;
+    //LOG_CMD;
     TLog(@"menu item: %@", item);
 }
 
@@ -87,7 +88,7 @@
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
-    TLog(@"updated focused view: %@", context.nextFocusedView);
+    //TLog(@"updated focused view: %@", context.nextFocusedView);
     if ([context.nextFocusedView isKindOfClass:UICollectionViewCell.class]){
         [self.transportSlider resetHideTimer];
     }
@@ -154,7 +155,7 @@
     KBAction *testItemsThree = [KBAction actionWithTitle:@"Reduce Loud Sounds" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         TLog(@"%@ selected", action);
     }];
-    testItemsThree.attributes = KBMenuElementAttributesHidden;
+    testItemsThree.attributes = KBMenuElementAttributesToggle;
     KBAction *testItemTwo = [KBAction actionWithTitle:@"Unknown" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
         TLog(@"%@ selected", action);
         if (action.state == KBMenuElementStateOn) {
@@ -170,7 +171,7 @@
 }
 
 - (void)menuTapped:(UITapGestureRecognizer *)gestRecognizer {
-    TLog(@"menu tapped");
+    //TLog(@"menu tapped");
     if (gestRecognizer.state == UIGestureRecognizerStateEnded){
         if ([self avInfoPanelShowing]) {
             [self hideAVInfoView];
@@ -237,9 +238,10 @@
     if (!item){
         item = (KBYTMedia*)[[_player currentItem] associatedMedia];
     }
-    meta.title = item.title;
-    meta.subtitle = item.author;
-    meta.duration = [item.duration timeFromDuration];
+    meta.title = item.author;
+    meta.subtitle = item.title;
+    //TLog(@"duration: %@", item.duration);
+    meta.duration = [[item duration] integerValue];
     meta.summary = item.details;
     NSString *artworkPath = item.images[@"medium"];
     if (artworkPath == nil)
@@ -281,7 +283,7 @@
             
         case AVPlayerTimeControlStatusPaused:
             
-            //[self updateProgress:_player.currentTime];
+            [self updateProgress:_player.currentTime];
             [_player play];
             _transportSlider.isPlaying = true;
             _transportSlider.isScrubbing = false;
@@ -384,7 +386,7 @@
     };
     
     _avInfoViewController.playbackStatusChanged = ^(AVPlayerItemStatus status) {
-        TLog(@"playback status changed");
+        //TLog(@"playback status changed");
         if (status == AVPlayerItemStatusReadyToPlay) {
             [self_weak_.loadingSpinner stopAnimating];
             YTPlayerItem *playerItem = (YTPlayerItem*)[self_weak_.player currentItem];
@@ -392,8 +394,8 @@
             if (media){
                 [self_weak_ createAndSetMeta:media];
                 [self_weak_.transportSlider setTotalDuration:playerItem.durationDouble];
-                self_weak_.transportSlider.title = media.title;
-                self_weak_.transportSlider.subtitle = media.author;
+                self_weak_.transportSlider.title = media.author;
+                self_weak_.transportSlider.subtitle = media.title;
                 [self_weak_.transportSlider fadeInIfNecessary];
             }
         } else {
@@ -402,6 +404,7 @@
     };
     
     [self addPeriodicTimeObserver];
+    _avInfoViewController.playerItem = _player.currentItem;
     //[self.player observeStatus];
     
     _transportSlider.timeSelectedBlock = ^(CGFloat currentTime) {
@@ -552,7 +555,7 @@
 
 - (void)addPeriodicTimeObserver {
     @weakify(self);
-    _periodicTimeToken = [_player addPeriodicTimeObserverForInterval:CMTimeMake(1, NSEC_PER_SEC) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
+    _periodicTimeToken = [_player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(1, NSEC_PER_SEC) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
         [self_weak_ updateProgress:time];
     }];
 }
@@ -565,13 +568,14 @@
 }
 
 - (void)sliderMoved:(KBSlider *)slider {
-    TLog(@"sliderMoved: %.0f", slider.value);
+    //TLog(@"sliderMoved: %.0f", slider.value);
     CMTime newTime = CMTimeMakeWithSeconds(slider.value, 600);
     [_player seekToTime:newTime];
     _transportSlider.currentTime = slider.value;
 }
 
 - (void)stepVideoBackwards {
+    LOG_CMD;
     self.transportSlider.scrubMode = KBScrubModeSkippingBackwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value - 10;
@@ -586,6 +590,7 @@
 }
 
 - (void)stepVideoForwards {
+    LOG_CMD;
     self.transportSlider.scrubMode = KBScrubModeSkippingForwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value + 10;
@@ -648,6 +653,7 @@
 }
 
 - (BOOL)setMediaURL:(NSURL *)mediaURL {
+    LOG_CMD;
     _mediaURL = mediaURL;
     AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:mediaURL];
     if (![[singleItem asset] isPlayable]){
@@ -773,6 +779,11 @@
         }
         //KBYTStream *stream = [[result streams] lastObject];
         //TLog(@"playing stream: %@", stream);
+        if (objects.count == 1) { //first item, setup stuff based on this
+            _tempDuration = [[result duration] integerValue];
+            //TLog(@"td: %lu", _tempDuration);
+            _transportSlider.totalDuration = _tempDuration;
+        }
         YTPlayerItem *playerItem = [result playerItemRepresentation];
         if (playerItem != nil) {
             [(KBYTQueuePlayer *)self.player addItemToQueue:playerItem];
@@ -821,7 +832,7 @@
            
             case UIPressTypeSelect:
                 if ([_transportSlider isFocused]){
-                    TLog(@"togglePlayPause");
+                    //TLog(@"togglePlayPause");
                     [self togglePlayPause];
                 }
                 break;
@@ -861,7 +872,7 @@
     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: usableDuration, MPNowPlayingInfoPropertyElapsedPlaybackTime: [NSNumber numberWithDouble:currentTime] }; //, MPMediaItemPropertyArtwork: artwork };
 #elif TARGET_OS_TV
     if (currentTime + 5 >= currentPlayerItem.durationDouble && currentPlayerItem.durationDouble > 0){
-        TLog(@"near the end: %.0f for %@", currentTime, currentItem.videoId);
+        //TLog(@"near the end: %.0f for %@", currentTime, currentItem.videoId);
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:currentItem.videoId];
     } else {
         if (self.avInfoViewController.playerItem != currentPlayerItem) {
@@ -885,9 +896,9 @@
             return;
         } else {
             _lastStarted = theMedia.videoId;
-            [self.transportSlider setTotalDuration:playerItem.durationDouble];
-            self.transportSlider.title = theMedia.title;
-            self.transportSlider.subtitle = theMedia.author;
+            [self.transportSlider setTotalDuration:theMedia.duration.integerValue];
+            self.transportSlider.title = theMedia.author;
+            self.transportSlider.subtitle = theMedia.title;
             [self createAndSetMeta:theMedia];
         }
     

@@ -272,7 +272,7 @@
 }
 
 - (void)seekResume {
-    LOG_CMD;
+    //LOG_CMD;
     _currentSeekSpeed = KBSeekSpeedNone;
     CMTime newtime = CMTimeMakeWithSeconds(self.value, 600);
     [_avPlayer seekToTime:newtime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
@@ -553,7 +553,7 @@
 }
 
 - (void)resetHideTimer {
-    LOG_CMD;
+    //LOG_CMD;
     [self _startFadeOutTimer];
 }
 

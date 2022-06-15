@@ -20,7 +20,7 @@
 @dynamic showsMenuAsPrimaryAction;
 
 - (void)selectedItem:(KBMenuElement *)item {
-    LOG_CMD;
+    //LOG_CMD;
     if ([_menuDelegate respondsToSelector:@selector(itemSelected:menu:from:)]) {
         [[self menuDelegate] itemSelected:item menu:_contextMenuView from:self];
     }
@@ -47,7 +47,7 @@
 }
 
 - (void)showMenuWithCompletion:(void(^)(void))block {
-    LOG_CMD;
+    //LOG_CMD;
     [_contextMenuView showContextViewFromButton:self completion:^{
         if (self.menuDelegate && [self.menuDelegate respondsToSelector:@selector(menuShown:from:)]){
             [self.menuDelegate menuShown:self.contextMenuView from:self];
@@ -59,7 +59,7 @@
 }
 
 - (void)dismissMenuWithCompletion:(void(^)(void))block {
-    LOG_CMD;
+    //LOG_CMD;
     [_contextMenuView showContextView:false completion:^{
         if (self.menuDelegate && [self.menuDelegate respondsToSelector:@selector(menuHidden:from:)]){
             [self.menuDelegate menuHidden:self.contextMenuView from:self];
