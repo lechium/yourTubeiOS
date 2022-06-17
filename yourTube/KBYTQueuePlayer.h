@@ -33,6 +33,8 @@
 @property (nonatomic, readonly) NSArray *itemsForPlayer;
 @property (nonatomic, readonly) NSInteger index;
 
+- (BOOL)hasNextItem;
+- (BOOL)hasPreviousItem;
 - (BOOL)mediaObjectExists:(id)media;
 - (void)playPreviousItem;
 - (void)playBeginningItem;

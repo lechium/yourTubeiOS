@@ -10,6 +10,15 @@
 
 @implementation UIImage (scale)
 
++ (NSData *)pngDataForLargeSymbolImage:(NSString *)symbolImageName {
+    UIImage *image = [UIImage symbolImageNamed:symbolImageName size:3 weight:UIFontWeightRegular compatibleWithFontSize:100];
+    return UIImagePNGRepresentation(image);
+}
+
++ (void)writeFile:(NSString *)file ForLargePNGImageNamed:(NSString *)imageName {
+    NSData *data = [UIImage pngDataForLargeSymbolImage:imageName];
+    [data writeToFile:file atomically:true];
+}
 
 - (UIImage *)scaledImagedToSize:(CGSize)newSize
 {

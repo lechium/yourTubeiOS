@@ -9,6 +9,7 @@
 #import "captions.h"
 #import "appletv.h"
 #import "tvhifi.h"
+#import "playlist.h"
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "KBSliderImages.h"
@@ -56,5 +57,8 @@
 }
 +(UIImage *)tvHifiImage {
     return SliderImageTemplate(tv_and_hifispeaker_fill_png);
+}
++(UIImage *)playlistImage {
+    return SliderImageTemplate(playlist_png);
 }
 @end

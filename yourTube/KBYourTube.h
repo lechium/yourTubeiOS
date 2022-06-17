@@ -12,6 +12,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import "KBYourTube+Categories.h"
 #import "APDeviceController.h"
+#import "AFNetworkReachabilityManager.h"
 #if TARGET_OS_IOS
 #import "KBYTMessagingCenter.h"
 #endif
@@ -239,6 +240,8 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSDictionary *userDetails; 
 
 + (NSUserDefaults *)sharedUserDefaults;
+- (void)startReachabilityMonitoring;
+- (void)stopReachabilityMonitoring;
 - (void)resetHomeScreenToDefaults;
 - (void)postHomeDataChangedNotification;
 - (void)removeHomeSection:(MetaDataAsset *)asset;

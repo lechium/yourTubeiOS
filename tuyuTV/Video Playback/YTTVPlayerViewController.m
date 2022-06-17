@@ -65,7 +65,7 @@
 
 - (void)itemSelected:(KBMenuElement *)item menu:(KBContextMenuView *)menu from:(KBButton *)button {
     //LOG_CMD;
-    TLog(@"menu item: %@", item);
+    //TLog(@"menu item: %@", item);
 }
 
 - (NSArray *) preferredFocusEnvironments {
@@ -93,7 +93,7 @@
         [self.transportSlider resetHideTimer];
     }
     if ([self.subtitleButton isFocused]){
-       // self.transportSlider.fadeOutTransport = false;
+        // self.transportSlider.fadeOutTransport = false;
         [self.transportSlider setFadeOutTime:8.0];
     } else if ([self.transportSlider isFocused]) {
         [self.transportSlider setFadeOutTime:3.0];
@@ -126,12 +126,26 @@
 
 
 - (void)dismissContextViewIfNecessary {
-    [_visibleContextView showContextView:false fromView:nil completion:^{
-        //button.opened = false;
+    
+    [_visibleContextView showContextView:false completion:^{
         [self.subtitleButton setOpened:false];
         [self.audioButton setOpened:false];
         [self destroyContextView];
     }];
+    return;
+    if (self.audioButton.opened) {
+        [self.audioButton dismissMenuWithCompletion:^{
+            [self.subtitleButton setOpened:false];
+            [self.audioButton setOpened:false];
+            [self destroyContextView];
+        }];
+    } else if (self.subtitleButton.opened) {
+        [self.subtitleButton dismissMenuWithCompletion:^{
+            [self.subtitleButton setOpened:false];
+            [self.audioButton setOpened:false];
+            [self destroyContextView];
+        }];
+    }
 }
 
 
@@ -140,11 +154,60 @@
     if (button == self.subtitleButton) {
         self.subtitleButton.menu = [_avInfoViewController createSubtitleMenu];
     } else if (button == self.audioButton) {
-        self.audioButton.menu = [self createAudioMenu];
+        self.audioButton.menu = [self createPlaylistMenu];
     }
 }
 
+- (KBYTQueuePlayer *)queuePlayer {
+    return (KBYTQueuePlayer *) _player;
+}
 
+- (void)selectMedia:(KBYTMedia *)media atIndex:(NSInteger)index {
+    LOG_CMD;
+}
+
+- (NSArray <KBAction *> *)playlistItems {
+    NSMutableArray *plItems = [NSMutableArray new];
+    NSArray <YTPlayerItem *> *items = (NSArray <YTPlayerItem *>*)[[self queuePlayer] items];
+    NSInteger idx = 0;
+    for (YTPlayerItem *item in items) {
+        KBYTMedia *media = (KBYTMedia*)[item associatedMedia];
+        if (media){
+            KBAction *action = [KBAction actionWithTitle:media.title image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+                [self selectMedia:media atIndex:idx];
+            }];
+            [plItems addObject:action];
+        }
+        idx++;
+    }
+    if (plItems.count == 0) {
+        return @[];
+    }
+    return [plItems subarrayWithRange:NSMakeRange(0, 4)];
+}
+
+- (KBMenu *)playlistItemsMenu {
+    return [KBMenu menuWithTitle:@"Items" image:nil identifier:nil options:KBMenuOptionsDisplayInline children:[self playlistItems]];
+}
+
+- (KBMenu *)createPlaylistMenu {
+    LOG_CMD;
+    @weakify(self);
+    __block NSMutableArray *items = [NSMutableArray new];
+    if ([[self queuePlayer] hasPreviousItem]){
+        KBAction *previousItem = [KBAction actionWithTitle:@"Play Previous Item" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+            [[self_weak_ queuePlayer] playPreviousItem];
+        }];
+        [items addObject:previousItem];
+    }
+    if ([[self queuePlayer] hasNextItem]) {
+        KBAction *nextItem = [KBAction actionWithTitle:@"Play Next Item" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
+            [[self_weak_ queuePlayer] advanceToNextItem];
+        }];
+        [items addObject:nextItem];
+    }
+    return [KBMenu menuWithTitle:@"Playlist" image:[KBSliderImages playlistImage] identifier:nil options:KBMenuOptionsDisplayInline children:items];
+}
 
 - (KBMenu *)createAudioMenu {
     KBAction *testItemOne = [KBAction actionWithTitle:@"Full Dynamic Range" image:nil identifier:nil handler:^(__kindof KBAction * _Nonnull action) {
@@ -176,9 +239,7 @@
         if ([self avInfoPanelShowing]) {
             [self hideAVInfoView];
         } else if ([self contextViewVisible]) {
-            [_visibleContextView showContextView:false completion:^{
-                [self destroyContextView];
-            }];
+            [self dismissContextViewIfNecessary];
         } else if ([self.transportSlider isScrubbing]) {
             [self.transportSlider setIsScrubbing:false];
             [self.transportSlider setCurrentTime:self.transportSlider.currentTime];
@@ -233,7 +294,6 @@
 }
 
 - (void)createAndSetMeta:(KBYTMedia *)item {
-    LOG_CMD;
     KBAVMetaData *meta = [KBAVMetaData new];
     if (!item){
         item = (KBYTMedia*)[[_player currentItem] associatedMedia];
@@ -358,7 +418,7 @@
     [_audioButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
     _audioButton.layer.masksToBounds = true;
     _audioButton.layer.cornerRadius = 68/2;
-    _audioButton.menu = [self createAudioMenu];
+    //_audioButton.menu = [self createPlaylistMenu];
     _audioButton.menuDelegate = self;
     [_audioButton.leftAnchor constraintEqualToAnchor:_subtitleButton.rightAnchor constant:0].active = true;
     
@@ -489,7 +549,6 @@
 }
 
 - (void)leftTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
-    LOG_CMD;
     if (!_transportSlider.isFocused) {
         return;
     }
@@ -507,7 +566,6 @@
 }
 
 - (void)rightTapHandler:(UITapGestureRecognizer *)gestureRecognizer {
-    LOG_CMD;
     if (!_transportSlider.isFocused) {
         return;
     }
@@ -575,7 +633,6 @@
 }
 
 - (void)stepVideoBackwards {
-    LOG_CMD;
     self.transportSlider.scrubMode = KBScrubModeSkippingBackwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value - 10;
@@ -590,7 +647,6 @@
 }
 
 - (void)stepVideoForwards {
-    LOG_CMD;
     self.transportSlider.scrubMode = KBScrubModeSkippingForwards;
     [self.transportSlider fadeInIfNecessary];
     NSTimeInterval newValue = self.transportSlider.value + 10;
@@ -653,7 +709,6 @@
 }
 
 - (BOOL)setMediaURL:(NSURL *)mediaURL {
-    LOG_CMD;
     _mediaURL = mediaURL;
     AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:mediaURL];
     if (![[singleItem asset] isPlayable]){
@@ -682,8 +737,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didForeground:) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     MPRemoteCommandCenter *shared = [MPRemoteCommandCenter sharedCommandCenter];
@@ -702,11 +755,9 @@
     }];
     
     
-    //#if TARGET_OS_IOS
     self.titleTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(setNowPlayingInfo) userInfo:nil repeats:true];
-    //#endif
     
-}
+    }
 
 - (void)queuePlayerHasMultipleItems:(KBYTQueuePlayer *)player {
     LOG_SELF;
@@ -754,17 +805,7 @@
                 }
             }
         }
-    }];/*
-    for (KBYTSearchResult *result in streamingMedia) {
-        if ([result media] != nil) {
-            YTPlayerItem *playerItem = [[result media] playerItemRepresentation];
-            playerItem.associatedMedia = [result media];
-            if (playerItem != nil) {
-                [avPlayerItemArray addObject:playerItem];
-            }
-        }
-    }
-    */
+    }];
     self.player = [KBYTQueuePlayer queuePlayerWithItems:avPlayerItemArray];
     [(KBYTQueuePlayer *)self.player setDelegate:self];
     self.view.frame = frame;
@@ -783,11 +824,14 @@
             _tempDuration = [[result duration] integerValue];
             //TLog(@"td: %lu", _tempDuration);
             _transportSlider.totalDuration = _tempDuration;
+        } else {
+            self.audioButton.menu = [self createPlaylistMenu];
         }
         YTPlayerItem *playerItem = [result playerItemRepresentation];
         if (playerItem != nil) {
             [(KBYTQueuePlayer *)self.player addItemToQueue:playerItem];
         }
+        
     }
 }
 
@@ -829,7 +873,7 @@
                 
             case UIPressTypeMenu:
                 break;
-           
+                
             case UIPressTypeSelect:
                 if ([_transportSlider isFocused]){
                     //TLog(@"togglePlayPause");
@@ -838,11 +882,11 @@
                 break;
                 
             case UIPressTypePlayPause:
-           
+                
                 //ELog(@"play pause");
                 [self togglePlayPause];
                 break;
-            
+                
             default:
                 TLog(@"unhandled type: %lu", press.type);
                 [super pressesEnded:presses withEvent:event];
@@ -868,9 +912,6 @@
         usableDuration = [numFormatter numberFromString:duration];
     }
     if (currentItem == nil) { return; }
-#if TARGET_OS_IOS
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : currentItem.title, MPMediaItemPropertyPlaybackDuration: usableDuration, MPNowPlayingInfoPropertyElapsedPlaybackTime: [NSNumber numberWithDouble:currentTime] }; //, MPMediaItemPropertyArtwork: artwork };
-#elif TARGET_OS_TV
     if (currentTime + 5 >= currentPlayerItem.durationDouble && currentPlayerItem.durationDouble > 0){
         //TLog(@"near the end: %.0f for %@", currentTime, currentItem.videoId);
         [[NSUserDefaults standardUserDefaults] removeObjectForKey:currentItem.videoId];
@@ -880,17 +921,14 @@
         }
         [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithDouble:currentTime] forKey:currentItem.videoId];
     }
-#endif
     
 }
 
 - (void)queuePlayer:(KBYTQueuePlayer *)player didStartPlayingItem:(AVPlayerItem *)item {
-    //    LOG_SELF;
-#if TARGET_OS_IOS
-    [self setNowPlayingInfo];
-#elif TARGET_OS_TV
+    LOG_CMD;
     YTPlayerItem *playerItem = (YTPlayerItem *)item;
     KBYTMedia *theMedia = (KBYTMedia*)[playerItem associatedMedia];
+    self.audioButton.menu = [self createPlaylistMenu];
     if (theMedia){
         if ([_lastStarted isEqualToString:theMedia.videoId]) {
             return;
@@ -901,31 +939,16 @@
             self.transportSlider.subtitle = theMedia.title;
             [self createAndSetMeta:theMedia];
         }
-    
-        
         [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
         CGFloat duration = [[[NSUserDefaults standardUserDefaults] valueForKey:theMedia.videoId] floatValue];
         TLog(@"current time offset for %@: %.0f", theMedia.videoId, duration);
         CMTime newtime = CMTimeMakeWithSeconds(duration, 600);
         [player seekToTime:newtime];
     }
-    
-#endif
-    /*
-     if ([[(KBYTQueuePlayer *)self.player items] count] == 0)
-     {
-     [self dismissViewControllerAnimated:true completion:nil];
-     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
-     } else {
-     [self setNowPlayingInfo];
-     }
-     */
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[MPRemoteCommandCenter sharedCommandCenter].pauseCommand removeTarget:self];
     [[MPRemoteCommandCenter sharedCommandCenter].playCommand removeTarget:self];
     [[MPRemoteCommandCenter sharedCommandCenter].nextTrackCommand removeTarget:self];
@@ -941,47 +964,6 @@
     }
     [self removePeriodicTimeObserver];
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
-}
-
-- (void)didForeground:(NSNotification *)n {
-    if (_layerToRestore != nil) {
-        [_layerToRestore setPlayer:[self player]];
-        _layerToRestore = nil;
-    }
-}
-
-- (AVPlayerLayer *)findPlayerView {
-    return [self findLayerWithAVPlayerLayer:self.view];
-}
-
-- (AVPlayerLayer *)findLayerWithAVPlayerLayer:(UIView *)view {
-    AVPlayerLayer *foundView = nil;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9.0")) {
-        if ([view.layer isKindOfClass:[AVPlayerLayer class]]) {
-            return (AVPlayerLayer *)view.layer;
-        }
-    } else {
-        @try {
-            foundView = [view valueForKey:@"_videoLayer"];
-        }
-        @catch ( NSException *e ) {
-            //  NSLog(@"exception: %@", e);
-        }
-        @finally {
-            if (foundView != nil)
-            {
-                return foundView;
-            }
-        }
-    }
-    
-    for (UIView *v in view.subviews) {
-        AVPlayerLayer *theLayer = [self findLayerWithAVPlayerLayer:v];
-        if (theLayer != nil) {
-            return theLayer;
-        }
-    }
-    return nil;
 }
 
 - (BOOL)isPlaying {
@@ -1005,21 +987,6 @@
         }
     }
     return false;
-}
-
-- (void)didBackground:(NSNotification *)n {
-    // NSString *recursiveDesc = [self.view performSelector:@selector(recursiveDescription)];
-    //NSLog(@"### view recursiveDescription: %@", recursiveDesc);
-    if ([self isPlaying] == true && [self hasVideo] == true) {
-        
-        _layerToRestore = [self findPlayerView];
-        [_layerToRestore setPlayer:nil];
-        
-    }
-}
-
-- (BOOL)shouldAutorotate {
-    return TRUE;
 }
 
 

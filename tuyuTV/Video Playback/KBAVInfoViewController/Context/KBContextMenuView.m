@@ -235,7 +235,7 @@
     self.transform = CGAffineTransformScale(self.transform, 0.01, 0.01);
     NSInteger itemCount = [self itemCount];
     CGFloat height = (itemCount * 70);
-    TLog(@"item count: %lu height: %f", itemCount, height);
+    //TLog(@"item count: %lu height: %f", itemCount, height);
     [self autoConstrainToSize:CGSizeMake(400, height)];
     [button.superview addSubview:self];
     [self.collectionView reloadData];

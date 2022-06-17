@@ -781,6 +781,25 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 #pragma mark convenience methods
 
+- (void)startReachabilityMonitoring {
+    AFNetworkReachabilityManager *man = [AFNetworkReachabilityManager sharedManager];
+    [man setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (status == AFNetworkReachabilityStatusReachableViaWiFi) {
+            TLog(@"wifi reachable");
+        } else {
+            TLog(@"wifi is not reachable");
+        }
+    }];
+    [man startMonitoring];
+    
+}
+
+- (void)stopReachabilityMonitoring {
+    AFNetworkReachabilityManager *man = [AFNetworkReachabilityManager sharedManager];
+    [man setReachabilityStatusChangeBlock:nil];
+    [man stopMonitoring];
+}
+
 - (void)postHomeDataChangedNotification {
     [[NSNotificationCenter defaultCenter] postNotificationName:KBYTHomeDataChangedNotification object:nil];
 }
@@ -1082,6 +1101,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (!shared){
         dispatch_once(&onceToken, ^{
             shared = [KBYourTube new];
+            [shared startReachabilityMonitoring];
             shared.deviceController = [[APDeviceController alloc] init];
         });
     }
@@ -1157,27 +1177,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 - (BOOL)isSignedIn {
-//#ifndef SHELF_EXT
     return [[TYAuthUserManager sharedInstance] authorized];
-//#endif
-    ONOXMLDocument *xmlDoc = [self documentFromURL:@"https://www.youtube.com/feed/history"];
-    ONOXMLElement *root = [xmlDoc rootElement];
-    ONOXMLElement * displayMessage = [root firstChildWithXPath:@"//div[contains(@class, 'display-message')]"];
-    //[root firstChildWithXPath:@"//div[contains(@class, 'yt-formatted-string')]"]
-    NSString *displayMessageString = [displayMessage stringValue];
-    NSLog(@"dms: %@", displayMessageString);
-    if (displayMessageString.length == 0 || displayMessageString == nil) {
-       // [TYAuthUserManager]
-        return true;
-    }
-    return false;
-
 }
 
 - (NSString *)shelfFile {
     return [[self appSupportFolder] stringByAppendingPathComponent:@"shelf.plist"];
 }
-
 
 - (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock
                                        failureBlock:(void(^)(NSString *error))failureBlock {

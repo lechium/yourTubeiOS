@@ -48,14 +48,20 @@
 
 - (void)showMenuWithCompletion:(void(^)(void))block {
     //LOG_CMD;
-    [_contextMenuView showContextViewFromButton:self completion:^{
-        if (self.menuDelegate && [self.menuDelegate respondsToSelector:@selector(menuShown:from:)]){
-            [self.menuDelegate menuShown:self.contextMenuView from:self];
-        }
-        if (block){
+    if (self.menu.children.count > 0) {
+        [_contextMenuView showContextViewFromButton:self completion:^{
+            if (self.menuDelegate && [self.menuDelegate respondsToSelector:@selector(menuShown:from:)]){
+                [self.menuDelegate menuShown:self.contextMenuView from:self];
+            }
+            if (block){
+                block();
+            }
+        }];
+    } else {
+        if(block){
             block();
         }
-    }];
+    }
 }
 
 - (void)dismissMenuWithCompletion:(void(^)(void))block {
@@ -110,7 +116,7 @@
     //DLog(@"subtype: %lu type: %lu", event.subtype, event.type);
     UIPress *first = [presses.allObjects firstObject];
     if (first.type == UIPressTypeSelect){
-        if (self.menu && self.showsMenuAsPrimaryAction) {
+        if (self.menu.children.count > 0 && self.showsMenuAsPrimaryAction) {
             if (!self.opened){
                 [self showMenuWithCompletion:^{
                     self.opened = true;

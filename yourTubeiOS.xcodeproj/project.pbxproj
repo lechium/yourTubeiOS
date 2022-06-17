@@ -414,6 +414,7 @@
 		32B022811E63EB2C002211C3 /* KBYTGridChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTGridChannelViewController.m; sourceTree = "<group>"; };
 		32B022831E63EB82002211C3 /* KBYTChannelHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBYTChannelHeaderView.h; sourceTree = "<group>"; };
 		32B022841E63EB82002211C3 /* KBYTChannelHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBYTChannelHeaderView.m; sourceTree = "<group>"; };
+		32B32D3A285C0B5D00285FC5 /* playlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = playlist.h; sourceTree = "<group>"; };
 		32C35AC71F3B173D000D24C7 /* Original Run script */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "Original Run script"; path = "tuyuTV/Original Run script"; sourceTree = "<group>"; };
 		32D2A1221F424805006F24B3 /* AFgzipRequestSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFgzipRequestSerializer.h; sourceTree = "<group>"; };
 		32D2A1231F424805006F24B3 /* AFgzipRequestSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFgzipRequestSerializer.m; sourceTree = "<group>"; };
@@ -994,9 +995,9 @@
 		32D6A5D3285695CC006BF25C /* KBSlider */ = {
 			isa = PBXGroup;
 			children = (
-				32D6A5D4285695CC006BF25C /* KBSlider.m */,
 				32D6A5D5285695CC006BF25C /* Images */,
 				32D6A5E3285695CC006BF25C /* KBSlider.h */,
+				32D6A5D4285695CC006BF25C /* KBSlider.m */,
 			);
 			path = KBSlider;
 			sourceTree = "<group>";
@@ -1004,19 +1005,20 @@
 		32D6A5D5285695CC006BF25C /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				32D6A5D6285695CC006BF25C /* tvhifi.h */,
-				32D6A5D7285695CC006BF25C /* backward.h */,
-				32D6A5D8285695CC006BF25C /* hd.h */,
-				32D6A5D9285695CC006BF25C /* goforward.h */,
-				32D6A5DA285695CC006BF25C /* audio.h */,
-				32D6A5DB285695CC006BF25C /* cc.h */,
-				32D6A5DC285695CC006BF25C /* KBSliderImages.m */,
+				32B32D3A285C0B5D00285FC5 /* playlist.h */,
 				32D6A5DD285695CC006BF25C /* appletv.h */,
+				32D6A5DA285695CC006BF25C /* audio.h */,
+				32D6A5D7285695CC006BF25C /* backward.h */,
 				32D6A5DE285695CC006BF25C /* captions.h */,
-				32D6A5DF285695CC006BF25C /* gobackward.h */,
+				32D6A5DB285695CC006BF25C /* cc.h */,
 				32D6A5E0285695CC006BF25C /* checkmark.h */,
-				32D6A5E1285695CC006BF25C /* KBSliderImages.h */,
 				32D6A5E2285695CC006BF25C /* forward.h */,
+				32D6A5DF285695CC006BF25C /* gobackward.h */,
+				32D6A5D9285695CC006BF25C /* goforward.h */,
+				32D6A5D8285695CC006BF25C /* hd.h */,
+				32D6A5E1285695CC006BF25C /* KBSliderImages.h */,
+				32D6A5DC285695CC006BF25C /* KBSliderImages.m */,
+				32D6A5D6285695CC006BF25C /* tvhifi.h */,
 			);
 			path = Images;
 			sourceTree = "<group>";

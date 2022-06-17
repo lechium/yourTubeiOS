@@ -76,10 +76,10 @@
     // Note: it is necessary to have seekToTime called twice in this method, once before and once after re-making the area. If it is not present before, the player will resume from the same spot in the next song when the previous song finishes playing; if it is not present after, the previous song will be played from the same spot that the current song was on.
     [self seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     // The next two lines are necessary since RemoveAllItems resets both the nowPlayingIndex and _itemsForPlayer
-    int tempNowPlayingIndex = self.nowPlayingIndex;
+    NSInteger tempNowPlayingIndex = self.nowPlayingIndex;
     NSMutableArray *tempPlaylist = [[NSMutableArray alloc]initWithArray:self.innerItems];
     [self removeAllItems];
-    for (int i = tempNowPlayingIndex - 1; i < [tempPlaylist count]; i++) {
+    for (NSInteger i = tempNowPlayingIndex - 1; i < [tempPlaylist count]; i++) {
         [self insertItem:[tempPlaylist objectAtIndex:i] afterItem:nil];
     }
     // The temp index is necessary since removeAllItems resets the nowPlayingIndex
@@ -154,6 +154,14 @@
         }
     }
     return NO;
+}
+
+- (BOOL)hasNextItem {
+    return (self.nowPlayingIndex < [self.innerItems count] - 1);
+}
+
+- (BOOL)hasPreviousItem {
+    return (self.nowPlayingIndex > 0 && self.items.count > 1);
 }
 
 - (void)advanceToNextItem {
