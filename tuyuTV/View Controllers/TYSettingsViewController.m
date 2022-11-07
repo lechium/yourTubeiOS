@@ -90,6 +90,8 @@
         NSLog(@"inside here???");
         if ([[tokenDict allKeys] containsObject:@"access_token"]){
             NSLog(@"we good: %@", tokenDict );
+            AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            [ad updateForSignedIn];
             [self dismissViewControllerAnimated:true completion:nil];
         } else {
             NSLog(@"show error alert here");
