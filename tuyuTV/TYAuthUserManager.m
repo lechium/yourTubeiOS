@@ -1053,7 +1053,7 @@
 }
 
 - (void)getOAuthCodeWithCompletion:(void(^)(NSDictionary *codeDict))block {
-    https://oauth2.googleapis.com/device/code
+    //https://oauth2.googleapis.com/device/code
     NSString* post = [NSString stringWithFormat:@"client_id=%@&scope=%@",ytClientID, [@"https://www.googleapis.com/auth/youtube" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     // Encode post string
     NSData* postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:false];
