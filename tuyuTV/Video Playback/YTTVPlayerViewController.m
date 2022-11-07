@@ -40,7 +40,7 @@
 @property UIPress *ignorePress;
 @property KBSlider *transportSlider;
 @property KBButton *subtitleButton;
-@property KBButton *audioButton;
+@property KBButton *playlistButton;
 @property BOOL wasPlaying; //keeps track if we were playing when scrubbing started
 @property AVPlayerLayer *playerLayer;
 @property KBAVInfoViewController *avInfoViewController;
@@ -56,7 +56,7 @@
 - (void)menuShown:(KBContextMenuView *)menu from:(KBButton *)button {
     //TLog(@"menu: %@ show from: %@", menu, button);
     _visibleContextView = menu;
-    self.audioButton.userInteractionEnabled = false;
+    self.playlistButton.userInteractionEnabled = false;
     self.transportSlider.userInteractionEnabled = false;
     self.subtitleButton.userInteractionEnabled = false;
     [self setNeedsFocusUpdate];
@@ -76,7 +76,7 @@
         return @[self.transportSlider];
     }
     //return @[self.transportSlider];
-    return @[self.transportSlider, self.subtitleButton, self.audioButton];
+    return @[self.transportSlider, self.subtitleButton, self.playlistButton];
 }
 
 - (BOOL)shouldUpdateFocusInContext:(UIFocusUpdateContext *)context {
@@ -114,10 +114,10 @@
 - (void)destroyContextView {
     _visibleContextView = nil;
     self.subtitleButton.opened = false;
-    self.audioButton.opened = false;
+    self.playlistButton.opened = false;
     self.transportSlider.userInteractionEnabled = true;
     self.subtitleButton.userInteractionEnabled = true;
-    self.audioButton.userInteractionEnabled = true;
+    self.playlistButton.userInteractionEnabled = true;
 }
 
 - (void)selectedItem:(nonnull KBMenuElement *)item {
@@ -126,26 +126,11 @@
 
 
 - (void)dismissContextViewIfNecessary {
-    
     [_visibleContextView showContextView:false completion:^{
         [self.subtitleButton setOpened:false];
-        [self.audioButton setOpened:false];
+        [self.playlistButton setOpened:false];
         [self destroyContextView];
     }];
-    return;
-    if (self.audioButton.opened) {
-        [self.audioButton dismissMenuWithCompletion:^{
-            [self.subtitleButton setOpened:false];
-            [self.audioButton setOpened:false];
-            [self destroyContextView];
-        }];
-    } else if (self.subtitleButton.opened) {
-        [self.subtitleButton dismissMenuWithCompletion:^{
-            [self.subtitleButton setOpened:false];
-            [self.audioButton setOpened:false];
-            [self destroyContextView];
-        }];
-    }
 }
 
 
@@ -153,8 +138,8 @@
     [self destroyContextView];
     if (button == self.subtitleButton) {
         self.subtitleButton.menu = [_avInfoViewController createSubtitleMenu];
-    } else if (button == self.audioButton) {
-        self.audioButton.menu = [self createPlaylistMenu];
+    } else if (button == self.playlistButton) {
+        self.playlistButton.menu = [self createPlaylistMenu];
     }
 }
 
@@ -206,6 +191,7 @@
         }];
         [items addObject:nextItem];
     }
+    TLog(@"item count: %lu", items.count);
     return [KBMenu menuWithTitle:@"Playlist" image:[KBSliderImages playlistImage] identifier:nil options:KBMenuOptionsDisplayInline children:items];
 }
 
@@ -398,15 +384,15 @@
     _subtitleButton = [KBButton buttonWithType:KBButtonTypeImage];
     _subtitleButton.alpha = 0;
     _subtitleButton.showsMenuAsPrimaryAction = true;
-    [_subtitleButton autoConstrainToSize:CGSizeMake(68, 68)];
+    [_subtitleButton autoConstrainToSize:CGSizeMake(0, 0)];
     [self.view addSubview:_subtitleButton];
     _subtitleButton.menu = [_avInfoViewController createSubtitleMenu];
     _subtitleButton.menuDelegate = self;
-    _audioButton = [KBButton buttonWithType:KBButtonTypeImage];
-    _audioButton.alpha = 0;
-    _audioButton.showsMenuAsPrimaryAction = true;
-    [_audioButton autoConstrainToSize:CGSizeMake(68, 68)];
-    [self.view addSubview:_audioButton];
+    _playlistButton = [KBButton buttonWithType:KBButtonTypeImage];
+    _playlistButton.alpha = 0;
+    _playlistButton.showsMenuAsPrimaryAction = true;
+    [_playlistButton autoConstrainToSize:CGSizeMake(68, 68)];
+    [self.view addSubview:_playlistButton];
     
     //[self updateSubtitleButtonState];
     [_subtitleButton.bottomAnchor constraintEqualToAnchor:_transportSlider.topAnchor constant:60].active = true;
@@ -414,34 +400,40 @@
     _subtitleButton.layer.masksToBounds = true;
     _subtitleButton.layer.cornerRadius = 68/2;
     
-    [_audioButton.bottomAnchor constraintEqualToAnchor:_transportSlider.topAnchor constant:60].active = true;
-    [_audioButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
-    _audioButton.layer.masksToBounds = true;
-    _audioButton.layer.cornerRadius = 68/2;
+    [_playlistButton.bottomAnchor constraintEqualToAnchor:_transportSlider.topAnchor constant:60].active = true;
+    [_playlistButton.trailingAnchor constraintEqualToAnchor:_transportSlider.trailingAnchor].active = true;
+    _playlistButton.layer.masksToBounds = true;
+    _playlistButton.layer.cornerRadius = 68/2;
     //_audioButton.menu = [self createPlaylistMenu];
-    _audioButton.menuDelegate = self;
-    [_audioButton.leftAnchor constraintEqualToAnchor:_subtitleButton.rightAnchor constant:0].active = true;
+    _playlistButton.menuDelegate = self;
+    [_playlistButton.leftAnchor constraintEqualToAnchor:_subtitleButton.rightAnchor constant:0].active = true;
     
     @weakify(self);
     _transportSlider.sliderFading = ^(CGFloat direction, BOOL animated) {
         [self_weak_ dismissContextViewIfNecessary];
         if (animated) {
             [UIView animateWithDuration:0.3 animations:^{
-                self_weak_.subtitleButton.alpha = direction;
-                self_weak_.audioButton.alpha = direction;
-                if ([self_weak_ contextViewVisible] && direction == 0){
-                    //[self_weak_ testShowContextView];
+                if (direction == 1) {
+                    if (self_weak_.playlistButton.menu.children.count > 0){
+                        self_weak_.playlistButton.alpha = direction;
+                    } else {
+                        self_weak_.subtitleButton.alpha = direction;
+                        self_weak_.playlistButton.alpha = direction;
+                    }
+                } else {
+                    self_weak_.subtitleButton.alpha = direction;
+                    self_weak_.playlistButton.alpha = direction;
                 }
             } completion:^(BOOL finished) {
                 if (direction == 0) {
-                    if ([self_weak_.subtitleButton isFocused] || [self_weak_.audioButton isFocused]){
+                    if ([self_weak_.subtitleButton isFocused] || [self_weak_.playlistButton isFocused]){
                         [self_weak_ setNeedsFocusUpdate];
                     }
                 }
             }];
         } else {
             self_weak_.subtitleButton.alpha = direction;
-            self_weak_.audioButton.alpha = direction;
+            self_weak_.playlistButton.alpha = direction;
         }
     };
     
@@ -825,7 +817,7 @@
             //TLog(@"td: %lu", _tempDuration);
             _transportSlider.totalDuration = _tempDuration;
         } else {
-            self.audioButton.menu = [self createPlaylistMenu];
+            self.playlistButton.menu = [self createPlaylistMenu];
         }
         YTPlayerItem *playerItem = [result playerItemRepresentation];
         if (playerItem != nil) {
@@ -928,7 +920,6 @@
     LOG_CMD;
     YTPlayerItem *playerItem = (YTPlayerItem *)item;
     KBYTMedia *theMedia = (KBYTMedia*)[playerItem associatedMedia];
-    self.audioButton.menu = [self createPlaylistMenu];
     if (theMedia){
         if ([_lastStarted isEqualToString:theMedia.videoId]) {
             return;
@@ -938,6 +929,7 @@
             self.transportSlider.title = theMedia.author;
             self.transportSlider.subtitle = theMedia.title;
             [self createAndSetMeta:theMedia];
+            //self.playlistButton.menu = [self createPlaylistMenu];
         }
         [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
         CGFloat duration = [[[NSUserDefaults standardUserDefaults] valueForKey:theMedia.videoId] floatValue];

@@ -3,7 +3,7 @@ Package: com.nito.tuyu
 Pre-Depends: cy+model.appletv
 Depends: firmware(>= 9.0), mobilesubstrate
 Architecture: appletvos-arm64
-Version: 0.5
+Version: 1.0
 Maintainer: Kevin Bradley
 Author: Kevin Bradley
 Description: tvOS port of tuyu for iOS. View featured videos, sign in to your account, view all account playlists and channels subscriptions, extremely powerful search with channel and playlist support.

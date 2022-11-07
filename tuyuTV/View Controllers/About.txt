@@ -1,4 +1,4 @@
-tuyu 0.5 for AppleTV 4
+tuyu 1.0 for AppleTV 4
 
 By: Kevin Bradley
 
@@ -7,6 +7,13 @@ tuyu is tvOS port of tuyu for iOS. View featured videos, sign in to your account
 
 
 Changelog:
+
+1.0: tuyu is reborn! All the same features from before work again.
+
+* Added new & improved custom playback controls to mirror the changes in iOS 15+
+* Added ability to manage the feautured channel screen
+* Result caching - drastically speeds up load times
+* Tons of bug fixes (too many to list or remember)
 
 0.4.1: improved support for youtube accounts that don't have any uploads and dont have watch later list.
 
