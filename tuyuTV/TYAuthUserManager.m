@@ -151,10 +151,6 @@
         return;
     }
     
-    /*
-     client_id=670004260779-f193lea0mkihris4cr8gi4qaek46c0kl.apps.googleusercontent.com&client_secret=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&device_code=AH-1Ng2uKm7Q6rhcdQCWUCCxjDLH9NS5gSWW9jB8xwYbE_bcSr_Vodl7WtCXk6cD8DEP8y9slleFxHEOFghVylHlZ0skKZAK8A&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
-     */
-    
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     NSString *deviceCode = self.authResponse[@"device_code"];
     NSString *pollURL = @"https://oauth2.googleapis.com/token";
@@ -184,18 +180,6 @@
                 self.authorized = false;
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    /*
-                     
-                     "error": "authorization_pending",
-                     "error_description": "Precondition Required"
-                     
-                     "access_token": "ya29.a0ARrdaM-ImfR0lSglbpcSDum_F3Xc63rLKfL9UtZ-LP8MmWliM0g3vcLcvwISFBWXYtdGUvHpiV4g-Gu7RPmXyiiYMwDPl8VMMk50Uz_FTXghQmLmgaN2HjQLyZFD3BwN6-M4N6KVY52V4gLdCCv0oxyUJLlD",
-                     "expires_in": 3599,
-                     "refresh_token": "1//06-oXZLuoysIgCgYIARAAGAYSNwF-L9IrVnd7cTPZcxuDerJI_7uBFc-lW3sfanDNK8-a2sKx0SiE-4Veed2ZdligxVq5aJCGkgI",
-                     "scope": "https://www.googleapis.com/auth/youtube.readonly",
-                     "token_type": "Bearer"
-                     */
                     
                     NSString *refreshToken = [tokenResponse valueForKey:@"refresh_token"];
                     AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
@@ -836,14 +820,6 @@
     
     return searchResult;
 }
-
-/*
- code=4/P7q7W91a-oMsCeLvIaQm6bTrgtp7&
- client_id=your_client_id&
- client_secret=your_client_secret&
- redirect_uri=http%3A//127.0.0.1%3A9004&
- grant_type=authorization_code
- */
 
 - (void)postCodeToGoogle:(NSString *)code completion:(void(^)(NSDictionary *returnData))block {
     
