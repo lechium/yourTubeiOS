@@ -572,17 +572,25 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 
-- (id)initWithJSON:(NSDictionary *)jsonDict {
+- (id)initWithJSON:(NSDictionary *)jsonDict error:(NSError * __autoreleasing *)outError {
     self = [super init];
-    if ([self processJSON:jsonDict] == true) {
+    if ([self processJSON:jsonDict error:outError] == true) {
         return self;
     }
     return nil;
 }
 
-- (BOOL)processJSON:(NSDictionary *)jsonDict {
+- (BOOL)processJSON:(NSDictionary *)jsonDict error:(NSError * __autoreleasing *)outError {
     NSDictionary *streamingData = jsonDict[@"streamingData"];
     NSDictionary *videoDetails = jsonDict[@"videoDetails"];
+    NSDictionary *playabilityStatus = jsonDict[@"playabilityStatus"];
+    NSString *status = playabilityStatus[@"status"];
+    if (![[status lowercaseString] isEqualToString:@"ok"]){
+        NSLog(@"reason: %@", playabilityStatus[@"reason"]);
+        NSDictionary *dict = @{NSLocalizedDescriptionKey: playabilityStatus[@"reason"]};
+        *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:42 userInfo:dict];
+        return false;
+    }
     self.author = videoDetails[@"author"];
     self.title = videoDetails[@"title"];
     self.videoId = videoDetails[@"videoId"];
@@ -2053,7 +2061,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         
         @autoreleasepool {
             KBYTMedia *rootInfo = nil;
-            NSString *errorString = nil;
+            __block NSString *errorString = @"";
             NSString *url = [self playerURL];
             NSLog(@"url: %@", url);
             //get the post body from the url above, gets the initial raw info we work with
@@ -2064,7 +2072,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             //NSLog(@"body: %@ for: %@ %@", jsonDict, url, params);
             [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"file2.plist"] atomically:true];
             
-            rootInfo = [[KBYTMedia alloc] initWithJSON:jsonDict];
+            NSError *error = nil;
+            rootInfo = [[KBYTMedia alloc] initWithJSON:jsonDict error:&error];
             //NSLog(@"root info: %@", rootInfo);
             dispatch_async(dispatch_get_main_queue(), ^{
                 
@@ -2072,6 +2081,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 {
                     completionBlock(rootInfo);
                 } else {
+                    if (error) {
+                        errorString = error.localizedDescription;
+                    }
                     failureBlock(errorString);
                 }
             });
@@ -2139,10 +2151,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         @autoreleasepool {
             NSMutableArray *finalArray = [NSMutableArray new];
             //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
-            NSString *errorString = nil;
-            
-            NSInteger i = 0;
-            
+            __block NSString *errorString = @"";
+
             for (KBYTSearchResult *result in searchResults) {
                 
                 if (!result.videoId){
@@ -2157,9 +2167,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 NSString *body = [self stringFromPostRequest:url withParams:params];
                 NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
                 NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
-                KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict];
-                [finalArray addObject:currentMedia];
-                
+                NSError *error = nil;
+                KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict error:&error];
+                if(currentMedia) {
+                    [finalArray addObject:currentMedia];
+                }
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -2184,11 +2196,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         @autoreleasepool {
             NSMutableArray *finalArray = [NSMutableArray new];
             //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
-            NSString *errorString = nil;
-            
-            //the url we use to call get_video_info
-            
-            NSInteger i = 0;
+            __block NSString *errorString = @"";
             
             for (NSString *videoID in videoIDs) {
                 
@@ -2199,8 +2207,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 NSString *body = [self stringFromPostRequest:url withParams:params];
                 NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
                 NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
-                KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict];
-                [finalArray addObject:currentMedia];
+                NSError *error = nil;
+                KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict error:&error];
+                if(currentMedia){
+                    [finalArray addObject:currentMedia];
+                }
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
