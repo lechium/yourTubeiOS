@@ -588,7 +588,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (![[status lowercaseString] isEqualToString:@"ok"]){
         NSLog(@"reason: %@", playabilityStatus[@"reason"]);
         NSDictionary *dict = @{NSLocalizedDescriptionKey: playabilityStatus[@"reason"]};
-        *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:42 userInfo:dict];
+        if (outError) {
+            *outError = [NSError errorWithDomain:NSCocoaErrorDomain code:42 userInfo:dict];
+        }
         return false;
     }
     self.author = videoDetails[@"author"];
