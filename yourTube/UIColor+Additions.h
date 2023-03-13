@@ -13,4 +13,6 @@ typedef NS_ENUM(NSInteger, SQFContrastingColorMethod) {
 - (NSString *)hexValue;
 + (UIColor *)colorFromHex:(NSString *)s;
 - (UIColor *)sqf_contrastingColorWithMethod:(SQFContrastingColorMethod)method;
++ (UIColor *)ourLightTextColor;
++ (UIColor *)ourDarkTextColor;
 @end

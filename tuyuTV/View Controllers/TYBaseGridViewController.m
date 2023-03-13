@@ -72,7 +72,7 @@ static int headerTagOffset = 70;
         self.topConstraint = [self.title autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-self.topOffset];
         //100 seems to be a good sweet spot
         [self.title autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:100];
-        self.title.textColor = [UIColor lightTextColor];
+        self.title.textColor = [UIColor ourLightTextColor];
         self.title.font = [UIFont systemFontOfSize:40];
         
     }
@@ -627,7 +627,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
     NSInteger headerTag = (cv.tag - tagOffset) + headerTagOffset;
     TYBaseGridCollectionHeaderView *header = [cv viewWithTag:headerTag];
     [header updateTopOffset:-40]; //always shift it back up
-     [header.title setTextColor:[UIColor lightTextColor]];
+     [header.title setTextColor:[UIColor ourLightTextColor]];
 }
 
 - (void)expandHeaderAnimated:(BOOL)animated {
@@ -737,7 +737,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             [[(TYBaseGridCollectionHeaderView *)view title] setTextColor:[UIColor whiteColor]];
         } else {
             
-            [[(TYBaseGridCollectionHeaderView *)view title] setTextColor:[UIColor lightTextColor]];
+            [[(TYBaseGridCollectionHeaderView *)view title] setTextColor:[UIColor ourLightTextColor]];
         }
     }
 }

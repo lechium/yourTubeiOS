@@ -506,8 +506,8 @@ NS_INLINE void updateSharedProgressViewList(BOOL complete) {
 
 - (void)layoutImageView {
     [_imageView sizeToFit];
-    
-    UIEdgeInsets insets = (!iOS7 && self.progressViewStyle == UIProgressViewStyleBar ? UIEdgeInsetsMake(1.0f, 1.0f, 2.0f, 1.0f) : UIEdgeInsetsZero);
+    //UIProgressViewStyleBar = 1
+    UIEdgeInsets insets = (!iOS7 && self.progressViewStyle == 1 ? UIEdgeInsetsMake(1.0f, 1.0f, 2.0f, 1.0f) : UIEdgeInsetsZero);
     
     CGRect frame = UIEdgeInsetsInsetRect(self.bounds, insets);
     

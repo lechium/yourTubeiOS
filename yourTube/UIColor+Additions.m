@@ -3,6 +3,13 @@
 
 @implementation UIColor (Additions)
 
++ (UIColor *)ourLightTextColor {
+    return [UIColor colorWithWhite:1.0 alpha:0.6];
+}
+
++ (UIColor *)ourDarkTextColor {
+    return [UIColor colorWithWhite:0.0 alpha:1.0];
+}
 
 - (UIColor*)changeBrightnessByAmount:(CGFloat)amount
 {

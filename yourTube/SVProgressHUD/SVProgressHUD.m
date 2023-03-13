@@ -596,7 +596,7 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
                                              selector:@selector(positionHUD:)
                                                  name:UIApplicationDidChangeStatusBarOrientationNotification
                                                object:nil];
-#endif
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(positionHUD:)
                                                  name:UIApplicationDidBecomeActiveNotification
@@ -621,6 +621,7 @@ static const CGFloat SVProgressHUDUndefinedProgress = -1;
                                              selector:@selector(positionHUD:)
                                                  name:UIKeyboardDidShowNotification
                                                object:nil];
+#endif 
 }
 
 - (NSDictionary*)notificationUserInfo{
