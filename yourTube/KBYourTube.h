@@ -132,6 +132,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSArray *streams;
 @property (nonatomic, strong) NSString *details; //description
 @property (readwrite, assign) NSInteger expireTime;
+@property (nonatomic, strong) NSString *hlsManifest;
 
 - (BOOL)isExpired;
 - (NSDictionary *)dictionaryRepresentation;

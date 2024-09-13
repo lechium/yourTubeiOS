@@ -37,6 +37,8 @@
     [self.bannerImageView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self];
     self.authorLabel = [[UILabel alloc] initForAutoLayout];
     self.subscriberLabel = [[UILabel alloc] initForAutoLayout];
+    self.subscriberLabel.numberOfLines = 0;
+    self.subscriberLabel.lineBreakMode = NSLineBreakByWordWrapping;
     //[self.bannerImageView addSubview:self.authorLabel];
     //[self.bannerImageView addSubview:self.subscriberLabel];
     UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[self.authorLabel, self.subscriberLabel]];

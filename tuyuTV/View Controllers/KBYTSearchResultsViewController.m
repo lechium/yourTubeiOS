@@ -580,6 +580,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     KBYTSearchResult *searchResult = [self.searchResults objectAtIndex:indexPath.row];
     if (searchResult.resultType ==kYTSearchResultTypeVideo) {
+        DLog(@"getting details for videoID: %@", searchResult.videoId);
         NSArray *subarray = [self.searchResults subarrayWithRange:NSMakeRange(indexPath.row, self.searchResults.count - indexPath.row)];
         [self playAllSearchResults:subarray];
     } else if (searchResult.resultType ==kYTSearchResultTypeChannel) {

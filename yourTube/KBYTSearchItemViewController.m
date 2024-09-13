@@ -41,7 +41,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
         aircontrolServers = aircontrols;
         self.title = media.title;
         ytMedia = media;
-        //NSLog(@"ytmedia: %@", ytMedia);
+        NSLog(@"ytmedia: %@", ytMedia);
         
     }
     return self;

@@ -67,6 +67,10 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         UICollectionView *collectionView  = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layoutTwo];
         [collectionView addGestureRecognizer:longpress];
         [collectionView addGestureRecognizer:swipeGesture];
+        UIView *existingView = [[self view] viewWithTag:60+i];
+        if (existingView){
+            [existingView removeFromSuperview]; //reset
+        }
         //collectionView.scrollEnabled = true;
         collectionView.tag = 60 + i;
         collectionView.translatesAutoresizingMaskIntoConstraints = false;
@@ -131,6 +135,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             NSURL *imageURL =  [NSURL URLWithString:channel.banner];
             [self.headerview.bannerImageView sd_setImageWithURL:imageURL placeholderImage:banner options:SDWebImageAllowInvalidSSLCertificates];
             self.headerview.subscriberLabel.text = channel.subscribers;
+            //self.headerview.subscriberLabel.text = channel.subscribers ? channel.subscribers : channel.subtitle;
             self.headerview.authorLabel.text = channel.title;
             _backingSectionLabels = [NSMutableArray new];
             __block NSMutableDictionary *plDict = [NSMutableDictionary new];
