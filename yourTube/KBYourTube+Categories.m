@@ -334,7 +334,7 @@
 }
 
 #endif
-
+/*
 - (NSArray *)propertiesForClass:(Class)clazz {
     u_int count;
     objc_property_t* properties = class_copyPropertyList(clazz, &count);
@@ -347,7 +347,7 @@
     free(properties);
     return propArray;
 }
-
+*/
 - (NSArray *)properties {
     u_int count;
     objc_property_t* properties = class_copyPropertyList(self.class, &count);

@@ -76,16 +76,32 @@
 
 #endif
 
-
 - (NSArray *)propertiesForClass:(Class)clazz {
     u_int count;
     objc_property_t* properties = class_copyPropertyList(clazz, &count);
     NSMutableArray* propArray = [NSMutableArray arrayWithCapacity:count];
-    for (int i = 0; i < count ; i++)
-    {
+    for (int i = 0; i < count ; i++) {
         const char* propertyName = property_getName(properties[i]);
         NSString *propName = [NSString  stringWithCString:propertyName encoding:NSUTF8StringEncoding];
-        [propArray addObject:propName];
+        char *selectorName = property_copyAttributeValue(properties[i], "S");
+        NSString* selectorString;
+        if (selectorName == NULL) {
+            char firstChar = (char)toupper(propertyName[0]);
+            NSString* capitalLetter = [NSString stringWithFormat:@"%c", firstChar];
+            NSString* reminder      = [NSString stringWithCString: propertyName+1
+                                                         encoding: NSASCIIStringEncoding];
+            selectorString = [@[@"set", capitalLetter, reminder, @":"] componentsJoinedByString:@""];
+            if (class_respondsToSelector(clazz, NSSelectorFromString(selectorString))) {
+                //DLog(@"class: %@ %@ setting selector: %@", clazz, propName, selectorString);
+                [propArray addObject:propName];
+            } else {
+                //DLog(@"class: %@ %@ bad selector: %@", clazz, propName, selectorString);
+            }
+        } else {
+            selectorString = [NSString stringWithCString:selectorName encoding:NSASCIIStringEncoding];
+            //DLog(@"%@ setting selector proper: %@", propName, selectorString);
+            [propArray addObject:propName];
+        }
     }
     free(properties);
     return propArray;
@@ -341,19 +357,19 @@
 
 //we'll never care about an items delegate details when saving a dict rep, this prevents an inifinite loop/crash on some classes.
 - (NSDictionary *)dictionaryRepresentation {
-    return [self dictionaryRepresentationExcludingProperties:@[@"delegate"]];
+    return [self dictionaryRepresentationExcludingProperties:@[@"delegate", @"superclass", @"hash", @"debugDescription", @"description"]];
 }
 
 - (NSDictionary *)dictionaryRepresentationExcludingProperties:(NSArray *)excluding {
     __block NSMutableDictionary *dict = [NSMutableDictionary new];
     Class cls = NSClassFromString([self valueForKey:@"className"]); //this is how we hone in our the properties /just/ for our specific class rather than NSObject's properties.
     NSArray *props = [self propertiesForClass:cls];
-    DLog(@"props: %@ for class: %@", props, cls);
+    //DLog(@"props: %@ for class: %@", props, cls);
     dict[@"___className"] = [self valueForKey:@"className"];
     [props enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         //get the value of the particular property
         id val = [self valueForKey:obj];
-        if ([val isKindOfClass:NSString.class] || [val isKindOfClass:NSNumber.class]) { //add numbers and strings as is
+        if ([val isKindOfClass:NSString.class] || [val isKindOfClass:NSNumber.class] && !([excluding containsObject:obj])) { //add numbers and strings as is
             [dict setValue:val forKey:obj];
         } else { //not a string or a number
             if ([val isKindOfClass:NSArray.class]) {
