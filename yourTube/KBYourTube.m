@@ -525,7 +525,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     //TLog(@"firstStream: %@ in %@", [self streams], NSStringFromSelector(_cmd));
     if (self.hlsManifest) {
         streamURL = [NSURL URLWithString:self.hlsManifest];
-        DLog(@"using streamURL :%@", streamURL);
+        //DLog(@"using streamURL :%@", streamURL);
     }
     YTPlayerItem *mediaItem = [[YTPlayerItem alloc] initWithURL:streamURL];
     mediaItem.associatedMedia = self;
@@ -1736,7 +1736,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 //DLog(@"details: %@", details);
             }
             NSDictionary *subscriberCount = [jsonDict recursiveObjectForKey:@"subscriberCountText"];
-            NSLog(@"subscriber count: %@", subscriberCount);
+            //NSLog(@"subscriber count: %@", subscriberCount);
             NSDictionary *title = [details recursiveObjectForKey:@"title"];
             NSDictionary *subtitle = [details recursiveObjectForKey:@"subtitle"];
             NSArray *thumbnails = [details recursiveObjectForKey:@"thumbnails"];

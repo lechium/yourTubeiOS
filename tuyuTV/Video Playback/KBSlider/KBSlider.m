@@ -1674,15 +1674,15 @@
     }
 }
 
+- (BOOL)isVisible {
+    return [self _isVisible];
+}
+
 - (void)fadeInIfNecessary {
-    if (self.sliderMode == KBSliderModeTransport){
-        if (![self _isVisible]){
-            [self fadeIn];
-        }
-    } else {
-        if (![self _isVisible]){
-            [self fadeIn];
-        }
+    DLOG_CMD;
+    if (![self _isVisible]){
+        DLog(@"is not visible!");
+        [self fadeIn];
     }
 }
 
@@ -1707,12 +1707,14 @@
 }
 
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
-    
-    [self fadeInIfNecessary];
-    if (!self.isFocused){
+    //DLOG_CMD;
+    UIPress *firstPress = presses.allObjects.firstObject;
+    if (firstPress.type == UIPressTypeMenu || firstPress.key.keyCode == UIKeyboardHIDUsageKeyboardEscape || !self.isFocused) {
+        DLog(@"discard menu events");
         [super pressesBegan:presses withEvent:event];
         return;
     }
+    [self fadeInIfNecessary];
     for (UIPress *press in presses){
         switch (press.type) {
             case UIPressTypeSelect:

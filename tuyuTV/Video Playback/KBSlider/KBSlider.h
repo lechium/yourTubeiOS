@@ -117,6 +117,7 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 
 @property (readwrite, assign) KBSeekSpeed currentSeekSpeed;
 
+- (BOOL)isVisible;
 - (void)seekResume;
 - (KBSeekSpeed)handleSeekingPressType:(UIPressType)pressType; //only matters if FF or RW
 + (NSDateComponentsFormatter *)sharedTimeFormatter;
@@ -141,6 +142,7 @@ typedef NS_ENUM(NSInteger, KBSliderMode) {
 
 
 #define DLog(format, ...) CFShow((__bridge CFStringRef)[NSString stringWithFormat:format, ## __VA_ARGS__]);
+#define DLOG_CMD          DLog(@"%@", NSStringFromSelector(_cmd))
 //#define LOG_SELF        DLog(@"[KBSlider] %@ %@", self, NSStringFromSelector(_cmd))
 #define KBSLog(format, ...) DLog(@"[KBSlider] %@",[NSString stringWithFormat:format, ## __VA_ARGS__]);
 NS_ASSUME_NONNULL_END

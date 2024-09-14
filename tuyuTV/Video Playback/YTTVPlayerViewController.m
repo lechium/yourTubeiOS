@@ -231,6 +231,11 @@
             [self.transportSlider setCurrentTime:self.transportSlider.currentTime];
             [self.player play];
         } else {
+            if (![self avInfoPanelShowing] && ![_transportSlider isVisible] ) {
+                [_transportSlider fadeInIfNecessary];
+                [self showAVInfoView];
+                return;
+            }
             [self.player pause]; //actually need to 'stop' here?
             [self dismissViewControllerAnimated:true completion:nil];
         }
