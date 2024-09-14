@@ -11,6 +11,38 @@
     return [UIColor colorWithWhite:0.0 alpha:1.0];
 }
 
++ (UIColor *)aquaColor {
+   return [UIColor colorFromHex:@"0096FF"];
+}
+
++ (UIColor *)oceanColor {
+   return [UIColor colorFromHex:@"005392"];
+}
+//510500
++ (UIColor *)darkRedColor {
+   return [UIColor colorFromHex:@"510500"];
+}
++ (UIColor *)ceruleanBlue {
+   return [UIColor colorFromHex:@"27557D"];//2A52BE
+}
+
++ (UIColor *)nickelColor {
+   return [UIColor colorFromHex:@"929292"];
+}
+
++ (UIColor *)tealColor {
+   return [UIColor colorFromHex:@"009192"];
+}
+
++ (UIColor *)coolBlueColor {
+   return [UIColor colorFromHex:@"0B46FA"];
+}
+
++ (UIColor *)nitoRedColor {
+   
+   return [UIColor colorFromHex:@"FA0D1B"];
+}
+
 - (UIColor*)changeBrightnessByAmount:(CGFloat)amount
 {
     

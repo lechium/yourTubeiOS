@@ -11,6 +11,7 @@
 #import "KBYTGridChannelViewController.h"
 #import "YTTVPlaylistViewController.h"
 #import "YTTVPlayerViewController.h"
+#import "UIColor+Additions.h"
 /*
  
  Tag offsets are used for both the collection views and their header views to be able to query them easily

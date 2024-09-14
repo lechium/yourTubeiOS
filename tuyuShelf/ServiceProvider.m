@@ -7,7 +7,7 @@
 //
 
 #import "ServiceProvider.h"
-
+#import "NSDictionary+serialize.h"
 @interface ServiceProvider ()
 
 

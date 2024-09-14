@@ -10,6 +10,7 @@
 #import "KBBulletinView.h"
 #import "TYAuthUserManager.h"
 #import "KBYTGridChannelViewController.h"
+#import "UIView+RecursiveFind.h"
 
 @interface TYGridUserViewController () {
     NSInteger _highlightedCell;

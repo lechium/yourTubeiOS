@@ -10,6 +10,9 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import "KBYourTube+Categories.h"
+#import "NSDictionary+serialize.h"
+#import "NSObject+Additions.h"
+#import "UIView+AL.h"
 
 #import "TYAuthUserManager.h"
 #import <CommonCrypto/CommonDigest.h>
@@ -143,31 +146,6 @@
 
 @implementation NSDictionary (strings)
 
-- (NSMutableDictionary *)convertDictionaryToObjects {
-    NSMutableDictionary *_newDict = [NSMutableDictionary new];
-    [self enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:NSDictionary.class]) {
-            _newDict[key] = [NSObject objectFromDictionary:obj];
-        } else if ([obj isKindOfClass:NSNumber.class] || [obj isKindOfClass:NSString.class]) {
-            _newDict[key] = obj;
-        } else if ([obj isKindOfClass:NSArray.class]){
-            _newDict[key] = [obj convertArrayToObjects];
-        }
-    }];
-    return _newDict;
-}
-
-- (NSMutableDictionary *)convertObjectsToDictionaryRepresentations {
-    NSMutableDictionary *_newDict = [NSMutableDictionary new];
-    [self enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:NSArray.class]){
-            _newDict[key] = [obj convertArrayToDictionaries];
-        } else {
-            _newDict[key] = [obj dictionaryRepresentation];
-        }
-    }];
-    return _newDict;
-}
 
 - (NSString *)stringValue {
     NSString *error = nil;
@@ -200,30 +178,6 @@
     }
     //TLog(@"newString: %@", newString);
     return newString;
-}
-
-- (NSMutableArray *)convertArrayToObjects {
-    __block NSMutableArray *_newArray = [NSMutableArray new];
-    [self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        id newOjb = [NSObject objectFromDictionary:obj];
-        [_newArray addObject:newOjb];
-    }];
-    return _newArray;
-}
-
-- (NSString *)stringFromArray {
-    NSString *error = nil;
-    NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self format:NSPropertyListXMLFormat_v1_0 errorDescription:&error];
-    NSString *s=[[NSString alloc] initWithData:xmlData encoding: NSUTF8StringEncoding];
-    return s;
-}
-
-- (NSMutableArray *)convertArrayToDictionaries {
-    __block NSMutableArray *_newArray = [NSMutableArray new];
-    [self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [_newArray addObject:[obj dictionaryRepresentation]];
-    }];
-    return _newArray;
 }
 
 @end
@@ -412,6 +366,7 @@
     return nil;
 }
 
+/*
 + (id)objectFromDictionary:(NSDictionary *)dictionary {
     NSString *className = dictionary[@"___className"];
     if (!className) {
@@ -443,7 +398,8 @@
     }];
     return object;
 }
-
+*/
+/*
 //we'll never care about an items delegate details when saving a dict rep, this prevents an inifinite loop/crash on some classes.
 - (NSDictionary *)dictionaryRepresentation {
     return [self dictionaryRepresentationExcludingProperties:@[@"delegate"]];
@@ -453,7 +409,7 @@
     __block NSMutableDictionary *dict = [NSMutableDictionary new];
     Class cls = NSClassFromString([self valueForKey:@"className"]); //this is how we hone in our the properties /just/ for our specific class rather than NSObject's properties.
     NSArray *props = [self propertiesForClass:cls];
-    //TLog(@"props: %@ for %@", props, self);
+    DLog(@"props: %@ for %@", props, cls);
     dict[@"___className"] = [self valueForKey:@"className"];
     [props enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         //get the value of the particular property
@@ -481,7 +437,7 @@
     }];
     return dict;
 }
-
+*/
 - (void)recursiveInspectObjectForKey:(NSString *)desiredKey saving:(NSMutableArray *)array {
     if ([self isKindOfClass:NSDictionary.class]) {
         NSDictionary *dictSelf = (NSDictionary *)self;

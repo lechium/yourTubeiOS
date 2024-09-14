@@ -43,17 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface NSDictionary (strings)
-- (NSMutableDictionary *)convertDictionaryToObjects;
 - (NSString *)stringValue;
 - (NSString *)JSONStringRepresentation;
-- (NSMutableDictionary *)convertObjectsToDictionaryRepresentations;
 @end
 
 @interface NSArray (strings)
 - (NSString *)runsToString;
-- (NSMutableArray *)convertArrayToObjects;
-- (NSString *)stringFromArray;
-- (NSMutableArray *)convertArrayToDictionaries;
 @end
 
 @interface NSString (TSSAdditions)
@@ -82,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 #if TARGET_OS_TV
 - (BOOL)darkMode;
 #endif
-+ (id)objectFromDictionary:(NSDictionary *)dictionary;
+//+ (id)objectFromDictionary:(NSDictionary *)dictionary;
 - (NSDictionary *)dictionaryRepresentation;
 - (void)recursiveInspectObjectLikeKey:(NSString *)desiredKey saving:(NSMutableArray *)array;
 - (void)recursiveInspectObjectForKey:(NSString *)desiredKey saving:(NSMutableArray *)array;

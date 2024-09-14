@@ -12,6 +12,7 @@
 #import "KBYourTube+Categories.h"
 #import <CoreMedia/CoreMedia.h>
 #import "MetadataPreviewView.h"
+#import "NSDictionary+serialize.h"
 #ifndef SHELF_EXT
 #import "KBAVMetaData.h"
 #endif
@@ -334,11 +335,22 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (self.channelPath == nil)self.channelPath = @"Unavailable";
     return @{@"title": self.title, @"author": self.author, @"details": self.details, @"imagePath": self.imagePath, @"videoId": self.videoId, @"duration": self.duration, @"age": self.age, @"views": self.views, @"resultType": [self readableSearchType], @"channelId": self.channelId, @"channelPath": self.channelPath};
 }
-*/
+
 - (NSString *)description {
     return [[self dictionaryRepresentation] description];
 }
-
+*/
+- (NSString *)uniqueID {
+    switch (self.resultType) {
+        case kYTSearchResultTypeUnknown: return nil;
+        case kYTSearchResultTypeVideo: return self.videoId;
+        case kYTSearchResultTypePlaylist: return self.playlistId;
+        case kYTSearchResultTypeChannel: return self.channelId;
+        case kYTSearchResultTypeChannelList: return @"Figure out unique id for channel list";
+        default:
+            return nil;
+    }
+}
 
 @end
 

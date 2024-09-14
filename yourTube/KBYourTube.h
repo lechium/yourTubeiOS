@@ -18,6 +18,7 @@
 #endif
 #import "YTKBPlayerViewController.h"
 #import "KBYTQueuePlayer.h"
+#import "KBProtocols.h"
 
 @class KBYTSearchResult, MetaDataAsset;
 
@@ -139,7 +140,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (YTPlayerItem *)playerItemRepresentation;
 @end
 
-@interface KBYTSearchResult: NSObject
+@interface KBYTSearchResult: NSObject <KBCollectionItemProtocol>
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *author;
@@ -163,6 +164,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (id)initWithYTChannelDictionary:(NSDictionary *)channelDict;
 - (id)initWithYTPlaylistDictionary:(NSDictionary *)playlistDict;
 - (NSString *)readableSearchType;
+- (NSString *)uniqueID;
 @end
 
 @interface KBYTSection: NSObject
