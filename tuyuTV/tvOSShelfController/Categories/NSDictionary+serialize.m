@@ -36,7 +36,7 @@
 - (NSMutableDictionary *)convertObjectsToDictionaryRepresentations {
     NSMutableDictionary *_newDict = [NSMutableDictionary new];
     [self enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        DLog(@"processing key: %@", key);
+        //DLog(@"processing key: %@", key);
         if ([obj isKindOfClass:NSArray.class]){
             _newDict[key] = [obj convertArrayToDictionaries];
         } else {

@@ -30,13 +30,13 @@ typedef enum {
 
 @protocol KBSectionProtocol <NSObject>
 
-- (NSString *)sectionName;
+- (NSString *)title;
 - (NSString *)type; //banner or standard
 - (SectionType)sectionType;
 - (NSInteger)order;
 - (BOOL)infinite;
 - (BOOL)autoScroll;
-- (NSArray <KBCollectionItemProtocol>*)items;
+- (NSArray <KBCollectionItemProtocol>*)content;
 - (NSString *)size;
 
 @end

@@ -19,6 +19,7 @@
 #import "YTKBPlayerViewController.h"
 #import "KBYTQueuePlayer.h"
 #import "KBProtocols.h"
+#import "KBSection.h"
 
 @class KBYTSearchResult, MetaDataAsset;
 
@@ -171,6 +172,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *subtitle;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *content;
+
 - (void)addResult:(KBYTSearchResult *)result;
 @end
 

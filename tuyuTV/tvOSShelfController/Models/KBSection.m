@@ -9,13 +9,16 @@
 //#import "Defines.h"
 #import "KBSection.h"
 #import "KBModelItem.h"
+#import "NSObject+Additions.h"
+#import "KBYourTube.h"
+
 @implementation KBSection
 
 - (instancetype)initWithSectionDictionary:(NSDictionary *)dict {
     //DLog(@"dict: %@", dict);
     self = [super init];
     if (self) {
-        _sectionName = dict[@"title"];
+        _title = dict[@"title"];
         _order = [dict[@"order"] integerValue];
         _infinite = [dict[@"infinite"] boolValue];
         _autoScroll = [dict[@"autoScroll"] boolValue];
@@ -53,7 +56,7 @@
 
 - (void)parseItems:(NSArray <NSDictionary *> *)items {
     //LOG_SELF;
-    __block NSMutableArray <KBModelItem *>*newItems = [NSMutableArray new];
+    __block NSMutableArray <KBCollectionItemProtocol>*newItems = [NSMutableArray new];
     [items enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         NSError *error = nil;
@@ -62,12 +65,21 @@
             [newItems addObject:model];
         }
     }];
-    _items = newItems;
+    _content = newItems;
+}
+
+- (void)addResult:(KBYTSearchResult *)result {
+    if (!result) return;
+    NSLog(@"adding result: %@", result);
+    NSMutableArray *_mutContent = [[self content] mutableCopy];
+    if (!_mutContent) _mutContent = [NSMutableArray new];
+    [_mutContent addObject:result];
+    self.content = _mutContent;
 }
 
 - (NSString *)description {
     //NSString *superDesc = [super description];
-    return [NSString stringWithFormat:@"Title: %@ Items: %@", self.sectionName, self.items];
+    return [NSString stringWithFormat:@"Title: %@ Items: %@", self.title, self.content];
 }
 
 @end

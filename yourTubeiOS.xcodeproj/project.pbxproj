@@ -334,6 +334,12 @@
 		4BBC7A7B2C9542BA005EB5D4 /* SDAssociatedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC79AB2C9542B6005EB5D4 /* SDAssociatedObject.m */; };
 		4BBC7A7C2C9542BA005EB5D4 /* SDAssociatedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC79AB2C9542B6005EB5D4 /* SDAssociatedObject.m */; };
 		4BBC7A7D2C9542BA005EB5D4 /* SDAssociatedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC79AB2C9542B6005EB5D4 /* SDAssociatedObject.m */; };
+		4BBC7A7E2C968156005EB5D4 /* KBDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D82C9535C6005EB5D4 /* KBDataSource.m */; };
+		4BBC7A7F2C968157005EB5D4 /* KBDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D82C9535C6005EB5D4 /* KBDataSource.m */; };
+		4BBC7A802C96815C005EB5D4 /* KBModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D62C9535C6005EB5D4 /* KBModelItem.m */; };
+		4BBC7A812C96815C005EB5D4 /* KBModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D62C9535C6005EB5D4 /* KBModelItem.m */; };
+		4BBC7A822C968160005EB5D4 /* KBSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D72C9535C6005EB5D4 /* KBSection.m */; };
+		4BBC7A832C968160005EB5D4 /* KBSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D72C9535C6005EB5D4 /* KBSection.m */; };
 		892669151C88AD5200082B31 /* libxml2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 892669141C88AD5200082B31 /* libxml2.2.dylib */; };
 		8926691D1C88B1A900082B31 /* MarqueeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8926691A1C88B1A900082B31 /* MarqueeLabel.m */; };
 		8926691E1C88B1BB00082B31 /* KBYTPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06C071C4CA1DC00B8D1C4 /* KBYTPreferences.m */; };
@@ -2598,6 +2604,7 @@
 				4BBC79C32C9542B7005EB5D4 /* SDWebImageManager.m in Sources */,
 				4BBC79BD2C9542B7005EB5D4 /* SDWebImageOperation.m in Sources */,
 				4BBC79F92C9542B8005EB5D4 /* SDWebImageCompat.m in Sources */,
+				4BBC7A822C968160005EB5D4 /* KBSection.m in Sources */,
 				320400011E4F8CA400D3B8B0 /* APElement.m in Sources */,
 				3204FFFF1E4F8C9E00D3B8B0 /* APAttribute.m in Sources */,
 				4BBC7A562C9542B9005EB5D4 /* UIImage+Metadata.m in Sources */,
@@ -2617,6 +2624,7 @@
 				4BBC79AE2C9542B7005EB5D4 /* SDImageHEICCoder.m in Sources */,
 				328E33841E4F868C00C544ED /* ServiceProvider.m in Sources */,
 				4BBC790C2C953A8A005EB5D4 /* NSObject+Additions.m in Sources */,
+				4BBC7A802C96815C005EB5D4 /* KBModelItem.m in Sources */,
 				4BBC79B72C9542B7005EB5D4 /* SDImageCoder.m in Sources */,
 				4BBC7A112C9542B8005EB5D4 /* SDDiskCache.m in Sources */,
 				4BBC7A202C9542B8005EB5D4 /* SDImageGIFCoder.m in Sources */,
@@ -2651,6 +2659,7 @@
 				4BBC7A592C9542B9005EB5D4 /* UIButton+WebCache.m in Sources */,
 				4BBC79F62C9542B8005EB5D4 /* SDMemoryCache.m in Sources */,
 				4BBC7A3E2C9542B9005EB5D4 /* SDImageCacheDefine.m in Sources */,
+				4BBC7A7E2C968156005EB5D4 /* KBDataSource.m in Sources */,
 				4BBC7A742C9542B9005EB5D4 /* NSBezierPath+SDRoundedCorners.m in Sources */,
 				4BBC7A2C2C9542B8005EB5D4 /* SDImageCachesManager.m in Sources */,
 				4BBC79CC2C9542B7005EB5D4 /* SDAnimatedImage.m in Sources */,
@@ -2900,9 +2909,11 @@
 				4BBC7A0F2C9542B8005EB5D4 /* SDDiskCache.m in Sources */,
 				89A83A991C88A93B00E1987E /* SVRadialGradientLayer.m in Sources */,
 				4BBC79D32C9542B7005EB5D4 /* SDImageAWebPCoder.m in Sources */,
+				4BBC7A832C968160005EB5D4 /* KBSection.m in Sources */,
 				89A83AB11C88A97700E1987E /* KBYTDownloadStream.m in Sources */,
 				4BBC7A3F2C9542B9005EB5D4 /* UIImage+MemoryCacheCost.m in Sources */,
 				4BBC7A662C9542B9005EB5D4 /* SDDeviceHelper.m in Sources */,
+				4BBC7A7F2C968157005EB5D4 /* KBDataSource.m in Sources */,
 				4BBC7A182C9542B8005EB5D4 /* SDWebImageDownloaderConfig.m in Sources */,
 				4BBC7A722C9542B9005EB5D4 /* NSBezierPath+SDRoundedCorners.m in Sources */,
 				89A83AB81C88AADF00E1987E /* ScaleAnimation.m in Sources */,
@@ -2941,6 +2952,7 @@
 				8926691F1C88B1CE00082B31 /* main.m in Sources */,
 				32D2A1401F424805006F24B3 /* AFURLRequestSerialization.m in Sources */,
 				32D2A13E1F424805006F24B3 /* AFSecurityPolicy.m in Sources */,
+				4BBC7A812C96815C005EB5D4 /* KBModelItem.m in Sources */,
 				4BBC7A512C9542B9005EB5D4 /* UIView+WebCache.m in Sources */,
 				4BBC7A7B2C9542BA005EB5D4 /* SDAssociatedObject.m in Sources */,
 				4BBC7A422C9542B9005EB5D4 /* SDImageCacheConfig.m in Sources */,

@@ -20,7 +20,7 @@
 @interface KBShelfViewController () {
     UILongPressGestureRecognizer *longPress;
     BOOL _firstAppearance;
-    NSArray <KBSection *> *sections_;
+    NSArray <KBSectionProtocol> *sections_;
     NSMutableArray *_cells;
 }
 @property (nonatomic, assign) CGFloat lastScrollViewOffsetX;
@@ -140,7 +140,7 @@
         
         NSIndexPath *indexPathForCell = [self centeredIndexPathForCollectionView:cv];
         //DLog(@"featuredSection.packages.count: %lu indexPathForCell.row: %lu ", featuredSection.items.count, indexPathForCell.row);
-        if (featuredSection.items.count == indexPathForCell.row+1){
+        if (featuredSection.content.count == indexPathForCell.row+1){
             //DLog(@"nope");
             [cell goToOne];
             return;
@@ -170,7 +170,7 @@
                 KBTableViewCell *selectedTableCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:sectionIndex]];
                 NSIndexPath *ip = [selectedTableCell.collectionView indexPathForCell:cell];
                 DLog(@"found index: %lu", ip.row);
-                KBModelItem *item = section.items[@(ip.row)];
+                KBModelItem *item = section.content[@(ip.row)];
                 DLog(@"found item: %@",item);
                 if (self.itemSelectedBlock) {
                     self.itemSelectedBlock(item, true);
@@ -194,7 +194,7 @@
 
 - (NSArray *)arrayForSection:(NSInteger)section {
     KBSection *currentSection = self.sections[section];
-    return currentSection.items;
+    return currentSection.content;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

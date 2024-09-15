@@ -37,7 +37,7 @@
     if(section.sectionType == KBSectionTypeStandard) {
         [self setupLabelIfNecessary];
         [self.trayTitleLabel sizeToFit];
-        self.trayTitleLabel.text = section.sectionName;
+        self.trayTitleLabel.text = section.title;
     } else {
         self.trayTitleLabel.text = @"";
     }
@@ -153,7 +153,7 @@
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     //DLog(@"my section: %lu", self.collectionView.indexPath.section);
     [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
-    if (self.section.sectionName.length == 0) return;
+    if (self.section.title.length == 0) return;
     KBDataItemCollectionViewCell *cell = (KBDataItemCollectionViewCell*)context.nextFocusedView;
     if ([cell isKindOfClass:KBDataItemCollectionViewCell.class]) {
         self.focusedView = cell;

@@ -56,17 +56,17 @@
     modelItem.details = @"Drake";
     modelItem.banner = modelItem.imagePath;
     modelItem.resultType = @1;
-    section.items = @[modelItem];
+    section.content = @[modelItem];
     
     KBSection *sectionTwo = [KBSection new];
     sectionTwo.type = @"standard";
-    sectionTwo.sectionName = @"First";
+    sectionTwo.title = @"First";
     sectionTwo.size = @"320x240";
     sectionTwo.infinite = false;
     sectionTwo.autoScroll = false;
     sectionTwo.order = 1;
     sectionTwo.className = @"KBModelItem";
-    sectionTwo.items = @[
+    sectionTwo.content = @[
         MODEL(@"God's Plan", @"https://i.ytimg.com/vi/xpVfcZ0ZcFM/hqdefault.jpg", @"xpVfcZ0ZcFM"),
         MODEL(@"Rich Flex", @"https://i.ytimg.com/vi/I4DjHHVHWAE/hqdefault.jpg", @"I4DjHHVHWAE"),
         MODEL(@"Spin Bout U", @"https://i.ytimg.com/vi/T8nbNQpRwNo/hqdefault.jpg", @"T8nbNQpRwNo"),
@@ -76,13 +76,13 @@
     
     KBSection *sectionThree = [KBSection new];
     sectionThree.type = @"standard";
-    sectionThree.sectionName = @"Second";
+    sectionThree.title = @"Second";
     sectionThree.size = @"640x480";
     sectionThree.infinite = false;
     sectionThree.autoScroll = false;
     sectionThree.order = 2;
     sectionThree.className = @"KBModelItem";
-    sectionThree.items = @[
+    sectionThree.content = @[
         MODEL(@"Drake - Worst Behavior", @"https://i.ytimg.com/vi/CccnAvfLPvE/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLBKduZRk6TRsKi8h4DE_cPajmtOcA", @"CccnAvfLPvE"),
         MODEL(@"Drake - Stars (Official Music Video) 2023", @"https://i.ytimg.com/vi/R4DZBZJsoEY/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLAKZUsBLjiB8Ook77VQSqatPhaQ2g", @"R4DZBZJsoEY"),
         MODEL(@"DJ Khaled ft. Drake - POPSTAR (Official Music Video - Starring Justin Bieber)", @"https://i.ytimg.com/vi/3CxtK7-XtE0/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLD9FC8VLEM86eZAY8awL1-3LgmM2g", @"3CxtK7-XtE0"),
@@ -92,13 +92,13 @@
     
     KBSection *sectionFour = [KBSection new];
     sectionFour.type = @"standard";
-    sectionFour.sectionName = @"Third";
+    sectionFour.title = @"Third";
     sectionFour.size = @"320x240";
     sectionFour.infinite = false;
     sectionFour.autoScroll = false;
     sectionFour.order = 3;
     sectionFour.className = @"KBModelItem";
-    sectionFour.items = @[
+    sectionFour.content = @[
         MODEL(@"God's Plan", @"https://i.ytimg.com/vi/xpVfcZ0ZcFM/hqdefault.jpg", @"xpVfcZ0ZcFM"),
         MODEL(@"Rich Flex", @"https://i.ytimg.com/vi/I4DjHHVHWAE/hqdefault.jpg", @"I4DjHHVHWAE"),
         MODEL(@"Spin Bout U", @"https://i.ytimg.com/vi/T8nbNQpRwNo/hqdefault.jpg", @"T8nbNQpRwNo"),
@@ -117,7 +117,7 @@
         DLog(@"item selected block: %@ long: %d", item, isLongPress);
     };
     shelfViewController.sections = [self items];//[self loadData];
-    shelfViewController.title = @"Test Shelf";
+    shelfViewController.title = @"tuyu Shelf";
     return shelfViewController;
     //UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:shelfViewController];
     //return nc;
@@ -695,7 +695,7 @@ void UncaughtExceptionHandler(NSException *exception) {
             [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
         }
     }
-    [self startServer];
+    //[self startServer];
     
     
     return YES;

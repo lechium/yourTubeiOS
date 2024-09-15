@@ -36,7 +36,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 @implementation KBYTSection
 - (NSString *)description {
     NSString *desc = [super description];
-    return [NSString stringWithFormat:@"%@ title: %@ content count: %lu", desc,_title, _content.count];
+    return [NSString stringWithFormat:@"%@ title: %@ content count: %lu", desc,self.title, self.content.count];
 }
 
 - (void)addResult:(KBYTSearchResult *)result {
@@ -1943,7 +1943,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                     recursiveObjectsLike(@"shortsLockupViewModel", shelf, stations);
                                     //NSLog(@"reels: %lu", stations.count);
                                     if (stations.count == 0){
-                                        NSLog(@"rend: %@", shelf);
+                                        //NSLog(@"rend: %@", shelf);
                                     }
                                     [stations enumerateObjectsUsingBlock:^(id  _Nonnull reel, NSUInteger idx, BOOL * _Nonnull stop) {
                                         //NSString *firstKey = [[reel allKeys] firstObject];
