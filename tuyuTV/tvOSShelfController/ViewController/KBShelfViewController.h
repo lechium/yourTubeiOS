@@ -34,6 +34,7 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 
 - (void)updateAutoScroll;
 + (BOOL)useRoundedEdges;
+- (void)focusedCellIndex:(NSInteger)cellIndex inSection:(NSInteger)section inCollectionView:(UICollectionView *)collectionView;
 @end
 
 NS_ASSUME_NONNULL_END

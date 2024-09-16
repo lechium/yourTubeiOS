@@ -326,11 +326,15 @@
     }
 }
 
+- (void)focusedCellIndex:(NSInteger)cellIndex inSection:(NSInteger)section inCollectionView:(UICollectionView *)collectionView {
+    DLog(@"focusedCell: %lu inSection: %lu", cellIndex, section);
+}
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator{
     
     //DLog(@"nfv: %@", context.nextFocusedView);
-    UICollectionView *sv = (UICollectionView*)context.nextFocusedView.superview;
+    UICollectionViewCell *cell = (UICollectionViewCell*)context.nextFocusedView;
+    UICollectionView *sv = (UICollectionView*)cell.superview;
     if ([sv respondsToSelector:@selector(section)]){
         //DLog(@"selected section: %lu", sv.indexPath.section);
         BOOL sectionChanged = (self.selectedSection != sv.section);
@@ -338,6 +342,10 @@
             DLog(@"changed from section: %lu to %lu", self.selectedSection, sv.section);
         }
         self.selectedSection = sv.section;
+        if ([cell isKindOfClass:UICollectionViewCell.class]) {
+            NSInteger itemIndex = [sv indexPathForCell:cell].row;
+            [self focusedCellIndex:itemIndex inSection:sv.section inCollectionView:sv];
+        }
     } else {
         self.selectedSection = 0;
     }
