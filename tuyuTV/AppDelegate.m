@@ -46,9 +46,9 @@
     
     KBSection *section = [KBSection new];
     section.type = @"banner";
-    section.size = @"1700x525";
-    section.infinite = true;
-    section.autoScroll = true;
+    section.size = @"640x480";
+    section.infinite = false;
+    section.autoScroll = false;
     section.order = 0;
     section.className = @"KBYTSearchResult";
     
@@ -76,7 +76,7 @@
     KBSection *sectionThree = [KBSection new];
     sectionThree.type = @"standard";
     sectionThree.title = @"Second";
-    sectionThree.size = @"640x480";
+    sectionThree.size = @"320x240";
     sectionThree.infinite = false;
     sectionThree.autoScroll = false;
     sectionThree.order = 2;
