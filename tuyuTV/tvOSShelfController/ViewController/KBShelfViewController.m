@@ -397,6 +397,7 @@
         }
         
     } else {
+        cell.bottomRightLabel.text = currentItem.duration;
         cell.bannerLabel.text = @"";
         cell.bannerDescription.text = @"";
         NSString *icon = [currentItem.imagePath stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];

@@ -1499,9 +1499,9 @@
 		4BBC78CE2C9535C6005EB5D4 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				4BBC78D12C9535C6005EB5D4 /* KBDataItemCollectionViewCell.h */,
 				4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */,
 				4BBC78D02C9535C6005EB5D4 /* KBTableViewCell.h */,
-				4BBC78D12C9535C6005EB5D4 /* KBDataItemCollectionViewCell.h */,
 				4BBC78D22C9535C6005EB5D4 /* KBTableViewCell.m */,
 			);
 			path = Cells;

@@ -6,7 +6,6 @@
 //
 // https://developers.google.com/youtube/v3/guides/auth/installed-apps#ios <-- for 'macOS' / desktop. just dont want to use their crap.
 
-
 #import "TYAuthUserManager.h"
 #import "YTCreds.h"
 #import "KBYourTube.h"
@@ -69,7 +68,6 @@
 - (void)createAndStartWebserverWithCompletion:(void(^)(BOOL success))block {
     // Create server
       _webServer = [[GCDWebServer alloc] init];
-      
     __weak __typeof(self) weakSelf = self;
       // Add a handler to respond to GET requests on any URL
       [_webServer addDefaultHandlerForMethod:@"GET"
@@ -111,7 +109,6 @@
 }
 
 - (void)stopTime {
-    
     [self.pollingTimer invalidate];
     self.pollingTimer = nil;
 }
@@ -144,21 +141,17 @@
     NSLog(@"interval since start: %f", interval);
     NSInteger expiresTime = 900; //15 minutes
     if (interval > expiresTime) {
-        
         [self stopTime];
         NSError *theError = [NSError errorWithDomain:@"com.nito.nitoTV4" code:2001 userInfo:nil];
         self.finishedBlock(nil,theError);
         return;
     }
-    
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     NSString *deviceCode = self.authResponse[@"device_code"];
     NSString *pollURL = @"https://oauth2.googleapis.com/token";
     NSString* post = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&device_code=%@&grant_type=%@",ytClientID, ytSecretKey, deviceCode,  [@"urn:ietf:params:oauth:grant-type:device_code" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    
     // Encode post string
     NSData* postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:false];
-    
     // Calculate length of post data
     NSString* postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
     
@@ -180,7 +173,6 @@
                 self.authorized = false;
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    
                     NSString *refreshToken = [tokenResponse valueForKey:@"refresh_token"];
                     AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
                     credential.refreshToken = refreshToken;
@@ -193,22 +185,14 @@
                     self.authorized = true;
                     self.finishedBlock(self.tokenData, nil);
                     [self stopTime];
-                    
                 });
-                
             }
         } else {
-            
             self.finishedBlock(nil, theError);
             NSLog(@"NO RETURN DATA!!, PROBABLY THROW ERROR HERE?");
-            
         }
-        
     });
-    
     //NSLog(@"token response %@", tokenResponse);
-    
-    
 }
 
 - (void)startAuthPolling {
@@ -269,17 +253,13 @@
 //DELETE https://www.googleapis.com/youtube/v3/subscriptions?id=Y3ufRxVp116IMX8y_Gy1238MBhIUUSvzIfjGlLit6F0&key={YOUR_API_KEY}
 
 - (id)unSubscribeFromChannel:(NSString *)subscriptionID {
-    
     TLog(@"unsubscribe with ID: %@", subscriptionID);
-    
     [self refreshAuthToken];
     NSError* error;
-    
     NSString *urlString = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/subscriptions?id=%@&key=%@", subscriptionID, ytClientID];
     
     // Create URL request and set url, method, content-length, content-type, and body
     //resourceId
-    
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
     
@@ -287,57 +267,34 @@
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
     //[request setURL:[NSURL URLWithString:@"https://gdata.youtube.com/feeds/api/users/default/favorites"]];
     [request setHTTPMethod:@"DELETE"];
-    
     // [request addValue:[[DeviceAuth sharedDeviceAuth] signatureForRequest:request] forHTTPHeaderField:@"X-GData-Device"];
-    
-    
     NSHTTPURLResponse *theResponse = nil;
-    
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
-    
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-    
     TLog(@"datString: %@", datString);
-    
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
     TLog(@"status string: %@", returnString);
-    
     //JSON data
-    
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
-    
     // NSLog(@"jsonDict: %@", jsonDict);
-    if ([jsonDict valueForKey:@"error"] != nil)
-    {
+    if ([jsonDict valueForKey:@"error"] != nil) {
         return datString;
-        
     } else {
-        
-        
     }
     return @"Success";
-    
 }
 
 - (void)copyPlaylist:(KBYTSearchResult *)result completion:(void(^)(NSString *response))completion {
     __block  KBYTSearchResult *plResult = [self createPlaylistWithTitle:result.title andPrivacyStatus:@"public"];
     
     [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(KBYTPlaylist *playlistDetails) {
-        
         // NSNumber *pageCount = playlistDetails[@"pageCount"];
-        
         //DLog(@"details: %@", playlistDetails);
-        
-        
         NSArray <KBYTSearchResult *>*results = playlistDetails.videos;
-        for (KBYTSearchResult *video in results)
-        {
+        for (KBYTSearchResult *video in results) {
             [self addVideo:video.videoId toPlaylistWithID:plResult.videoId];
         }
-        
         completion(@"science");
-        
-        
     } failureBlock:^(NSString *error) {
         //
     }];
@@ -365,17 +322,6 @@
     [self genericGetCommand:initialString completion:^(NSDictionary *jsonResponse, NSString *error) {
         NSArray *items = jsonResponse[@"items"];
         [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            /*
-             KBYTSearchResult *playlist = [KBYTSearchResult new];
-             playlist.videoId = obj[@"id"];
-             playlist.author = obj[@"snippet"][@"channelTitle"];
-             playlist.channelId = obj[@"snippet"][@"channelId"];
-             playlist.duration = [NSString stringWithFormat:@"%@ tracks", obj[@"contentDetails"][@"itemCount"]];
-             playlist.title = [obj recursiveObjectForKey:@"title"];
-             playlist.details = [obj recursiveObjectForKey:@"description"];
-             playlist.imagePath = [obj recursiveObjectForKey:@"thumbnails"][@"high"][@"url"];
-             playlist.resultType = kYTSearchResultTypePlaylist;
-             playlist.continuationToken = obj[@"nextPageToken"]; */
             KBYTSearchResult *playlist = [[KBYTSearchResult alloc] initWithYTPlaylistDictionary:obj];
             //TLog(@"playlist: %@", playlist);
             [playlists addObject:playlist];
@@ -384,26 +330,61 @@
         if (completionBlock) {
             completionBlock(playlists, error);
         }
-        
-        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/getPlaylists.plist" atomically:TRUE];
+        NSString *plFile = [[self appSupportFolder] stringByAppendingPathComponent:@"getPlaylists.plist"];
+        DLog(@"plfile: %@", plFile);
+        [jsonResponse writeToFile:plFile atomically:TRUE];
     }];
 }
 //https://www.googleapis.com/youtube/v3/channels?part=snippet&id='+commaSeperatedList+'&fields=items(id%2Csnippet%2Fthumbnails)&key={YOUR_API_KEY}
-- (void)getProfileThumbnail:(NSString *)profileID completion:(void(^)(NSString *thumbURL, NSString *error)) completionBlock {
-    NSString *initialString = @"https://www.googleapis.com/youtube/v3/channels?part=snippet&fields=items%2Fsnippet%2Fthumbnails&id";
-    NSString *formattedString = [NSString stringWithFormat:@"%@=%@", initialString, profileID];
-    [self genericGetCommand:formattedString completion:^(NSDictionary *jsonResponse, NSString *error) {
+- (void)getProfileDetailsWithCompletion:(void (^)(NSDictionary *, NSString *))completionBlock {
+    NSString *initialString = @"https://www.googleapis.com/youtube/v3/channels?part=snippet%2Cid&fields=items%2Fsnippet%2Citems%2Fid&mine=true";
+    TLog(@"initialString: %@", initialString);
+    [self genericGetCommand:initialString completion:^(NSDictionary *jsonResponse, NSString *error) {
         NSDictionary *thumbs = [jsonResponse recursiveObjectForKey:@"thumbnails"];
+        NSString *channelID = [jsonResponse recursiveObjectForKey:@"id"];
+        NSString *title = [jsonResponse recursiveObjectForKey:@"title"];
+        
         NSDictionary *thumb = thumbs[@"high"];
         if (!thumb) {
             thumb = thumbs[@"medium"];
         }
         NSString *url = thumb[@"url"];
-        TLog(@"url: %@", url);
+        TLog(@"title: %@ channelID: %@ error: %@", title, channelID, error);
+        if (completionBlock) {
+            NSMutableDictionary *dict = [NSMutableDictionary new];
+            if (url) dict[@"url"] = url;
+            if (channelID) dict[@"channelID"] = channelID;
+            if (title) dict[@"title"] = title;
+            completionBlock(dict, error);
+        }
+        NSString *profileFile = [[self appSupportFolder] stringByAppendingPathComponent:@"profile.plist"];
+        DLog(@"profileFile: %@", profileFile);
+        [jsonResponse writeToFile:profileFile atomically:TRUE];
+    }];
+}
+
+//https://www.googleapis.com/youtube/v3/channels?part=snippet&id='+commaSeperatedList+'&fields=items(id%2Csnippet%2Fthumbnails)&key={YOUR_API_KEY}
+- (void)getProfileThumbnail:(NSString *)profileID completion:(void(^)(NSString *thumbURL, NSString *error)) completionBlock {
+    NSString *initialString = @"https://www.googleapis.com/youtube/v3/channels?part=snippet%2Cid&fields=items%2Fsnippet%2Citems%2Fid&id";
+    NSString *formattedString = [NSString stringWithFormat:@"%@=%@", initialString, profileID];
+    TLog(@"formattedString: %@", formattedString);
+    [self genericGetCommand:formattedString completion:^(NSDictionary *jsonResponse, NSString *error) {
+        NSDictionary *thumbs = [jsonResponse recursiveObjectForKey:@"thumbnails"];
+        NSString *channelID = [jsonResponse recursiveObjectForKey:@"id"];
+        NSString *title = [jsonResponse recursiveObjectForKey:@"title"];
+        
+        NSDictionary *thumb = thumbs[@"high"];
+        if (!thumb) {
+            thumb = thumbs[@"medium"];
+        }
+        NSString *url = thumb[@"url"];
+        TLog(@"title: %@ channelID: %@ error: %@", title, channelID, error);
         if (completionBlock) {
             completionBlock(url, error);
         }
-        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/profile.plist" atomically:TRUE];
+        NSString *profileFile = [[self appSupportFolder] stringByAppendingPathComponent:@"profile.plist"];
+        DLog(@"profileFile: %@", profileFile);
+        [jsonResponse writeToFile:profileFile atomically:TRUE];
     }];
 }
 
@@ -457,16 +438,6 @@
     [self genericGetCommand:initialString completion:^(NSDictionary *jsonResponse, NSString *error) {
         NSArray *items = jsonResponse[@"items"];
         [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            /*KBYTSearchResult *channel = [KBYTSearchResult new];
-             channel.videoId = [obj recursiveObjectForKey:@"resourceId"][@"channelId"];
-             channel.channelId = obj[@"snippet"][@"channelId"];
-             channel.title = [obj recursiveObjectForKey:@"title"];
-             channel.details = [obj recursiveObjectForKey:@"description"];
-             channel.imagePath = [obj recursiveObjectForKey:@"thumbnails"][@"high"][@"url"];
-             channel.resultType = kYTSearchResultTypeChannel;
-             channel.continuationToken = obj[@"nextPageToken"];
-             //TLog(@"channel: %@", channel);
-             */
             KBYTSearchResult *channel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:obj];
             [channels addObject:channel];
         }];
@@ -475,7 +446,9 @@
             completionBlock(channels, error);
         }
         
-        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/getChannelListResponse.plist" atomically:TRUE];
+        NSString *clr = [[self appSupportFolder] stringByAppendingPathComponent:@"getChannelListResponse.plist"];
+        DLog(@"channelListResponse: %@", clr);
+        [jsonResponse writeToFile:clr atomically:TRUE];
     }];
 }
 
@@ -629,8 +602,10 @@
         if (completionBlock) {
             completionBlock(channels, error);
         }
-        
-        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/playlistItemsResponse.plist" atomically:TRUE];
+        NSString *playlistItemsResponse = [[self appSupportFolder] stringByAppendingPathComponent:@"playlistItemsResponse.plist"];
+        DLog(@"playlistItemsResponse: %@", playlistItemsResponse);
+        [jsonResponse writeToFile:playlistItemsResponse atomically:TRUE];
+        //[jsonResponse writeToFile:@"/var/mobile/Library/Preferences/playlistItemsResponse.plist" atomically:TRUE];
     }];
 }
 

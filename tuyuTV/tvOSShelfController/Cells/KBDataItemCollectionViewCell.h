@@ -16,7 +16,10 @@
 @property (nonatomic, strong) UILabel *bannerDescription;
 @property (nonatomic, strong) UILabel *bannerCategory;
 @property (nonatomic, strong) UILabel *secondaryLabel;
+@property (nonatomic, strong) UILabel *bottomRightLabel;
 @property (nonatomic, strong) NSLayoutConstraint *imageHeightConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *bottomlabelInset;
+@property (nonatomic, strong) NSLayoutConstraint *durationTrailingConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *durationBottomConstraint;
 
 @end

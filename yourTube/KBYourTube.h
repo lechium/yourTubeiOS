@@ -161,11 +161,13 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (readwrite, assign) YTSearchResultType resultType;
 @property (nonatomic, strong) NSArray *items; //only relevant for channel list
 
+- (NSString *)banner;
 - (id)initWithDictionary:(NSDictionary *)resultDict;
 - (id)initWithYTChannelDictionary:(NSDictionary *)channelDict;
 - (id)initWithYTPlaylistDictionary:(NSDictionary *)playlistDict;
 - (NSString *)readableSearchType;
 - (NSString *)uniqueID;
+-(instancetype)initWithTitle:(NSString *)title imagePath:(NSString *)path uniqueID:(NSString *)unique type:(YTSearchResultType)type;
 @end
 
 @interface KBYTSection: NSObject

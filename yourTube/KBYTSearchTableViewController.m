@@ -473,21 +473,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                                           message: @"Create a copy of this playlist to your channel?"
                                           preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Copy" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            [[TYAuthUserManager sharedInstance] copyPlaylist:result completion:^(NSString *response) {
-                
-                
-                
-                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        [[TYAuthUserManager sharedInstance] copyPlaylist:result completion:^(NSString *response) {
             }];
-            
-            
         });
-        
-        
     }];
     [alertController addAction:yesAction];
     UIAlertAction *cancelAction = [UIAlertAction

@@ -267,6 +267,18 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 @synthesize title, author, details, imagePath, videoId, duration, age, views, resultType;
 
+-(instancetype)initWithTitle:(NSString *)title imagePath:(NSString *)path uniqueID:(NSString *)unique type:(YTSearchResultType)type {
+    KBYTSearchResult *result = [KBYTSearchResult new];
+    result.videoId = unique; //for now
+    result.channelId = unique; //ditto
+    result.playlistId = unique; //ditto
+    result.title = title;
+    result.imagePath = path;
+    result.resultType = type;
+    
+    return result;
+}
+
 - (id)initWithYTChannelDictionary:(NSDictionary *)channelDict {
     KBYTSearchResult *channel = [KBYTSearchResult new];
     channel.videoId = [channelDict recursiveObjectForKey:@"resourceId"][@"channelId"];
@@ -350,6 +362,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         default:
             return nil;
     }
+}
+
+- (NSString *)banner {
+    return self.imagePath;
 }
 
 @end
@@ -1290,7 +1306,34 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 returnDict[@"channelID"] = [channels firstObject].channelId;
                             }
                         }
-                        [authManager getProfileThumbnail:returnDict[@"channelID"] completion:^(NSString *thumbURL, NSString *error) {
+                        [authManager getProfileDetailsWithCompletion:^(NSDictionary *profileDetails, NSString *error) {
+                            if (error) {
+                                TLog(@"error occured: %@", error);
+                            } else {
+                                NSString *userName = profileDetails[@"title"];
+                                NSString *channelID = profileDetails[@"channelID"];
+                                NSString *thumbURL = profileDetails[@"url"];
+                                TLog(@"profileDetails: %@", profileDetails);
+                                KBYTSearchResult *userChannel = [KBYTSearchResult new];
+                                userChannel.title = @"Your channel";
+                                userChannel.author = userName;
+                                userChannel.videoId = channelID;
+                                //userChannel.details = [NSString stringWithFormat:@"%lu videos", channelVideoCount];
+                                userChannel.imagePath = thumbURL;
+                                userChannel.resultType =kYTSearchResultTypeChannel;
+                                [itemArray addObject:userChannel];
+                                returnDict[@"results"] = itemArray;
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    if (returnDict != nil) {
+                                        [[returnDict convertObjectsToDictionaryRepresentations] writeToFile:[self shelfFile] atomically:true];
+                                        completionBlock(returnDict);
+                                    } else {
+                                        failureBlock(errorString);
+                                    }
+                                });
+                            }
+                        }];
+                        /* [authManager getProfileThumbnail:returnDict[@"channelID"] completion:^(NSString *thumbURL, NSString *error) {
                             NSString *userName = returnDict[@"userName"];
                             NSString *channelID = returnDict[@"channelID"];
                             //TLog(@"rd: %@", returnDict);
@@ -1304,19 +1347,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             [itemArray addObject:userChannel];
                             returnDict[@"results"] = itemArray;
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                
-                                if (returnDict != nil)
-                                {
+                                if (returnDict != nil) {
                                     [[returnDict convertObjectsToDictionaryRepresentations] writeToFile:[self shelfFile] atomically:true];
                                     completionBlock(returnDict);
                                 } else {
                                     failureBlock(errorString);
                                 }
-                                
-                                
                             });
-                        }];
-                        
+                        }]; */
                     }];
                 }];
                 

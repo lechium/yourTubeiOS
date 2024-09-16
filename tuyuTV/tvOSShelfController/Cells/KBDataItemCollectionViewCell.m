@@ -98,6 +98,19 @@
     [self.secondaryLabel.topAnchor constraintEqualToAnchor:self.label.bottomAnchor constant:1].active = true;
     self.secondaryLabel.textColor = [UIColor grayColor];
     
+    self.bottomRightLabel = [[UILabel alloc] initForAutoLayout];
+    self.bottomRightLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+    self.bottomRightLabel.text = @"";
+    self.bottomRightLabel.textAlignment = NSTextAlignmentCenter;
+    [self.contentView addSubview:self.bottomRightLabel];
+    //[self.bottomRightLabel autoAlignAxisToSuperviewAxis:NSLayoutAttributeCenterX];
+    self.durationTrailingConstraint = [self.bottomRightLabel.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-10];
+    self.durationTrailingConstraint.active = true;
+    self.durationBottomConstraint = [self.bottomRightLabel.bottomAnchor constraintEqualToAnchor:self.imageView.bottomAnchor constant:-33];
+        self.durationBottomConstraint.active = true;
+    self.bottomRightLabel.textColor = [UIColor whiteColor];
+    self.bottomRightLabel.backgroundColor = [UIColor colorWithWhite:0 alpha:0.18];
+    
     [self.label.widthAnchor constraintEqualToAnchor:self.contentView.widthAnchor multiplier:0.8].active = true;
     self.imageHeightConstraint = [self.imageView autoSetDimension:NSLayoutAttributeHeight toSize:320];
     self.imageView.adjustsImageWhenAncestorFocused =true;
@@ -133,6 +146,8 @@
             self.label.textColor = [UIColor whiteColor];
             self.secondaryLabel.textColor = [UIColor whiteColor];
             self.bottomlabelInset.constant = 70;
+            self.durationTrailingConstraint.constant = 0;
+            self.durationBottomConstraint.constant = -10;
             if (self.label.text.length > 0){
                 [self updateOverlay];
             }
@@ -143,6 +158,8 @@
             self.label.textColor = [self labelColor];
             self.secondaryLabel.textColor = [self secondaryLabelColor];
             self.bottomlabelInset.constant = 50;
+            self.durationTrailingConstraint.constant = -10;
+            self.durationBottomConstraint.constant = -33;
         }
     } completion:^{
         
