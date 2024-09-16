@@ -42,7 +42,7 @@
 
 @implementation AppDelegate
 
-- (NSArray *)items {
+- (NSArray <KBSectionProtocol>*)items {
     
     KBSection *section = [KBSection new];
     section.type = @"banner";
@@ -117,6 +117,9 @@
     };
     shelfViewController.sections = [self items];//[self loadData];
     shelfViewController.title = @"tuyu Shelf";
+    shelfViewController.itemFocusedBlock = ^(NSInteger row, NSInteger section, UICollectionView * _Nonnull collectionView) {
+        DLog(@"item focused: %lu in section: %lu cv: %@", row,section,collectionView);
+    };
     return shelfViewController;
     //UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:shelfViewController];
     //return nc;

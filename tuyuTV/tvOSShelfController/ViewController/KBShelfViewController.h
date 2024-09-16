@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 
 //@property (nonatomic, copy, nullability) returnType (^blockName)(parameterTypes);
 @property (nonatomic, copy, nullable) void (^itemSelectedBlock)(KBModelItem *item, BOOL longPress);
+@property (nonatomic, copy, nullable) void (^itemFocusedBlock)(NSInteger row, NSInteger section, UICollectionView *collectionView);
 @property (nonatomic, strong) UIImage *placeholderImage;
 @property (nonatomic, strong) NSArray <KBSectionProtocol> *sections;
 @property (nonatomic, strong) UITableView *tableView;

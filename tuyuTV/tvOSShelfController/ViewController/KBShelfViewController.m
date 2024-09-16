@@ -328,6 +328,9 @@
 
 - (void)focusedCellIndex:(NSInteger)cellIndex inSection:(NSInteger)section inCollectionView:(UICollectionView *)collectionView {
     DLog(@"focusedCell: %lu inSection: %lu", cellIndex, section);
+    if (self.itemFocusedBlock) {
+        self.itemFocusedBlock(cellIndex, section, collectionView);
+    }
 }
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator{
