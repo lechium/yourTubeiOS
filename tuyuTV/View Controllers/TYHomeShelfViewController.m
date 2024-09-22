@@ -104,7 +104,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if ([self firstLoad]) {
-        [self loadDataForced:true completion:^(BOOL loaded) {
+        [self loadDataWithProgress:true loadingSnapshot:true completion:^(BOOL loaded) {
             DLog(@"loaded: %d", loaded);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self handleSectionsUpdated];
@@ -112,6 +112,28 @@
         }];
     }
 }
+
+- (NSString *)homeCacheFile {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"newhome.plist"];
+}
+
+- (void)snapshotResults {
+    NSArray *sections = [self.sections convertArrayToDictionaries];
+    [sections writeToFile:[self homeCacheFile] atomically:true];
+}
+
+- (BOOL)loadFromSnapshot {
+    if (![FM fileExistsAtPath:[self homeCacheFile]]){
+        return false;
+    }
+    NSArray *sects = [NSArray arrayWithContentsOfFile:[self homeCacheFile]];
+  
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.sections = [sects convertArrayToObjects];
+    });
+    return (self.sections.count > 0);
+}
+
 
 - (void)showPlaylist:(NSString *)videoID named:(NSString *)name {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
@@ -133,10 +155,18 @@
     [self presentViewController:cv animated:true completion:nil];
 }
 
-- (void)loadDataForced:(BOOL)forceLoad completion:(void(^)(BOOL loaded))completionBlock {
+- (void)loadDataWithProgress:(BOOL)progress loadingSnapshot:(BOOL)loadingSnapshot completion:(void(^)(BOOL loaded))completionBlock {
+    
+    if (loadingSnapshot) {
+        [self loadFromSnapshot];
+        progress = false;
+    }
+    
     __block NSInteger loadedSections = 0;
-    [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
-    [SVProgressHUD show];
+    if (progress) {
+        [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
+        [SVProgressHUD show];
+    }
     [self.sections enumerateObjectsUsingBlock:^(KBSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         DLog(@"section: %@", obj);
         DLog(@"section type: %u channel type: %lu", obj.sectionResultType, kYTSearchResultTypeChannel);
@@ -145,7 +175,10 @@
                 obj.channel = channel;
                 obj.content = [channel allSectionItems];
                 if (loadedSections == self.sections.count-1){
-                    [SVProgressHUD dismiss];
+                    if (progress) {
+                        [SVProgressHUD dismiss];
+                    }
+                    [self snapshotResults];
                     if (completionBlock){
                         completionBlock(true);
                     }

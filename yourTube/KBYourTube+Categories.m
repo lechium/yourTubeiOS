@@ -362,7 +362,8 @@
 }
 
 - (id)valueForUndefinedKey:(NSString *)key {
-    TLog(@"in value for undefined key: %@", key);
+    NSString *className = [self valueForKey:@"className"];
+    TLog(@"in value for undefined key: %@ in %@", key, className);
     return nil;
 }
 
