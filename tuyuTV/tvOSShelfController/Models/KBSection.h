@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "KBProtocols.h"
+#import "KBYourTube.h"
 @class KBModelItem, KBYTSearchResult;
 typedef enum {
     KBSectionTypeBanner = 0,
@@ -25,7 +26,13 @@ typedef enum {
 @property (nonatomic, strong) NSArray <KBCollectionItemProtocol>*content;
 @property (nonatomic, strong) NSString *size;
 @property (nonatomic, strong) NSString *className;
+@property (readwrite, assign) NSUInteger sectionResultType;
+@property (nonatomic, strong) NSString *uniqueId; //either channel ID or playlist ID for now.
+@property (nonatomic, strong) NSString *imagePath;
+@property (nonatomic, strong) id channel; //optional
+@property (nonatomic, strong) id playlist;//optional
 
+- (BOOL)isLoaded;
 - (CGFloat)imageWidth;
 - (CGFloat)imageHeight;
 - (CGSize)imageSize;

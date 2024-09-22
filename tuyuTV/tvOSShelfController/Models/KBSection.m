@@ -33,6 +33,10 @@
     return self;
 }
 
+- (BOOL)isLoaded {
+    return self.content.count > 0;
+}
+
 - (CGSize)imageSize {
     return CGSizeMake(self.imageWidth, self.imageHeight);
 }

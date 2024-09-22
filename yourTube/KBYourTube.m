@@ -921,6 +921,102 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
  banner: https://yt3.ggpht.com/5VQ4RrTfG7iC2xoPdMwKw1950v8SvuP8lEZiVjjqxlpOMIBEMP7RXCPnBxR-rvwaTSPuvHj-=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj
  */
 
+- (NSArray <KBSection*>*)createDefaultSectionsArray {
+    KBSection *spotlight = [[KBSection alloc] init];
+    spotlight.title = @"YouTube Spotlight";
+    spotlight.type = @"banner";
+    spotlight.size = @"640x480";
+    spotlight.infinite = false;
+    spotlight.autoScroll = false;
+    spotlight.sectionResultType = kYTSearchResultTypeChannel;
+    spotlight.order = 0;
+    spotlight.className = @"KBYTSearchResult";
+    spotlight.uniqueId = KBYTSpotlightChannelID;
+    spotlight.subtitle = @"YouTube's Official Channel helps you discover what's new & trending globally. Watch must-see videos, from music to culture to Internet phenomena";
+    spotlight.imagePath = @"https://yt3.googleusercontent.com/584JjRp5QMuKbyduM_2k5RlXFqHJtQ0qLIPZpwbUjMJmgzZngHcam5JMuZQxyzGMV5ljwJRl0Q=s160-c-k-c0x00ffffff-no-rj";
+    
+    KBSection *popular = [KBSection new];
+    popular.type = @"standard";
+    popular.size = @"320x240";
+    popular.infinite = false;
+    popular.autoScroll = false;
+    popular.sectionResultType = kYTSearchResultTypeChannel;
+    popular.order = 1;
+    popular.className = @"KBYTSearchResult";
+    popular.title = @"Popular on YouTube";
+    popular.uniqueId = KBYTPopularChannelID;
+    popular.subtitle = @"The pulse of what's popular on YouTube. Check out the latest music videos, trailers, comedy clips, and everything else that people are watching right now.";
+    popular.imagePath = @"https://yt3.ggpht.com/_lhig9VVBeYLLZ0uEDUdoQsOBiGmWh8LxEB3VStXiBP3Xw2_HaFUldbGP_BEBVpBBJogHTA_eA=s900-c-k-c0x00ffffff-no-rj";
+    
+    
+    KBSection *music = [KBSection new];
+    music.type = @"standard";
+    music.size = @"320x240";
+    music.infinite = false;
+    music.autoScroll = false;
+    music.sectionResultType = kYTSearchResultTypeChannel;
+    music.order = 2;
+    music.title = @"Music";
+    music.uniqueId = KBYTMusicChannelID;
+    music.className = @"KBYTSearchResult";
+    music.subtitle = @"Visit the YouTube Music Channel to find today’s top talent, featured artists, and playlists. Subscribe to see the latest in the music world.\nThis channel was generated automatically by YouTube's video discovery system.";
+    music.imagePath = @"https://yt3.ggpht.com/nCOmA7RfWNA-UU-4HsTXkWt2LWZHvU-3E2sHc-vJV0H981_J5oH8zmnisUjElCMUni-nDrbvwOU=s900-c-k-c0x00ffffff-no-rj-mo";
+    
+    KBSection *sports = [KBSection new];
+    sports.type = @"standard";
+    sports.size = @"320x240";
+    sports.infinite = false;
+    sports.autoScroll = false;
+    sports.sectionResultType = kYTSearchResultTypeChannel;
+    sports.order = 3;
+    sports.title = @"Sports";
+    sports.className = @"KBYTSearchResult";
+    sports.uniqueId = KBYTSportsChannelID;
+    sports.subtitle = @"YouTube's featured Sports channel.";
+    sports.imagePath = @"https://yt3.ggpht.com/Q4LNAquvFLgrqCSuKglF_EF3wghkG5AyutxrlMAFGctQn8rFZFAg-AhDaaci0tWYUBwLya1C5A=s900-c-k-c0x00ffffff-no-rj-mo";
+    
+    KBSection *gaming = [KBSection new];
+    gaming.type = @"standard";
+    gaming.size = @"320x240";
+    gaming.infinite = false;
+    gaming.autoScroll = false;
+    gaming.sectionResultType = kYTSearchResultTypeChannel;
+    gaming.order = 4;
+    gaming.title = @"Gaming";
+    gaming.className = @"KBYTSearchResult";
+    gaming.uniqueId = KBYTGamingChannelID;
+    gaming.subtitle = @"YouTube's featured Gaming channel.";
+    gaming.imagePath = @"https://yt3.ggpht.com/drsoZuCe8u-2JarqCZ-Z9oJh4Td5t1faAMjrOVSjjDpPX27Os0qLWNiGOuS-973r7jKU65L5IA=s900-c-k-c0x00ffffff-no-rj-mo";
+    
+    KBSection *fb = [KBSection new];
+    fb.type = @"standard";
+    fb.size = @"320x240";
+    fb.infinite = false;
+    fb.autoScroll = false;
+    fb.sectionResultType = kYTSearchResultTypeChannel;
+    fb.order = 5;
+    fb.title = @"Fashion & Beauty";
+    fb.className = @"KBYTSearchResult";
+    fb.uniqueId = KBYTFashionAndBeautyID;
+    fb.subtitle = @"YouTube's featured Fashion & Beauty channel.";
+    fb.imagePath = @"https://yt3.ggpht.com/Cw_5o8wcghBvDl-oCq9-ehGBezoxo3gOdz2yE5jt74ZdAWpvH6UyADqtQLxql9Ud_NRU4sYV4g=s900-c-k-c0x00ffffff-no-rj-mo";
+
+    KBSection *vr = [KBSection new];
+    vr.type = @"standard";
+    vr.size = @"320x240";
+    vr.infinite = false;
+    vr.autoScroll = false;
+    vr.sectionResultType = kYTSearchResultTypeChannel;
+    vr.order = 6;
+    vr.title = @"Virtual Reality";
+    vr.className = @"KBYTSearchResult";
+    vr.uniqueId = KBYT360ChannelID;
+    vr.subtitle = @"Learn more at https://vr.youtube.com";
+    vr.imagePath = @"https://yt3.ggpht.com/Cw_5o8wcghBvDl-oCq9-ehGBezoxo3gOdz2yE5jt74ZdAWpvH6UyADqtQLxql9Ud_NRU4sYV4g=s900-c-k-c0x00ffffff-no-rj-mo";
+    
+    return @[spotlight, popular, music, sports, gaming, fb, vr];
+}
+
 - (NSDictionary *)createDefaultSections {
     
     NSArray *items = @[@{@"name": @"Popular on YouTube",
@@ -960,15 +1056,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                        
     ];
     NSMutableDictionary *dict = [NSMutableDictionary new];
-    /*
-    NSArray *sectionArray = @[@"Popular on YouTube", @"Music", @"Sports", @"Gaming", @"Fashion & Beauty",@"YouTube",@"Virtual Reality"];
-    NSArray *idArray = @[KBYTPopularChannelID, KBYTMusicChannelID, KBYTSportsChannelID, KBYTGamingChannelID, KBYTFashionAndBeautyID, KBYTSpotlightChannelID, KBYT360ChannelID];
-    __block NSMutableDictionary *dict = [NSMutableDictionary new];
-    __block NSMutableArray *array = [NSMutableArray new];
-    [sectionArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        //dict[obj] = idArray[idx];
-        [array addObject:@{@"name": obj, @"channel": idArray[idx]}];
-    }];*/
     dict[@"sections"] = items;
     dict[@"featured"] = KBYTSpotlightChannelID;//@"UCByOQJjav0CUDwxCk-jVNRQ";
     return dict;

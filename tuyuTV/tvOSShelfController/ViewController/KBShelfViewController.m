@@ -173,7 +173,7 @@
                 KBModelItem *item = section.content[@(ip.row)];
                 DLog(@"found item: %@",item);
                 if (self.itemSelectedBlock) {
-                    self.itemSelectedBlock(item, true);
+                    self.itemSelectedBlock(item, true, ip.row, sectionIndex);
                 }
             }
             
@@ -309,7 +309,7 @@
     if (self.itemSelectedBlock) {
         KBModelItem *item = [self collectionView:collectionView itemAtRow:indexPath.row];
         if (self.itemSelectedBlock) {
-            self.itemSelectedBlock(item, FALSE);
+            self.itemSelectedBlock(item, FALSE, indexPath.row, [collectionView section]);
         }
     }
 }

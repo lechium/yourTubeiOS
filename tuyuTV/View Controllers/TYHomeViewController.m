@@ -50,14 +50,6 @@
 }
 
 
-- (id)initWithSections:(NSArray *)sections andChannelIDs:(NSArray *)channelIds {
-    
-    self = [super initWithSections:sections];
-    featuredId = @"UCByOQJjav0CUDwxCk-jVNRQ";
-    self.channelIDs = channelIds;
-    return self;
-}
-
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (_homeDataChanged) {

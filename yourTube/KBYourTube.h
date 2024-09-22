@@ -255,6 +255,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (void)setFeaturedResult:(KBYTSearchResult *)channel;
 - (void)addHomeSection:(KBYTSearchResult *)channel;
 - (NSDictionary *)homeScreenData;
+- (NSArray *)createDefaultSectionsArray;
 - (NSDictionary *)createDefaultSections;
 - (NSString *)sectionsFile;
 

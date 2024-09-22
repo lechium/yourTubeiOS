@@ -24,6 +24,7 @@
 #import "TYAuthUserManager.h"
 #import <unistd.h>
 #import "tvOSShelfController.h"
+#import "TYHomeShelfViewController.h"
 
 #define MODEL(n,p,i) [[KBModelItem alloc] initWithTitle:n imagePath:p uniqueID:i]
 #define SMODEL(n,p,i) [[KBYTSearchResult alloc] initWithTitle:n imagePath:p uniqueID:i type:kYTSearchResultTypeVideo]
@@ -108,22 +109,17 @@
     return @[section, sectionTwo, sectionThree, sectionFour];
 }
 
-- (KBShelfViewController *)createTempShelfViewController {
-    KBShelfViewController *shelfViewController = [[KBShelfViewController alloc] init];
+- (TYHomeShelfViewController *)testShelfViewController {
+    TYHomeShelfViewController *shelfViewController = [[TYHomeShelfViewController alloc] initWithSections:[[KBYourTube sharedInstance] createDefaultSectionsArray]];
     shelfViewController.useRoundedEdges = false;
     shelfViewController.placeholderImage = [[UIImage imageNamed:@"YTPlaceholder.png"] roundedBorderImage:20.0 borderColor:nil borderWidth:0];
-    shelfViewController.itemSelectedBlock = ^(KBModelItem * _Nonnull item, BOOL isLongPress) {
-        DLog(@"item selected block: %@ long: %d", item, isLongPress);
-    };
-    shelfViewController.sections = [self items];//[self loadData];
-    shelfViewController.title = @"tuyu Shelf";
-    shelfViewController.itemFocusedBlock = ^(NSInteger row, NSInteger section, UICollectionView * _Nonnull collectionView) {
-        DLog(@"item focused: %lu in section: %lu cv: %@", row,section,collectionView);
-    };
+    //shelfViewController.sections = [self items];//[self loadData];
+    shelfViewController.title = @"tuyu test";
+    
     return shelfViewController;
-    //UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:shelfViewController];
-    //return nc;
 }
+
+
 
 - (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
     // DLOG_SELF;
@@ -634,7 +630,7 @@ void UncaughtExceptionHandler(NSException *exception) {
     AboutViewController *avc = [AboutViewController new];
     avc.title = @"about";
     [viewControllers addObject:avc];
-    KBShelfViewController *shelfNav = [self createTempShelfViewController];
+    TYHomeShelfViewController *shelfNav = [self testShelfViewController];
     [viewControllers addObject:shelfNav];
     self.tabBar.viewControllers = viewControllers;
     KBYourTube *kbyt = [KBYourTube sharedInstance];
