@@ -365,7 +365,7 @@
 
 - (NSIndexPath *)indexPathForPreferredFocusedViewInCollectionView:(UICollectionView *)collectionView {
     KBSection *currentSection = self.sections[collectionView.section];
-    if (currentSection.sectionType != SectionTypeBanner) { return nil; }
+    if (currentSection.sectionType != SectionTypeBanner && !currentSection.infinite) { return nil; }
     NSIndexPath *visibleIndexPath = [self centeredIndexPathForCollectionView:collectionView];
     return visibleIndexPath;
 }
@@ -401,7 +401,9 @@
     CGSize currentSize = featuredSection.imageSize;
     if (featuredSection.sectionType == SectionTypeBanner) {
         cell.bannerLabel.text = currentItem.title;
+        [cell.bannerLabel shadowify];
         cell.bannerDescription.text = currentItem.details;
+        [cell.bannerDescription shadowify];
         NSString *banner = [currentItem.banner stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
         if ([KBShelfViewController useRoundedEdges]) {
             [cell.imageView sd_setImageWithURL:[NSURL URLWithString:banner] placeholderImage:nil options:SDWebImageAllowInvalidSSLCertificates | SDWebImageAvoidAutoSetImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {

@@ -106,10 +106,15 @@
         defaultSize = CGSizeMake(self.section.imageWidth, self.section.imageHeight);
     }
     if (self.section.sectionType == KBSectionTypeBanner) {
-        layout = [[FPScrollingBannerCollectionFlowLayout alloc] init];
+        if (self.section.infinite) {
+            layout = [[FPScrollingBannerCollectionFlowLayout alloc] init];
+        } else {
+            layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 20);
+        }
         layout.itemSize = defaultSize;//CGSizeMake(640,480);//CGSizeMake(1700,400);
         layout.minimumInteritemSpacing = 1;
         layout.minimumLineSpacing = 50;//30;
+        
         //layout.sectionInset = UIEdgeInsetsMake(20, 0, 0, 20);
         layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     } else {
