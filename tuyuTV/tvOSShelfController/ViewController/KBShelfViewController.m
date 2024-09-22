@@ -36,6 +36,10 @@
 
 @implementation KBShelfViewController
 
+- (BOOL)firstLoad {
+    return _firstAppearance;
+}
+
 + (void)initialize {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{kShelfControllerRoundedEdges: @(true)}];
 }
@@ -63,7 +67,7 @@
 }
 
 - (void)viewDidLoad {
-    _firstAppearance =  false;
+    _firstAppearance =  true;
     [super viewDidLoad];
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.translatesAutoresizingMaskIntoConstraints = FALSE;
@@ -86,15 +90,20 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if (_firstAppearance) {
-        _firstAppearance = true;
-    }
+    
     self.view.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.backgroundView = nil;
     self.tableView.maskView = nil;
     self.navigationController.view.backgroundColor = nil;
     self.tabBarController.view.backgroundColor = nil;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (_firstAppearance) {
+        _firstAppearance = false;
+    }
 }
 
 - (void)updateAutoScroll {

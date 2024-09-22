@@ -103,12 +103,14 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self loadDataForced:true completion:^(BOOL loaded) {
-        DLog(@"loaded: %d", loaded);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self handleSectionsUpdated];
-        });
-    }];
+    if ([self firstLoad]) {
+        [self loadDataForced:true completion:^(BOOL loaded) {
+            DLog(@"loaded: %d", loaded);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self handleSectionsUpdated];
+            });
+        }];
+    }
 }
 
 - (void)showPlaylist:(NSString *)videoID named:(NSString *)name {
