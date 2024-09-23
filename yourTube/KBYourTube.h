@@ -187,6 +187,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *image;
 @property (nonatomic, strong) NSString *channelID;
 @property (nonatomic, strong) NSString *continuationToken;
+@property (nonatomic, strong) NSArray *continuationTokens; //only exists if theres more than one.
 @property (nonatomic, strong) NSString *banner;
 @property (nonatomic, strong) NSString *subscribers;
 @property (nonatomic, strong) NSString *duration; //video count

@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TYHomeShelfViewController : KBShelfViewController
 
 - (id)initWithSections:(NSArray <KBSectionProtocol>*)sections;
-
+@property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
+@property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 @end
 
 NS_ASSUME_NONNULL_END

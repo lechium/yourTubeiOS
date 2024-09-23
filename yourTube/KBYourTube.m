@@ -122,6 +122,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     NSInteger estimatedResults = [[jsonDict recursiveObjectForKey:@"estimatedResults"] integerValue];
     self.estimatedResults = estimatedResults;
     id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
+    recursiveObjectsFor(@"continuationCommand", jsonDict, ccs);
+    //DLog(@"ccs: %@", ccs);
     self.continuationToken = cc[@"token"];
     //NSLog(@"cc: %@", cc);
     if (filter == KBYTSearchTypeAll) {
@@ -1866,7 +1868,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSString *lastBanner = [banner lastObject][@"url"];
             //NSLog(@"our banners: %@", lastBanner);
             id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
-            
+            recursiveObjectsFor(@"continuationCommand", jsonDict, ccs);
+            //DLog(@"ccs: %@", ccs);
             NSDictionary *details = [jsonDict recursiveObjectForKey:@"topicChannelDetailsRenderer"];
             if (!details) {
                 details = [jsonDict recursiveObjectForKey:@"channelMetadataRenderer"];
@@ -1896,6 +1899,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             channel.image = imagePath;
             channel.url = [details recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
             channel.continuationToken = cc[@"token"];
+            if (ccs.count > 1) {
+                channel.continuationTokens = ccs;
+            }
             channel.banner = lastBanner;
             //DLog(@"details: %@", details);
             //title,subtitle,thumbnails
@@ -2153,6 +2159,35 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             
             if (channel.allSectionItems.count == 0) {
                 TLog(@"no items found!");
+                if (channel.continuationTokens.count > 0) {
+                    NSDictionary *token = [[[channel continuationTokens] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"token == %@", continuationToken]] firstObject];
+                    if (token) {
+                        DLog(@"found token: %@", token);
+                        NSInteger index = [channel.continuationTokens indexOfObject:token];
+                        DLog(@"found at index: %lu", index);
+                        NSInteger next = index++;
+                        if (next > channel.continuationTokens.count) {
+                            DLog(@"do nothing, over count!");
+                        } else {
+                            NSString *token = [channel continuationTokens][next][@"token"];
+                            DLog(@"trying new token: %@", token);
+                            [self getChannelVideosAlt:channelID continuation:token completionBlock:^(KBYTChannel *channel) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    if (completionBlock) {
+                                        completionBlock(channel);
+                                    }
+                                });
+                            } failureBlock:^(NSString *error) {
+                                dispatch_async(dispatch_get_main_queue(), ^{
+                                    if (completionBlock) {
+                                        completionBlock(nil);
+                                    }
+                                });
+                            }];
+                            return;
+                        }
+                    }
+                }
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
