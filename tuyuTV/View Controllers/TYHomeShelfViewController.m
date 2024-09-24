@@ -160,13 +160,15 @@
 
 - (void)homeDataChanged:(NSNotification *)n {
     _homeDataChanged = true;
+    self.sections = [[[KBYourTube sharedInstance] homeScreenData] convertArrayToObjects];
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([self topViewController] == self) {
+        //if ([self topViewController] == self) {
+           
             [self loadDataWithProgress:true loadingSnapshot:false completion:^(BOOL loaded) {
                 [self handleSectionsUpdated];
             }];
             _homeDataChanged = false;
-        }
+        //}
     });
 }
 

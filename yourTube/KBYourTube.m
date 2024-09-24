@@ -854,7 +854,21 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     [[NSNotificationCenter defaultCenter] postNotificationName:KBYTHomeDataChangedNotification object:nil];
 }
 
+
 - (void)removeHomeSection:(MetaDataAsset *)asset {
+    //NSMutableDictionary *dict = [[[NSDictionary alloc] initWithContentsOfFile:[self newSectionsFile]] mutableCopy];
+    //NSMutableArray *sections = [dict[@"sections"] mutableCopy];
+    //NSDictionary *item = [[sections filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"channel == %@", asset.uniqueID]] firstObject];
+    NSMutableArray *sections = [[[NSArray alloc] initWithContentsOfFile:[self newSectionsFile]] mutableCopy];
+    NSDictionary *item = [[sections filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"uniqueId == %@", asset.uniqueID]] firstObject];
+    TLog(@"found item: %@", item);
+    [sections removeObject:item];
+    [sections writeToFile:[self newSectionsFile] atomically:true];
+    [self postHomeDataChangedNotification];
+    
+}
+
+- (void)oldremoveHomeSection:(MetaDataAsset *)asset {
     NSMutableDictionary *dict = [[[NSDictionary alloc] initWithContentsOfFile:[self sectionsFile]] mutableCopy];
     NSMutableArray *sections = [dict[@"sections"] mutableCopy];
     NSDictionary *item = [[sections filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"channel == %@", asset.uniqueID]] firstObject];
@@ -866,14 +880,66 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     
 }
 
-- (void)setFeaturedResult:(KBYTSearchResult *)channel {
+- (void)oldsetFeaturedResult:(KBYTSearchResult *)channel {
     NSMutableDictionary *dict = [[[NSDictionary alloc] initWithContentsOfFile:[self sectionsFile]] mutableCopy];
     dict[@"featured"] = channel.videoId;
     [dict writeToFile:[self sectionsFile] atomically:true];
     [self postHomeDataChangedNotification];
 }
 
+- (void)setFeaturedResult:(KBYTSearchResult *)channel {
+    NSMutableArray *sections = [[[NSArray alloc] initWithContentsOfFile:[self newSectionsFile]] mutableCopy];
+    KBSection *newItem = [KBSection new];
+    newItem.title = channel.title;
+    newItem.uniqueId = channel.videoId;
+    newItem.imagePath = channel.imagePath;
+    newItem.subtitle = channel.itemDescription;
+    newItem.type = @"banner";
+    newItem.infinite = false;
+    newItem.autoScroll = false;
+    newItem.size = @"640x480";
+    newItem.className = @"KBSection";
+    TLog(@"setting featured: %@", newItem);
+    NSDictionary *dictRep = [newItem dictionaryRepresentation];
+    TLog(@"dictionaryRepresentation: %@", dictRep);
+    NSDictionary *currentFeatured = [sections firstObject];
+    [sections removeObjectAtIndex:0];
+    TLog(@"sections: %@", sections);
+    [sections insertObject:dictRep atIndex:0];
+    [sections writeToFile:[self newSectionsFile] atomically:true];
+    [self postHomeDataChangedNotification];
+}
+
 - (void)addHomeSection:(KBYTSearchResult *)channel {
+    TLog(@"channel: %@", channel);
+    NSMutableArray *sections = [[[NSArray alloc] initWithContentsOfFile:[self newSectionsFile]] mutableCopy];
+    NSDictionary *item = [[sections filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"uniqueID == %@", channel.videoId]] firstObject];
+    if (item) {
+        TLog(@"already found!");
+        return;
+    }
+    KBSection *newItem = [KBSection new];
+    newItem.title = channel.title;
+    newItem.uniqueId = channel.videoId;
+    newItem.imagePath = channel.imagePath;
+    newItem.subtitle = channel.itemDescription;
+    newItem.type = @"standard";
+    newItem.infinite = false;
+    newItem.autoScroll = false;
+    newItem.size = @"320x240";
+    newItem.className = @"KBSection";
+    newItem.sectionResultType = kYTSearchResultTypeChannel;
+    //NSDictionary *newItem = @{@"name": channel.title, @"channel": channel.videoId, @"imagePath": channel.imagePath, @"description": channel.itemDescription};
+    TLog(@"adding new item: %@", newItem);
+    NSDictionary *dictRep = [newItem dictionaryRepresentation];
+    TLog(@"dictionaryRepresentation: %@", dictRep);
+    [sections addObject:dictRep];
+    TLog(@"sections: %@", sections);
+    [sections writeToFile:[self newSectionsFile] atomically:true];
+    [self postHomeDataChangedNotification];
+}
+
+- (void)addHomeSectionold:(KBYTSearchResult *)channel {
     TLog(@"channel: %@", channel);
     NSMutableDictionary *dict = [[[NSDictionary alloc] initWithContentsOfFile:[self sectionsFile]] mutableCopy];
     NSMutableArray *sections = [dict[@"sections"] mutableCopy];
@@ -890,6 +956,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     TLog(@"sections: %@", sections);
     [dict writeToFile:[self sectionsFile] atomically:true];
     [self postHomeDataChangedNotification];
+}
+
+- (NSString *)newSectionsFile {
+    return [[self appSupportFolder] stringByAppendingPathComponent:@"newsections.plist"];
 }
 
 - (NSString *)sectionsFile {
@@ -1064,12 +1134,28 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 }
 
 - (void)resetHomeScreenToDefaults {
+    [FM removeItemAtPath:[self newSectionsFile] error:nil];
+    [self homeScreenData]; //write the new data
+    [self postHomeDataChangedNotification];
+}
+
+- (void)resetHomeScreenToDefaultsold {
     [FM removeItemAtPath:[self sectionsFile] error:nil];
     [self homeScreenData]; //write the new data
     [self postHomeDataChangedNotification];
 }
 
-- (NSDictionary *)homeScreenData {
+- (NSArray *)homeScreenData {
+    if ([FM fileExistsAtPath:[self newSectionsFile]]) {
+        TLog(@"loading from saved file");
+        return [NSArray arrayWithContentsOfFile:[self newSectionsFile]];
+    }
+    NSArray *def = [[self createDefaultSectionsArray] convertArrayToDictionaries];
+    [def writeToFile:[self newSectionsFile] atomically:true];
+    return def;
+}
+
+- (NSDictionary *)homeScreenDataold {
     if ([FM fileExistsAtPath:[self sectionsFile]]) {
         TLog(@"loading from saved file");
         return [NSDictionary dictionaryWithContentsOfFile:[self sectionsFile]];

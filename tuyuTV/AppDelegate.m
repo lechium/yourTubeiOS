@@ -109,12 +109,13 @@
     return @[section, sectionTwo, sectionThree, sectionFour];
 }
 
-- (TYHomeShelfViewController *)testShelfViewController {
-    TYHomeShelfViewController *shelfViewController = [[TYHomeShelfViewController alloc] initWithSections:[[KBYourTube sharedInstance] createDefaultSectionsArray]];
+- (TYHomeShelfViewController *)homeShelfViewController {
+    NSMutableArray <KBSectionProtocol> *sections = [[[KBYourTube sharedInstance] homeScreenData] convertArrayToObjects];
+    TYHomeShelfViewController *shelfViewController = [[TYHomeShelfViewController alloc] initWithSections:sections];
     shelfViewController.useRoundedEdges = false;
     shelfViewController.placeholderImage = [[UIImage imageNamed:@"YTPlaceholder.png"] roundedBorderImage:20.0 borderColor:nil borderWidth:0];
     //shelfViewController.sections = [self items];//[self loadData];
-    shelfViewController.title = @"tuyu test";
+    shelfViewController.title = @"tuyu";
     
     return shelfViewController;
 }
@@ -621,7 +622,8 @@ void UncaughtExceptionHandler(NSException *exception) {
     NSMutableArray *viewControllers = [NSMutableArray new];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
-    TYHomeViewController *homeViewController = [[TYHomeViewController alloc] initWithData:[[KBYourTube sharedInstance] homeScreenData]];//[[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
+    //TYHomeViewController *homeViewController = [[TYHomeViewController alloc] initWithData:[[KBYourTube sharedInstance] homeScreenData]];//[[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
+    TYHomeShelfViewController *homeViewController = [self homeShelfViewController];
     UIViewController *searchViewController = [self packagedSearchController];
     //[viewControllers removeObjectAtIndex:0];
     [viewControllers insertObject:homeViewController atIndex:0];
@@ -630,8 +632,10 @@ void UncaughtExceptionHandler(NSException *exception) {
     AboutViewController *avc = [AboutViewController new];
     avc.title = @"about";
     [viewControllers addObject:avc];
+    /*
     TYHomeShelfViewController *shelfNav = [self testShelfViewController];
     [viewControllers addObject:shelfNav];
+     */
     self.tabBar.viewControllers = viewControllers;
     KBYourTube *kbyt = [KBYourTube sharedInstance];
     if ([kbyt isSignedIn]) {

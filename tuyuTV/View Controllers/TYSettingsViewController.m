@@ -155,6 +155,29 @@
 }
 
 - (void)showManageChannelsView {
+    NSArray <NSDictionary *>*savedSections = [NSArray arrayWithContentsOfFile:[[KBYourTube sharedInstance] newSectionsFile]];
+    __block NSMutableArray *sections = [NSMutableArray new];
+    [savedSections enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull section, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSDictionary *assetDict = @{@"name": section[@"title"], @"imagePath": section[@"imagePath"],  @"uniqueID": section[@"uniqueId"], @"channel": section[@"uniqueId"]};
+        NSString *objDesc = section[@"description"];
+        if (objDesc != nil){
+            assetDict = @{@"name": section[@"title"], @"imagePath": section[@"imagePath"],  @"uniqueID": section[@"uniqueId"], @"channel": section[@"uniqueId"], @"description": objDesc};
+        }
+        MetaDataAsset *asset = [[MetaDataAsset alloc] initWithDictionary:assetDict];
+        [sections addObject:asset];
+    }];
+    TYManageFeaturedViewController *featuredVC = [[TYManageFeaturedViewController alloc] initWithNames:sections];
+    featuredVC.defaultImageName = @"YTPlaceholder";
+    NSDictionary *restoreDefaults = @{@"name": @"Restore default settings", @"imagePath": @"YTPlaceholder", @"detail": @"", @"detailOptions": @[],@"selectorName":@"restoreDefaultSettings",  @"description": @"This will reset the channel listing & settings in the Home (tuyu) section to its default settings."};
+    MetaDataAsset *extraItemOne = [[MetaDataAsset alloc] initWithDictionary:restoreDefaults];
+    extraItemOne.accessory = false;
+    featuredVC.extraItems = @[extraItemOne];
+    featuredVC.extraTitle = @"Maintenance";
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:featuredVC];
+    [self presentViewController:navController animated:true completion:nil];
+}
+
+- (void)showManageChannelsViewold {
     
     NSDictionary *data =[NSDictionary dictionaryWithContentsOfFile:[[KBYourTube sharedInstance] sectionsFile]];
     __block NSMutableArray *sections = [NSMutableArray new];

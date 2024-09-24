@@ -255,11 +255,11 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (void)removeHomeSection:(MetaDataAsset *)asset;
 - (void)setFeaturedResult:(KBYTSearchResult *)channel;
 - (void)addHomeSection:(KBYTSearchResult *)channel;
-- (NSDictionary *)homeScreenData;
+- (NSArray *)homeScreenData;
 - (NSArray *)createDefaultSectionsArray;
 - (NSDictionary *)createDefaultSections;
 - (NSString *)sectionsFile;
-
+- (NSString *)newSectionsFile;
 - (BOOL)loadUserDetailsFromCache;
 - (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current;
 + (YTSearchResultType)resultTypeForString:(NSString *)string;
