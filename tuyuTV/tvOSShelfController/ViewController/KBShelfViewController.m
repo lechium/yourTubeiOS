@@ -249,12 +249,26 @@
     });
 }
 
+- (void)handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
+    LOG_SELF;
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+}
+
 - (KBTableViewCell *)createCellAtIndexPath:(NSIndexPath *)indexPath {
     KBSection *section = self.sections[indexPath.section];
     static NSString *CellIdentifier = @"CellIdentifier";
     KBTableViewCell *cell = (KBTableViewCell *)[self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell){
         cell = [[KBTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        UILongPressGestureRecognizer *longpress
+        = [[UILongPressGestureRecognizer alloc]
+           initWithTarget:self action:@selector(handleLongpressMethod:)];
+        longpress.minimumPressDuration = .5; //seconds
+        longpress.delegate = self;
+        longpress.allowedPressTypes = @[[NSNumber numberWithInteger:UIPressTypeSelect]];
+        [cell addGestureRecognizer:longpress];
     }
     cell.section = section;
     [cell setCollectionViewDataSourceDelegate:self section:indexPath.section];
@@ -356,7 +370,9 @@
         self.selectedSection = sv.section;
         if ([cell isKindOfClass:UICollectionViewCell.class]) {
             NSInteger itemIndex = [sv indexPathForCell:cell].row;
+            self.focusedCollectionCell = cell;
             [self focusedCellIndex:itemIndex inSection:sv.section inCollectionView:sv];
+            
         }
     } else {
         self.selectedSection = 0;

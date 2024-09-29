@@ -9,7 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TYUserShelfViewController : TYBaseShelfViewController
+@interface TYUserShelfViewController : TYBaseShelfViewController {
+    BOOL _jiggling;
+    UITapGestureRecognizer *menuTapRecognizer;
+    UITapGestureRecognizer *_pressGestureRecognizer;
+    UITapGestureRecognizer *_playPauseGestureRecognizer;
+}
 
 @end
 

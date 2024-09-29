@@ -517,6 +517,7 @@
     KBYTSearchResult *newChannel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:jsonDict];
     TLog(@"new channel: %@", newChannel);
     [[KBYourTube sharedInstance] addChannelToUserDetails:newChannel];
+    [[KBYourTube sharedInstance] postUserDataChangedNotification];
     return jsonDict;
 }
 

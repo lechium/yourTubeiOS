@@ -457,9 +457,20 @@
     [viewControllers removeObjectAtIndex:1];
     UIViewController *pvc = [self packagedSearchController];
     [viewControllers insertObject:pvc atIndex:1];
-    if ([[KBYourTube sharedInstance] isSignedIn])
-    {
-        [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+    if ([[KBYourTube sharedInstance] isSignedIn]) {
+        [[KBYourTube sharedInstance] fetchUserDetailsWithCompletion:^(NSArray<KBSectionProtocol> *userDetails, NSString *userName) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                TYUserShelfViewController *shelfViewController = [[TYUserShelfViewController alloc] initWithSections:userDetails];
+                shelfViewController.useRoundedEdges = false;
+                shelfViewController.placeholderImage = [[UIImage imageNamed:@"YTPlaceholder.png"] roundedBorderImage:20.0 borderColor:nil borderWidth:0];
+                //shelfViewController.sections = [self items];//[self loadData];
+                shelfViewController.title = userName;
+                [viewControllers insertObject:shelfViewController atIndex:1];
+                self.tabBar.viewControllers = viewControllers;
+            });
+        }];
+        /*  [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
             
             // NSLog(@"userdeets : %@", outputResults);
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
@@ -477,7 +488,7 @@
             
         } failureBlock:^(NSString *error) {
             //
-        }];
+        }]; */
     }
 }
 
@@ -642,6 +653,27 @@ void UncaughtExceptionHandler(NSException *exception) {
     if ([kbyt isSignedIn]) {
         //DLog(@"%@", [TYAuthUserManager suastring]);
         [[TYAuthUserManager sharedInstance] checkAndSetCredential];
+        /*
+        [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+            
+            // NSLog(@"userdeets : %@", outputResults);
+            [[KBYourTube sharedInstance] setUserDetails:outputResults];
+            TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
+            
+            uvc.title = outputResults[@"userName"];
+            if ([[outputResults allKeys]containsObject:@"altUserName"])
+            {
+                uvc.title = outputResults[@"altUserName"];
+            }
+            [viewControllers insertObject:uvc atIndex:1];
+            
+            self.tabBar.viewControllers = viewControllers;
+            
+            
+        } failureBlock:^(NSString *error) {
+            //
+        }];
+        */
         [kbyt fetchUserDetailsWithCompletion:^(NSArray<KBSectionProtocol> *userDetails, NSString *userName) {
             
             dispatch_async(dispatch_get_main_queue(), ^{

@@ -62,10 +62,12 @@
     [self.sections enumerateObjectsUsingBlock:^(KBSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         //DLog(@"section: %@", obj);
         DLog(@"section type: %u channel type: %lu", obj.sectionResultType, kYTSearchResultTypeChannel);
+        
         switch ([obj sectionResultType]) {
                 
             case kYTSearchResultTypePlaylist: {
                 [self handlePlaylistSection:obj completion:^(BOOL loaded, NSString *error) {
+                    DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
                     BOOL finished = loadedSections == self.sections.count-1;
                     if (finished || loadedSections > 3){
                         if (progress && finished) {
@@ -85,6 +87,7 @@
                 
             case kYTSearchResultTypeChannel: {
                 [self handleChannelSection:obj completion:^(BOOL loaded, NSString *error) {
+                    DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
                     BOOL finished = loadedSections == self.sections.count-1;
                     if (finished || loadedSections > 3){
                         if (progress && finished) {
@@ -100,6 +103,22 @@
                     loadedSections++;
                 }];
         }
+                break;
+            default:
+                DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
+                BOOL finished = loadedSections == self.sections.count-1;
+                if (finished || loadedSections > 3){
+                    if (progress && finished) {
+                        [SVProgressHUD dismiss];
+                    }
+                    if (finished){
+                        [self snapshotResults];
+                    }
+                    if (completionBlock){
+                        completionBlock(true);
+                    }
+                }
+                loadedSections++;
                 break;
         }
     }];
@@ -128,10 +147,28 @@
     
 }
 
+- (NSArray *)specialIDs {
+    return @[KBYTUserChannelsID, KBYTUserChannelHistoryID, KBYTUserVideoHistoryID];
+}
+
 - (void)handleChannelSection:(KBSection *)section completion:(void(^)(BOOL loaded, NSString *error))completionBlock {
     DLog(@"section uniqueID: %@ title: %@", section.uniqueId, section.title);
-    if (section.uniqueId) {
-        [[KBYourTube sharedInstance] getChannelVideosAlt:section.uniqueId completionBlock:^(KBYTChannel *channel) {
+    NSString *uniqueID = section.uniqueId;
+    if ([[self specialIDs] containsObject:uniqueID]){
+        if ([uniqueID isEqualToString:KBYTUserChannelsID]) {
+            //section.content = [[KBYourTube sharedInstance] userDetails][@"channels"];
+        } else if ([uniqueID isEqualToString:KBYTUserChannelHistoryID]) {
+            section.content = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
+        } else if ([uniqueID isEqualToString:KBYTUserVideoHistoryID]) {
+            section.content = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
+        }
+        if (completionBlock){
+            completionBlock(true, nil);
+        }
+        return;
+    }
+    if (uniqueID) {
+        [[KBYourTube sharedInstance] getChannelVideosAlt:uniqueID completionBlock:^(KBYTChannel *channel) {
             section.channel = channel;
             section.content = [channel allSectionItems];
             if (completionBlock){
@@ -144,7 +181,7 @@
         }];
     } else {
         if (completionBlock){
-            completionBlock(false, @"No Unique ID");
+            completionBlock(false, [NSString stringWithFormat:@"No uniqueID for %@", section.title]);
         }
     }
     

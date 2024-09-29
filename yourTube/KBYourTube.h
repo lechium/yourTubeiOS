@@ -48,6 +48,9 @@ static NSString *const KBYTGamingChannelID  =  @"UCOpNcN46UbXVtpKMrmU4Abg";
 static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 static NSString *const KBYTFashionAndBeautyID =  @"UCrpQ4p1Ql_hG8rKXIKM1MOQ";
 static NSString *const KBYTSpotlightChannelID = @"UCBR8-60-B28hp2BmDPdntcQ";
+static NSString *const KBYTUserChannelsID = @"USER_CHANNELS_ID";
+static NSString *const KBYTUserChannelHistoryID = @"USER_CHANNEL_HISTORY_ID";
+static NSString *const KBYTUserVideoHistoryID = @"USER_VIDEO_HISTORY_ID";
 
 @protocol YTPlayerItemProtocol <NSObject>
 - (NSString *)duration;
@@ -254,6 +257,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (void)stopReachabilityMonitoring;
 - (void)resetHomeScreenToDefaults;
 - (void)postHomeDataChangedNotification;
+- (void)postUserDataChangedNotification;
 - (void)removeHomeSection:(MetaDataAsset *)asset;
 - (void)setFeaturedResult:(KBYTSearchResult *)channel;
 - (void)addHomeSection:(KBYTSearchResult *)channel;

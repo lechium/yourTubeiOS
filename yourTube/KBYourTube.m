@@ -18,6 +18,7 @@
 #endif
 //#ifndef SHELF_EXT
 #import "TYAuthUserManager.h"
+#import "EXTScope.h"
 //#endif
 
 #if TARGET_OS_TV
@@ -887,6 +888,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     [[NSNotificationCenter defaultCenter] postNotificationName:KBYTHomeDataChangedNotification object:nil];
 }
 
+- (void)postUserDataChangedNotification {
+    [[NSNotificationCenter defaultCenter] postNotificationName:KBYTUserDataChangedNotification object:nil];
+}
 
 - (void)removeHomeSection:(MetaDataAsset *)asset {
     //NSMutableDictionary *dict = [[[NSDictionary alloc] initWithContentsOfFile:[self newSectionsFile]] mutableCopy];
@@ -1491,7 +1495,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (void)fetchUserDetailsWithCompletion:(void(^)(NSArray <KBSectionProtocol>*userDetails, NSString *username))completionBlock {
     __block NSMutableArray *finishedArray = [NSMutableArray new];
     //NSDictionary *userDetails = [self userDetails];
+    @weakify(self);
     [self getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *userDetails) {
+        self_weak_.userDetails = userDetails;
         NSString *channelID = userDetails[@"channelID"];
         DLog(@"channelID: %@", channelID);
         NSString *userName = userDetails[@"userName"];
@@ -1514,6 +1520,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             channelsSection.type = @"standard";
             channelsSection.autoScroll = false;
             channelsSection.infinite = false;
+            channelsSection.uniqueId = KBYTUserChannelsID;
+            channelsSection.className = @"KBSection";
             channelsSection.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
             channelsSection.content = channels;
             [finishedArray addObject:channelsSection];
@@ -1527,8 +1535,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             channelHistory.type = @"standard";
             channelHistory.autoScroll = false;
             channelHistory.infinite = false;
+            channelHistory.uniqueId = KBYTUserChannelHistoryID;
             channelHistory.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
             channelHistory.content = channelHistoryItems;
+            channelHistory.className = @"KBSection";
             [finishedArray addObject:channelHistory];
         }
         
@@ -1540,19 +1550,22 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             videoHistory.type = @"standard";
             videoHistory.autoScroll = false;
             videoHistory.infinite = false;
+            videoHistory.uniqueId = KBYTUserVideoHistoryID;
             videoHistory.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
             videoHistory.content = videoHistoryItems;
+            videoHistory.className = @"KBSection";
             [finishedArray addObject:videoHistory];
         }
         
         [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(KBYTChannel *channel) {
             KBSection *section = [KBSection new];
-            section.title = @"Channels";
+            section.title = userName;
             section.size = @"640x480";
             section.type = @"banner";
             section.autoScroll = false;
             section.infinite = false;
             section.uniqueId = channelID;
+            section.className = @"KBSection";
             section.sectionResultType = kYTSearchResultTypeChannel;
             //DLog(@"videos: %@", channel.videos);
             section.content = channel.videos;
@@ -1618,7 +1631,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 //userChannel.details = [NSString stringWithFormat:@"%lu videos", channelVideoCount];
                                 userChannel.imagePath = thumbURL;
                                 userChannel.resultType =kYTSearchResultTypeChannel;
-                                [itemArray addObject:userChannel];
+                                //[itemArray addObject:userChannel];
                                 returnDict[@"results"] = itemArray;
                                 dispatch_async(dispatch_get_main_queue(), ^{
                                     if (returnDict != nil) {
