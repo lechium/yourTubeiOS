@@ -85,7 +85,8 @@
             }
                 break;
                 
-            case kYTSearchResultTypeChannel: {
+            case kYTSearchResultTypeChannel:
+            case kYTSearchResultTypeChannelList: {
                 [self handleChannelSection:obj completion:^(BOOL loaded, NSString *error) {
                     DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
                     BOOL finished = loadedSections == self.sections.count-1;
@@ -156,7 +157,7 @@
     NSString *uniqueID = section.uniqueId;
     if ([[self specialIDs] containsObject:uniqueID]){
         if ([uniqueID isEqualToString:KBYTUserChannelsID]) {
-            //section.content = [[KBYourTube sharedInstance] userDetails][@"channels"];
+            section.content = [[KBYourTube sharedInstance] userDetails][@"channels"];
         } else if ([uniqueID isEqualToString:KBYTUserChannelHistoryID]) {
             section.content = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
         } else if ([uniqueID isEqualToString:KBYTUserVideoHistoryID]) {
