@@ -33,8 +33,14 @@
     [self addSubview:self.bannerImageView];
     self.bannerImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.bannerImageView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero];
-    //[self.bannerImageView autoSetDimension:ALDimensionHeight toSize:175];
     [self.bannerImageView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self];
+    UIView *bannerOverlay = [[UIView alloc] initForAutoLayout];
+    [self.bannerImageView addSubview:bannerOverlay];
+    [bannerOverlay autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-80];
+    [bannerOverlay autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self];
+    bannerOverlay.clipsToBounds = false;
+    [bannerOverlay.heightAnchor constraintEqualToConstant:340].active = true;
+    bannerOverlay.backgroundColor = [UIColor colorWithWhite:0 alpha:0.20];
     self.authorLabel = [[UILabel alloc] initForAutoLayout];
     self.subscriberLabel = [[UILabel alloc] initForAutoLayout];
     self.subscriberLabel.numberOfLines = 0;
@@ -57,6 +63,7 @@
     self.subscriberLabel.textColor = [UIColor whiteColor];
     [self.subscriberLabel shadowify];
     [self.authorLabel shadowify];
+    
 }
 
 /*

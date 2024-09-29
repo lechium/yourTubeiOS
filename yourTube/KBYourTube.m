@@ -337,8 +337,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     }
     section.imagePath = self.imagePath;
     section.uniqueId = self.uniqueID;
-    DLog(@"uniqueID: %@", self.uniqueID);
-    DLog(@"videoID: %@", self.videoId);
     section.subtitle = self.itemDescription;
     section.className = @"KBSection";
     return section;
@@ -936,10 +934,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     newItem.autoScroll = false;
     newItem.size = @"640x480";
     newItem.className = @"KBSection";
+    newItem.sectionResultType = kYTSearchResultTypeChannel;
     TLog(@"setting featured: %@", newItem);
     NSDictionary *dictRep = [newItem dictionaryRepresentation];
     TLog(@"dictionaryRepresentation: %@", dictRep);
-    NSDictionary *currentFeatured = [sections firstObject];
+    //NSDictionary *currentFeatured = [sections firstObject];
     [sections removeObjectAtIndex:0];
     TLog(@"sections: %@", sections);
     [sections insertObject:dictRep atIndex:0];
@@ -2148,13 +2147,16 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                     //TLog(@"idx: %lu of %lu", idx, [sect count]);
                     if (idx+1 == sect.count && backup){
-                        //TLog(@"adding straggler!");
+                        TLog(@"adding straggler: %@", backup);
                         [sections addObject:backup];
                         backup = nil;
                     }
                 } else { //no shelf
                     if (backup) {
-                        [sections addObject:backup];
+                        //DLog(@"backup: %@", backup);
+                        if (backup.content.count > 0) {
+                            [sections addObject:backup];
+                        }
                         backup = nil;
                     }
                     //NSDictionary *rend = [renderers firstObject];
@@ -2243,9 +2245,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         NSDictionary *longBylineText = channel[@"longBylineText"];
                                         NSDictionary *thumb = thumbnails.lastObject;
                                         NSString *imagePath = thumb[@"url"];
+                                        NSString *originalImagePath = imagePath;
                                         NSInteger width = [thumb[@"height"] integerValue];
                                         if (width < 400){
-                                            //NSLog(@"generate thumb manually!");
+                                            //TLog(@"generate thumb manually: %lu", width);
+                                            
                                             imagePath = [self hiRestChannelImageFromDict:thumb];
                                         }
                                         if (![imagePath containsString:@"https:"]){
@@ -2259,6 +2263,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         searchItem.videoId = cis;
                                         searchItem.channelId = channelID;
                                         searchItem.imagePath = imagePath;
+                                        searchItem.originalImagePath = originalImagePath;
                                         searchItem.resultType = kYTSearchResultTypeChannel;
                                         searchItem.details = [channel recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
                                         NSArray *itemDesc = [channel recursiveObjectForKey:@"videoCountText"][@"runs"];
@@ -2309,7 +2314,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         
                     }
                     section.content = content;
-                    [sections addObject:section];
+                    if (content.count > 0) {
+                        [sections addObject:section];
+                    } else {
+                        DLog(@"section is empty, skipping: %@", section);
+                    }
                 }
                 
                 

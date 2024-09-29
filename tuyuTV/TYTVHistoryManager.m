@@ -85,7 +85,7 @@
 }
 
 - (void)addChannelToHistory:(NSDictionary *)channelDetails {
-    TLog(@"add to channel to history: %@", channelDetails);
+    //TLog(@"add to channel to history: %@", channelDetails);
     NSMutableDictionary *channel = [channelDetails mutableCopy];
 
     [channel removeObjectForKey:@"sections"];
@@ -97,7 +97,7 @@
         NSMutableArray *newArray = [history mutableCopy];
         NSArray *foundItems = [history filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"channelID == %@", channelDetails[@"channelID"]]];
         if (foundItems.count > 0) {
-            TLog(@"items already exists: %@", foundItems);
+            //TLog(@"items already exists: %@", foundItems);
             [newArray removeObjectsInArray:foundItems];
         }
         //[newArray addObject:channel];
@@ -121,7 +121,7 @@
         NSArray *foundItems = [history filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"videoID == %@", videoDetails[@"videoID"]]];
         
         if (foundItems.count > 0) {
-            TLog(@"items already exists: %@", foundItems);
+            //TLog(@"items already exists: %@", foundItems);
             [newArray removeObjectsInArray:foundItems];
         }
         //[newArray addObject:video];

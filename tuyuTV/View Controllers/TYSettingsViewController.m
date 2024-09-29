@@ -57,7 +57,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    DLog(@"dt: %@", [[KBYourTube sharedInstance] userDetails]);
+    //DLog(@"dt: %@", [[KBYourTube sharedInstance] userDetails]);
     MetaDataAsset *theAsset = self.items[0];
     if ([self signedIn] == true) {
         NSString *ourProfileImage = [[KBYourTube sharedInstance]userDetails][@"profileImage"];

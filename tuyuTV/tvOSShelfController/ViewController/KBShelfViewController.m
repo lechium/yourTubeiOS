@@ -350,7 +350,7 @@
 }
 
 - (void)focusedCellIndex:(NSInteger)cellIndex inSection:(NSInteger)section inCollectionView:(UICollectionView *)collectionView {
-    DLog(@"focusedCell: %lu inSection: %lu", cellIndex, section);
+    //DLog(@"focusedCell: %lu inSection: %lu", cellIndex, section);
     if (self.itemFocusedBlock) {
         self.itemFocusedBlock(cellIndex, section, collectionView);
     }
@@ -365,7 +365,7 @@
         //DLog(@"selected section: %lu", sv.indexPath.section);
         BOOL sectionChanged = (self.selectedSection != sv.section);
         if (sectionChanged) {
-            DLog(@"changed from section: %lu to %lu", self.selectedSection, sv.section);
+            //DLog(@"changed from section: %lu to %lu", self.selectedSection, sv.section);
         }
         self.selectedSection = sv.section;
         if ([cell isKindOfClass:UICollectionViewCell.class]) {
@@ -420,6 +420,7 @@
         [cell.bannerLabel shadowify];
         cell.bannerDescription.text = currentItem.details;
         [cell.bannerDescription shadowify];
+        cell.bottomRightLabel.text = @"";
         NSString *banner = [currentItem.banner stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
         if ([KBShelfViewController useRoundedEdges]) {
             [cell.imageView sd_setImageWithURL:[NSURL URLWithString:banner] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates | SDWebImageAvoidAutoSetImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
@@ -459,7 +460,7 @@
         } else {
             [cell.imageView sd_setImageWithURL:[NSURL URLWithString:icon] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
                 if (error) {
-                    //DLog(@"an error occured set og image path: %@", error);
+                    //DLog(@"an error occured with: %@ set og image path: %@", icon, [currentItem valueForKey:@"originalImagePath"]);
                     if ([currentItem respondsToSelector:@selector(originalImagePath)]){
                         [cell.imageView sd_setImageWithURL:[NSURL URLWithString:[currentItem valueForKey:@"originalImagePath"]] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates];
                     }

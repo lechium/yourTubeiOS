@@ -61,13 +61,13 @@
     }
     [self.sections enumerateObjectsUsingBlock:^(KBSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         //DLog(@"section: %@", obj);
-        DLog(@"section type: %u channel type: %lu", obj.sectionResultType, kYTSearchResultTypeChannel);
+        //DLog(@"section type: %u channel type: %lu", obj.sectionResultType, kYTSearchResultTypeChannel);
         
         switch ([obj sectionResultType]) {
                 
             case kYTSearchResultTypePlaylist: {
                 [self handlePlaylistSection:obj completion:^(BOOL loaded, NSString *error) {
-                    DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
+                    //DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
                     BOOL finished = loadedSections == self.sections.count-1;
                     if (finished || loadedSections > 3){
                         if (progress && finished) {
@@ -88,7 +88,7 @@
             case kYTSearchResultTypeChannel:
             case kYTSearchResultTypeChannelList: {
                 [self handleChannelSection:obj completion:^(BOOL loaded, NSString *error) {
-                    DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
+                    //DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
                     BOOL finished = loadedSections == self.sections.count-1;
                     if (finished || loadedSections > 3){
                         if (progress && finished) {
@@ -105,8 +105,8 @@
                 }];
         }
                 break;
-            default:
-                DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
+            default: {
+                //DLog(@"loadedSections: %lu sectionsCount: %lu", loadedSections, self.sections.count-1);
                 BOOL finished = loadedSections == self.sections.count-1;
                 if (finished || loadedSections > 3){
                     if (progress && finished) {
@@ -120,6 +120,7 @@
                     }
                 }
                 loadedSections++;
+            }
                 break;
         }
     }];
@@ -153,7 +154,7 @@
 }
 
 - (void)handleChannelSection:(KBSection *)section completion:(void(^)(BOOL loaded, NSString *error))completionBlock {
-    DLog(@"section uniqueID: %@ title: %@", section.uniqueId, section.title);
+    //DLog(@"section uniqueID: %@ title: %@", section.uniqueId, section.title);
     NSString *uniqueID = section.uniqueId;
     if ([[self specialIDs] containsObject:uniqueID]){
         if ([uniqueID isEqualToString:KBYTUserChannelsID]) {
