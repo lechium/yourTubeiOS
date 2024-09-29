@@ -127,7 +127,7 @@
 }
 
 - (void)handlePlaylistSection:(KBSection *)section completion:(void(^)(BOOL loaded, NSString *error))completionBlock {
-    DLog(@"section uniqueID: %@ title: %@", section.uniqueId, section.title);
+    //DLog(@"section uniqueID: %@ title: %@", section.uniqueId, section.title);
     if (section.uniqueId) {
         [[KBYourTube sharedInstance] getPlaylistVideos:section.uniqueId completionBlock:^(KBYTPlaylist *playlist) {
             section.playlist = playlist;

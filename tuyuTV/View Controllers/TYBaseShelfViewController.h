@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 
 - (id)initWithSections:(NSArray <KBSectionProtocol>*)sections;
+- (void)handlePlaylistSection:(KBSection *)section completion:(void(^)(BOOL loaded, NSString *error))completionBlock;
 - (void)handleChannelSection:(KBSection *)section completion:(void(^)(BOOL loaded, NSString *error))completionBlock;
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result;
 - (void)showPlaylistAlertForSearchResult:(KBYTSearchResult *)result;

@@ -157,16 +157,58 @@
     }
 }
 
+- (void)handlePlaylistSection:(KBSection *)section completion:(void(^)(BOOL loaded, NSString *error))completionBlock {
+    //DLog(@"section uniqueID: %@ title: %@", section.uniqueId, section.title);
+    if (section.uniqueId) {
+        [[TYAuthUserManager sharedInstance] getPlaylistItems:section.uniqueId completion:^(NSArray<KBYTSearchResult *> *playlistItems, NSString *error) {
+            KBYTPlaylist *playlist = [KBYTPlaylist new];
+            playlist.title = section.title;
+            playlist.owner = section.subtitle;
+            playlist.videos = playlistItems;
+            playlist.playlistID = section.uniqueId;
+            NSString *testOutput = [NSString stringWithFormat:@"%@_playlistSearchItems.plist", section.uniqueId];
+            NSString *outputPath = [[self appSupportFolder] stringByAppendingPathComponent:testOutput];
+            NSArray *writableArray = [playlistItems convertArrayToDictionaries];
+            DLog(@"writing to file: %@", outputPath);
+            [writableArray writeToFile:outputPath atomically:true];
+            section.playlist = playlist;
+            section.content = playlist.videos;
+            if (completionBlock){
+                completionBlock(true, nil);
+            }
+        }];
+        /*[[KBYourTube sharedInstance] getPlaylistVideos:section.uniqueId completionBlock:^(KBYTPlaylist *playlist) {
+            section.playlist = playlist;
+            section.content = playlist.videos;
+            //DLog(@"playlist videos: %@", playlist.videos);
+            if (completionBlock){
+                completionBlock(true, nil);
+            }
+        } failureBlock:^(NSString *error) {
+            if (completionBlock){
+                completionBlock(false, error);
+            }
+        }]; */
+    } else {
+        if (completionBlock){
+            completionBlock(false, @"No Unique ID");
+        }
+    }
+    
+}
+
 - (void)removeVideo:(KBYTSearchResult *)searchResult fromPlaylist:(KBYTPlaylist *)playlist inCollectionView:(UICollectionView *)cv {
     TLog(@"deleting %@ from %@ in %@", searchResult, playlist, cv);
-    [[TYAuthUserManager sharedInstance] removeVideo:searchResult.videoId FromPlaylist:playlist.playlistID];
+    [[TYAuthUserManager sharedInstance] removeVideo:searchResult.stupidId ? searchResult.stupidId : searchResult.videoId FromPlaylist:playlist.playlistID];
     [cv performBatchUpdates:^{
         KBSection *section = self.sections[cv.section];
         NSMutableArray *playlistMutable = [playlist.videos mutableCopy];
-        NSIndexPath *ip = [NSIndexPath indexPathForItem:[playlist.videos indexOfObject:searchResult] inSection:0];
+        KBYTSearchResult *foundItem = [[playlist.videos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"stupidId == %@", searchResult.stupidId]] lastObject];
+        DLog(@"foundItem: %@", foundItem);
+        NSIndexPath *ip = [NSIndexPath indexPathForItem:[playlist.videos indexOfObject:foundItem] inSection:0];
         TLog(@"ip: %@", ip);
         [cv deleteItemsAtIndexPaths:@[ip]];
-        [playlistMutable removeObject:searchResult];
+        [playlistMutable removeObject:foundItem];
         playlist.videos = playlistMutable;
         section.playlist = playlist;
         section.content = playlist.videos;
