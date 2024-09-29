@@ -20,6 +20,10 @@
 #import "TYAuthUserManager.h"
 //#endif
 
+#if TARGET_OS_TV
+#import "TYTVHistoryManager.h"
+#endif
+
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 static NSString * const hardcodedTimestamp = @"16864";
@@ -310,6 +314,35 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return playlist;
 }
 
+- (KBSection *)sectionRepresentation {
+    KBSection *section = [KBSection new];
+    section.title = self.title;
+    section.infinite = false;
+    section.autoScroll = false;
+    section.size = @"320x240";
+    switch (self.resultType) {
+        case kYTSearchResultTypeChannel:
+            section.sectionResultType = kYTSearchResultTypeChannel;
+            break;
+        case kYTSearchResultTypePlaylist:
+            section.sectionResultType = kYTSearchResultTypePlaylist;
+            break;
+        case kYTSearchResultTypeVideo:
+            section.sectionResultType = kYTSearchResultTypeVideo;
+            break;
+        default:
+            section.sectionResultType = kYTSearchResultTypeUnknown;
+            break;
+    }
+    section.imagePath = self.imagePath;
+    section.uniqueId = self.uniqueID;
+    DLog(@"uniqueID: %@", self.uniqueID);
+    DLog(@"videoID: %@", self.videoId);
+    section.subtitle = self.itemDescription;
+    section.className = @"KBSection";
+    return section;
+}
+
 //potentially obsolete
 - (id)initWithDictionary:(NSDictionary *)resultDict {
     self = [super init];
@@ -358,7 +391,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     switch (self.resultType) {
         case kYTSearchResultTypeUnknown: return nil;
         case kYTSearchResultTypeVideo: return self.videoId;
-        case kYTSearchResultTypePlaylist: return self.playlistId;
+        case kYTSearchResultTypePlaylist: return self.playlistId ? self.playlistId : self.videoId;
         case kYTSearchResultTypeChannel: return self.channelId;
         case kYTSearchResultTypeChannelList: return @"Figure out unique id for channel list";
         default:
@@ -1193,7 +1226,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     NSMutableDictionary *_newDict = [self.userDetails mutableCopy];
     _newDict[@"results"] = newResults;
     _newDict[@"channels"] = channels;
-    [_newDict writeToFile:[self userDetailsCache] atomically:true];
+    BOOL writeUserDeets = [_newDict writeToFile:[self userDetailsCache] atomically:true];
+    if (writeUserDeets) {
+        TLog(@"user deets written successfully!");
+    } else {
+        TLog(@"user deets write failed!");
+    }
     [[KBYourTube sharedUserDefaults] setObject:_newDict forKey:@"testKey"];
 }
 
@@ -1449,6 +1487,90 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return [[self appSupportFolder] stringByAppendingPathComponent:@"shelf.plist"];
 }
 
+#if TARGET_OS_TV
+- (void)fetchUserDetailsWithCompletion:(void(^)(NSArray <KBSectionProtocol>*userDetails, NSString *username))completionBlock {
+    __block NSMutableArray *finishedArray = [NSMutableArray new];
+    //NSDictionary *userDetails = [self userDetails];
+    [self getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *userDetails) {
+        NSString *channelID = userDetails[@"channelID"];
+        DLog(@"channelID: %@", channelID);
+        NSString *userName = userDetails[@"userName"];
+        if ([[userDetails allKeys]containsObject:@"altUserName"]) {
+            userName = userDetails[@"altUserName"];
+        }
+        NSArray <KBYTSearchResult *> *playlists = userDetails[@"results"];
+        [playlists enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj.resultType == kYTSearchResultTypePlaylist) {
+                KBSection *playlistSection = [obj sectionRepresentation];
+                [finishedArray addObject:playlistSection];
+            }
+        }];
+        
+        NSArray <KBCollectionItemProtocol> *channels = userDetails[@"channels"];
+        if (channels.count > 0){
+            KBSection *channelsSection = [KBSection new];
+            channelsSection.title = @"Channels";
+            channelsSection.size = @"320x240";
+            channelsSection.type = @"standard";
+            channelsSection.autoScroll = false;
+            channelsSection.infinite = false;
+            channelsSection.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
+            channelsSection.content = channels;
+            [finishedArray addObject:channelsSection];
+        }
+        
+        NSArray <KBCollectionItemProtocol> *channelHistoryItems = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
+        if (channelHistoryItems.count > 0) {
+            KBSection *channelHistory = [KBSection new];
+            channelHistory.title = @"Channel History";
+            channelHistory.size = @"320x240";
+            channelHistory.type = @"standard";
+            channelHistory.autoScroll = false;
+            channelHistory.infinite = false;
+            channelHistory.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
+            channelHistory.content = channelHistoryItems;
+            [finishedArray addObject:channelHistory];
+        }
+        
+        NSArray <KBCollectionItemProtocol> *videoHistoryItems = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
+        if (videoHistoryItems.count > 0) {
+            KBSection *videoHistory = [KBSection new];
+            videoHistory.title = @"Video History";
+            videoHistory.size = @"320x240";
+            videoHistory.type = @"standard";
+            videoHistory.autoScroll = false;
+            videoHistory.infinite = false;
+            videoHistory.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
+            videoHistory.content = videoHistoryItems;
+            [finishedArray addObject:videoHistory];
+        }
+        
+        [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(KBYTChannel *channel) {
+            KBSection *section = [KBSection new];
+            section.title = @"Channels";
+            section.size = @"640x480";
+            section.type = @"banner";
+            section.autoScroll = false;
+            section.infinite = false;
+            section.uniqueId = channelID;
+            section.sectionResultType = kYTSearchResultTypeChannel;
+            //DLog(@"videos: %@", channel.videos);
+            section.content = channel.videos;
+            section.channel = channel;
+            [finishedArray insertObject:section atIndex:0];
+            completionBlock(finishedArray, userName);
+        } failureBlock:^(NSString *error) {
+            DLog(@"error getting your channel videos: %@", error);
+            completionBlock(finishedArray, userName);
+        }];
+    } failureBlock:^(NSString *error) {
+        
+    }];
+    
+    
+}
+#endif
+
 - (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock
                                        failureBlock:(void(^)(NSString *error))failureBlock {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -1508,28 +1630,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 });
                             }
                         }];
-                        /* [authManager getProfileThumbnail:returnDict[@"channelID"] completion:^(NSString *thumbURL, NSString *error) {
-                            NSString *userName = returnDict[@"userName"];
-                            NSString *channelID = returnDict[@"channelID"];
-                            //TLog(@"rd: %@", returnDict);
-                            KBYTSearchResult *userChannel = [KBYTSearchResult new];
-                            userChannel.title = @"Your channel";
-                            userChannel.author = userName;
-                            userChannel.videoId = channelID;
-                            //userChannel.details = [NSString stringWithFormat:@"%lu videos", channelVideoCount];
-                            userChannel.imagePath = thumbURL;
-                            userChannel.resultType =kYTSearchResultTypeChannel;
-                            [itemArray addObject:userChannel];
-                            returnDict[@"results"] = itemArray;
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                if (returnDict != nil) {
-                                    [[returnDict convertObjectsToDictionaryRepresentations] writeToFile:[self shelfFile] atomically:true];
-                                    completionBlock(returnDict);
-                                } else {
-                                    failureBlock(errorString);
-                                }
-                            });
-                        }]; */
                     }];
                 }];
                 
@@ -1891,7 +1991,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (!imagePath){
         imagePath = [NSString stringWithFormat:@"https://i.ytimg.com/vi/%@/maxresdefault.jpg", vid];
     } else {
-        imagePath = [imagePath maxResVideoURL];
+        imagePath = imagePath; //convert to hi-res later
     }
     NSDictionary *longBylineText = [current recursiveObjectForKey:@"longBylineText"];
     if (!longBylineText) {
@@ -1912,7 +2012,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     searchItem.videoId = vid;
     searchItem.views = viewCountText;
     searchItem.age = current[@"publishedTimeText"][@"simpleText"];
-    searchItem.imagePath = imagePath;
+    searchItem.originalImagePath = imagePath;
+    searchItem.imagePath = [imagePath maxResVideoURL];
     searchItem.channelId = channelId;
     searchItem.playlistId = playlistId;
     searchItem.resultType = kYTSearchResultTypeVideo;
@@ -1954,7 +2055,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSString *lastBanner = [banner lastObject][@"url"];
             //NSLog(@"our banners: %@", lastBanner);
             id cc = [jsonDict recursiveObjectForKey:@"continuationCommand"];
-            recursiveObjectsFor(@"continuationCommand", jsonDict, ccs);
+            //recursiveObjectsFor(@"continuationCommand", jsonDict, ccs);
             //DLog(@"ccs: %@", ccs);
             NSDictionary *details = [jsonDict recursiveObjectForKey:@"topicChannelDetailsRenderer"];
             if (!details) {
@@ -1981,13 +2082,17 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 channel.subtitle = subtitle[@"simpleText"];
             }
             channel.channelID = channelID;
-            channel.subscribers = subscriberCount[@"simpleText"];
+            if ([subscriberCount respondsToSelector:@selector(isEqualToString:)]){
+                channel.subscribers = (NSString*)subscriberCount;
+            } else {
+                channel.subscribers = subscriberCount[@"simpleText"];
+            }
             channel.image = imagePath;
             channel.url = [details recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
             channel.continuationToken = cc[@"token"];
-            if (ccs.count > 1) {
-                channel.continuationTokens = ccs;
-            }
+            //if (ccs.count > 1) {
+              //  channel.continuationTokens = ccs;
+            //}
             channel.banner = lastBanner;
             //DLog(@"details: %@", details);
             //title,subtitle,thumbnails

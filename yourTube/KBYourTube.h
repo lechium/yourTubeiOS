@@ -152,6 +152,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *stupidId; //youtube specific id to unsubscribe et al
 @property (nonatomic, strong) NSString *duration;
 @property (nonatomic, strong) NSString *imagePath;
+@property (nonatomic, strong) NSString *originalImagePath;
 @property (nonatomic, strong) NSString *age;
 @property (nonatomic, strong) NSString *views;
 @property (nonatomic, strong) NSString *details;
@@ -161,6 +162,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (readwrite, assign) YTSearchResultType resultType;
 @property (nonatomic, strong) NSArray *items; //only relevant for channel list
 
+- (KBSection *)sectionRepresentation;
 - (NSString *)banner;
 - (id)initWithDictionary:(NSDictionary *)resultDict;
 - (id)initWithYTChannelDictionary:(NSDictionary *)channelDict;
@@ -268,6 +270,10 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (void)documentFromURL:(NSString *)theURL completion:(void(^)(ONOXMLDocument *document))block;
 - (ONOXMLDocument *)documentFromURL:(NSString *)theURL;
 - (NSString *)videoDescription:(NSString *)videoID;
+
+#if TARGET_OS_TV
+- (void)fetchUserDetailsWithCompletion:(void(^)(NSArray <KBSectionProtocol>*userDetails, NSString *username))completionBlock;
+#endif
 
 - (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock
                                        failureBlock:(void(^)(NSString *error))failureBlock;

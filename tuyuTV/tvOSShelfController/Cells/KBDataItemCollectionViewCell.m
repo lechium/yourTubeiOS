@@ -78,6 +78,7 @@
     [self.bannerCategory.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:40].active = true;
     [self.bannerLabel.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:padding].active = true;
     [self.bannerDescription.leftAnchor constraintEqualToAnchor:self.contentView.leftAnchor constant:padding].active = true;
+    [self.bannerLabel.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:10].active = true;
     [self.bannerLabel.topAnchor constraintEqualToAnchor:self.bannerCategory.bottomAnchor constant:5].active = true;
     [self.bannerDescription.topAnchor constraintEqualToAnchor:self.bannerLabel.bottomAnchor constant:5].active = true;
     [self.imageView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:UIRectEdgeBottom];

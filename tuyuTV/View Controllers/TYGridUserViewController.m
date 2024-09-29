@@ -370,6 +370,73 @@
     [_newDict writeToFile:[appSupport stringByAppendingPathComponent:@"user2.plist"] atomically:true];
 }
 
+- (void)fetchUserDetailsWithCompletion:(void(^)(NSArray *userDetails))completionBlock {
+    NSMutableArray *finishedArray = [NSMutableArray new];
+    NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];
+    NSString *channelID = userDetails[@"channelID"];
+    
+    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(KBYTChannel *channel) {
+        KBSection *section = [KBSection new];
+        section.title = @"Channels";
+        section.size = @"640x480";
+        section.type = @"banner";
+        section.autoScroll = false;
+        section.infinite = false;
+        section.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
+        section.content = channel.videos;
+        section.channel = channel;
+        [finishedArray addObject:section];
+        
+    } failureBlock:^(NSString *error) {
+        DLog(@"error getting your channel videos: %@", error);
+    }];
+    
+    NSArray <KBYTSearchResult *> *playlists = userDetails[@"results"];
+    [playlists enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        KBSection *playlistSection = [obj sectionRepresentation];
+        [finishedArray addObject:playlistSection];
+    }];
+    
+    NSArray <KBCollectionItemProtocol> *channels = userDetails[@"channels"];
+    if (channels.count > 0){
+        KBSection *channelsSection = [KBSection new];
+        channelsSection.title = @"Channels";
+        channelsSection.size = @"320x240";
+        channelsSection.type = @"standard";
+        channelsSection.autoScroll = false;
+        channelsSection.infinite = false;
+        channelsSection.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
+        channelsSection.content = channels;
+        [finishedArray addObject:channelsSection];
+    }
+    
+    NSArray <KBCollectionItemProtocol> *channelHistoryItems = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
+    if (channelHistoryItems.count > 0) {
+        KBSection *channelHistory = [KBSection new];
+        channelHistory.title = @"Channels";
+        channelHistory.size = @"320x240";
+        channelHistory.type = @"standard";
+        channelHistory.autoScroll = false;
+        channelHistory.infinite = false;
+        channelHistory.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
+        channelHistory.content = channelHistoryItems;
+        [finishedArray addObject:channelHistory];
+    }
+    
+    NSArray <KBCollectionItemProtocol> *videoHistoryItems = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
+    if (videoHistoryItems.count > 0) {
+        KBSection *videoHistory = [KBSection new];
+        videoHistory.title = @"Channels";
+        videoHistory.size = @"320x240";
+        videoHistory.type = @"standard";
+        videoHistory.autoScroll = false;
+        videoHistory.infinite = false;
+        videoHistory.sectionResultType = kYTSearchResultTypeChannelList; //there it is!
+        videoHistory.content = videoHistoryItems;
+        [finishedArray addObject:videoHistory];
+    }
+}
+
 - (void)fetchUserDetailsWithCompletionBlock:(void(^)(NSDictionary *finishedDetails))completionBlock {
     NSMutableDictionary *playlists = [NSMutableDictionary new];
     NSDictionary *userDetails = [[KBYourTube sharedInstance] userDetails];

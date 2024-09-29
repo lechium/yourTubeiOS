@@ -406,7 +406,7 @@
         [cell.bannerDescription shadowify];
         NSString *banner = [currentItem.banner stringByReplacingOccurrencesOfString:@"http://" withString:@"https://"];
         if ([KBShelfViewController useRoundedEdges]) {
-            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:banner] placeholderImage:nil options:SDWebImageAllowInvalidSSLCertificates | SDWebImageAvoidAutoSetImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:banner] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates | SDWebImageAvoidAutoSetImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
                 if (!CGSizeEqualToSize(currentSize, image.size)) {
                     image = [image scaledImagedToSize:currentSize];
                 }
@@ -415,7 +415,15 @@
                 cell.imageView.image = rounded;
             }];
         } else {
-            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:banner] placeholderImage:nil options:SDWebImageAllowInvalidSSLCertificates];
+            //[cell.imageView sd_setImageWithURL:[NSURL URLWithString:banner] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates];
+            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:banner] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+                if (error) {
+                    //DLog(@"an error occured set og image path: %@", error);
+                    if ([currentItem respondsToSelector:@selector(originalImagePath)]){
+                        [cell.imageView sd_setImageWithURL:[NSURL URLWithString:[currentItem valueForKey:@"originalImagePath"]] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates];
+                    }
+                }
+            }];
         }
         
     } else {
@@ -433,7 +441,15 @@
                 cell.imageView.image = [image sd_roundedCornerImageWithRadius:20.0 corners:UIRectCornerAllCorners borderWidth:0 borderColor:nil];
             }];
         } else {
-            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:icon] placeholderImage:nil options:SDWebImageAllowInvalidSSLCertificates];
+            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:icon] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+                if (error) {
+                    //DLog(@"an error occured set og image path: %@", error);
+                    if ([currentItem respondsToSelector:@selector(originalImagePath)]){
+                        [cell.imageView sd_setImageWithURL:[NSURL URLWithString:[currentItem valueForKey:@"originalImagePath"]] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates];
+                    }
+                }
+            }];
+            //[cell.imageView sd_setImageWithURL:[NSURL URLWithString:icon] placeholderImage:self.placeholderImage options:SDWebImageAllowInvalidSSLCertificates];
         }
     }
     

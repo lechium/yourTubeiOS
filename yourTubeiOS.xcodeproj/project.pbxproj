@@ -104,6 +104,9 @@
 		32D6A63B285695CC006BF25C /* KBTextPresentationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A616285695CC006BF25C /* KBTextPresentationViewController.m */; };
 		32D6A63D285695CC006BF25C /* NSString+Truncate.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A61C285695CC006BF25C /* NSString+Truncate.m */; };
 		32D6A63E285695CC006BF25C /* KBMoreButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A61D285695CC006BF25C /* KBMoreButton.m */; };
+		4B379BBF2CA8B78500453DBC /* TYTVHistoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 899877AE1CEA43DE006A639E /* TYTVHistoryManager.m */; };
+		4B379BC22CA8EA6100453DBC /* TYBaseShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BC12CA8EA6100453DBC /* TYBaseShelfViewController.m */; };
+		4B379BC52CA8EEF900453DBC /* TYUserShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BC42CA8EEF900453DBC /* TYUserShelfViewController.m */; };
 		4BBC78FA2C9535C7005EB5D4 /* KBDataItemCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */; };
 		4BBC78FB2C9535C8005EB5D4 /* KBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D22C9535C6005EB5D4 /* KBTableViewCell.m */; };
 		4BBC78FC2C9535C8005EB5D4 /* KBModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D62C9535C6005EB5D4 /* KBModelItem.m */; };
@@ -726,6 +729,10 @@
 		32D6A61E285695CC006BF25C /* NSString+Truncate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Truncate.h"; sourceTree = "<group>"; };
 		32D6A61F285695CC006BF25C /* KBPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBPlayerViewController.h; sourceTree = "<group>"; };
 		32D6A620285695CC006BF25C /* KBVideoPlaybackProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBVideoPlaybackProtocol.h; sourceTree = "<group>"; };
+		4B379BC02CA8EA6100453DBC /* TYBaseShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYBaseShelfViewController.h; sourceTree = "<group>"; };
+		4B379BC12CA8EA6100453DBC /* TYBaseShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYBaseShelfViewController.m; sourceTree = "<group>"; };
+		4B379BC32CA8EEF900453DBC /* TYUserShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYUserShelfViewController.h; sourceTree = "<group>"; };
+		4B379BC42CA8EEF900453DBC /* TYUserShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYUserShelfViewController.m; sourceTree = "<group>"; };
 		4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBDataItemCollectionViewCell.m; sourceTree = "<group>"; };
 		4BBC78D02C9535C6005EB5D4 /* KBTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBTableViewCell.h; sourceTree = "<group>"; };
 		4BBC78D12C9535C6005EB5D4 /* KBDataItemCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBDataItemCollectionViewCell.h; sourceTree = "<group>"; };
@@ -1265,6 +1272,10 @@
 				89EEC1021C9214B0006B1944 /* YTTVPlaylistViewController.m */,
 				4BBC7A842CA01335005EB5D4 /* TYHomeShelfViewController.h */,
 				4BBC7A852CA01335005EB5D4 /* TYHomeShelfViewController.m */,
+				4B379BC32CA8EEF900453DBC /* TYUserShelfViewController.h */,
+				4B379BC42CA8EEF900453DBC /* TYUserShelfViewController.m */,
+				4B379BC02CA8EA6100453DBC /* TYBaseShelfViewController.h */,
+				4B379BC12CA8EA6100453DBC /* TYBaseShelfViewController.m */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -2691,6 +2702,7 @@
 				320400071E4F8E5700D3B8B0 /* Reachability.m in Sources */,
 				4BBC79BA2C9542B7005EB5D4 /* SDCallbackQueue.m in Sources */,
 				4BBC7A682C9542B9005EB5D4 /* SDDeviceHelper.m in Sources */,
+				4B379BBF2CA8B78500453DBC /* TYTVHistoryManager.m in Sources */,
 				4BBC7A442C9542B9005EB5D4 /* SDImageCacheConfig.m in Sources */,
 				4BBC79F32C9542B8005EB5D4 /* UIImage+MultiFormat.m in Sources */,
 				4BBC7A7D2C9542BA005EB5D4 /* SDAssociatedObject.m in Sources */,
@@ -2837,6 +2849,7 @@
 				898E93481C8D56BF00B34DAA /* SVRadialGradientLayer.m in Sources */,
 				4BBC79E32C9542B7005EB5D4 /* SDWebImageCacheSerializer.m in Sources */,
 				32D6A628285695CC006BF25C /* KBMenu.m in Sources */,
+				4B379BC52CA8EEF900453DBC /* TYUserShelfViewController.m in Sources */,
 				4BBC79172C954024005EB5D4 /* FPScrollingBannerCollectionFlowLayout.m in Sources */,
 				892A3F4A1CF7AD3F00EA0247 /* TYAuthUserManager.m in Sources */,
 				3246AF8A28569686008678D4 /* EXTScope.m in Sources */,
@@ -2869,6 +2882,7 @@
 				899877AF1CEA43DE006A639E /* TYTVHistoryManager.m in Sources */,
 				4BBC7A0A2C9542B8005EB5D4 /* NSButton+WebCache.m in Sources */,
 				32D6A63E285695CC006BF25C /* KBMoreButton.m in Sources */,
+				4B379BC22CA8EA6100453DBC /* TYBaseShelfViewController.m in Sources */,
 				32D6A636285695CC006BF25C /* KBAVInfoPanelDescriptionViewController.m in Sources */,
 				898E935B1C8D5B4F00B34DAA /* MarqueeLabel.m in Sources */,
 				4BBC7A282C9542B8005EB5D4 /* SDImageLoadersManager.m in Sources */,

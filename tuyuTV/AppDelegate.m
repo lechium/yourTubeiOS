@@ -25,6 +25,7 @@
 #import <unistd.h>
 #import "tvOSShelfController.h"
 #import "TYHomeShelfViewController.h"
+#import "TYUserShelfViewController.h"
 
 #define MODEL(n,p,i) [[KBModelItem alloc] initWithTitle:n imagePath:p uniqueID:i]
 #define SMODEL(n,p,i) [[KBYTSearchResult alloc] initWithTitle:n imagePath:p uniqueID:i type:kYTSearchResultTypeVideo]
@@ -641,41 +642,18 @@ void UncaughtExceptionHandler(NSException *exception) {
     if ([kbyt isSignedIn]) {
         //DLog(@"%@", [TYAuthUserManager suastring]);
         [[TYAuthUserManager sharedInstance] checkAndSetCredential];
-        if ([kbyt loadUserDetailsFromCache]) {
-            [kbyt setUserDetails:kbyt.userDetails];
-            TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:kbyt.userDetails];
-            uvc.title = kbyt.userDetails[@"userName"];
-            if ([[kbyt.userDetails allKeys]containsObject:@"altUserName"]) {
-                uvc.title = kbyt.userDetails[@"altUserName"];
-            }
-            [viewControllers insertObject:uvc atIndex:1];
-            self.tabBar.viewControllers = viewControllers;
+        [kbyt fetchUserDetailsWithCompletion:^(NSArray<KBSectionProtocol> *userDetails, NSString *userName) {
             
-            //still want to fetch fresh after this..
-            [kbyt getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
-                [kbyt setUserDetails:outputResults];
-                [uvc updateUserData:outputResults];
-            } failureBlock:^(NSString *error) {
-                
-            }];
-        } else {
-            [kbyt getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
-                
-                //NSLog(@"userdeets : %@", outputResults);
-                [kbyt setUserDetails:outputResults];
-                TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
-                uvc.title = outputResults[@"userName"];
-                if ([[outputResults allKeys]containsObject:@"altUserName"]) {
-                    uvc.title = outputResults[@"altUserName"];
-                }
-                [viewControllers insertObject:uvc atIndex:1];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                TYUserShelfViewController *shelfViewController = [[TYUserShelfViewController alloc] initWithSections:userDetails];
+                shelfViewController.useRoundedEdges = false;
+                shelfViewController.placeholderImage = [[UIImage imageNamed:@"YTPlaceholder.png"] roundedBorderImage:20.0 borderColor:nil borderWidth:0];
+                //shelfViewController.sections = [self items];//[self loadData];
+                shelfViewController.title = userName;
+                [viewControllers insertObject:shelfViewController atIndex:1];
                 self.tabBar.viewControllers = viewControllers;
-                
-                
-            } failureBlock:^(NSString *error) {
-                //
-            }];
-        }
+            });
+        }];
         
     }
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"MobileMode"]) {

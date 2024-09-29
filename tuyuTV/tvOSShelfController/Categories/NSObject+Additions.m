@@ -376,7 +376,11 @@
                 //TLog(@"processing: %@ for %@", obj, [self valueForKey:@"className"]);
                 __block NSMutableArray *_newArray = [NSMutableArray new]; //new array will hold the dictionary reps of each item inside said array.
                 [val enumerateObjectsUsingBlock:^(id  _Nonnull arrayObj, NSUInteger arrayIdx, BOOL * _Nonnull arrayStop) {
-                    [_newArray addObject:[arrayObj dictionaryRepresentation]]; //call ourselves again, but with the current subarray object.
+                    if ([arrayObj isKindOfClass:NSDictionary.class]){
+                        [_newArray addObject:arrayObj];
+                    } else {
+                        [_newArray addObject:[arrayObj dictionaryRepresentation]]; //call ourselves again, but with the current subarray object.
+                    }
                 }];
                 [dict setValue:_newArray forKey:obj];
             } else if ([val isKindOfClass:NSDictionary.class]) {

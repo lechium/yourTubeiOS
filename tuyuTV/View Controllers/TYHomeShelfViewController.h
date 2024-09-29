@@ -6,15 +6,14 @@
 //
 
 #import "KBShelfViewController.h"
+#import "TYBaseShelfViewController.h"
 #import "KBSection.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TYHomeShelfViewController : KBShelfViewController
+@interface TYHomeShelfViewController : TYBaseShelfViewController
 
-- (id)initWithSections:(NSArray <KBSectionProtocol>*)sections;
-@property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
-@property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
+
 @end
 
 NS_ASSUME_NONNULL_END
