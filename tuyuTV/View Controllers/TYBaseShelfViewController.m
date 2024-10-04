@@ -8,11 +8,13 @@
 #import "TYBaseShelfViewController.h"
 #import "SVProgressHUD.h"
 #import "KBYTGridChannelViewController.h"
+#import "TYChannelShelfViewController.h"
 #import "YTTVPlaylistViewController.h"
 #import "KBYTQueuePlayer.h"
 #import "YTTVPlayerViewController.h"
 #import "EXTScope.h"
 #import "TYAuthUserManager.h"
+#import "KBSection.h"
 
 @interface TYBaseShelfViewController ()
 
@@ -237,11 +239,11 @@
         KBSection *currentSection = self_weak_.sections[section]; //TODO: crash proof with categories
         KBYTChannel *channel = currentSection.channel;
         //DLog(@"channel: %@", channel);
-        if (channel.continuationToken) {
+        if (currentSection.params) {
             //DLog(@"channel has continuation token: %@", channel.continuationToken);
-            if (row+1 == channel.allSectionItems.count) {
+            if (row+1 == currentSection.content.count) {
                 TLog(@"get a new page maybe?");
-                [self_weak_ getNextPage:channel inCollectionView:collectionView];
+                [self_weak_ getNextPage:currentSection inCollectionView:collectionView];
             }
         }
     };
@@ -331,7 +333,7 @@
 
 - (void)showChannel:(KBYTSearchResult *)searchResult {
     
-    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
+    TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.videoId];
     [self presentViewController:cv animated:true completion:nil];
 }
 
@@ -411,7 +413,7 @@
         TLog(@"searchResult: %@", searchResult);
         return;
     }
-    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.channelId];
+    TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.channelId];
     [self presentViewController:cv animated:true completion:nil];
 }
 
@@ -510,6 +512,14 @@
         
     }];
     [alertController addAction:featuredAction];
+    
+    UIAlertAction *goToChannel = [UIAlertAction actionWithTitle:@"Go to channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [self goToChannelOfResult:result];
+            //[[KBYourTube sharedInstance] setFeaturedResult:result];
+        });
+    }];
+    [alertController addAction:goToChannel];
     UIAlertAction *cancelAction = [UIAlertAction
                                    actionWithTitle:@"Cancel"
                                    style:UIAlertActionStyleCancel
@@ -521,9 +531,21 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)getNextPage:(KBYTChannel *)currentChannel inCollectionView:(UICollectionView *)cv {
-    TLog(@"currentChannel.continuationToken: %@ channelID: %@", currentChannel.continuationToken, currentChannel.channelID);
-    [[KBYourTube sharedInstance] getChannelVideosAlt:currentChannel.channelID continuation:currentChannel.continuationToken completionBlock:^(KBYTChannel *channel) {
+- (void)getNextPage:(KBSection *)currentSection inCollectionView:(UICollectionView *)cv {
+    NSString *ct = currentSection.continuationToken;
+    KBYTChannel *currentChannel = currentSection.channel;
+    TLog(@"currentSection.continuationToken: %@ channelID: %@", ct, currentSection.browseId);
+    [[KBYourTube sharedInstance] getSection:currentSection params:currentSection.params continuation:ct completionBlock:^(KBSection *section) {
+            currentSection.content = section.content;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [cv reloadData];//[self reloadCollectionViews];
+            });
+        
+    } failureBlock:^(NSString *error) {
+        
+    }];
+    /*
+    [[KBYourTube sharedInstance] getChannelVideosAlt:currentChannel.channelID params:nil continuation:ct completionBlock:^(KBYTChannel *channel) {
         if (channel.videos.count > 0){
             TLog(@"got more channels!");
             [currentChannel mergeChannelVideos:channel];
@@ -534,6 +556,7 @@
     } failureBlock:^(NSString *error) {
         
     }];
+     */
 }
 
 

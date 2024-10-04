@@ -17,6 +17,7 @@
 #import "UIView+RecursiveFind.h"
 #import "TYAuthUserManager.h"
 #import "KBYTGridChannelViewController.h"
+#import "TYChannelShelfViewController.h"
 
 @interface KBYTSearchResultsViewController () <UISearchBarDelegate>
 
@@ -98,7 +99,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (void)goToChannelOfResult:(KBYTSearchResult *)searchResult {
-    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.channelId];
+    TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.channelId];
+    //KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.channelId];
     [self presentViewController:cv animated:true completion:nil];
 }
 
@@ -585,7 +587,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         [self playAllSearchResults:subarray];
     } else if (searchResult.resultType ==kYTSearchResultTypeChannel) {
         
-        KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
+        TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.videoId];
         [self presentViewController:cv animated:true completion:nil];
         
     } else if (searchResult.resultType ==kYTSearchResultTypePlaylist) {

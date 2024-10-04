@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "KBProtocols.h"
+#import "KBYTChannelHeaderView.h"
 
 @class KBModelItem, KBSection;
 
@@ -33,7 +34,10 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 @property (nonatomic, strong) UITableView *tableView;
 @property (readwrite, assign) BOOL useRoundedEdges;
 @property (nonatomic, weak) UICollectionViewCell *focusedCollectionCell;
+@property (nonatomic, strong) NSLayoutConstraint *headerTopConstraint;
 
+- (NSArray *)arrayForSection:(NSInteger)section;
+- (KBYTChannelHeaderView *)headerview;
 - (void)updateAutoScroll;
 + (BOOL)useRoundedEdges;
 - (void)focusedCellIndex:(NSInteger)cellIndex inSection:(NSInteger)section inCollectionView:(UICollectionView *)collectionView;

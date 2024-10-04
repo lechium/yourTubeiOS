@@ -166,11 +166,13 @@
             playlist.owner = section.subtitle;
             playlist.videos = playlistItems;
             playlist.playlistID = section.uniqueId;
-            NSString *testOutput = [NSString stringWithFormat:@"%@_playlistSearchItems.plist", section.uniqueId];
-            NSString *outputPath = [[self appSupportFolder] stringByAppendingPathComponent:testOutput];
-            NSArray *writableArray = [playlistItems convertArrayToDictionaries];
-            DLog(@"writing to file: %@", outputPath);
-            [writableArray writeToFile:outputPath atomically:true];
+            if ([[KBYourTube sharedInstance] writeDebugJSONFiles]){
+                NSString *testOutput = [NSString stringWithFormat:@"%@_playlistSearchItems.plist", section.uniqueId];
+                NSString *outputPath = [[self appSupportFolder] stringByAppendingPathComponent:testOutput];
+                NSArray *writableArray = [playlistItems convertArrayToDictionaries];
+                DLog(@"writing to file: %@", outputPath);
+                [writableArray writeToFile:outputPath atomically:true];
+            }
             section.playlist = playlist;
             section.content = playlist.videos;
             if (completionBlock){

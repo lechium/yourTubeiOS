@@ -8,6 +8,7 @@
 
 
 #import "KBYTGridChannelViewController.h"
+#import "TYChannelShelfViewController.h"
 #import "AppDelegate.h"
 #import "KBYourTube.h"
 #import "KBYourTube+Categories.h"

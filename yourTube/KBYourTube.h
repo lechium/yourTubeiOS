@@ -179,8 +179,11 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *subtitle;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *content;
+@property (nonatomic, strong) NSString *continuationToken;
+@property (nonatomic, strong) NSString *browseId;
 
 - (void)addResult:(KBYTSearchResult *)result;
+- (void)addResults:(NSArray <KBYTSearchResult *>*)results;
 @end
 
 @interface KBYTChannel: NSObject
@@ -198,7 +201,11 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *duration; //video count
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
-@property (nonatomic, strong) NSArray <KBYTSection *> *sections;
+@property (nonatomic, strong) NSArray <KBSection *> *sections;
+@property (readwrite, assign) NSInteger activeSection; //defaults to 0
+
+- (KBSection *)sectionMatching:(KBSection *)section;
+- (BOOL)mergeSection:(KBSection *)section;
 - (NSArray <KBYTSearchResult *>*)allSectionItems;
 - (NSArray <KBYTSearchResult *>*)allSortedItems; //legacy
 - (void)mergeChannelVideos:(KBYTChannel *)channel;
@@ -241,6 +248,15 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 #import "Ono/ONOXMLDocument.h"
 
+@interface KBYTTab: NSObject
+
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *browseId;
+@property (nonatomic, strong) NSString *params;
+@property (nonatomic, strong) NSArray <KBSection *>*contents;
+- (id)initWithTabDetails:(NSDictionary *)tabDetails;
+@end
+
 @interface KBYourTube : NSObject {
     NSInteger bestTag;
 }
@@ -250,7 +266,9 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *ytkey;
 @property (nonatomic, strong) NSString *airplayIP;
 @property (nonatomic, strong) NSString *lastSearch;
-@property (nonatomic, strong) NSDictionary *userDetails; 
+@property (nonatomic, strong) NSDictionary *userDetails;
+@property (readwrite, assign) BOOL writeDebugJSONFiles;
+@property (readwrite, assign) BOOL printCurlCommands;
 
 + (NSUserDefaults *)sharedUserDefaults;
 - (void)startReachabilityMonitoring;
@@ -314,10 +332,23 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
                failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getChannelVideosAlt:(NSString *)channelID
+                     params:(NSString *)params
                continuation:(NSString *)continuationToken
             completionBlock:(void(^)(KBYTChannel *channel))completionBlock
                failureBlock:(void(^)(NSString *error))failureBlock;
 
+- (void)getSection:(KBSection *)section
+            params:(NSString *)params
+      continuation:(NSString *)continuationToken
+   completionBlock:(void(^)(KBSection *section))completionBlock
+      failureBlock:(void(^)(NSString *error))failureBlock;
+
+/*
+- (void)getChannelVideosAlt:(NSString *)channelID
+               continuation:(NSString *)continuationToken
+            completionBlock:(void(^)(KBYTChannel *channel))completionBlock
+               failureBlock:(void(^)(NSString *error))failureBlock;
+*/
 
 - (void)getVideoDetailsForSearchResults:(NSArray*)searchResults
                         completionBlock:(void(^)(NSArray* videoArray))completionBlock

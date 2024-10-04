@@ -33,6 +33,16 @@
     return self;
 }
 
++ (KBSection *)defaultSection {
+    KBSection *section = [KBSection new];
+    section.infinite = false;
+    section.autoScroll = false;
+    section.className = @"KBSection";
+    section.size = @"320x240";
+    section.type = @"standard";
+    return section;
+}
+
 - (BOOL)isLoaded {
     return self.content.count > 0;
 }
@@ -78,6 +88,15 @@
     NSMutableArray *_mutContent = [[self content] mutableCopy];
     if (!_mutContent) _mutContent = [NSMutableArray new];
     [_mutContent addObject:result];
+    self.content = _mutContent;
+}
+
+- (void)addResults:(NSArray <KBYTSearchResult *>*)results {
+    if (!results) return;
+    //NSLog(@"adding result: %@", result);
+    NSMutableArray *_mutContent = [[self content] mutableCopy];
+    if (!_mutContent) _mutContent = [NSMutableArray new];
+    [_mutContent addObjectsFromArray:results];
     self.content = _mutContent;
 }
 

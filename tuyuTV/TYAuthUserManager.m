@@ -684,10 +684,12 @@ snippet =             {
         if (completionBlock) {
             completionBlock(playlistItems, error);
         }
-        NSString *fileName = [NSString stringWithFormat:@"%@_playlistItemResponse.plist", playlistID];
-        NSString *playlistItemsResponse = [[self appSupportFolder] stringByAppendingPathComponent:fileName];
-        DLog(@"playlistItemsResponse: %@", playlistItemsResponse);
-        [jsonResponse writeToFile:playlistItemsResponse atomically:TRUE];
+        if ([[KBYourTube sharedInstance] writeDebugJSONFiles]){
+            NSString *fileName = [NSString stringWithFormat:@"%@_playlistItemResponse.plist", playlistID];
+            NSString *playlistItemsResponse = [[self appSupportFolder] stringByAppendingPathComponent:fileName];
+            DLog(@"playlistItemsResponse: %@", playlistItemsResponse);
+            [jsonResponse writeToFile:playlistItemsResponse atomically:TRUE];
+        }
         //[jsonResponse writeToFile:@"/var/mobile/Library/Preferences/playlistItemsResponse.plist" atomically:TRUE];
     }];
 }

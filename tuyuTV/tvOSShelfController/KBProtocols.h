@@ -19,7 +19,6 @@ typedef enum {
 - (NSString *)uniqueID;
 - (NSString *)imagePath;
 @optional
-@optional
 - (NSString *)duration;
 - (NSString *)author;
 - (NSString *)banner;
@@ -38,7 +37,10 @@ typedef enum {
 - (BOOL)autoScroll;
 - (NSArray <KBCollectionItemProtocol>*)content;
 - (NSString *)size;
-
+@optional
+- (NSString *)browseId;
+- (NSString *)continuationToken;
+- (NSString *)params;
 @end
 
 NS_ASSUME_NONNULL_END

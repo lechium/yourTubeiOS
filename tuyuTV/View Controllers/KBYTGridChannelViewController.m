@@ -126,7 +126,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         [SVProgressHUD show];
     }
     TLog(@"channelID: -%@-", self.channelID);
-    [[KBYourTube sharedInstance] getChannelVideosAlt:self.channelID continuation:nil completionBlock:^(KBYTChannel *channel) {
+    [[KBYourTube sharedInstance] getChannelVideosAlt:self.channelID params:nil continuation:nil completionBlock:^(KBYTChannel *channel) {
         
         TLog(@"channelData: %@", channel);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -139,7 +139,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
             self.headerview.authorLabel.text = channel.title;
             _backingSectionLabels = [NSMutableArray new];
             __block NSMutableDictionary *plDict = [NSMutableDictionary new];
-            [[channel sections] enumerateObjectsUsingBlock:^(KBYTSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [[channel sections] enumerateObjectsUsingBlock:^(KBSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 if (obj.title == nil){
                     obj.title = [NSString stringWithFormat:@"%lu", idx];
                 }

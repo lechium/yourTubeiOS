@@ -12,6 +12,7 @@
 #import "YTTVPlaylistViewController.h"
 #import "YTTVPlayerViewController.h"
 #import "UIColor+Additions.h"
+#import "TYChannelShelfViewController.h"
 /*
  
  Tag offsets are used for both the collection views and their header views to be able to query them easily
@@ -461,7 +462,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
         TLog(@"searchResult: %@", searchResult);
         return;
     }
-    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.channelId];
+    TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.channelId];
     [self presentViewController:cv animated:true completion:nil];
 }
 
@@ -821,7 +822,7 @@ static NSString * const standardReuseIdentifier = @"StandardCell";
 
 - (void)showChannel:(KBYTSearchResult *)searchResult {
     
-    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
+    TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.videoId];
     [self presentViewController:cv animated:true completion:nil];
 }
 

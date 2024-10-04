@@ -32,9 +32,14 @@
 @property (nonatomic, strong) NSArray *cellArray;
 @property ScrollDirection scrollDirection;
 @property NSDate *randomDate;
+@property (nonatomic, strong) NSLayoutConstraint *headerHeightConstraint;
 @end
 
 @implementation KBShelfViewController
+
+- (KBYTChannelHeaderView *)headerview {
+    return nil; //override in subclass
+}
 
 - (BOOL)firstLoad {
     return _firstAppearance;
@@ -66,6 +71,35 @@
     _cells = [NSMutableArray new];
 }
 
+
+- (void)expandHeaderAnimated:(BOOL)animated {
+    if (animated) {
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.headerTopConstraint.constant = 0;
+            self.headerview.alpha = 1.0;
+            [self.view layoutIfNeeded];
+        } completion:nil];
+    } else {
+        self.headerTopConstraint.constant = 0;
+        self.headerview.alpha = 1.0;
+        [self.view layoutIfNeeded];
+    }
+}
+
+- (void)collapseHeaderAnimated:(BOOL)animated {
+    if (animated) {
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.headerTopConstraint.constant = -175;
+            self.headerview.alpha = 0;
+            [self.view layoutIfNeeded];
+        } completion:nil];
+    } else {
+        self.headerview.alpha = 0;
+        self.headerTopConstraint.constant = -175;
+        [self.view layoutIfNeeded];
+    }
+}
+
 - (void)viewDidLoad {
     _firstAppearance =  true;
     [super viewDidLoad];
@@ -75,7 +109,19 @@
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self.tableView autoPinEdgesToSuperviewEdges];
+    KBYTChannelHeaderView *headerView = [self headerview];
+    if (headerView != nil) {
+        [self.view addSubview:headerView];
+        self.headerTopConstraint = [headerView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+        [headerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+        [headerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
+        [headerView setupView];
+        self.headerHeightConstraint = [headerView autoSetDimension:ALDimensionHeight toSize:175];
+        [self.tableView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
+        [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:headerView withOffset:150];
+    } else {
+        [self.tableView autoPinEdgesToSuperviewEdges];
+    }
     UIEdgeInsets edgeInsets = self.tableView.contentInset;
     edgeInsets.top = -10;
     self.tableView.insetsContentViewsToSafeArea = false;
@@ -368,6 +414,13 @@
             //DLog(@"changed from section: %lu to %lu", self.selectedSection, sv.section);
         }
         self.selectedSection = sv.section;
+        if ([self headerview]) {
+            if (sv.section == 0) {
+                [self expandHeaderAnimated:true];
+            } else if (sv.section > 0){
+                [self collapseHeaderAnimated:true];
+            }
+        }
         if ([cell isKindOfClass:UICollectionViewCell.class]) {
             NSInteger itemIndex = [sv indexPathForCell:cell].row;
             self.focusedCollectionCell = cell;

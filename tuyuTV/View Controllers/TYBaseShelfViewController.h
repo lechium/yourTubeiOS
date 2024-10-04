@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showChannel:(KBYTSearchResult *)searchResult;
 - (void)showPlaylist:(NSString *)videoID named:(NSString *)name;
 - (void)goToChannelOfResult:(KBYTSearchResult *)searchResult;
-- (void)getNextPage:(KBYTChannel *)currentChannel inCollectionView:(UICollectionView *)cv;
+- (void)getNextPage:(KBSection *)currentSection inCollectionView:(UICollectionView *)cv;
 - (void)handleSelectVideo:(KBYTSearchResult *)video inSection:(NSInteger)section atIndex:(NSInteger)row;
 - (void)playAllSearchResults:(NSArray *)searchResults;
 - (NSString *)cacheFile;

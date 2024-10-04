@@ -8,6 +8,7 @@
 #import "TYManageFeaturedViewController.h"
 #import "KBYourTube.h"
 #import "KBYTGridChannelViewController.h"
+#import "TYChannelShelfViewController.h"
 
 @interface TYManageFeaturedViewController ()
 
@@ -89,7 +90,7 @@
         [self showRestoreDefaultWarningAlert];
     } else {
         MetaDataAsset *searchResult = self.items[indexPath.row];
-        KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.uniqueID];
+        TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.uniqueID];
         [self presentViewController:cv animated:true completion:nil];
     }
 }

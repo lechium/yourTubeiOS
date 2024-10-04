@@ -31,13 +31,18 @@ typedef enum {
 @property (nonatomic, strong) NSString *imagePath;
 @property (nonatomic, strong) KBYTChannel *channel; //optional
 @property (nonatomic, strong) KBYTPlaylist *playlist;//optional
+@property (nonatomic, strong) NSString *browseId; //optional
+@property (nonatomic, strong) NSString *continuationToken;
+@property (nonatomic, strong) NSString *params;
 
++ (KBSection *)defaultSection;
 - (BOOL)isLoaded;
 - (CGFloat)imageWidth;
 - (CGFloat)imageHeight;
 - (CGSize)imageSize;
 - (SectionType)sectionType;
 - (void)addResult:(KBYTSearchResult *)result;
+- (void)addResults:(NSArray <KBYTSearchResult *>*)results;
 - (instancetype)initWithSectionDictionary:(NSDictionary *)dict;
 
 @end

@@ -12,7 +12,7 @@
 #import "SVProgressHUD.h"
 #import "SVIndefiniteAnimatedView.h"
 #import "SVRadialGradientLayer.h"
-#import "../UIColor+Additions.h"
+#import "UIColor+Additions.h"
 
 NSString * const SVProgressHUDDidReceiveTouchEventNotification = @"SVProgressHUDDidReceiveTouchEventNotification";
 NSString * const SVProgressHUDDidTouchDownInsideNotification = @"SVProgressHUDDidTouchDownInsideNotification";

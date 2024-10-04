@@ -94,7 +94,7 @@
 
 - (void)getNextPage:(KBYTChannel *)currentChannel inCollectionView:(UICollectionView *)cv {
     TLog(@"currentChannel.continuationToken: %@", currentChannel.continuationToken);
-    [[KBYourTube sharedInstance] getChannelVideosAlt:currentChannel.channelID continuation:currentChannel.continuationToken completionBlock:^(KBYTChannel *channel) {
+    [[KBYourTube sharedInstance] getChannelVideosAlt:currentChannel.channelID params:nil continuation:currentChannel.continuationToken completionBlock:^(KBYTChannel *channel) {
         if (channel.videos.count > 0){
             TLog(@"got more channels!");
             [currentChannel mergeChannelVideos:channel];

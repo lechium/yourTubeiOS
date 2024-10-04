@@ -107,6 +107,16 @@
 		4B379BBF2CA8B78500453DBC /* TYTVHistoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 899877AE1CEA43DE006A639E /* TYTVHistoryManager.m */; };
 		4B379BC22CA8EA6100453DBC /* TYBaseShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BC12CA8EA6100453DBC /* TYBaseShelfViewController.m */; };
 		4B379BC52CA8EEF900453DBC /* TYUserShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BC42CA8EEF900453DBC /* TYUserShelfViewController.m */; };
+		4B379BCD2CAB766C00453DBC /* UIColor+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BC82CAB766B00453DBC /* UIColor+Additions.m */; };
+		4B379BCE2CAB766C00453DBC /* UIColor+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BC82CAB766B00453DBC /* UIColor+Additions.m */; };
+		4B379BCF2CAB766C00453DBC /* UIColor+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BC82CAB766B00453DBC /* UIColor+Additions.m */; };
+		4B379BD02CAB766C00453DBC /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCB2CAB766B00453DBC /* UIImage+Scale.m */; };
+		4B379BD12CAB766C00453DBC /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCB2CAB766B00453DBC /* UIImage+Scale.m */; };
+		4B379BD22CAB766C00453DBC /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCB2CAB766B00453DBC /* UIImage+Scale.m */; };
+		4B379BD32CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */; };
+		4B379BD42CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */; };
+		4B379BD52CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */; };
+		4B9C254B2CADFD930037AB16 /* TYChannelShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */; };
 		4BBC78FA2C9535C7005EB5D4 /* KBDataItemCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */; };
 		4BBC78FB2C9535C8005EB5D4 /* KBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D22C9535C6005EB5D4 /* KBTableViewCell.m */; };
 		4BBC78FC2C9535C8005EB5D4 /* KBModelItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D62C9535C6005EB5D4 /* KBModelItem.m */; };
@@ -429,8 +439,6 @@
 		898E930B1C8D566200B34DAA /* KBYourTube+Categories.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67AD1C6A424F00AE33FA /* KBYourTube+Categories.m */; };
 		898E930F1C8D568B00B34DAA /* APDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */; };
 		898E93101C8D569100B34DAA /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA501C6E731D00FB6D67 /* Reachability.m */; };
-		898E93111C8D569600B34DAA /* UIColor+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A0A1C58AAB000F50BC2 /* UIColor+Additions.m */; };
-		898E93121C8D569800B34DAA /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A0F1C58B03000F50BC2 /* UIImage+Scale.m */; };
 		898E93131C8D569C00B34DAA /* URLCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BCF1C499EF000B8D1C4 /* URLCredential.m */; };
 		898E93141C8D569E00B34DAA /* URLDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD11C499EF000B8D1C4 /* URLDownloader.m */; };
 		898E93151C8D56A700B34DAA /* 360.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A311C88A90000E1987E /* 360.png */; };
@@ -540,8 +548,6 @@
 		89A83AC01C88AAF200E1987E /* KBYTSearchItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 895F67851C62B9BD00AE33FA /* KBYTSearchItemViewController.m */; };
 		89A83AC11C88AAF700E1987E /* APDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BEA1C499F7000B8D1C4 /* APDeviceController.m */; };
 		89A83AC21C88AAFC00E1987E /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA501C6E731D00FB6D67 /* Reachability.m */; };
-		89A83AC31C88AB0000E1987E /* UIColor+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A0A1C58AAB000F50BC2 /* UIColor+Additions.m */; };
-		89A83AC41C88AB0000E1987E /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A0F1C58B03000F50BC2 /* UIImage+Scale.m */; };
 		89A83AC51C88AB0800E1987E /* URLCredential.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BCF1C499EF000B8D1C4 /* URLCredential.m */; };
 		89A83AC61C88AB0800E1987E /* URLDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD11C499EF000B8D1C4 /* URLDownloader.m */; };
 		89A83AC81C88AB2E00E1987E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A83AC71C88AB2E00E1987E /* UIKit.framework */; };
@@ -733,6 +739,14 @@
 		4B379BC12CA8EA6100453DBC /* TYBaseShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYBaseShelfViewController.m; sourceTree = "<group>"; };
 		4B379BC32CA8EEF900453DBC /* TYUserShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYUserShelfViewController.h; sourceTree = "<group>"; };
 		4B379BC42CA8EEF900453DBC /* TYUserShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYUserShelfViewController.m; sourceTree = "<group>"; };
+		4B379BC72CAB766B00453DBC /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Scale.h"; sourceTree = "<group>"; };
+		4B379BC82CAB766B00453DBC /* UIColor+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Additions.m"; sourceTree = "<group>"; };
+		4B379BC92CAB766B00453DBC /* NSURLRequest+cURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLRequest+cURL.h"; sourceTree = "<group>"; };
+		4B379BCA2CAB766B00453DBC /* UIColor+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Additions.h"; sourceTree = "<group>"; };
+		4B379BCB2CAB766B00453DBC /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Scale.m"; sourceTree = "<group>"; };
+		4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLRequest+cURL.m"; sourceTree = "<group>"; };
+		4B9C25492CADFD930037AB16 /* TYChannelShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYChannelShelfViewController.h; sourceTree = "<group>"; };
+		4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYChannelShelfViewController.m; sourceTree = "<group>"; };
 		4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBDataItemCollectionViewCell.m; sourceTree = "<group>"; };
 		4BBC78D02C9535C6005EB5D4 /* KBTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBTableViewCell.h; sourceTree = "<group>"; };
 		4BBC78D12C9535C6005EB5D4 /* KBDataItemCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBDataItemCollectionViewCell.h; sourceTree = "<group>"; };
@@ -965,10 +979,6 @@
 		895F67AF1C6A427500AE33FA /* KBYourTube+Categories.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "KBYourTube+Categories.h"; path = "yourTube/KBYourTube+Categories.h"; sourceTree = "<group>"; };
 		897B49C21C58A4F600F50BC2 /* KBYTDownloadsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KBYTDownloadsTableViewController.h; path = yourTube/KBYTDownloadsTableViewController.h; sourceTree = "<group>"; };
 		897B49C31C58A4F600F50BC2 /* KBYTDownloadsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KBYTDownloadsTableViewController.m; path = yourTube/KBYTDownloadsTableViewController.m; sourceTree = "<group>"; };
-		897B4A091C58AAB000F50BC2 /* UIColor+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIColor+Additions.h"; path = "yourTube/UIColor+Additions.h"; sourceTree = "<group>"; };
-		897B4A0A1C58AAB000F50BC2 /* UIColor+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+Additions.m"; path = "yourTube/UIColor+Additions.m"; sourceTree = "<group>"; };
-		897B4A0E1C58B03000F50BC2 /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+Scale.h"; path = "yourTube/UIImage+Scale.h"; sourceTree = "<group>"; };
-		897B4A0F1C58B03000F50BC2 /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Scale.m"; path = "yourTube/UIImage+Scale.m"; sourceTree = "<group>"; };
 		897B4A231C5E8B3D00F50BC2 /* APAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APAttribute.h; sourceTree = "<group>"; };
 		897B4A241C5E8B3D00F50BC2 /* APAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APAttribute.m; sourceTree = "<group>"; };
 		897B4A251C5E8B3D00F50BC2 /* APDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APDocument.h; sourceTree = "<group>"; };
@@ -1276,6 +1286,8 @@
 				4B379BC42CA8EEF900453DBC /* TYUserShelfViewController.m */,
 				4B379BC02CA8EA6100453DBC /* TYBaseShelfViewController.h */,
 				4B379BC12CA8EA6100453DBC /* TYBaseShelfViewController.m */,
+				4B9C25492CADFD930037AB16 /* TYChannelShelfViewController.h */,
+				4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -1495,6 +1507,20 @@
 				32D6A61E285695CC006BF25C /* NSString+Truncate.h */,
 			);
 			path = KBMoreButton;
+			sourceTree = "<group>";
+		};
+		4B379BC62CAB766B00453DBC /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				4B379BC92CAB766B00453DBC /* NSURLRequest+cURL.h */,
+				4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */,
+				4B379BCA2CAB766B00453DBC /* UIColor+Additions.h */,
+				4B379BC82CAB766B00453DBC /* UIColor+Additions.m */,
+				4B379BC72CAB766B00453DBC /* UIImage+Scale.h */,
+				4B379BCB2CAB766B00453DBC /* UIImage+Scale.m */,
+			);
+			name = Categories;
+			path = yourTube/Categories;
 			sourceTree = "<group>";
 		};
 		4BBC78CD2C9535C5005EB5D4 /* tvOSShelfController */ = {
@@ -1835,17 +1861,6 @@
 			);
 			name = Animations;
 			path = yourTube/Animations;
-			sourceTree = "<group>";
-		};
-		897B4A121C5974EE00F50BC2 /* Categories */ = {
-			isa = PBXGroup;
-			children = (
-				897B4A091C58AAB000F50BC2 /* UIColor+Additions.h */,
-				897B4A0A1C58AAB000F50BC2 /* UIColor+Additions.m */,
-				897B4A0E1C58B03000F50BC2 /* UIImage+Scale.h */,
-				897B4A0F1C58B03000F50BC2 /* UIImage+Scale.m */,
-			);
-			name = Categories;
 			sourceTree = "<group>";
 		};
 		897B4A131C5974F600F50BC2 /* Bonjour */ = {
@@ -2301,6 +2316,7 @@
 		89E06BCC1C499ED400B8D1C4 /* yourTube */ = {
 			isa = PBXGroup;
 			children = (
+				4B379BC62CAB766B00453DBC /* Categories */,
 				4BBC791A2C9542B1005EB5D4 /* SDWebImage */,
 				892A2C381C6A8400003724D6 /* yourTubeApplication.h */,
 				89E06BE61C499F2100B8D1C4 /* yourTubeApplication.m */,
@@ -2319,7 +2335,6 @@
 				897B4A161C59751D00F50BC2 /* View Controllers */,
 				897B4A131C5974F600F50BC2 /* Bonjour */,
 				8912FA4E1C6E731D00FB6D67 /* Reachability */,
-				897B4A121C5974EE00F50BC2 /* Categories */,
 				89E06BCD1C499EF000B8D1C4 /* Download */,
 				89A83A301C88A90000E1987E /* Resources */,
 				89E06BED1C49F59100B8D1C4 /* theos */,
@@ -2627,6 +2642,7 @@
 				4BBC7A1A2C9542B8005EB5D4 /* SDWebImageDownloaderConfig.m in Sources */,
 				4BBC79C92C9542B7005EB5D4 /* UIImageView+HighlightedWebCache.m in Sources */,
 				4BBC79E12C9542B7005EB5D4 /* SDImageLoader.m in Sources */,
+				4B379BCF2CAB766C00453DBC /* UIColor+Additions.m in Sources */,
 				4BBC79C02C9542B7005EB5D4 /* SDWebImageDownloaderDecryptor.m in Sources */,
 				4BBC7A6B2C9542B9005EB5D4 /* SDWeakProxy.m in Sources */,
 				4BBC7A622C9542B9005EB5D4 /* SDImageCachesManagerOperation.m in Sources */,
@@ -2651,6 +2667,7 @@
 				4BBC79ED2C9542B7005EB5D4 /* UIImage+GIF.m in Sources */,
 				4BBC7A472C9542B9005EB5D4 /* SDWebImageCacheKeyFilter.m in Sources */,
 				4BBC79E72C9542B7005EB5D4 /* SDWebImageIndicator.m in Sources */,
+				4B379BD52CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */,
 				3258A29C2853D277009BBDB3 /* AFOAuthCredential.m in Sources */,
 				4BBC7A382C9542B9005EB5D4 /* UIImageView+WebCache.m in Sources */,
 				4BBC7A7A2C9542BA005EB5D4 /* SDAsyncBlockOperation.m in Sources */,
@@ -2678,6 +2695,7 @@
 				4BBC7A7E2C968156005EB5D4 /* KBDataSource.m in Sources */,
 				4BBC7A742C9542B9005EB5D4 /* NSBezierPath+SDRoundedCorners.m in Sources */,
 				4BBC7A2C2C9542B8005EB5D4 /* SDImageCachesManager.m in Sources */,
+				4B379BD22CAB766C00453DBC /* UIImage+Scale.m in Sources */,
 				4BBC79CC2C9542B7005EB5D4 /* SDAnimatedImage.m in Sources */,
 				4BBC79FF2C9542B8005EB5D4 /* SDWebImageDownloaderResponseModifier.m in Sources */,
 				4BBC7A022C9542B8005EB5D4 /* SDWebImageError.m in Sources */,
@@ -2761,6 +2779,7 @@
 				899876621CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,
 				32D6A62E285695CC006BF25C /* KBAVMetaData.m in Sources */,
 				4BBC79FB2C9542B8005EB5D4 /* SDImageAPNGCoder.m in Sources */,
+				4B379BCE2CAB766C00453DBC /* UIColor+Additions.m in Sources */,
 				898E93061C8D565300B34DAA /* KBYTDownloadOperation.m in Sources */,
 				4BBC7A192C9542B8005EB5D4 /* SDWebImageDownloaderConfig.m in Sources */,
 				8998766F1CDEA423006A639E /* UIView+RecursiveFind.m in Sources */,
@@ -2780,7 +2799,6 @@
 				4BBC7A732C9542B9005EB5D4 /* NSBezierPath+SDRoundedCorners.m in Sources */,
 				322215FE2852799900F3EE8A /* KBAirDropHelper.m in Sources */,
 				4BBC7A492C9542B9005EB5D4 /* SDWebImageDefine.m in Sources */,
-				898E93111C8D569600B34DAA /* UIColor+Additions.m in Sources */,
 				324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */,
 				4BBC7A1C2C9542B8005EB5D4 /* SDImageCache.m in Sources */,
 				32D6A63B285695CC006BF25C /* KBTextPresentationViewController.m in Sources */,
@@ -2816,7 +2834,6 @@
 				4BBC7A402C9542B9005EB5D4 /* UIImage+MemoryCacheCost.m in Sources */,
 				4BBC79FE2C9542B8005EB5D4 /* SDWebImageDownloaderResponseModifier.m in Sources */,
 				32D2A1491F424805006F24B3 /* AFOAuth2Manager.m in Sources */,
-				898E93121C8D569800B34DAA /* UIImage+Scale.m in Sources */,
 				4BBC79B02C9542B7005EB5D4 /* NSImage+Compatibility.m in Sources */,
 				4BBC7A5B2C9542B9005EB5D4 /* SDWebImageDownloaderRequestModifier.m in Sources */,
 				89EEC1031C9214B0006B1944 /* YTTVPlaylistViewController.m in Sources */,
@@ -2829,6 +2846,7 @@
 				32D2A1451F424805006F24B3 /* AFURLSessionManager.m in Sources */,
 				898E935A1C8D56D800B34DAA /* RNFrostedSidebar.m in Sources */,
 				4BBC79192C954024005EB5D4 /* FPScrollingBanner.m in Sources */,
+				4B9C254B2CADFD930037AB16 /* TYChannelShelfViewController.m in Sources */,
 				4BBC78FC2C9535C8005EB5D4 /* KBModelItem.m in Sources */,
 				899877A91CE99CB3006A639E /* TYGridUserViewController.m in Sources */,
 				4BBC7A0D2C9542B8005EB5D4 /* SDImageIOCoder.m in Sources */,
@@ -2837,6 +2855,7 @@
 				4BBC7A2B2C9542B8005EB5D4 /* SDImageCachesManager.m in Sources */,
 				4BBC79B62C9542B7005EB5D4 /* SDImageCoder.m in Sources */,
 				32D6A635285695CC006BF25C /* KBAVInfoPanelSubtitleCollectionViewController.m in Sources */,
+				4B379BD42CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */,
 				32D6A633285695CC006BF25C /* KBAVInfoPanelContentViewController.m in Sources */,
 				4BBC7A642C9542B9005EB5D4 /* SDImageAssetManager.m in Sources */,
 				4BBC79052C9535C8005EB5D4 /* UIView+RecursiveFind.m in Sources */,
@@ -2895,6 +2914,7 @@
 				4BBC7A072C9542B8005EB5D4 /* SDImageCoderHelper.m in Sources */,
 				32D6A62A285695CC006BF25C /* KBMenuElement.m in Sources */,
 				4BBC79042C9535C8005EB5D4 /* NSURLRequest+IgnoreSSL.m in Sources */,
+				4B379BD12CAB766C00453DBC /* UIImage+Scale.m in Sources */,
 				4BBC79B92C9542B7005EB5D4 /* SDCallbackQueue.m in Sources */,
 				4BBC79DD2C9542B7005EB5D4 /* SDWebImageDownloader.m in Sources */,
 				32D6A639285695CC006BF25C /* UIImage+Template.m in Sources */,
@@ -2925,6 +2945,7 @@
 				89A83ABD1C88AAF200E1987E /* KBYTDownloadsTableViewController.m in Sources */,
 				32D2A1441F424805006F24B3 /* AFURLSessionManager.m in Sources */,
 				89A83ABC1C88AAF200E1987E /* KBYTDownloadCell.m in Sources */,
+				4B379BD32CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */,
 				4BBC79AF2C9542B7005EB5D4 /* NSImage+Compatibility.m in Sources */,
 				4BBC7A0F2C9542B8005EB5D4 /* SDDiskCache.m in Sources */,
 				89A83A991C88A93B00E1987E /* SVRadialGradientLayer.m in Sources */,
@@ -2943,16 +2964,15 @@
 				4BBC7A332C9542B9005EB5D4 /* NSData+ImageContentType.m in Sources */,
 				4BBC7A452C9542B9005EB5D4 /* SDWebImageCacheKeyFilter.m in Sources */,
 				4BBC79EE2C9542B7005EB5D4 /* SDImageCodersManager.m in Sources */,
+				4B379BD02CAB766C00453DBC /* UIImage+Scale.m in Sources */,
 				4BBC79E52C9542B7005EB5D4 /* SDWebImageIndicator.m in Sources */,
 				32D2A1381F424805006F24B3 /* AFgzipRequestSerializer.m in Sources */,
 				4BBC79BE2C9542B7005EB5D4 /* SDWebImageDownloaderDecryptor.m in Sources */,
 				89A83A971C88A93600E1987E /* SVIndefiniteAnimatedView.m in Sources */,
-				89A83AC31C88AB0000E1987E /* UIColor+Additions.m in Sources */,
 				4BBC79AC2C9542B7005EB5D4 /* SDImageHEICCoder.m in Sources */,
 				32D2A1421F424805006F24B3 /* AFURLResponseSerialization.m in Sources */,
 				4BBC7A272C9542B8005EB5D4 /* SDImageLoadersManager.m in Sources */,
 				4BBC7A1E2C9542B8005EB5D4 /* SDImageGIFCoder.m in Sources */,
-				89A83AC41C88AB0000E1987E /* UIImage+Scale.m in Sources */,
 				4BBC7A6F2C9542B9005EB5D4 /* SDFileAttributeHelper.m in Sources */,
 				4BBC7A302C9542B8005EB5D4 /* SDImageTransformer.m in Sources */,
 				4BBC7A5D2C9542B9005EB5D4 /* UIColor+SDHexString.m in Sources */,
@@ -3005,6 +3025,7 @@
 				4BBC7A542C9542B9005EB5D4 /* UIImage+Metadata.m in Sources */,
 				4BBC79F72C9542B8005EB5D4 /* SDWebImageCompat.m in Sources */,
 				89A83ABB1C88AAEB00E1987E /* KBYTWebViewController.mm in Sources */,
+				4B379BCD2CAB766C00453DBC /* UIColor+Additions.m in Sources */,
 				89A83A961C88A93000E1987E /* yourTubeApplication.m in Sources */,
 				4BBC7A5A2C9542B9005EB5D4 /* SDWebImageDownloaderRequestModifier.m in Sources */,
 				4BBC7A4B2C9542B9005EB5D4 /* SDWebImageOptionsProcessor.m in Sources */,

@@ -15,6 +15,7 @@
 #import "NSObject+Additions.h"
 #import "UIView+AL.h"
 #import "../PureLayout/PureLayout.h"
+#import "NSURLRequest+cURL.h"
 
 #define INFINITE_CELL_COUNT 100000
 

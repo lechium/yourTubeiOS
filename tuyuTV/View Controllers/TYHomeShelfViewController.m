@@ -8,6 +8,7 @@
 #import "TYHomeShelfViewController.h"
 #import "SVProgressHUD.h"
 #import "KBYTGridChannelViewController.h"
+#import "TYChannelShelfViewController.h"
 #import "EXTScope.h"
 #import "TYAuthUserManager.h"
 

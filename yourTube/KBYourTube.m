@@ -24,7 +24,7 @@
 #if TARGET_OS_TV
 #import "TYTVHistoryManager.h"
 #endif
-
+#import "NSURLRequest+cURL.h"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 static NSString * const hardcodedTimestamp = @"16864";
@@ -53,6 +53,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     self.content = _mutContent;
 }
 
+- (void)addResults:(NSArray <KBYTSearchResult *>*)results {
+    if (!results) return;
+    //NSLog(@"adding result: %@", result);
+    NSMutableArray *_mutContent = [[self content] mutableCopy];
+    if (!_mutContent) _mutContent = [NSMutableArray new];
+    [_mutContent addObjectsFromArray:results];
+    self.content = _mutContent;
+}
+
 @end
 
 @implementation KBYTChannel
@@ -60,6 +69,35 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (NSString *)description {
     NSString *desc = [super description];
     return [NSString stringWithFormat:@"%@ videos: %@ title: %@ ID: %@", desc, _videos, _title, _channelID];
+}
+
+- (KBSection *)sectionMatching:(KBSection *)section {
+    __block KBSection *match = nil;
+    [self.sections enumerateObjectsUsingBlock:^(KBSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj title] == [section title]) {
+            DLog(@"found a match: %@", obj);
+            match = obj;
+            *stop = TRUE;
+        }
+    }];
+    return match;
+}
+
+- (BOOL)mergeSection:(KBSection *)section {
+    KBSection *matchedSection = [self sectionMatching:section];
+    if (matchedSection) {
+        DLog(@"found matching section!");
+        NSMutableArray *content = [matchedSection.content mutableCopy];
+        if (!content) {
+            content = [NSMutableArray new];
+        }
+        [content addObjectsFromArray:section.content];
+        matchedSection.content = content;
+        return TRUE;
+    } else {
+        DLog(@"no section match found!");
+    }
+    return FALSE;
 }
 
 - (void)mergeChannelVideos:(KBYTChannel *)channel {
@@ -90,7 +128,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         return [self allSortedItems];
     }
     __block NSMutableArray *_newArray = [NSMutableArray new];
-    [self.sections enumerateObjectsUsingBlock:^(KBYTSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.sections enumerateObjectsUsingBlock:^(KBSection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [_newArray addObjectsFromArray:obj.content];
     }];
     return _newArray;
@@ -848,6 +886,20 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 @end
 
+@implementation KBYTTab
+
+- (id)initWithTabDetails:(NSDictionary *)tabDetails {
+    self = [super init];
+    if (self) {
+        self.title = tabDetails[@"title"];
+        NSDictionary *endpoint = tabDetails[@"endpoint"][@"browseEndpoint"];
+        self.browseId = endpoint[@"browseId"];
+        self.params = endpoint[@"params"];
+    }
+    return self;
+}
+
+@end
 
 /**
  
@@ -1267,28 +1319,41 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 // '{ videoId = xpVfcZ0ZcFM, contentCheckOk = True, racyCheckOk = True, context = { client = { clientName = ANDROID, clientScreen = , clientVersion = 16.46.37, hl = en, gl = US, utcOffsetMinutes = 0 }, thirdParty = { embedUrl = https://www.youtube.com } } }'
 
 
-- (NSDictionary *)paramsForChannelID:(NSString *)channelID continuation:(NSString *)continuationToken {
-    if (continuationToken == nil) {
-     return @{ @"browseId": channelID,
-               @"context":  @{ @"client":
+- (NSDictionary *)paramsForChannelID:(NSString *)channelID params:(NSString *)params continuation:(NSString *)continuationToken {
+    
+    NSDictionary *client = @{ @"client":
                                    @{ @"clientName": @"WEB",
                                       @"clientVersion": @"2.20210408.08.00",
                                       @"hl": @"en",
                                       @"gl": @"US",
-                                      @"utcOffsetMinutes": @0 } } };
+                                      @"utcOffsetMinutes": @0 } };
+    NSMutableDictionary *paramDict = [NSMutableDictionary new];
+    paramDict[@"browseId"] = channelID;
+    paramDict[@"context"] = client;
+    if (continuationToken) {
+        paramDict[@"continuation"] = continuationToken;
+    }
+    if (params) {
+        paramDict[@"params"] = params;
+    }
+    return [paramDict copy];
+    /*
+    if (continuationToken == nil) {
+     return @{ @"browseId": channelID,
+               @"context":  client };
     }
     return @{ @"browseId": channelID,
               @"continuation": continuationToken,
-              @"context":  @{ @"client":
-                                  @{ @"clientName": @"WEB",
-                                     @"clientVersion": @"2.20210408.08.00",
-                                     @"hl": @"en",
-                                     @"gl": @"US",
-                                     @"utcOffsetMinutes": @0 } } };
+              @"context":  client };
+     */
+}
+
+- (NSDictionary *)paramsForChannelID:(NSString *)channelID params:(NSString *)params {
+    return [self paramsForChannelID:channelID params:params continuation:nil];
 }
 
 - (NSDictionary *)paramsForChannelID:(NSString *)channelID {
-    return [self paramsForChannelID:channelID continuation:nil];
+    return [self paramsForChannelID:channelID params:nil continuation:nil];
 }
 
 - (NSDictionary *)paramsForPlaylist:(NSString *)playlistID continuation:(NSString *)continuationToken {
@@ -1408,6 +1473,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         dispatch_once(&onceToken, ^{
             shared = [KBYourTube new];
             [shared startReachabilityMonitoring];
+            shared.writeDebugJSONFiles = FALSE;
+            shared.printCurlCommands = TRUE;
             shared.deviceController = [[APDeviceController alloc] init];
         });
     }
@@ -1742,6 +1809,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     [request setHTTPBody:json];
     //[request setValue:@"Mozilla/5.0 (iPhone; CPU iPhone OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4" forHTTPHeaderField:@"User-Agent"];
     NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+    NSString *curl = [request cURL];
+    if (self.printCurlCommands) {
+        TLog(@"curl command: %@", curl);
+    }
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     
 }
@@ -2032,14 +2103,136 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return searchItem;
 }
 
+- (void)getChannelVideosAlt:(NSString *)channelID
+                     params:(NSString *)params
+            completionBlock:(void(^)(KBYTChannel *channel))completionBlock
+               failureBlock:(void(^)(NSString *error))failureBlock {
+    [self getChannelVideosAlt:channelID params:params continuation:nil completionBlock:completionBlock failureBlock:failureBlock];
+}
 
 - (void)getChannelVideosAlt:(NSString *)channelID
           completionBlock:(void(^)(KBYTChannel *channel))completionBlock
              failureBlock:(void(^)(NSString *error))failureBlock {
-    [self getChannelVideosAlt:channelID continuation:nil completionBlock:completionBlock failureBlock:failureBlock];
+    [self getChannelVideosAlt:channelID params:nil continuation:nil completionBlock:completionBlock failureBlock:failureBlock];
+}
+
+- (void)getSection:(KBSection *)section
+            params:(NSString *)params
+      continuation:(NSString *)continuationToken
+   completionBlock:(void(^)(KBSection *channel))completionBlock
+      failureBlock:(void(^)(NSString *error))failureBlock {
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        //UCO9zJy7HWrIS3ojB4Lr7Yqw
+        @autoreleasepool {
+            
+            NSString *url = [self browseURL];
+            //get the post body from the url above, gets the initial raw info we work with
+            NSDictionary *paramDictionary = [self paramsForChannelID:section.browseId params:params continuation:continuationToken];
+            NSString *body = [self stringFromPostRequest:url withParams:paramDictionary];
+            NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
+            NSArray *tabs = jsonDict[@"contents"][@"twoColumnBrowseResultsRenderer"][@"tabs"];
+            __block NSMutableArray *channelTabs = [NSMutableArray new];
+            __block NSDictionary *activeTab = nil;
+            __block NSInteger activeIndex = 0;
+            __block NSString *activeTitle = nil;
+            [tabs enumerateObjectsUsingBlock:^(id  _Nonnull tab, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSDictionary *tabR = tab[@"tabRenderer"];
+                NSString *tabTitle = tabR[@"title"];
+                NSDictionary *content = tabR[@"content"];
+                if (content) {
+                    DLog(@"found content for tab idx: %lu, title: %@", idx, tabTitle);
+                    activeTab = tabR;
+                    activeIndex = idx;
+                    activeTitle = tabTitle;
+                    *stop = TRUE;
+                }
+            }];
+            if (params && !continuationToken) {
+                DLog(@"getting data for specific shelf: %lu", activeIndex);
+                id cc = [activeTab recursiveObjectForKey:@"continuationCommand"][@"token"];
+                DLog(@"continuation command: %@ for %@", cc, activeTitle);
+                if (!continuationToken && cc) {
+                    DLog(@"didn't originally load from continuation token, but we want to initially");
+                    [self getSection:section params:section.params continuation:cc completionBlock:completionBlock failureBlock:failureBlock];
+                    return;
+                }
+                NSDictionary *richGridRenderer = [activeTab recursiveObjectLikeKey:@"richGridRenderer"];
+                NSArray *items = richGridRenderer[@"contents"];
+                DLog(@"item count: %lu", items.count);
+                return;
+            }
+            if (continuationToken) {
+                NSDictionary *onResponseReceived = [jsonDict[@"onResponseReceivedActions"] firstObject];
+                NSArray *items = [onResponseReceived recursiveObjectForKey:@"continuationItems"];
+                NSString *cToken = [onResponseReceived recursiveObjectForKey:@"continuationCommand"][@"token"];
+                DLog(@"continuation items count: %lu", items.count);
+                DLog(@"new continunation token: %@", cToken);
+                if (!cToken) {
+                    section.params = nil; //clear params, no more continuation to get, kinda hacky but should work!
+                } else {
+                    section.continuationToken = cToken;
+                }
+                __block NSMutableArray *content = [NSMutableArray new];
+                [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    //NSArray *videos = [obj recursiveObjectsLikeKey:@"videoRenderer"];
+                    recursiveObjectsLike(@"videoRenderer", obj, videos);
+                    DLog(@"videos: %@ class: %@", videos, videos.class);
+                    if (videos) {
+                        [videos enumerateObjectsUsingBlock:^(id  _Nonnull videoObj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                KBYTSearchResult *video = [self searchResultFromVideoRenderer:videoObj];
+                                video.channelId = section.browseId;
+                                //NSLog(@"video: %@", video);
+                                [content addObject:video];
+                            
+                        }];
+                    } else {
+                        recursiveObjectsLike(@"playlistRenderer", obj, playlistRenders);
+                        //DLog(@"playlistRenders: %lu", playlistRenders.count);
+                        if (playlistRenders.count > 0) {
+                            [playlistRenders enumerateObjectsUsingBlock:^(id  _Nonnull playlist, NSUInteger idx, BOOL * _Nonnull stop) {
+                                NSDictionary *title = [playlist recursiveObjectForKey:@"title"];
+                                NSString *cis = [playlist recursiveObjectForKey:@"playlistId"];
+                                NSArray *thumbnails = [playlist recursiveObjectForKey:@"thumbnail"][@"thumbnails"];
+                                NSString *last = thumbnails.lastObject[@"url"];
+                                NSDictionary *desc = [playlist recursiveObjectForKey:@"description"];
+                                KBYTSearchResult *searchItem = [KBYTSearchResult new];
+                                searchItem.title = title[@"simpleText"] ? title[@"simpleText"] : [title recursiveObjectForKey:@"text"];
+                                searchItem.duration = playlist[@"videoCountShortText"][@"simpleText"];
+                                searchItem.videoId = cis;
+                                searchItem.imagePath = last;
+                                searchItem.channelId = section.browseId;
+                                searchItem.age = playlist[@"publishedTimeText"][@"simpleText"];
+                                NSArray *shortByline = [playlist recursiveObjectForKey:@"shortBylineText"][@"runs"];
+                                DLog(@"author: %@",[shortByline runsToString]);
+                                searchItem.author = [shortByline runsToString];
+                                //searchItem.author = channel.title; //FIXME!!
+                                searchItem.resultType = kYTSearchResultTypePlaylist;
+                                searchItem.details = [desc recursiveObjectForKey:@"simpleText"];
+                                [content addObject:searchItem];
+                                
+                            }];
+                        } else {
+                            
+                        }
+                    }
+                    
+                    
+                }];
+                DLog(@"content: %@", content);
+                [section addResults:content];
+                if (completionBlock) {
+                    completionBlock(section);
+                }
+            }
+            
+        }
+    });
 }
 
 - (void)getChannelVideosAlt:(NSString *)channelID
+                     params:(NSString *)params
                continuation:(NSString *)continuationToken
           completionBlock:(void(^)(KBYTChannel *channel))completionBlock
              failureBlock:(void(^)(NSString *error))failureBlock {
@@ -2048,8 +2241,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         @autoreleasepool {
             NSString *url = [self browseURL];
             //get the post body from the url above, gets the initial raw info we work with
-            NSDictionary *params = [self paramsForChannelID:channelID continuation:continuationToken];
-            NSString *body = [self stringFromPostRequest:url withParams:params];
+            NSDictionary *paramDictionary = [self paramsForChannelID:channelID params:params continuation:continuationToken];
+            NSString *body = [self stringFromPostRequest:url withParams:paramDictionary];
             NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
             NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
             //TLog(@"params: %@", params);
@@ -2058,11 +2251,29 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             //NSLog(@"channelID: %@ body: %@ for: %@ %@",channelID, jsonDict, url, params);
             //NSMutableArray* arr = [NSMutableArray array];
             //[self obtainKeyPaths:jsonDict intoArray:arr withString:nil];
-            NSString *fileName = [channelID stringByAppendingPathExtension:@"plist"];
-            DLog(@"file: %@", [NSHomeDirectory() stringByAppendingPathComponent:fileName]);
-            
-            [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:fileName] atomically:true];
-            
+            if ([[KBYourTube sharedInstance] writeDebugJSONFiles]) {
+                NSString *fileName = [channelID stringByAppendingPathExtension:@"plist"];
+                DLog(@"file: %@", [NSHomeDirectory() stringByAppendingPathComponent:fileName]);
+                
+                [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:fileName] atomically:true];
+            }
+            NSArray *tabs = jsonDict[@"contents"][@"twoColumnBrowseResultsRenderer"][@"tabs"];
+            __block NSMutableArray *channelTabs = [NSMutableArray new];
+            __block NSDictionary *activeTab = nil;
+            __block NSInteger activeIndex = 0;
+            __block NSString *activeTitle = nil;
+            [tabs enumerateObjectsUsingBlock:^(id  _Nonnull tab, NSUInteger idx, BOOL * _Nonnull stop) {
+                NSDictionary *tabR = tab[@"tabRenderer"];
+                NSString *tabTitle = tabR[@"title"];
+                NSDictionary *content = tabR[@"content"];
+                if (content) {
+                    DLog(@"found content for tab idx: %lu, title: %@", idx, tabTitle);
+                    activeTab = tabR;
+                    activeIndex = idx;
+                    activeTitle = tabTitle;
+                    *stop = TRUE;
+                }
+            }];
             NSArray *banner = [jsonDict recursiveObjectForKey:@"imageBannerViewModel"][@"image"][@"sources"];
             NSString *lastBanner = [banner lastObject][@"url"];
             //NSLog(@"our banners: %@", lastBanner);
@@ -2106,10 +2317,61 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
               //  channel.continuationTokens = ccs;
             //}
             channel.banner = lastBanner;
+            
+            if (activeIndex > 0) {
+                channel.activeSection = activeIndex;
+                DLog(@"getting data for specific shelf: %lu", activeIndex);
+                id cc = [activeTab recursiveObjectForKey:@"continuationCommand"][@"token"];
+                DLog(@"continuation command: %@ for %@", cc, activeTitle);
+                if (!continuationToken && cc) {
+                    DLog(@"didn't originally load from continuation token, but we want to initially");
+                    [self getChannelVideosAlt:channelID params:params continuation:cc completionBlock:completionBlock failureBlock:failureBlock];
+                    return;
+                }
+                NSDictionary *richGridRenderer = [activeTab recursiveObjectLikeKey:@"richGridRenderer"];
+                NSArray *items = richGridRenderer[@"contents"];
+                DLog(@"item count: %lu", items.count);
+                return;
+            }
+            if (continuationToken) {
+                NSInteger activeSect = channel.activeSection;
+                DLog(@"active section: %lu", activeSect);
+                NSDictionary *onResponseReceived = [jsonDict[@"onResponseReceivedActions"] firstObject];
+                NSArray *items = [onResponseReceived recursiveObjectForKey:@"continuationItems"];
+                DLog(@"continuation items count: %lu", items.count);
+                __block NSMutableArray *content = [NSMutableArray new];
+                [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    //NSArray *playlistRenders = [obj recursiveObjectsLikeKey:@"playlistRenderer"];
+                    recursiveObjectsLike(@"playlistRenderer", obj, playlistRenders);
+                    DLog(@"playlistRenders: %lu", playlistRenders.count);
+                    [playlistRenders enumerateObjectsUsingBlock:^(id  _Nonnull playlist, NSUInteger idx, BOOL * _Nonnull stop) {
+                        NSDictionary *title = [playlist recursiveObjectForKey:@"title"];
+                        NSString *cis = [playlist recursiveObjectForKey:@"playlistId"];
+                        NSArray *thumbnails = [playlist recursiveObjectForKey:@"thumbnail"][@"thumbnails"];
+                        NSString *last = thumbnails.lastObject[@"url"];
+                        NSDictionary *desc = [playlist recursiveObjectForKey:@"description"];
+                        KBYTSearchResult *searchItem = [KBYTSearchResult new];
+                        searchItem.title = title[@"simpleText"] ? title[@"simpleText"] : [title recursiveObjectForKey:@"text"];
+                        searchItem.duration = playlist[@"videoCountShortText"][@"simpleText"];
+                        searchItem.videoId = cis;
+                        searchItem.imagePath = last;
+                        searchItem.channelId = channel.channelID;
+                        searchItem.age = playlist[@"publishedTimeText"][@"simpleText"];
+                        searchItem.author = channel.title;
+                        searchItem.resultType = kYTSearchResultTypePlaylist;
+                        searchItem.details = [desc recursiveObjectForKey:@"simpleText"];
+                        [content addObject:searchItem];
+                        
+                    }];
+                    
+                }];
+                DLog(@"content: %@", content);
+            }
             //DLog(@"details: %@", details);
             //title,subtitle,thumbnails
             //[jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"music.plist"] atomically:true];
             recursiveObjectsLike(@"itemSectionRenderer", jsonDict, sect);
+            DLog(@"section count: %lu", sect.count);
             //NSArray *sect = [jsonDict recursiveObjectsLikeKey:@"itemSectionRenderer"];
             if (sect.count == 0) {
                 NSDictionary *richGridRenderer = [jsonDict recursiveObjectLikeKey:@"richGridRenderer"];
@@ -2117,13 +2379,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 //TLog(@"no content for some retarded reason");
             }
             __block NSMutableArray *sections = [NSMutableArray new];
-            __block KBYTSection *backup = nil;
+            __block KBSection *backup = nil;
             [sect enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSArray *shelf = [obj recursiveObjectLikeKey:@"shelfRenderer"];
-                if (!shelf) {
+                if (!shelf) { //no shelf
                     NSDictionary *video = [obj recursiveObjectLikeKey:@"videoRenderer"];
                     if (!backup){
-                        backup = [KBYTSection new];
+                        backup = [KBSection defaultSection];
                     }
                     KBYTSearchResult *res = [self searchResultFromVideoRenderer:video];
                     if (res.videoId) {
@@ -2151,7 +2413,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         [sections addObject:backup];
                         backup = nil;
                     }
-                } else { //no shelf
+                } else { //there is a shelf
                     if (backup) {
                         //DLog(@"backup: %@", backup);
                         if (backup.content.count > 0) {
@@ -2160,16 +2422,37 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         backup = nil;
                     }
                     //NSDictionary *rend = [renderers firstObject];
+                    KBSection *section = [KBSection defaultSection];
+                    section.sectionResultType = kYTSearchResultTypeChannel;
                     NSDictionary *title = [shelf recursiveObjectForKey:@"title"];
-                    KBYTSection *section = [KBYTSection new];
+                    NSDictionary *endpoint = [shelf recursiveObjectForKey:@"endpoint"];
                     section.title = title[@"simpleText"] ? title[@"simpleText"] : [title recursiveObjectForKey:@"text"];
-                    //NSLog(@"idx %lu shelf: %@", idx, section.title);
+                    
+                    if (endpoint) {
+                        NSString *browseId = endpoint[@"browseEndpoint"][@"browseId"];
+                        NSString *params = endpoint[@"browseEndpoint"][@"params"];
+                        if (browseId) {
+                            //DLog(@"browseId: %@ for section: %@", browseId, section.title);
+                            section.browseId = browseId;
+                        }
+                        if (params) {
+                            DLog(@"params: %@ for section: %@ in channel: %@", params, section.title, channel.title);
+                            section.params = params;
+                        }
+                        NSDictionary *shelfCC = [endpoint recursiveObjectForKey:@"continuationCommand"];
+                        if (shelfCC) {
+                            //DLog(@"shelfCC: %@ channel: %@", shelfCC[@"token"], title);
+                            section.continuationToken = shelfCC[@"token"];
+                        }
+                    }
+                    
+                    //DLog(@"idx %lu shelf: %@", idx, section.title);
                     
                     NSArray *videos = [shelf recursiveObjectsLikeKey:@"videoRenderer"];
-                    //NSLog(@"videos: %@", videos);
+                    //DLog(@"videos: %@", videos);
                     __block NSMutableArray *content = [NSMutableArray new];
                     if (videos){
-                        //NSLog(@"videos: %lu", videos.count);
+                        //DLog(@"videos: %lu", videos.count);
                         [videos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                             NSString *first = [[obj allKeys] firstObject];
                             NSDictionary *vid = obj[first];
@@ -2183,7 +2466,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     } else {
                         NSArray *stations = [shelf recursiveObjectsLikeKey:@"stationRenderer"];
                         if (stations.count > 0){
-                            //NSLog(@"stations: %lu", stations.count);
+                            DLog(@"stations: %lu", stations.count);
                             [stations enumerateObjectsUsingBlock:^(id  _Nonnull station, NSUInteger idx, BOOL * _Nonnull stop) {
                                 NSString *firstKey = [[station allKeys] firstObject];
                                 NSDictionary *playlist = station[firstKey];
@@ -2209,7 +2492,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             NSArray *playlistRenders = [shelf recursiveObjectsLikeKey:@"playlistRenderer"];
                             if (playlistRenders.count > 0){
                                 
-                                //NSLog(@"playlists count: %lu", stations.count);
+                                DLog(@"playlists count: %lu", stations.count);
                                 [playlistRenders enumerateObjectsUsingBlock:^(id  _Nonnull station, NSUInteger idx, BOOL * _Nonnull stop) {
                                     NSString *firstKey = [[station allKeys] firstObject];
                                     NSDictionary *playlist = station[firstKey];
@@ -2234,7 +2517,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             } else {
                                 playlistRenders = [shelf recursiveObjectsLikeKey:@"channelRenderer"];
                                 if (playlistRenders.count > 0){
-                                    //NSLog(@"channels count: %lu", stations.count);
+                                    DLog(@"channels count: %lu", stations.count);
                                     [playlistRenders enumerateObjectsUsingBlock:^(id  _Nonnull channelObj, NSUInteger idx, BOOL * _Nonnull stop) {
                                         NSString *firstKey = [[channelObj allKeys] firstObject];
                                         NSDictionary *channel = channelObj[firstKey];
@@ -2280,12 +2563,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                     
                                 } else { //shorts maybe?
                                     //NSLog(@"rend: %@", rend);
-                                    recursiveObjectsLike(@"shortsLockupViewModel", shelf, stations);
-                                    //NSLog(@"reels: %lu", stations.count);
-                                    if (stations.count == 0){
+                                    recursiveObjectsLike(@"shortsLockupViewModel", shelf, shorts);
+                                    DLog(@"reels: %lu", stations.count);
+                                    if (shorts.count == 0){
                                         //NSLog(@"rend: %@", shelf);
                                     }
-                                    [stations enumerateObjectsUsingBlock:^(id  _Nonnull reel, NSUInteger idx, BOOL * _Nonnull stop) {
+                                    [shorts enumerateObjectsUsingBlock:^(id  _Nonnull reel, NSUInteger idx, BOOL * _Nonnull stop) {
                                         //NSString *firstKey = [[reel allKeys] firstObject];
                                         NSDictionary *reelObject = reel; //for now //reel[firstKey];
                                         NSArray *thumbnails = [reelObject recursiveObjectForKey:@"thumbnail"][@"sources"];
@@ -2307,11 +2590,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         [content addObject:searchItem];
                                     }];
                                 }
-                                
                             }
-                            
                         }
-                        
                     }
                     section.content = content;
                     if (content.count > 0) {
@@ -2384,7 +2664,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         } else {
                             NSString *token = [channel continuationTokens][next][@"token"];
                             DLog(@"trying new token: %@", token);
-                            [self getChannelVideosAlt:channelID continuation:token completionBlock:^(KBYTChannel *channel) {
+                            [self getChannelVideosAlt:channelID params:nil continuation:token completionBlock:^(KBYTChannel *channel) {
                                 dispatch_async(dispatch_get_main_queue(), ^{
                                     if (completionBlock) {
                                         completionBlock(channel);
@@ -2515,10 +2795,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSString *body = [self stringFromPostRequest:url withParams:params];
             NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
             NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
-            DLog(@"body: %@ for: %@ %@", jsonDict, url, params);
-            DLog(@"file: %@", [NSHomeDirectory() stringByAppendingPathComponent:@"file2.plist"]);
-            [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"file2.plist"] atomically:true];
-            
+            if ([[KBYourTube sharedInstance] writeDebugJSONFiles]) {
+                DLog(@"body: %@ for: %@ %@", jsonDict, url, params);
+                DLog(@"file: %@", [NSHomeDirectory() stringByAppendingPathComponent:@"file2.plist"]);
+                [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"file2.plist"] atomically:true];
+            }
             NSError *error = nil;
             rootInfo = [[KBYTMedia alloc] initWithJSON:jsonDict error:&error];
             //NSLog(@"root info: %@", rootInfo);
@@ -2560,7 +2841,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             KBYTSearchResults *results = [KBYTSearchResults new];
             [results processJSON:jsonDict filter:type];
             NSLog(@"video count: %lu", results.allItems.count);
-            [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"search.plist"] atomically:true];
+            if ([[KBYourTube sharedInstance] writeDebugJSONFiles]) {
+                [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"search.plist"] atomically:true];
+            }
             dispatch_async(dispatch_get_main_queue(), ^{
                 if(results != nil) {
                     completionBlock(results);
