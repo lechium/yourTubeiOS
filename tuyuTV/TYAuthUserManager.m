@@ -330,9 +330,11 @@
         if (completionBlock) {
             completionBlock(playlists, error);
         }
-        NSString *plFile = [[self appSupportFolder] stringByAppendingPathComponent:@"getPlaylists.plist"];
-        DLog(@"plfile: %@", plFile);
-        [jsonResponse writeToFile:plFile atomically:TRUE];
+        if ([[KBYourTube sharedInstance] writeDebugJSONFiles]) {
+            NSString *plFile = [[self appSupportFolder] stringByAppendingPathComponent:@"getPlaylists.plist"];
+            DLog(@"plfile: %@", plFile);
+            [jsonResponse writeToFile:plFile atomically:TRUE];
+        }
     }];
 }
 //https://www.googleapis.com/youtube/v3/channels?part=snippet&id='+commaSeperatedList+'&fields=items(id%2Csnippet%2Fthumbnails)&key={YOUR_API_KEY}
@@ -357,9 +359,11 @@
             if (title) dict[@"title"] = title;
             completionBlock(dict, error);
         }
-        NSString *profileFile = [[self appSupportFolder] stringByAppendingPathComponent:@"profile.plist"];
-        DLog(@"profileFile: %@", profileFile);
-        [jsonResponse writeToFile:profileFile atomically:TRUE];
+        if ([[KBYourTube sharedInstance]writeDebugJSONFiles]) {
+            NSString *profileFile = [[self appSupportFolder] stringByAppendingPathComponent:@"profile.plist"];
+            DLog(@"profileFile: %@", profileFile);
+            [jsonResponse writeToFile:profileFile atomically:TRUE];
+        }
     }];
 }
 
@@ -382,53 +386,57 @@
         if (completionBlock) {
             completionBlock(url, error);
         }
-        NSString *profileFile = [[self appSupportFolder] stringByAppendingPathComponent:@"profile.plist"];
-        DLog(@"profileFile: %@", profileFile);
-        [jsonResponse writeToFile:profileFile atomically:TRUE];
+        if ([[KBYourTube sharedInstance]writeDebugJSONFiles]) {
+            NSString *profileFile = [[self appSupportFolder] stringByAppendingPathComponent:@"profile.plist"];
+            DLog(@"profileFile: %@", profileFile);
+            [jsonResponse writeToFile:profileFile atomically:TRUE];
+        }
     }];
 }
 
 - (void)genericGetCommand:(NSString *)command completion:(void(^)(NSDictionary *jsonResponse, NSString *error))completionBlock {
     
     //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        id token = [self refreshAuthToken];
-        //TLog(@"refreshed token: %@", token);
-        NSString *urlString = [NSString stringWithFormat:@"%@&key=%@", command, ytClientID];
-        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
-                                                                    cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
-        
-        AFOAuthCredential *cred = [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
-        NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
-        [request setValue:authorization forHTTPHeaderField:@"Authorization"];
-        
-        [request setHTTPMethod:@"GET"];
-        
-        NSHTTPURLResponse *theResponse = nil;
-        
-        NSError* error = nil;
-        NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
-        
-        NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-        NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-        //TLog(@"status string: %@", returnString);
-        
-        //JSON data
-        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
-        //TLog(@"jsonDict: %@", jsonDict);
-        //dispatch_async(dispatch_get_main_queue(), ^{
-            if ([jsonDict valueForKey:@"error"] != nil) {
-                if (completionBlock) {
-                    completionBlock(nil, datString);
-                }
-                return;
-            }
-            //NSLog(@"jsonDict: %@", jsonDict);
-            [jsonDict writeToFile:@"/var/mobile/Library/Preferences/genericGetCommand.plist" atomically:TRUE];
-            if (completionBlock){
-                completionBlock(jsonDict, nil);
-            }
-        //});
-        
+    id token = [self refreshAuthToken];
+    //TLog(@"refreshed token: %@", token);
+    NSString *urlString = [NSString stringWithFormat:@"%@&key=%@", command, ytClientID];
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
+                                                                cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
+    
+    AFOAuthCredential *cred = [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
+    NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
+    [request setValue:authorization forHTTPHeaderField:@"Authorization"];
+    
+    [request setHTTPMethod:@"GET"];
+    
+    NSHTTPURLResponse *theResponse = nil;
+    
+    NSError* error = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
+    
+    NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+    NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
+    //TLog(@"status string: %@", returnString);
+    
+    //JSON data
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
+    //TLog(@"jsonDict: %@", jsonDict);
+    //dispatch_async(dispatch_get_main_queue(), ^{
+    if ([jsonDict valueForKey:@"error"] != nil) {
+        if (completionBlock) {
+            completionBlock(nil, datString);
+        }
+        return;
+    }
+    //NSLog(@"jsonDict: %@", jsonDict);
+    if ([[KBYourTube sharedInstance]writeDebugJSONFiles]) {
+        [jsonDict writeToFile:@"/var/mobile/Library/Preferences/genericGetCommand.plist" atomically:TRUE];
+    }
+    if (completionBlock){
+        completionBlock(jsonDict, nil);
+    }
+    //});
+    
     //});
 }
 
@@ -446,9 +454,11 @@
             completionBlock(channels, error);
         }
         
-        NSString *clr = [[self appSupportFolder] stringByAppendingPathComponent:@"getChannelListResponse.plist"];
-        DLog(@"channelListResponse: %@", clr);
-        [jsonResponse writeToFile:clr atomically:TRUE];
+        if ([[KBYourTube sharedInstance] writeDebugJSONFiles]) {
+            NSString *clr = [[self appSupportFolder] stringByAppendingPathComponent:@"getChannelListResponse.plist"];
+            DLog(@"channelListResponse: %@", clr);
+            [jsonResponse writeToFile:clr atomically:TRUE];
+        }
     }];
 }
 

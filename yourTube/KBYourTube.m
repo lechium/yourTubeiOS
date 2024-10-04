@@ -1678,18 +1678,22 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         TLog(@"got channels");
                         if (channels.count > 0) {
                             returnDict[@"channels"] = channels;
-                            if (![[returnDict allKeys] containsObject:@"channelID"]){
-                                returnDict[@"channelID"] = [channels firstObject].channelId;
-                            }
                         }
                         [authManager getProfileDetailsWithCompletion:^(NSDictionary *profileDetails, NSString *error) {
                             if (error) {
                                 TLog(@"error occured: %@", error);
+                                failureBlock(errorString);
                             } else {
                                 NSString *userName = profileDetails[@"title"];
                                 NSString *channelID = profileDetails[@"channelID"];
+                                if (![[returnDict allKeys] containsObject:@"channelID"]){
+                                    returnDict[@"channelID"] = channelID;
+                                }
+                                if (![[returnDict allKeys] containsObject:@"userName"]) {
+                                    returnDict[@"userName"] = userName;
+                                }
                                 NSString *thumbURL = profileDetails[@"url"];
-                                TLog(@"profileDetails: %@", profileDetails);
+                                //TLog(@"profileDetails: %@", profileDetails);
                                 KBYTSearchResult *userChannel = [KBYTSearchResult new];
                                 userChannel.title = @"Your channel";
                                 userChannel.author = userName;
@@ -2178,7 +2182,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                     //NSArray *videos = [obj recursiveObjectsLikeKey:@"videoRenderer"];
                     recursiveObjectsLike(@"videoRenderer", obj, videos);
-                    DLog(@"videos: %@ class: %@", videos, videos.class);
+                    //DLog(@"videos: %@ class: %@", videos, videos.class);
                     if (videos) {
                         [videos enumerateObjectsUsingBlock:^(id  _Nonnull videoObj, NSUInteger idx, BOOL * _Nonnull stop) {
                                 KBYTSearchResult *video = [self searchResultFromVideoRenderer:videoObj];
@@ -2220,7 +2224,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     
                     
                 }];
-                DLog(@"content: %@", content);
+                DLog(@"content size: %lu", content.count);
                 [section addResults:content];
                 if (completionBlock) {
                     completionBlock(section);
