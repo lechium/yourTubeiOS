@@ -2374,7 +2374,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     //*stop = TRUE;
                 }
                 KBYTTab *tabItem = [[KBYTTab alloc] initWithTabDetails:tabR];
-                [channelTabs addObject:tabItem];
+                if (![tabTitle isEqualToString:@"Store"]){
+                    [channelTabs addObject:tabItem];
+                }
             }];
             
             NSArray *banner = [jsonDict recursiveObjectForKey:@"imageBannerViewModel"][@"image"][@"sources"];
