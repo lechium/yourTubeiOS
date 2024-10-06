@@ -5,6 +5,7 @@ build/
 obj/
 com.*
 tuyuTV/YTCreds*
+tuyuTV/ogFiles/*
 *.DS_Store
 *.pbxuser
 !default.pbxuser

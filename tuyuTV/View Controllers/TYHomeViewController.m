@@ -15,11 +15,13 @@
 @interface TYHomeViewController () {
     BOOL firstLoad;
     BOOL _homeDataChanged;
+    BOOL _setupTabBar;
     NSString *featuredId;
 }
 @end
 
 @implementation TYHomeViewController
+
 
 - (id)initWithData:(NSDictionary *)data {
     __block NSMutableArray *sections = [NSMutableArray new];

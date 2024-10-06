@@ -14,6 +14,7 @@
 @interface TYChannelShelfViewController () {
     KBYTChannelHeaderView *__headerView;
     KBYTChannel *__channel;
+    BOOL _tabBarSetup;
 }
 @end
 
@@ -100,6 +101,16 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 }
+
+/*
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (!_tabBarSetup) {
+        [self setTabDetails:@[@"Videos", @"Playlists", @"Shorts"]];
+        _tabBarSetup = true;
+    }
+}
+ */
 
 - (KBYTChannelHeaderView *)headerview {
     if (__headerView != nil) return __headerView;

@@ -22,6 +22,7 @@
     BOOL _firstAppearance;
     NSArray <KBSectionProtocol> *sections_;
     NSMutableArray *_cells;
+    NSArray *_tabDetails;
 }
 @property (nonatomic, assign) CGFloat lastScrollViewOffsetX;
 @property (nonatomic, assign) CGFloat lastScrollViewOffsetY;
@@ -36,6 +37,46 @@
 @end
 
 @implementation KBShelfViewController
+
+- (void)setTabDetails:(NSArray *)tabDetails {
+    _tabDetails = tabDetails;
+    [self setupTabBar];
+}
+
+- (void)setupTabBar {
+    if (!self.tabBar) {
+        self.tabBar = [[UITabBar alloc] initForAutoLayout];
+        [self.view addSubview:self.tabBar];
+        [self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+        [self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+        [self.tabBar autoCenterVerticallyInSuperview];
+        
+        [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
+        if (self.headerview) {
+            self.tabBarTopConstraint = [self.tabBar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:100];
+        } else {
+            //[self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:100];
+            self.tabBarTopConstraint = [self.tabBar autoPinEdgeToSuperviewMargin:ALEdgeTop];
+        }
+        self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar withOffset:100];
+        NSMutableArray *tabBarItems = [NSMutableArray new];
+        [self.tabDetails enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:obj image:nil tag:idx];
+            [tabBarItems addObject:item];
+        }];
+        [self.tabBar setItems:tabBarItems animated:true];
+        self.tabBar.delegate = self;
+    }
+}
+
+- (NSArray *)tabDetails {
+    return _tabDetails;
+}
+
+- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
+    LOG_SELF;
+    
+}
 
 - (KBYTChannelHeaderView *)headerview {
     return nil; //override in subclass
@@ -77,11 +118,27 @@
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.headerTopConstraint.constant = 0;
             self.headerview.alpha = 1.0;
+            [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
+            if (self.headerview) {
+                self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.headerview withOffset:self.tabBar ? 100 : 150];
+            } else {
+                self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.view withOffset:self.tabBar ? 100 : 0];
+                self.tabBarTopConstraint.constant = 0;
+            }
+            self.tabBar.alpha = 1.0;
             [self.view layoutIfNeeded];
         } completion:nil];
     } else {
         self.headerTopConstraint.constant = 0;
         self.headerview.alpha = 1.0;
+        self.tabBar.alpha = 1.0;
+        [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
+        if (self.headerview) {
+            self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.headerview withOffset:self.tabBar ? 100 : 150];
+        } else {
+            self.tabBarTopConstraint.constant = 0;
+            self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.view withOffset:self.tabBar ? 100 : 0];
+        }
         [self.view layoutIfNeeded];
     }
 }
@@ -91,11 +148,27 @@
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.headerTopConstraint.constant = -175;
             self.headerview.alpha = 0;
+            self.tabBar.alpha = 0;
+            [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
+            if (self.headerview) {
+                self.tableTopConstraint =  [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:150];
+            } else {
+                self.tabBarTopConstraint.constant = -150;
+                self.tableTopConstraint =  [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+            }
             [self.view layoutIfNeeded];
         } completion:nil];
     } else {
         self.headerview.alpha = 0;
         self.headerTopConstraint.constant = -175;
+        self.tabBar.alpha = 0;
+        [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
+        if (self.headerview) {
+            self.tableTopConstraint =  [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:150];
+        } else {
+            self.tabBarTopConstraint.constant = -150;
+            self.tableTopConstraint =  [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        }
         [self.view layoutIfNeeded];
     }
 }
@@ -109,18 +182,19 @@
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    [self.tableView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
     KBYTChannelHeaderView *headerView = [self headerview];
-    if (headerView != nil) {
+    if (headerView) {
         [self.view addSubview:headerView];
         self.headerTopConstraint = [headerView autoPinEdgeToSuperviewMargin:ALEdgeTop];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
         [headerView setupView];
         self.headerHeightConstraint = [headerView autoSetDimension:ALDimensionHeight toSize:175];
-        [self.tableView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
-        [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:headerView withOffset:150];
+        self.tableTopConstraint =  [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:headerView withOffset:150];
     } else {
-        [self.tableView autoPinEdgesToSuperviewEdges];
+        self.tableTopConstraint =  [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        //[self.tableView autoPinEdgesToSuperviewEdges];
     }
     UIEdgeInsets edgeInsets = self.tableView.contentInset;
     edgeInsets.top = -10;
@@ -414,7 +488,7 @@
             //DLog(@"changed from section: %lu to %lu", self.selectedSection, sv.section);
         }
         self.selectedSection = sv.section;
-        if ([self headerview]) {
+        if ([self headerview] || self.tabBar) {
             if (sv.section == 0) {
                 [self expandHeaderAnimated:true];
             } else if (sv.section > 0){

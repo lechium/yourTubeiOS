@@ -14,11 +14,24 @@
 
 @interface TYHomeShelfViewController () {
     BOOL _homeDataChanged;
+    BOOL _tabBarSetup;
 }
 
 @end
 
 @implementation TYHomeShelfViewController
+
+//comment in to demo out tab bar stuff in home view
+
+/*
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (!_tabBarSetup) {
+        [self setTabDetails:@[@"Videos", @"Playlists", @"Shorts"]];
+        _tabBarSetup = true;
+    }
+}
+ */
 
 - (void)viewDidLoad {
     [super viewDidLoad];

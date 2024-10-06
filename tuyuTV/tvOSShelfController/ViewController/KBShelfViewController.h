@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 };
 
 //UITableViewController
-@interface KBShelfViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSourcePrefetching>
+@interface KBShelfViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSourcePrefetching, UITabBarDelegate>
 
 //@property (nonatomic, copy, nullability) returnType (^blockName)(parameterTypes);
 @property (nonatomic, copy, nullable) void (^itemSelectedBlock)(id<KBCollectionItemProtocol> item, BOOL longPress, NSInteger row, NSInteger section);
@@ -35,6 +35,10 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 @property (readwrite, assign) BOOL useRoundedEdges;
 @property (nonatomic, weak) UICollectionViewCell *focusedCollectionCell;
 @property (nonatomic, strong) NSLayoutConstraint *headerTopConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *tableTopConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *tabBarTopConstraint;
+@property (nonatomic, strong) UITabBar *tabBar;
+@property (nonatomic, strong) NSArray *tabDetails;
 
 - (NSArray *)arrayForSection:(NSInteger)section;
 - (KBYTChannelHeaderView *)headerview;
@@ -43,7 +47,7 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 - (void)focusedCellIndex:(NSInteger)cellIndex inSection:(NSInteger)section inCollectionView:(UICollectionView *)collectionView;
 - (void)handleSectionsUpdated;
 - (BOOL)firstLoad;
-- (void)handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer ;
+- (void)handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer;
 @end
 
 NS_ASSUME_NONNULL_END
