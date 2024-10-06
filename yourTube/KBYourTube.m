@@ -2398,14 +2398,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSDictionary *thumb = [thumbnails lastObject];
             //NSInteger width = [thumb[@"height"] integerValue];
             NSString *imagePath = [thumb[@"url"] highResChannelURL];
-            
+            //contentMetadataViewModel
+            NSDictionary *pageHeader = [jsonDict recursiveObjectForKey:@"pageHeaderRenderer"];
             if (!details) {
-                NSDictionary *pageHeader = [jsonDict recursiveObjectForKey:@"pageHeaderRenderer"];
                 title = pageHeader[@"pageTitle"];
                 NSDictionary *imageContainer = [[[pageHeader recursiveObjectForKey:@"image"] recursiveObjectForKey:@"image"][@"sources"] lastObject];
                 DLog(@"imageContainer: %@", imageContainer);
                 imagePath = imageContainer[@"url"];
             }
+            
             __block KBYTChannel *channel = [KBYTChannel new];
             channel.tabs = channelTabs;
             if ([title isKindOfClass:[NSDictionary class]]){
@@ -2423,6 +2424,26 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 channel.subscribers = (NSString*)subscriberCount;
             } else {
                 channel.subscribers = subscriberCount[@"simpleText"];
+            }
+            if (!channel.subscribers) {
+                NSDictionary *contentMetadataViewModel = [pageHeader recursiveObjectForKey:@"contentMetadataViewModel"];
+                //DLog(@"contentMetadataViewModel: %@", contentMetadataViewModel);
+                NSString *delimiter = contentMetadataViewModel[@"delimiter"];
+                NSArray *metadataRows = contentMetadataViewModel[@"metadataRows"];
+                recursiveObjectsFor(@"text", contentMetadataViewModel, textsDicts);
+                __block NSMutableString *newString = [NSMutableString new];
+                [textsDicts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    NSString *text = obj[@"content"];
+                    if (text) {
+                        [newString appendString:text];
+                    }
+                    DLog(@"text: %@ idx: %lu row count: %lu", text, idx, textsDicts.count);
+                    if (idx < metadataRows.count) {
+                        [newString appendFormat:@" %@ ", delimiter];
+                    }
+                }];
+                DLog(@"newString: %@", newString);
+                channel.subscribers = newString;
             }
             channel.image = imagePath;
             channel.url = [details recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
@@ -2558,6 +2579,25 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                                 KBYTSearchResult *res = [self searchResultFromStationRenderer:obj inChannel:channel];
                                                 [backup addResult:res];
                                             }];
+                                        } else {
+                                            DLog(@"NO SOUP FOR YOU!");
+                                            recursiveObjectsLike(@"lockupViewModel", obj, podcastModels);
+                                            DLog(@"podcastModels: %lu", podcastModels.count);
+                                            if (podcastModels.count > 0) {
+                                                [podcastModels enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                                    KBYTSearchResult *res = [KBYTSearchResult new];
+                                                    NSDictionary *contentImage = [[obj[@"contentImage"] recursiveObjectForKey:@"image"][@"sources"]firstObject];
+                                                    DLog(@"contentImage: %@", contentImage);
+                                                    NSDictionary *meta = obj[@"metadata"];
+                                                    res.title = [meta recursiveObjectForKey:@"title"][@"content"];
+                                                    res.imagePath = contentImage[@"url"];
+                                                    res.resultType = kYTSearchResultTypePlaylist;
+                                                    res.videoId = obj[@"contentId"];
+                                                    res.playlistId = obj[@"contentId"];
+                                                    //KBYTSearchResult *res = [self searchResultFromStationRenderer:obj inChannel:channel];
+                                                    [backup addResult:res];
+                                                }];
+                                            }
                                         }
                                     }
                                 }
