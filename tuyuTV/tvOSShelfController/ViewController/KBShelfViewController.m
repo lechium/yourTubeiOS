@@ -16,13 +16,14 @@
 #import "KBModelItem.h"
 #import "UIImage+Scale.h"
 #import "UIImage+Transform.h"
+#import "KBYourTube.h"
 
 @interface KBShelfViewController () {
     UILongPressGestureRecognizer *longPress;
     BOOL _firstAppearance;
     NSArray <KBSectionProtocol> *sections_;
     NSMutableArray *_cells;
-    NSArray *_tabDetails;
+    NSArray <KBYTTab *>*_tabDetails;
 }
 @property (nonatomic, assign) CGFloat lastScrollViewOffsetX;
 @property (nonatomic, assign) CGFloat lastScrollViewOffsetY;
@@ -38,7 +39,7 @@
 
 @implementation KBShelfViewController
 
-- (void)setTabDetails:(NSArray *)tabDetails {
+- (void)setTabDetails:(NSArray <KBYTTab*> *)tabDetails {
     _tabDetails = tabDetails;
     [self setupTabBar];
 }
@@ -60,8 +61,13 @@
         }
         self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar withOffset:100];
         NSMutableArray *tabBarItems = [NSMutableArray new];
+        /*
         [self.tabDetails enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:obj image:nil tag:idx];
+            [tabBarItems addObject:item];
+        }];*/
+        [self.tabDetails enumerateObjectsUsingBlock:^(KBYTTab * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:obj.title image:nil tag:idx];
             [tabBarItems addObject:item];
         }];
         [self.tabBar setItems:tabBarItems animated:true];
@@ -69,7 +75,7 @@
     }
 }
 
-- (NSArray *)tabDetails {
+- (NSArray <KBYTTab *>*)tabDetails {
     return _tabDetails;
 }
 
@@ -443,7 +449,7 @@
     if (featuredSection.infinite) {
         index = index % detailsArray.count;
     }
-    return detailsArray[index];
+    return detailsArray[@(index)];
 }
 
 //an item was selected!

@@ -1473,7 +1473,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
         dispatch_once(&onceToken, ^{
             shared = [KBYourTube new];
             [shared startReachabilityMonitoring];
-            shared.writeDebugJSONFiles = TRUE;
+            shared.writeDebugJSONFiles = FALSE;
             shared.printCurlCommands = TRUE;
             shared.deviceController = [[APDeviceController alloc] init];
         });
@@ -2371,9 +2371,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     activeTab = tabR;
                     activeIndex = idx;
                     activeTitle = tabTitle;
-                    *stop = TRUE;
+                    //*stop = TRUE;
                 }
+                KBYTTab *tabItem = [[KBYTTab alloc] initWithTabDetails:tabR];
+                [channelTabs addObject:tabItem];
             }];
+            
             NSArray *banner = [jsonDict recursiveObjectForKey:@"imageBannerViewModel"][@"image"][@"sources"];
             NSString *lastBanner = [banner lastObject][@"url"];
             //NSLog(@"our banners: %@", lastBanner);
@@ -2393,7 +2396,16 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSDictionary *thumb = [thumbnails lastObject];
             //NSInteger width = [thumb[@"height"] integerValue];
             NSString *imagePath = [thumb[@"url"] highResChannelURL];
+            
+            if (!details) {
+                NSDictionary *pageHeader = [jsonDict recursiveObjectForKey:@"pageHeaderRenderer"];
+                title = pageHeader[@"pageTitle"];
+                NSDictionary *imageContainer = [[[pageHeader recursiveObjectForKey:@"image"] recursiveObjectForKey:@"image"][@"sources"] lastObject];
+                DLog(@"imageContainer: %@", imageContainer);
+                imagePath = imageContainer[@"url"];
+            }
             __block KBYTChannel *channel = [KBYTChannel new];
+            channel.tabs = channelTabs;
             if ([title isKindOfClass:[NSDictionary class]]){
                 channel.title = title[@"simpleText"];
             } else {
@@ -2417,13 +2429,13 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
               //  channel.continuationTokens = ccs;
             //}
             channel.banner = lastBanner;
-            
+            /*
             if (activeIndex > 0) {
                 channel.activeSection = activeIndex;
                 DLog(@"getting data for specific shelf: %lu", activeIndex);
                 id cc = [activeTab recursiveObjectForKey:@"continuationCommand"][@"token"];
-                DLog(@"continuation command: %@ for %@", cc, activeTitle);
-                if (!continuationToken && cc) {
+                //DLog(@"continuation command: %@ for %@", cc, activeTitle);
+                /*if (!continuationToken && cc) {
                     DLog(@"didn't originally load from continuation token, but we want to initially");
                     [self getChannelVideosAlt:channelID params:params continuation:cc completionBlock:completionBlock failureBlock:failureBlock];
                     return;
@@ -2433,6 +2445,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 DLog(@"item count: %lu", items.count);
                 return;
             }
+             
             if (continuationToken) {
                 NSInteger activeSect = channel.activeSection;
                 DLog(@"active section: %lu", activeSect);
@@ -2467,15 +2480,20 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 }];
                 DLog(@"content: %@", content);
             }
+             */
             //DLog(@"details: %@", details);
             //title,subtitle,thumbnails
             //[jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"music.plist"] atomically:true];
             recursiveObjectsLike(@"itemSectionRenderer", jsonDict, sect);
             DLog(@"section count: %lu", sect.count);
             //NSArray *sect = [jsonDict recursiveObjectsLikeKey:@"itemSectionRenderer"];
-            if (sect.count == 0) {
+            if (sect.count == 0 || activeIndex > 0) {
                 NSDictionary *richGridRenderer = [jsonDict recursiveObjectLikeKey:@"richGridRenderer"];
-                sect = richGridRenderer[@"contents"];
+                NSArray *tempSect = richGridRenderer[@"contents"];
+                if (tempSect.count > 0){
+                    sect = tempSect;
+                    DLog(@"rich grid count: %lu", sect.count);
+                }
                 //TLog(@"no content for some retarded reason");
             }
             __block NSMutableArray *sections = [NSMutableArray new];
@@ -2483,6 +2501,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             [sect enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSArray *shelf = [obj recursiveObjectLikeKey:@"shelfRenderer"];
                 if (!shelf) { //no shelf
+                    DLog(@"NO SHELF FOR U!");
                     NSDictionary *video = [obj recursiveObjectLikeKey:@"videoRenderer"];
                     if (!backup){
                         backup = [KBSection defaultSection];
@@ -2504,6 +2523,43 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 res.channelId = channel.channelID;
                                 [backup addResult:res];
                             }
+                        } else {
+                            TLog(@"no channel renderer, videos or continuation commands");
+                            recursiveObjectsLike(@"shortsLockupViewModel", obj, shorts);
+                            DLog(@"reels: %lu", shorts.count);
+                            if (shorts.count > 0) {
+                                [shorts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                    KBYTSearchResult *res = [self searchResultFromShortRenderer:obj inChannel:channel];
+                                    [backup addResult:res];
+                                }];
+                            } else { //no shorts check channel
+                                recursiveObjectsLike(@"channelRenderer", obj, channelRenderers);
+                                DLog(@"channelRenderers: %lu", channelRenderers.count);
+                                if (channelRenderers.count > 0) {
+                                    [channelRenderers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                        KBYTSearchResult *res = [self searchResultFromChannelRenderer:obj inChannel:channel];
+                                        [backup addResult:res];
+                                    }];
+                                } else { //no channel, check playlist
+                                    recursiveObjectsLike(@"playlistRenderer", obj, playlistRenderers);
+                                    DLog(@"playlistRenderers: %lu", playlistRenderers.count);
+                                    if (playlistRenderers.count > 0) {
+                                        [playlistRenderers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                            KBYTSearchResult *res = [self searchResultFromPlaylistRenderer:obj inChannelID:channel.channelID];
+                                            [backup addResult:res];
+                                        }];
+                                    } else { //no playlist renderer, check station
+                                        recursiveObjectsLike(@"stationRenderer", obj, stationRenderers);
+                                        DLog(@"stationRenderers: %lu", stationRenderers.count);
+                                        if (stationRenderers.count > 0) {
+                                            [stationRenderers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                                                KBYTSearchResult *res = [self searchResultFromStationRenderer:obj inChannel:channel];
+                                                [backup addResult:res];
+                                            }];
+                                        }
+                                    }
+                                }
+                            }
                         }
                         
                     }
@@ -2514,6 +2570,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         backup = nil;
                     }
                 } else { //there is a shelf
+                    //DLog(@"we have a shelf");
                     if (backup) {
                         //DLog(@"backup: %@", backup);
                         if (backup.content.count > 0) {
@@ -2524,7 +2581,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     //NSDictionary *rend = [renderers firstObject];
                     KBSection *section = [KBSection defaultSection];
                     section.sectionResultType = kYTSearchResultTypeChannel;
-                    NSDictionary *title = [shelf recursiveObjectForKey:@"title"];
+                    NSDictionary *shelfDict = (NSDictionary *)shelf;
+                    NSDictionary *title = shelfDict[@"title"];//[shelf recursiveObjectForKey:@"title"];
                     NSDictionary *endpoint = [shelf recursiveObjectForKey:@"endpoint"];
                     section.title = title[@"simpleText"] ? title[@"simpleText"] : [title recursiveObjectForKey:@"text"];
                     
@@ -2570,23 +2628,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             [stations enumerateObjectsUsingBlock:^(id  _Nonnull station, NSUInteger idx, BOOL * _Nonnull stop) {
                                 NSString *firstKey = [[station allKeys] firstObject];
                                 NSDictionary *playlist = station[firstKey];
-                                /*
-                                NSDictionary *title = [playlist recursiveObjectForKey:@"title"];
-                                NSString *cis = [playlist recursiveObjectForKey:@"playlistId"];
-                                NSArray *thumbnails = [playlist recursiveObjectForKey:@"thumbnail"][@"thumbnails"];
-                                NSString *last = thumbnails.lastObject[@"url"];
-                                NSDictionary *desc = [playlist recursiveObjectForKey:@"description"];
-                                KBYTSearchResult *searchItem = [KBYTSearchResult new];
-                                searchItem.title = title[@"simpleText"] ? title[@"simpleText"] : [title recursiveObjectForKey:@"text"];;
-                                searchItem.duration = [playlist[@"videoCountText"] recursiveObjectForKey:@"text"];
-                                searchItem.videoId = cis;
-                                searchItem.channelId = channel.channelID;
-                                searchItem.imagePath = last;
-                                searchItem.author = channel.title;
-                                searchItem.resultType = kYTSearchResultTypePlaylist;
-                                searchItem.details = [desc recursiveObjectForKey:@"simpleText"];
-                                //NSLog(@"searchItem: %@", searchItem);
-                                 */
+                                
                                 KBYTSearchResult *searchItem = [self searchResultFromStationRenderer:playlist inChannel:channel];
                                 [content addObject:searchItem];
                             }];
@@ -2599,23 +2641,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 [playlistRenders enumerateObjectsUsingBlock:^(id  _Nonnull station, NSUInteger idx, BOOL * _Nonnull stop) {
                                     NSString *firstKey = [[station allKeys] firstObject];
                                     NSDictionary *playlist = station[firstKey];
-                                    /*
-                                    NSDictionary *title = [playlist recursiveObjectForKey:@"title"];
-                                    NSString *cis = [playlist recursiveObjectForKey:@"playlistId"];
-                                    NSArray *thumbnails = [playlist recursiveObjectForKey:@"thumbnail"][@"thumbnails"];
-                                    NSString *last = thumbnails.lastObject[@"url"];
-                                    NSDictionary *desc = [playlist recursiveObjectForKey:@"description"];
-                                    KBYTSearchResult *searchItem = [KBYTSearchResult new];
-                                    searchItem.title = title[@"simpleText"] ? title[@"simpleText"] : [title recursiveObjectForKey:@"text"];
-                                    searchItem.duration = playlist[@"videoCountShortText"][@"simpleText"];
-                                    searchItem.videoId = cis;
-                                    searchItem.imagePath = last;
-                                    searchItem.channelId = channel.channelID;
-                                    searchItem.age = playlist[@"publishedTimeText"][@"simpleText"];
-                                    searchItem.author = channel.title;
-                                    searchItem.resultType = kYTSearchResultTypePlaylist;
-                                    searchItem.details = [desc recursiveObjectForKey:@"simpleText"];
-                                     */
                                     KBYTSearchResult *searchItem = [self searchResultFromPlaylistRenderer:playlist inChannelID:channel.channelID];
                                     [content addObject:searchItem];
                                 }];
@@ -2629,74 +2654,18 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         NSDictionary *channelDict = channelObj[firstKey];
                                         
                                         KBYTSearchResult *searchItem = [self searchResultFromChannelRenderer:channelDict inChannel:channel];
-                                        /*
-                                        NSDictionary *title = channelDict[@"title"];//[channel recursiveObjectForKey:@"title"];
-                                        NSString *cis = channelDict[@"channelId"];
-                                        NSArray *thumbnails = channelDict[@"thumbnail"][@"thumbnails"];
-                                        NSDictionary *longBylineText = channelDict[@"longBylineText"];
-                                        NSDictionary *thumb = thumbnails.lastObject;
-                                        NSString *imagePath = thumb[@"url"];
-                                        NSString *originalImagePath = imagePath;
-                                        NSInteger width = [thumb[@"height"] integerValue];
-                                        if (width < 400){
-                                            //TLog(@"generate thumb manually: %lu", width);
-                                            
-                                            imagePath = [self hiRestChannelImageFromDict:thumb];
-                                        }
-                                        if (![imagePath containsString:@"https:"]){
-                                            imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
-                                        }
-                                        KBYTSearchResult *searchItem = [KBYTSearchResult new];
-                                        searchItem.author = [longBylineText recursiveObjectForKey:@"text"];
-                                        searchItem.title = title[@"simpleText"];
-                                        searchItem.author = title[@"simpleText"];
-                                        searchItem.duration = [channel[@"videoCountText"] recursiveObjectForKey:@"text"];
-                                        searchItem.videoId = cis;
-                                        searchItem.channelId = channelID;
-                                        searchItem.imagePath = imagePath;
-                                        searchItem.originalImagePath = originalImagePath;
-                                        searchItem.resultType = kYTSearchResultTypeChannel;
-                                        searchItem.details = [channelDict recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
-                                        NSArray *itemDesc = [channelDict recursiveObjectForKey:@"videoCountText"][@"runs"];
-                                        if (itemDesc){
-                                            searchItem.itemDescription = [itemDesc runsToString];
-                                        } else {
-                                            //try subscriberCountText
-                                            searchItem.itemDescription = channelDict[@"subscriberCountText"][@"simpleText"];
-                                            //TLog(@"desc: %@", searchItem.itemDescription);
-                                        }
-                                        //NSLog(@"channel: %@ keys: %@", searchItem, channel.allKeys);
-                                         */
                                         [content addObject:searchItem];
                                     }];
                                     
                                 } else { //shorts maybe?
                                     //NSLog(@"rend: %@", rend);
                                     recursiveObjectsLike(@"shortsLockupViewModel", shelf, shorts);
-                                    DLog(@"reels: %lu", stations.count);
+                                    DLog(@"reels: %lu", shorts.count);
                                     if (shorts.count == 0){
                                         //NSLog(@"rend: %@", shelf);
                                     }
                                     [shorts enumerateObjectsUsingBlock:^(id  _Nonnull reel, NSUInteger idx, BOOL * _Nonnull stop) {
                                         NSDictionary *reelObject = reel;
-                                        /*
-                                        NSArray *thumbnails = [reelObject recursiveObjectForKey:@"thumbnail"][@"sources"];
-                                        NSString *last = thumbnails.lastObject[@"url"];
-                                        NSDictionary *overlay = reelObject[@"overlayMetadata"];
-                                        //DLog(@"overlay meta: %@", overlay);
-                                        //DLog(@"keys: %@", [reelObject allKeys]);
-                                        KBYTSearchResult *searchItem = [KBYTSearchResult new];
-                                        searchItem.title = overlay[@"primaryText"][@"content"];
-                                        searchItem.videoId = [reelObject recursiveObjectForKey:@"videoId"];//reelObject[@"videoId"];
-                                        searchItem.views = overlay[@"secondaryText"][@"content"];
-                                        searchItem.resultType = kYTSearchResultTypeVideo;
-                                        searchItem.imagePath = last;
-                                        searchItem.channelId = channelID;
-                                        searchItem.age = [reelObject recursiveObjectForKey:@"timestampText"][@"simpleText"];
-                                        searchItem.author = channel.title;
-                                        searchItem.duration = @"Short";
-                                        //NSLog(@"searchItem: %@", searchItem);
-                                         */
                                         KBYTSearchResult *searchItem = [self searchResultFromShortRenderer:reelObject inChannel:channel];
                                         [content addObject:searchItem];
                                     }];
@@ -2718,47 +2687,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             //NSLog(@"section count: %lu", sections.count);
             //NSLog(@"one: %@", [sections firstObject]);
             channel.sections = sections;
-            /*
-             __block NSMutableArray *items = [NSMutableArray new];
-             __block NSMutableArray *playlists = [NSMutableArray new];
-             
-            NSMutableArray *vrArray = [NSMutableArray new];
-            [jsonDict recursiveInspectObjectLikeKey:@"videoRenderer" saving:vrArray];
-            NSMutableArray *plArray = [NSMutableArray new];
-            [jsonDict recursiveInspectObjectLikeKey:@"stationRenderer" saving:plArray];
-            if ([vrArray count] > 0){
-                [vrArray enumerateObjectsUsingBlock:^(id  _Nonnull video, NSUInteger idx, BOOL * _Nonnull stop) {
-                    KBYTSearchResult *result = [self searchResultFromVideoRenderer:video];
-                    //DLog(@"shelf item %lu subindex %lu is a video object", idx, idx2);
-                    [items addObject:result];
-                    //DLog(@"result: %@", result);
-                    
-                }];
-            }
             
-            if ([plArray count] > 0){
-                [plArray enumerateObjectsUsingBlock:^(id  _Nonnull playlist, NSUInteger idx, BOOL * _Nonnull stop) {
-                    //NSLog(@"playlist: %@", playlist);
-                    NSDictionary *title = [playlist recursiveObjectForKey:@"title"];
-                    NSString *cis = [playlist recursiveObjectForKey:@"playlistId"];
-                    NSArray *thumbnails = playlist[@"thumbnail"][@"thumbnails"];
-                    NSDictionary *desc = playlist[@"description"];
-                    KBYTSearchResult *searchItem = [KBYTSearchResult new];
-                    searchItem.title = title[@"simpleText"];
-                    searchItem.duration = [playlist[@"videoCountText"] recursiveObjectForKey:@"text"];
-                    searchItem.videoId = cis;
-                    searchItem.imagePath = thumbnails.lastObject[@"url"];
-                    searchItem.resultType = kYTSearchResultTypePlaylist;
-                    searchItem.details = [desc recursiveObjectForKey:@"simpleText"];
-                    [playlists addObject:searchItem];
-                    //DLog(@"result: %@", searchItem);
-                    
-                }];
-            }
-            channel.channelID = channelID;
-            channel.videos = items;
-            channel.playlists = playlists;
-            */
             //get the post body from the url above, gets the initial raw info we work with
             
             if (channel.allSectionItems.count == 0) {

@@ -98,6 +98,10 @@
         NSArray *foundItems = [history filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"channelID == %@", channelDetails[@"channelID"]]];
         if (foundItems.count > 0) {
             //TLog(@"items already exists: %@", foundItems);
+            NSInteger index = [history indexOfObject:[foundItems firstObject]];
+            if (index == 0) {
+                return;
+            }
             [newArray removeObjectsInArray:foundItems];
         }
         //[newArray addObject:channel];

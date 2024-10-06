@@ -24,6 +24,20 @@
     return __channel;
 }
 
+- (KBYTTab *)selectedTab {
+    if (self.tabBar) {
+        UITabBarItem *selectedItem = self.tabBar.selectedItem;
+        TLog(@"selectedItem: %@", selectedItem);
+        NSInteger index = [self.tabBar.items indexOfObject:selectedItem];
+        TLog(@"did select item at index: %lu", index);
+        if (index != NSNotFound) {
+            KBYTTab *tab = self.tabDetails[@(index)];
+            return tab;
+        }
+    }
+    return nil;
+}
+
 - (void)setChannel:(KBYTChannel *)channel {
     __channel = channel;
     [self channelUpdated];
@@ -37,8 +51,8 @@
     
 }
 
-- (void)fetchChannelDetails {
-    [[KBYourTube sharedInstance] getChannelVideosAlt:self.channelID params:nil continuation:nil completionBlock:^(KBYTChannel *channel) {
+- (void)fetchChannelDetails:(KBYTTab *)tab {
+    [[KBYourTube sharedInstance] getChannelVideosAlt:self.channelID params:[tab params] continuation:nil completionBlock:^(KBYTChannel *channel) {
         self.channel = channel;
     } failureBlock:^(NSString *error) {
         DLog(@"fetch channel failed with error: %@", error);
@@ -95,7 +109,20 @@
     NSURL *imageURL =  [NSURL URLWithString:self.channel.banner];
     [self.headerview.bannerImageView sd_setImageWithURL:imageURL placeholderImage:banner options:SDWebImageAllowInvalidSSLCertificates];
     [[TYTVHistoryManager sharedInstance] addChannelToHistory:[self.channel dictionaryRepresentation]];
+    if (self.channel.tabs.count > 1) {
+        [self setTabDetails:self.channel.tabs];
+    }
 }
+
+- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
+    LOG_SELF;
+    NSInteger index = [tabBar.items indexOfObject:item];
+    TLog(@"did select item at index: %lu", index);
+    KBYTTab *tab = self.tabDetails[@(index)];
+    TLog(@"found tab: %@ params: %@", tab.title, tab.params);
+    [self fetchChannelDetails:tab];
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -123,7 +150,7 @@
     self = [super init];
     if (self) {
         self.channelID = channelID;
-        [self fetchChannelDetails];
+        [self fetchChannelDetails:nil];
     }
     return self;
 }

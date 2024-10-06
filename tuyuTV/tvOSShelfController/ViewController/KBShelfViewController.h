@@ -23,6 +23,8 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
     ScrollDirectionCrazy,
 };
 
+@class KBYTTab;
+
 //UITableViewController
 @interface KBShelfViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSourcePrefetching, UITabBarDelegate>
 
@@ -38,7 +40,7 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 @property (nonatomic, strong) NSLayoutConstraint *tableTopConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *tabBarTopConstraint;
 @property (nonatomic, strong) UITabBar *tabBar;
-@property (nonatomic, strong) NSArray *tabDetails;
+@property (nonatomic, strong) NSArray <KBYTTab *> *tabDetails;
 
 - (NSArray *)arrayForSection:(NSInteger)section;
 - (KBYTChannelHeaderView *)headerview;

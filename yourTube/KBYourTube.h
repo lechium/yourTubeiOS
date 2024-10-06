@@ -186,6 +186,15 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (void)addResults:(NSArray <KBYTSearchResult *>*)results;
 @end
 
+@interface KBYTTab: NSObject
+
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *browseId;
+@property (nonatomic, strong) NSString *params;
+@property (nonatomic, strong) NSArray <KBSection *>*contents;
+- (id)initWithTabDetails:(NSDictionary *)tabDetails;
+@end
+
 @interface KBYTChannel: NSObject
 
 @property (nonatomic, strong) NSString *title;
@@ -203,7 +212,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
 @property (nonatomic, strong) NSArray <KBSection *> *sections;
 @property (readwrite, assign) NSInteger activeSection; //defaults to 0
-
+@property (nonatomic, strong) NSArray <KBYTTab *> *tabs;
 - (KBSection *)sectionMatching:(KBSection *)section;
 - (BOOL)mergeSection:(KBSection *)section;
 - (NSArray <KBYTSearchResult *>*)allSectionItems;
@@ -248,14 +257,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 #import "Ono/ONOXMLDocument.h"
 
-@interface KBYTTab: NSObject
 
-@property (nonatomic, strong) NSString *title;
-@property (nonatomic, strong) NSString *browseId;
-@property (nonatomic, strong) NSString *params;
-@property (nonatomic, strong) NSArray <KBSection *>*contents;
-- (id)initWithTabDetails:(NSDictionary *)tabDetails;
-@end
 
 @interface KBYourTube : NSObject {
     NSInteger bestTag;
