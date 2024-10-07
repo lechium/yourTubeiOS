@@ -40,6 +40,7 @@
     section.className = @"KBSection";
     section.size = @"320x240";
     section.type = @"standard";
+    section.channelDisplayType = ChannelDisplayTypeShelf;
     return section;
 }
 

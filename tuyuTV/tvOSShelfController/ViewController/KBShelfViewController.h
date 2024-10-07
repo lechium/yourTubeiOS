@@ -32,6 +32,7 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 @property (nonatomic, copy, nullable) void (^itemSelectedBlock)(id<KBCollectionItemProtocol> item, BOOL longPress, NSInteger row, NSInteger section);
 @property (nonatomic, copy, nullable) void (^itemFocusedBlock)(NSInteger row, NSInteger section, UICollectionView *collectionView);
 @property (nonatomic, strong) UIImage *placeholderImage;
+@property (readwrite, assign) NSInteger selectedSection;
 @property (nonatomic, strong) NSArray <KBSectionProtocol> *sections;
 @property (nonatomic, strong) UITableView *tableView;
 @property (readwrite, assign) BOOL useRoundedEdges;
@@ -42,6 +43,7 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 @property (nonatomic, strong) UITabBar *tabBar;
 @property (nonatomic, strong) NSArray <KBYTTab *> *tabDetails;
 
+- (NSInteger)selectedTabIndex;
 - (NSArray *)arrayForSection:(NSInteger)section;
 - (KBYTChannelHeaderView *)headerview;
 - (void)updateAutoScroll;

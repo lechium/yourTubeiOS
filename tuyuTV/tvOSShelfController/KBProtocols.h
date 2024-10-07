@@ -10,6 +10,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef enum {
+    ChannelDisplayTypeShelf,
+    ChannelDisplayTypeGrid,
+} ChannelDisplayType;
+
+typedef enum {
     SectionTypeBanner = 0,
     SectionTypeStandard = 1,
 } SectionType;
@@ -37,6 +42,7 @@ typedef enum {
 - (BOOL)autoScroll;
 - (NSArray <KBCollectionItemProtocol>*)content;
 - (NSString *)size;
+- (ChannelDisplayType)channelDisplayType;
 @optional
 - (NSString *)browseId;
 - (NSString *)continuationToken;

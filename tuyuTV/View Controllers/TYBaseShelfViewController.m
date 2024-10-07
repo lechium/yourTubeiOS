@@ -239,11 +239,21 @@
         KBSection *currentSection = self_weak_.sections[section]; //TODO: crash proof with categories
         KBYTChannel *channel = currentSection.channel;
         //DLog(@"channel: %@", channel);
+        //DLog(@"currentSection params: %@", currentSection.params);
         if (currentSection.params) {
-            //DLog(@"channel has continuation token: %@", channel.continuationToken);
-            if (row+1 == currentSection.content.count) {
-                TLog(@"get a new page maybe?");
-                [self_weak_ getNextPage:currentSection inCollectionView:collectionView];
+            if (currentSection.channelDisplayType == ChannelDisplayTypeGrid) {
+                NSInteger rowCount = currentSection.content.count / 5;
+                NSInteger currentRow = row / 5;
+                if (currentRow+1 >= rowCount) {
+                    DLog(@"get a new page for grid maybe");
+                    [self_weak_ getNextPage:currentSection inCollectionView:collectionView];
+                }
+            } else {
+                //DLog(@"channel has continuation token: %@", channel.continuationToken);
+                if (row+1 == currentSection.content.count) {
+                    DLog(@"get a new page maybe?");
+                    [self_weak_ getNextPage:currentSection inCollectionView:collectionView];
+                }
             }
         }
     };

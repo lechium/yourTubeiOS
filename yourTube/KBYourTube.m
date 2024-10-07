@@ -2362,6 +2362,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             __block NSDictionary *activeTab = nil;
             __block NSInteger activeIndex = 0;
             __block NSString *activeTitle = nil;
+            __block ChannelDisplayType defaultDisplayType = ChannelDisplayTypeShelf;
+            __block NSString *activeSectionParms = nil;
+            __block NSString *activeSectionContinuationToken = nil;
+            
             [tabs enumerateObjectsUsingBlock:^(id  _Nonnull tab, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSDictionary *tabR = tab[@"tabRenderer"];
                 NSString *tabTitle = tabR[@"title"];
@@ -2371,6 +2375,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     activeTab = tabR;
                     activeIndex = idx;
                     activeTitle = tabTitle;
+                    activeSectionContinuationToken = [activeTab recursiveObjectForKey:@"continuationCommand"][@"token"];
+                    DLog(@"activeSectionContinuationToken: %@ length: %lu", activeSectionContinuationToken, activeSectionContinuationToken.length);
+                    if (activeSectionContinuationToken.length < 1000) {
+                        activeSectionContinuationToken = nil;
+                    }
+                    activeSectionParms = activeTab[@"endpoint"][@"browseEndpoint"][@"params"];
+                    DLog(@"activeSectionParms: %@", activeSectionParms);
+                    //DLog(@"continuation command: %@ for %@", cc, activeTitle);
                     //*stop = TRUE;
                 }
                 KBYTTab *tabItem = [[KBYTTab alloc] initWithTabDetails:tabR];
@@ -2420,11 +2432,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 channel.subtitle = subtitle[@"simpleText"];
             }
             channel.channelID = channelID;
+            /*
             if ([subscriberCount respondsToSelector:@selector(isEqualToString:)]){
                 channel.subscribers = (NSString*)subscriberCount;
             } else {
                 channel.subscribers = subscriberCount[@"simpleText"];
-            }
+            }*/
             if (!channel.subscribers) {
                 NSDictionary *contentMetadataViewModel = [pageHeader recursiveObjectForKey:@"contentMetadataViewModel"];
                 //DLog(@"contentMetadataViewModel: %@", contentMetadataViewModel);
@@ -2432,6 +2445,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 NSArray *metadataRows = contentMetadataViewModel[@"metadataRows"];
                 recursiveObjectsFor(@"text", contentMetadataViewModel, textsDicts);
                 __block NSMutableString *newString = [NSMutableString new];
+                __block NSString *subscriberString = nil;
                 [textsDicts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                     NSString *text = obj[@"content"];
                     if (text) {
@@ -2441,9 +2455,12 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     if (idx < metadataRows.count) {
                         [newString appendFormat:@" %@ ", delimiter];
                     }
+                    if ([text containsString:@"subscribers"]){
+                        subscriberString = text;
+                    }
                 }];
-                DLog(@"newString: %@", newString);
-                channel.subscribers = newString;
+                DLog(@"subscriberString: %@", subscriberString);
+                channel.subscribers = subscriberString;
             }
             channel.image = imagePath;
             channel.url = [details recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
@@ -2458,7 +2475,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 DLog(@"getting data for specific shelf: %lu", activeIndex);
                 id cc = [activeTab recursiveObjectForKey:@"continuationCommand"][@"token"];
                 //DLog(@"continuation command: %@ for %@", cc, activeTitle);
-                /*if (!continuationToken && cc) {
+                if (!continuationToken && cc) {
                     DLog(@"didn't originally load from continuation token, but we want to initially");
                     [self getChannelVideosAlt:channelID params:params continuation:cc completionBlock:completionBlock failureBlock:failureBlock];
                     return;
@@ -2515,6 +2532,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 NSArray *tempSect = richGridRenderer[@"contents"];
                 if (tempSect.count > 0){
                     sect = tempSect;
+                    defaultDisplayType = ChannelDisplayTypeGrid;
                     DLog(@"rich grid count: %lu", sect.count);
                 }
                 //TLog(@"no content for some retarded reason");
@@ -2524,11 +2542,17 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             [sect enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSArray *shelf = [obj recursiveObjectLikeKey:@"shelfRenderer"];
                 if (!shelf) { //no shelf
-                    DLog(@"NO SHELF FOR U!");
                     NSDictionary *video = [obj recursiveObjectLikeKey:@"videoRenderer"];
                     if (!backup){
                         backup = [KBSection defaultSection];
                     }
+                    if (activeSectionParms) {
+                        backup.params = activeSectionParms;
+                    }
+                    if (activeSectionContinuationToken) {
+                        backup.continuationToken = activeSectionContinuationToken;
+                    }
+                    backup.channelDisplayType = defaultDisplayType;
                     KBYTSearchResult *res = [self searchResultFromVideoRenderer:video];
                     if (res.videoId) {
                         [backup addResult:res];
@@ -2607,7 +2631,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                     //TLog(@"idx: %lu of %lu", idx, [sect count]);
                     if (idx+1 == sect.count && backup){
-                        TLog(@"adding straggler: %@", backup);
+                        //TLog(@"adding straggler: %@", backup);
                         [sections addObject:backup];
                         backup = nil;
                     }

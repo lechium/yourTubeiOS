@@ -29,7 +29,6 @@
 @property (nonatomic, assign) CGFloat lastScrollViewOffsetY;
 @property (nonatomic, strong) NSMutableDictionary *contentOffsetDictionary;
 @property (nonatomic, strong) NSTimer *bannerTimer;
-@property (readwrite, assign) NSInteger selectedSection;
 @property (nonatomic, strong) NSCache *cellCache;
 @property (nonatomic, strong) NSArray *cellArray;
 @property ScrollDirection scrollDirection;
@@ -147,6 +146,13 @@
         }
         [self.view layoutIfNeeded];
     }
+}
+
+- (NSInteger)selectedTabIndex {
+    if (!self.tabBar) {
+        return NSNotFound;
+    }
+    return [self.tabBar.items indexOfObject:self.tabBar.selectedItem];
 }
 
 - (void)collapseHeaderAnimated:(BOOL)animated {
@@ -397,6 +403,7 @@
         [cell addGestureRecognizer:longpress];
     }
     cell.section = section;
+    cell.channelDisplayType = section.channelDisplayType;
     [cell setCollectionViewDataSourceDelegate:self section:indexPath.section];
     return cell;
 }
@@ -425,6 +432,9 @@
     if (section.sectionType == KBSectionTypeBanner){
         return section.imageHeight + 100;
     } else {
+        if (section.channelDisplayType == ChannelDisplayTypeGrid) {
+            return section.imageHeight * 4;
+        }
         return section.imageHeight + 170; //need extra space for the labels and whatnot
     }
 }
@@ -466,13 +476,23 @@
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
     KBDataItemCollectionViewCell *ourCell = (KBDataItemCollectionViewCell*)cell;
     NSInteger realSection = [collectionView section];
-    KBSection *section = self.sections[realSection];
+    KBSection *section = self.sections[@(realSection)];
     if (section.sectionType == KBSectionTypeBanner) {
         ourCell.label.text = @"";
         ourCell.imageHeightConstraint.constant = section.imageHeight;
     } else {
         ourCell.imageHeightConstraint.constant = section.imageHeight;
     }
+    if (section.channelDisplayType == ChannelDisplayTypeGrid) {
+        NSInteger rowCount = section.content.count / 5;
+        NSInteger currentRow = indexPath.row / 5;
+        //TLog(@"indexRow : %lu currentRow: %lu rowCount: %lu, searchCount: %lu", indexPath.row, currentRow, rowCount, self.searchResults.count);
+        if (currentRow+1 >= rowCount) {
+            //DLog(@"get next page as grid");
+            //[self getNextPage];
+        }
+    }
+   
 }
 
 - (void)focusedCellIndex:(NSInteger)cellIndex inSection:(NSInteger)section inCollectionView:(UICollectionView *)collectionView {
@@ -494,12 +514,29 @@
             //DLog(@"changed from section: %lu to %lu", self.selectedSection, sv.section);
         }
         self.selectedSection = sv.section;
+        
         if ([self headerview] || self.tabBar) {
-            if (sv.section == 0) {
-                [self expandHeaderAnimated:true];
-            } else if (sv.section > 0){
-                [self collapseHeaderAnimated:true];
+            KBSection *currentSection = self.sections[@(self.selectedSection)];
+            if (currentSection.channelDisplayType == ChannelDisplayTypeGrid) {
+                if ([cell isKindOfClass:UICollectionViewCell.class]) {
+                    NSInteger row = [sv indexPathForCell:cell].row;
+                    NSInteger rowCount = currentSection.content.count / 5;
+                    NSInteger currentRow = row / 5;
+                    if (currentRow == 0) {
+                        [self expandHeaderAnimated:true];
+                    } else if (currentRow > 0) {
+                        [self collapseHeaderAnimated:true];
+                    }
+                    //self.focusedCollectionCell = cell;
+                }
+            } else { //shelf style
+                if (sv.section == 0) {
+                    [self expandHeaderAnimated:true];
+                } else if (sv.section > 0){
+                    [self collapseHeaderAnimated:true];
+                }
             }
+            
         }
         if ([cell isKindOfClass:UICollectionViewCell.class]) {
             NSInteger itemIndex = [sv indexPathForCell:cell].row;

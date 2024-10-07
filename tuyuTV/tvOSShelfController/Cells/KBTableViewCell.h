@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "KBProtocols.h"
 #import "KBSection.h"
 
 static NSString *CollectionViewCellIdentifier = @"CollectionViewCellIdentifier";
@@ -16,6 +17,7 @@ static NSString *CollectionViewCellIdentifier = @"CollectionViewCellIdentifier";
 @property (nonatomic, strong) UILabel *trayTitleLabel;
 @property (nonatomic, strong) KBSection *section;
 @property (nonatomic, strong) UICollectionView *collectionView;
+@property (readwrite, assign) ChannelDisplayType channelDisplayType;
 
 - (NSIndexPath *)focusedIndexPath;
 - (void)setCollectionViewDataSourceDelegate:(id<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching>)dataSourceDelegate section:(NSInteger)section;

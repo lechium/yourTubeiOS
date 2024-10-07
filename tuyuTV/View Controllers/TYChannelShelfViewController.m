@@ -10,6 +10,7 @@
 #import "KBYourTube.h"
 #import "EXTScope.h"
 #import "TYTVHistoryManager.h"
+#import "KBTableViewCell.h"
 
 @interface TYChannelShelfViewController () {
     KBYTChannelHeaderView *__headerView;
@@ -54,6 +55,35 @@
 - (void)fetchChannelDetails:(KBYTTab *)tab {
     [[KBYourTube sharedInstance] getChannelVideosAlt:self.channelID params:[tab params] continuation:nil completionBlock:^(KBYTChannel *channel) {
         self.channel = channel;
+        
+        NSInteger tabIndex = [self.channel.tabs indexOfObject:tab];
+        if (tabIndex > 0) {
+            DLog(@"isnt the first tab: %lu", tabIndex);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UICollectionViewCell *focusedCollectionCell = [self focusedCollectionCell];
+                if (focusedCollectionCell) {
+                    UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
+                    //DLog(@"found collectionView: %@", cv);
+                    [cv setNeedsLayout];
+                    [cv layoutIfNeeded];
+                    [cv reloadData];
+                } else {
+                    NSInteger currentSection = self.selectedSection;
+                    NSIndexPath *ip = [NSIndexPath indexPathForRow:currentSection inSection:0];
+                    //DLog(@"indexPath: %@", ip);
+                    KBTableViewCell *cell = (KBTableViewCell*)[self.tableView cellForRowAtIndexPath:ip];
+                    //DLog(@"found cell: %@", cell);
+                    UICollectionView *cv = [cell collectionView];
+                    //DLog(@"cv: %@", cv);
+                    [cv setNeedsLayout];
+                    [cv layoutIfNeeded];
+                    [cv reloadData];
+                }
+                
+            });
+            
+        }
+        //[self.tableView reloadData];
     } failureBlock:^(NSString *error) {
         DLog(@"fetch channel failed with error: %@", error);
     }];
@@ -116,8 +146,13 @@
 
 - (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
     LOG_SELF;
+    NSInteger currentIndex = [self selectedTabIndex];
     NSInteger index = [tabBar.items indexOfObject:item];
-    TLog(@"did select item at index: %lu", index);
+    TLog(@"did select item at index: %lu current INdex: %lu", index, currentIndex);
+    if (currentIndex == index) {
+        TLog(@"dont!");
+        return;
+    }
     KBYTTab *tab = self.tabDetails[@(index)];
     TLog(@"found tab: %@ params: %@", tab.title, tab.params);
     [self fetchChannelDetails:tab];

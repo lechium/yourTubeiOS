@@ -34,6 +34,7 @@ typedef enum {
 @property (nonatomic, strong) NSString *browseId; //optional
 @property (nonatomic, strong) NSString *continuationToken;
 @property (nonatomic, strong) NSString *params;
+@property (readwrite, assign) ChannelDisplayType channelDisplayType;
 
 + (KBSection *)defaultSection;
 - (BOOL)isLoaded;

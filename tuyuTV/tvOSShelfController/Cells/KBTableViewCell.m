@@ -14,11 +14,62 @@
 
 @interface KBTableViewCell() {
     KBSection *section_;
+    ChannelDisplayType _channelDisplayType;
 }
 @property KBDataItemCollectionViewCell *focusedView;
 @end
 
 @implementation KBTableViewCell
+
+- (void)setChannelDisplayType:(ChannelDisplayType)channelDisplayType {
+    BOOL changed = _channelDisplayType != channelDisplayType;
+    _channelDisplayType = channelDisplayType;
+    //if (changed) {
+        //[self channelDisplayTypeUpdated];
+        [self setNeedsLayout];
+        [self layoutIfNeeded];
+    //}
+}
+
+- (ChannelDisplayType)channelDisplayType {
+    return _channelDisplayType;
+}
+
+- (void)channelDisplayTypeUpdated {
+    if (!self.collectionView) {
+        return;
+    }
+    LOG_SELF;
+    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
+    CGSize defaultSize = CGSizeMake(308, 250);
+    CGFloat lineSpacing = 50;
+    CGFloat bottomInset = 0;
+    CGFloat minimumInteritemSpacing = 100;
+    if (self.section) {
+        defaultSize = CGSizeMake(self.section.imageWidth, self.section.imageHeight);
+    }
+    UICollectionViewScrollDirection scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    if (self.section.channelDisplayType == ChannelDisplayTypeGrid) {
+        lineSpacing = 100;
+        scrollDirection = UICollectionViewScrollDirectionVertical;
+        bottomInset = 100;
+        minimumInteritemSpacing = 50;
+    }
+    layout.itemSize = defaultSize;
+    switch (self.channelDisplayType) {
+        case ChannelDisplayTypeShelf:
+            //setup collection view here
+            layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+            
+            break;
+        case ChannelDisplayTypeGrid:
+            //setup grid collection view here
+            layout.scrollDirection = UICollectionViewScrollDirectionVertical;
+            
+            break;
+    }
+    [self.collectionView setCollectionViewLayout:layout animated:NO];
+}
 
 - (BOOL)canBecomeFocused {
     return NO;
@@ -56,8 +107,8 @@
     if (!(self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) return nil;
 
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.sectionInset = UIEdgeInsetsMake(10, 10, 9, 10);
-    layout.itemSize = CGSizeMake(320, 240);
+    layout.sectionInset = UIEdgeInsetsMake(0, 40, 0, 20);
+    layout.itemSize = CGSizeMake(308, 250);
     layout.minimumLineSpacing = 50;
     layout.minimumInteritemSpacing = 100;
     
@@ -102,8 +153,18 @@
     //DLog(@"indexPath: %@", self.collectionView.indexPath);
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
     CGSize defaultSize = CGSizeMake(308, 250);
+    CGFloat lineSpacing = 50;
+    CGFloat bottomInset = 0;
+    CGFloat minimumInteritemSpacing = 100;
     if (self.section) {
         defaultSize = CGSizeMake(self.section.imageWidth, self.section.imageHeight);
+    }
+    UICollectionViewScrollDirection scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    if (self.section.channelDisplayType == ChannelDisplayTypeGrid) {
+        lineSpacing = 100;
+        scrollDirection = UICollectionViewScrollDirectionVertical;
+        bottomInset = 100;
+        minimumInteritemSpacing = 50;
     }
     if (self.section.sectionType == KBSectionTypeBanner) {
         if (self.section.infinite) {
@@ -113,16 +174,17 @@
         }
         layout.itemSize = defaultSize;//CGSizeMake(640,480);//CGSizeMake(1700,400);
         layout.minimumInteritemSpacing = 1;
-        layout.minimumLineSpacing = 50;//30;
+        layout.minimumLineSpacing = lineSpacing;//30;
         
         //layout.sectionInset = UIEdgeInsetsMake(20, 0, 0, 20);
         layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     } else {
         [self.trayTitleLabel sizeToFit];
         layout.itemSize = defaultSize;//CGSizeMake(308, 250);
-        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        layout.sectionInset = UIEdgeInsetsMake(0, 40, 0, 20);
-        layout.minimumLineSpacing = 50;
+        layout.scrollDirection = scrollDirection;
+        layout.sectionInset = UIEdgeInsetsMake(0, 40, bottomInset, 20);
+        layout.minimumLineSpacing = lineSpacing;
+        layout.minimumInteritemSpacing = minimumInteritemSpacing;
         layout.sectionHeadersPinToVisibleBounds = YES;
         
     }
