@@ -2327,7 +2327,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             if (!banner) {
                 NSDictionary *headerDict = jsonDict[@"header"];
                 NSDictionary *bannerDict = [headerDict recursiveObjectForKey:@"banner"];
-                banner = [headerDict recursiveObjectForKey:@"banner"][@"thumbnails"];
+                banner = bannerDict[@"thumbnails"];
                 //DLog(@"headerDict: %@", headerDict);
                 //DLog(@"banner: %@", banner);
             }
@@ -2353,6 +2353,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSDictionary *pageHeader = [jsonDict recursiveObjectForKey:@"pageHeaderRenderer"];
             if (!details) {
                 title = pageHeader[@"pageTitle"];
+                if (!title) {
+                    title = jsonDict[@"header"][@"interactiveTabbedHeaderRenderer"][@"title"][@"simpleText"];
+                }
                 NSDictionary *imageContainer = [[[pageHeader recursiveObjectForKey:@"image"] recursiveObjectForKey:@"image"][@"sources"] lastObject];
                 //DLog(@"imageContainer: %@", imageContainer);
                 imagePath = imageContainer[@"url"];
@@ -2517,6 +2520,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 searchResult.channelId = browseId;
                                 searchResult.imagePath = url;
                                 searchResult.title = gameTitle;
+                                searchResult.author = channel.title;
                                 searchResult.params = browseEndpoint[@"params"];
                                 [backup addResult:searchResult];
                             } else {
