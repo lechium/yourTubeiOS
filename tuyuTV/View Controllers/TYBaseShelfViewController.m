@@ -16,7 +16,9 @@
 #import "TYAuthUserManager.h"
 #import "KBSection.h"
 
-@interface TYBaseShelfViewController ()
+@interface TYBaseShelfViewController () {
+    BOOL _gettingPage;
+}
 
 @property (nonatomic, strong) YTTVPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTQueuePlayer *player;
@@ -542,17 +544,26 @@
 }
 
 - (void)getNextPage:(KBSection *)currentSection inCollectionView:(UICollectionView *)cv {
+    if (_gettingPage) {
+        TLog(@"already getting a page, dont do anything");
+        return;
+    }
+    _gettingPage = true;
     NSString *ct = currentSection.continuationToken;
     KBYTChannel *currentChannel = currentSection.channel;
+    @weakify(self);
     TLog(@"currentSection.continuationToken: %@ channelID: %@", ct, currentSection.browseId);
     [[KBYourTube sharedInstance] getSection:currentSection params:currentSection.params continuation:ct completionBlock:^(KBSection *section) {
             currentSection.content = section.content;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [cv reloadData];//[self reloadCollectionViews];
+                @strongify(self);
+                self->_gettingPage = false;
             });
         
     } failureBlock:^(NSString *error) {
-        
+        @strongify(self);
+        self->_gettingPage = false;
     }];
     /*
     [[KBYourTube sharedInstance] getChannelVideosAlt:currentChannel.channelID params:nil continuation:ct completionBlock:^(KBYTChannel *channel) {

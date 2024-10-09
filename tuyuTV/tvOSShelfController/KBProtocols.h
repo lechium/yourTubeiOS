@@ -30,6 +30,7 @@ typedef enum {
 - (NSString *)secondaryTitle;
 - (NSString *)details;
 - (NSNumber *)resultType;
+- (NSString *)thumbnailSize;
 @end
 
 @protocol KBSectionProtocol <NSObject>

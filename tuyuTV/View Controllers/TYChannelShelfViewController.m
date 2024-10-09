@@ -64,9 +64,10 @@
                 if (focusedCollectionCell) {
                     UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
                     //DLog(@"found collectionView: %@", cv);
-                    [cv setNeedsLayout];
-                    [cv layoutIfNeeded];
+                    //[cv setNeedsLayout];
+                    //[cv layoutIfNeeded];
                     [cv reloadData];
+                    [cv.collectionViewLayout invalidateLayout];
                 } else {
                     NSInteger currentSection = self.selectedSection;
                     NSIndexPath *ip = [NSIndexPath indexPathForRow:currentSection inSection:0];
@@ -75,9 +76,10 @@
                     //DLog(@"found cell: %@", cell);
                     UICollectionView *cv = [cell collectionView];
                     //DLog(@"cv: %@", cv);
-                    [cv setNeedsLayout];
-                    [cv layoutIfNeeded];
+                    //[cv setNeedsLayout];
+                    //[cv layoutIfNeeded];
                     [cv reloadData];
+                    [cv.collectionViewLayout invalidateLayout];
                 }
                 
             });

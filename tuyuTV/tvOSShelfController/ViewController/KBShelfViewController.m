@@ -433,7 +433,9 @@
         return section.imageHeight + 100;
     } else {
         if (section.channelDisplayType == ChannelDisplayTypeGrid) {
-            return section.imageHeight * 4;
+            CGFloat imageHeight = section.imageHeight * 4;
+            //TLog(@"imageHeight: %.0f returned: %.0f", imageHeight, MIN(imageHeight, 1000));
+            return MIN(imageHeight, 1000);
         }
         return section.imageHeight + 170; //need extra space for the labels and whatnot
     }
