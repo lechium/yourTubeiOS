@@ -214,6 +214,8 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
 @property (nonatomic, strong) NSArray <KBSection *> *sections;
 @property (readwrite, assign) NSInteger activeSection; //defaults to 0
+@property (readwrite, assign) BOOL isAboutDetails;
+@property (nonatomic, strong) NSString *aboutDetails;
 @property (nonatomic, strong) NSArray <KBYTTab *> *tabs;
 - (KBSection *)sectionMatching:(KBSection *)section;
 - (BOOL)mergeSection:(KBSection *)section;

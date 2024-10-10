@@ -34,6 +34,7 @@
     self.bannerImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.bannerImageView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero];
     [self.bannerImageView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self];
+    self.bannerImageView.clipsToBounds = true;
     UIView *bannerOverlay = [[UIView alloc] initForAutoLayout];
     [self.bannerImageView addSubview:bannerOverlay];
     [bannerOverlay autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-80];
@@ -51,7 +52,7 @@
     stackView.axis = UILayoutConstraintAxisVertical;
     [self.bannerImageView addSubview:stackView];
     [stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:40];
-    [stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:-20];
+    [stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:20];
     //stackView.backgroundColor = [UIColor redColor];
     //[self.authorLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:99];
     //[self.authorLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:40];

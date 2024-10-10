@@ -16,6 +16,8 @@
     KBYTChannelHeaderView *__headerView;
     KBYTChannel *__channel;
     BOOL _tabBarSetup;
+    UIView *aboutView;
+    UILabel *aboutDescription;
 }
 @end
 
@@ -54,11 +56,17 @@
 
 - (void)fetchChannelDetails:(KBYTTab *)tab {
     [[KBYourTube sharedInstance] getChannelVideosAlt:self.channelID params:[tab params] continuation:nil completionBlock:^(KBYTChannel *channel) {
-        self.channel = channel;
-        
+        if (channel.isAboutDetails) {
+            self.channel.aboutDetails = channel.aboutDetails;
+            aboutView.alpha = 1.0;
+            aboutDescription.text = channel.aboutDetails;
+        } else {
+            aboutView.alpha = 0.0;
+            self.channel = channel;
+        }
         NSInteger tabIndex = [self.channel.tabs indexOfObject:tab];
         if (tabIndex > 0) {
-            DLog(@"isnt the first tab: %lu", tabIndex);
+            DLog(@"isnt the first tab: %lu title: %@", tabIndex, tab.title);
             dispatch_async(dispatch_get_main_queue(), ^{
                 UICollectionViewCell *focusedCollectionCell = [self focusedCollectionCell];
                 if (focusedCollectionCell) {
@@ -150,7 +158,7 @@
     LOG_SELF;
     NSInteger currentIndex = [self selectedTabIndex];
     NSInteger index = [tabBar.items indexOfObject:item];
-    TLog(@"did select item at index: %lu current INdex: %lu", index, currentIndex);
+    TLog(@"did select item at index: %lu current Index: %lu", index, currentIndex);
     if (currentIndex == index) {
         TLog(@"dont!");
         return;
@@ -160,9 +168,32 @@
     [self fetchChannelDetails:tab];
 }
 
+- (void)afterSetupTabBar {
+    LOG_SELF;
+    [aboutView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor].active = true;
+    [aboutView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = true;
+    [aboutView.topAnchor constraintEqualToAnchor:self.tabBar.bottomAnchor constant:50].active = true;
+    //[aboutView.heightAnchor constraintEqualToConstant:300].active = true;
+    [aboutView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = true;
+    aboutView.alpha = 0.0;
+    aboutView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    //[aboutDescription autoCenterInSuperview];
+    [aboutDescription.topAnchor constraintEqualToAnchor:aboutView.topAnchor constant:100].active = true;
+    [aboutDescription autoCenterVerticallyInSuperview];
+    aboutDescription.text = @"test description";
+    aboutDescription.numberOfLines = 0;
+    aboutDescription.lineBreakMode = NSLineBreakByWordWrapping;
+    [aboutDescription.widthAnchor constraintEqualToAnchor:aboutView.widthAnchor multiplier:0.75].active = true;
+    aboutView.userInteractionEnabled = false;
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    aboutView = [[UIView alloc] initForAutoLayout];
+    aboutDescription = [[UILabel alloc] initForAutoLayout];
+    [self.view addSubview:aboutView];
+    [aboutView addSubview:aboutDescription];
     // Do any additional setup after loading the view.
 }
 

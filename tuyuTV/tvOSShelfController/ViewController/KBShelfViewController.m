@@ -18,6 +18,10 @@
 #import "UIImage+Transform.h"
 #import "KBYourTube.h"
 
+#define HEADER_SIZE 260.0
+#define TABLE_TOP 100.0
+#define TAB_TOP 50.0
+
 @interface KBShelfViewController () {
     UILongPressGestureRecognizer *longPress;
     BOOL _firstAppearance;
@@ -53,7 +57,7 @@
         
         [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
         if (self.headerview) {
-            self.tabBarTopConstraint = [self.tabBar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:100];
+            self.tabBarTopConstraint = [self.tabBar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:TAB_TOP];
         } else {
             //[self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:100];
             self.tabBarTopConstraint = [self.tabBar autoPinEdgeToSuperviewMargin:ALEdgeTop];
@@ -71,7 +75,12 @@
         }];
         [self.tabBar setItems:tabBarItems animated:true];
         self.tabBar.delegate = self;
+        [self afterSetupTabBar];
     }
+}
+
+- (void)afterSetupTabBar {
+    
 }
 
 - (NSArray <KBYTTab *>*)tabDetails {
@@ -125,9 +134,9 @@
             self.headerview.alpha = 1.0;
             [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
             if (self.headerview) {
-                self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.headerview withOffset:self.tabBar ? 100 : 150];
+                self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.headerview withOffset:self.tabBar ? TAB_TOP : TABLE_TOP];
             } else {
-                self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.view withOffset:self.tabBar ? 100 : 0];
+                self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.view withOffset:self.tabBar ? TAB_TOP : 0];
                 self.tabBarTopConstraint.constant = 0;
             }
             self.tabBar.alpha = 1.0;
@@ -139,10 +148,10 @@
         self.tabBar.alpha = 1.0;
         [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
         if (self.headerview) {
-            self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.headerview withOffset:self.tabBar ? 100 : 150];
+            self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.headerview withOffset:self.tabBar ? TAB_TOP : TABLE_TOP];
         } else {
             self.tabBarTopConstraint.constant = 0;
-            self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.view withOffset:self.tabBar ? 100 : 0];
+            self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar ? self.tabBar : self.view withOffset:self.tabBar ? TAB_TOP : 0];
         }
         [self.view layoutIfNeeded];
     }
@@ -158,27 +167,27 @@
 - (void)collapseHeaderAnimated:(BOOL)animated {
     if (animated) {
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            self.headerTopConstraint.constant = -175;
+            self.headerTopConstraint.constant = -HEADER_SIZE;
             self.headerview.alpha = 0;
             self.tabBar.alpha = 0;
             [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
             if (self.headerview) {
-                self.tableTopConstraint =  [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:150];
+                self.tableTopConstraint =  [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:TABLE_TOP];
             } else {
-                self.tabBarTopConstraint.constant = -150;
+                self.tabBarTopConstraint.constant = -TABLE_TOP;
                 self.tableTopConstraint =  [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeTop];
             }
             [self.view layoutIfNeeded];
         } completion:nil];
     } else {
         self.headerview.alpha = 0;
-        self.headerTopConstraint.constant = -175;
+        self.headerTopConstraint.constant = -HEADER_SIZE;
         self.tabBar.alpha = 0;
         [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
         if (self.headerview) {
-            self.tableTopConstraint =  [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:150];
+            self.tableTopConstraint =  [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:TABLE_TOP];
         } else {
-            self.tabBarTopConstraint.constant = -150;
+            self.tabBarTopConstraint.constant = -TABLE_TOP;
             self.tableTopConstraint =  [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeTop];
         }
         [self.view layoutIfNeeded];
@@ -198,12 +207,13 @@
     KBYTChannelHeaderView *headerView = [self headerview];
     if (headerView) {
         [self.view addSubview:headerView];
-        self.headerTopConstraint = [headerView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+        //self.headerTopConstraint = [headerView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+        self.headerTopConstraint = [headerView autoPinEdgeToSuperviewEdge:ALEdgeTop];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
         [headerView autoPinEdgeToSuperviewEdge:ALEdgeRight];
         [headerView setupView];
-        self.headerHeightConstraint = [headerView autoSetDimension:ALDimensionHeight toSize:175];
-        self.tableTopConstraint =  [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:headerView withOffset:150];
+        self.headerHeightConstraint = [headerView autoSetDimension:ALDimensionHeight toSize:HEADER_SIZE];
+        self.tableTopConstraint =  [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:headerView withOffset:TABLE_TOP];
     } else {
         self.tableTopConstraint =  [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeTop];
         //[self.tableView autoPinEdgesToSuperviewEdges];

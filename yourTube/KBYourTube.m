@@ -2297,7 +2297,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             __block ChannelDisplayType defaultDisplayType = ChannelDisplayTypeShelf;
             __block NSString *activeSectionParms = nil;
             __block NSString *activeSectionContinuationToken = nil;
-            
+            __block BOOL aboutDetails = false;
             [tabs enumerateObjectsUsingBlock:^(id  _Nonnull tab, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSDictionary *tabR = tab[@"tabRenderer"];
                 NSString *tabTitle = tabR[@"title"];
@@ -2316,6 +2316,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     DLog(@"activeSectionParms: %@", activeSectionParms);
                     //DLog(@"continuation command: %@ for %@", cc, activeTitle);
                     //*stop = TRUE;
+                    if ([activeTitle isEqualToString:@"About"]) {
+                        aboutDetails = true;
+                    }
                 }
                 KBYTTab *tabItem = [[KBYTTab alloc] initWithTabDetails:tabR];
                 if (![tabTitle isEqualToString:@"Store"]){
@@ -2470,6 +2473,19 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             //DLog(@"details: %@", details);
             //title,subtitle,thumbnails
             //[jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:@"music.plist"] atomically:true];
+            if (aboutDetails) {
+                NSDictionary *aboutRenderer = [jsonDict recursiveObjectForKey:@"channelAboutFullMetadataRenderer"];
+                NSString *description = aboutRenderer[@"description"][@"simpleText"];
+                channel.aboutDetails = description;
+                channel.isAboutDetails = true;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (completionBlock) {
+                        completionBlock(channel);
+                    }
+                });
+                DLog(@"is about section. return");
+                return;
+            }
             recursiveObjectsLike(@"itemSectionRenderer", jsonDict, sect);
             DLog(@"section count: %lu", sect.count);
             //NSArray *sect = [jsonDict recursiveObjectsLikeKey:@"itemSectionRenderer"];
