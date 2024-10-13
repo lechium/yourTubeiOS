@@ -273,7 +273,7 @@
     self.currentPage++;
     
     if (self.channel) {
-        [[KBYourTube sharedInstance] getChannelVideosAlt:self.channel.channelID continuation:self.channel.continuationToken completionBlock:^(KBYTChannel *channel) {
+        [[KBYourTube sharedInstance] getChannelVideosAlt:self.channel.channelID params:nil continuation:self.channel.continuationToken completionBlock:^(KBYTChannel *channel) {
             //[self.channel mergeChannelVideos:channel];
         } failureBlock:^(NSString *error) {
             
@@ -333,7 +333,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 - (void)updateTable {
     [SVProgressHUD show];
     if (self.tableType == kYTSearchResultTypeChannel) {
-        [[KBYourTube sharedInstance] getChannelVideosAlt:self.customId continuation:nil completionBlock:^(KBYTChannel *channel) {
+        [[KBYourTube sharedInstance] getChannelVideosAlt:self.customId params:nil continuation:nil completionBlock:^(KBYTChannel *channel) {
             [SVProgressHUD dismiss];
             self.channel = channel;
             self.title = channel.title;

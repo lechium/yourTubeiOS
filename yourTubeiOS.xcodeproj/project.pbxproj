@@ -104,6 +104,9 @@
 		32D6A63B285695CC006BF25C /* KBTextPresentationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A616285695CC006BF25C /* KBTextPresentationViewController.m */; };
 		32D6A63D285695CC006BF25C /* NSString+Truncate.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A61C285695CC006BF25C /* NSString+Truncate.m */; };
 		32D6A63E285695CC006BF25C /* KBMoreButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A61D285695CC006BF25C /* KBMoreButton.m */; };
+		4B340E772CBB734100B131AA /* KBPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5E5285695CC006BF25C /* KBPlayerViewController.m */; };
+		4B340E782CBB740F00B131AA /* NSURLRequest+IgnoreSSL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78EF2C9535C6005EB5D4 /* NSURLRequest+IgnoreSSL.m */; };
+		4B340E792CBB741300B131AA /* UIView+RecursiveFind.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78F02C9535C6005EB5D4 /* UIView+RecursiveFind.m */; };
 		4B379BBF2CA8B78500453DBC /* TYTVHistoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 899877AE1CEA43DE006A639E /* TYTVHistoryManager.m */; };
 		4B379BC22CA8EA6100453DBC /* TYBaseShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BC12CA8EA6100453DBC /* TYBaseShelfViewController.m */; };
 		4B379BC52CA8EEF900453DBC /* TYUserShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BC42CA8EEF900453DBC /* TYUserShelfViewController.m */; };
@@ -2951,6 +2954,7 @@
 				89A83A991C88A93B00E1987E /* SVRadialGradientLayer.m in Sources */,
 				4BBC79D32C9542B7005EB5D4 /* SDImageAWebPCoder.m in Sources */,
 				4BBC7A832C968160005EB5D4 /* KBSection.m in Sources */,
+				4B340E792CBB741300B131AA /* UIView+RecursiveFind.m in Sources */,
 				89A83AB11C88A97700E1987E /* KBYTDownloadStream.m in Sources */,
 				4BBC7A3F2C9542B9005EB5D4 /* UIImage+MemoryCacheCost.m in Sources */,
 				4BBC7A662C9542B9005EB5D4 /* SDDeviceHelper.m in Sources */,
@@ -2980,6 +2984,7 @@
 				89A83AB41C88AACA00E1987E /* ONOXMLDocument.m in Sources */,
 				4BBC79FA2C9542B8005EB5D4 /* SDImageAPNGCoder.m in Sources */,
 				32D2A13C1F424805006F24B3 /* AFNetworkReachabilityManager.m in Sources */,
+				4B340E782CBB740F00B131AA /* NSURLRequest+IgnoreSSL.m in Sources */,
 				89A83ABF1C88AAF200E1987E /* KBYTGenericVideoTableViewController.m in Sources */,
 				89A83AB61C88AADF00E1987E /* BaseAnimation.m in Sources */,
 				4BBC790E2C953B49005EB5D4 /* UIWindow+Additions.m in Sources */,
@@ -3003,6 +3008,7 @@
 				4BBC7A2D2C9542B8005EB5D4 /* SDWebImageTransition.m in Sources */,
 				4BBC79CD2C9542B7005EB5D4 /* SDAnimatedImageView.m in Sources */,
 				8926691D1C88B1A900082B31 /* MarqueeLabel.m in Sources */,
+				4B340E772CBB734100B131AA /* KBPlayerViewController.m in Sources */,
 				32D2A14A1F424805006F24B3 /* AFOAuthCredential.m in Sources */,
 				899876611CDE77A5006A639E /* NSLayoutConstraint+PureLayout.m in Sources */,
 				89A83AAD1C88A96D00E1987E /* APElement.m in Sources */,
