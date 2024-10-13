@@ -12,6 +12,7 @@
 #if TARGET_OS_IOS
 #import <GCDWebServers/GCDWebServers.h>
 #endif
+#import "NSURLRequest+cURL.h"
 
 @interface TYAuthUserManager() {
 #if TARGET_OS_IOS
@@ -268,6 +269,10 @@
     //[request setURL:[NSURL URLWithString:@"https://gdata.youtube.com/feeds/api/users/default/favorites"]];
     [request setHTTPMethod:@"DELETE"];
     // [request addValue:[[DeviceAuth sharedDeviceAuth] signatureForRequest:request] forHTTPHeaderField:@"X-GData-Device"];
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     NSHTTPURLResponse *theResponse = nil;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
@@ -503,7 +508,10 @@
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:postData];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     
     NSHTTPURLResponse *theResponse = nil;
     
@@ -545,7 +553,7 @@
  }
  */
 
-- (id)setPosition:(NSInteger)position forVideoID:(NSString *)videoID inPlaylist:(NSString *)playlistID {
+- (id)setPosition:(NSInteger)position forSearchItem:(KBYTSearchResult *)searchItem inPlaylist:(NSString *)playlistID {
     
     [self refreshAuthToken];
     NSError* error;
@@ -558,31 +566,35 @@
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
     
-    NSDictionary *postDictionary = @{@"id": playlistID,
-                                     @"snippet": @{@"playlistId": @"",
-                                                   @"position": @(position)},
-                                     @"resourceId": @{@"kind": @"youtube#video",
-                                                      @"videoId": videoID
+    NSDictionary *postDictionary = @{@"id": searchItem.stupidId,
+                                     @"snippet": @{@"playlistId": playlistID,
+                                                   @"position": @(position),
+                                                   @"resourceId": @{@"kind": @"youtube#video",
+                                                                    @"videoId": searchItem.videoId
+                                                   }
                                      }
-                                     
     };
-    TLog(@"post: %@", postDictionary);
+    //TLog(@"post: %@", postDictionary);
     //NSLog(@"postString: %@", [finalDict JSONString]);
     // Encode post string
     NSData* postData = [NSJSONSerialization dataWithJSONObject:postDictionary options:NSJSONWritingPrettyPrinted error:nil];
     AFOAuthCredential *cred = [self defaultCredential];
     NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
+    //TLog(@"access token: %@", cred.accessToken);
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
     [request setHTTPMethod:@"PUT"];
     [request setHTTPBody:postData];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     NSHTTPURLResponse *theResponse = nil;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     //NSLog(@"datString: %@", datString);
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
     
-    // NSLog(@"jsonDict: %@", jsonDict);
+    NSLog(@"jsonDict: %@", jsonDict);
     if ([jsonDict valueForKey:@"error"] != nil){
         return datString;
     }
@@ -722,7 +734,10 @@ snippet =             {
     NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
     [request setHTTPMethod:@"DELETE"];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     
     NSHTTPURLResponse *theResponse = nil;
     
@@ -755,7 +770,10 @@ snippet =             {
     NSString *authorization = [NSString stringWithFormat:@"Bearer %@",[[self defaultCredential] accessToken]];
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
     [request setHTTPMethod:@"DELETE"];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     
     NSHTTPURLResponse *theResponse = nil;
     
@@ -850,7 +868,10 @@ snippet =             {
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:postData];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     
     NSHTTPURLResponse *theResponse = nil;
     
@@ -1014,15 +1035,23 @@ snippet =             {
 - (id)addVideo:(NSString *)videoID toPlaylistWithID:(NSString *)playlistID {
     
     [self refreshAuthToken];
-    DLog(@"adding a video: %@ to favorites: %@", videoID, playlistID);
-    
+    DLog(@"adding a video: %@ to playlistID: %@", videoID, playlistID);
+/*
     NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
     NSDictionary *resourceId = [NSDictionary dictionaryWithObjectsAndKeys:@"youtube#video", @"kind", videoID, @"videoId", nil];
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:playlistID, @"playlistId",resourceId , @"resourceId", nil];
     [finalDict setObject:dict forKey:@"snippet"];
+  */
     
+    NSDictionary *finalDict = @{ @"snippet": @{
+        @"playlistId": playlistID,
+        @"resourceId": @{
+            @"kind": @"youtube#video",
+            @"videoId": videoID
+        }
+    }};
     
-    NSError* error;
+    NSError* error = nil;
     
     // Encode post string
     NSData* postData = [NSJSONSerialization dataWithJSONObject:finalDict options:NSJSONWritingPrettyPrinted error:nil];
@@ -1039,7 +1068,7 @@ snippet =             {
     
     NSString *accessToken = [[self defaultCredential] accessToken];
     
-    DLog(@"access token: %@", accessToken);
+    //DLog(@"access token: %@", accessToken);
     
     NSString *authorization = [NSString stringWithFormat:@"Bearer %@",accessToken];
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
@@ -1048,7 +1077,10 @@ snippet =             {
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:postData];
     
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     NSHTTPURLResponse *theResponse = nil;
     
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];

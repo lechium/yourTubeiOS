@@ -67,23 +67,27 @@
     _playPauseGestureRecognizer.enabled = true;
 }
 
-- (void)collectionView:(UICollectionView*)cv moveCellFromRow:(NSInteger)artwork offset:(NSInteger)offset {
+- (void)collectionView:(UICollectionView*)cv moveCellFromRow:(NSInteger)row offset:(NSInteger)offset {
     KBSection *section = self.sections[cv.section];
     KBYTPlaylist *playlist = section.playlist;
     NSMutableArray *_data = [playlist.videos mutableCopy];
-    TLog(@"moving from index: %lu to index: %lu", artwork, offset + artwork);
-    if (artwork + offset >= 0 && artwork + offset <= [_data count] - 1) {
+    NSInteger newIndex = offset + row;
+    TLog(@"moving from index: %lu to index: %lu", row, newIndex);
+    if (newIndex >= 0 && newIndex <= [_data count] - 1) {
+        KBYTSearchResult *result = [_data objectAtIndex:row];
         [cv performBatchUpdates:^{
-            [cv moveItemAtIndexPath:[NSIndexPath indexPathForItem:artwork inSection:0] toIndexPath:[NSIndexPath indexPathForItem:artwork + offset inSection:0]];
-            [cv moveItemAtIndexPath:[NSIndexPath indexPathForItem:artwork + offset inSection:0] toIndexPath:[NSIndexPath indexPathForItem:artwork inSection:0]];
+            [cv moveItemAtIndexPath:[NSIndexPath indexPathForItem:row inSection:0] toIndexPath:[NSIndexPath indexPathForItem:newIndex inSection:0]];
+            [cv moveItemAtIndexPath:[NSIndexPath indexPathForItem:newIndex inSection:0] toIndexPath:[NSIndexPath indexPathForItem:row inSection:0]];
             _highlightedCell += offset;
-            [_data exchangeObjectAtIndex:artwork withObjectAtIndex:artwork + offset];
+            [_data exchangeObjectAtIndex:row withObjectAtIndex:newIndex];
             playlist.videos = _data;
             section.content = playlist.videos;
             //if there are certain elements in the cells that are position dependant, this is the right time to change them
             //because these cells are not reloaded by default (for example you have idx displayed in your cell... the cells will swap but idxs won't by default)
         } completion:^(BOOL finished) {
             [self focusedCellStartJiggling];
+            [[TYAuthUserManager sharedInstance] setPosition:newIndex forSearchItem:result inPlaylist:playlist.playlistID];
+            [self snapshotResults];
             //NSString *temp = _data[artwork + offset];
             //_data[artwork + offset] = _data[artwork];
             //_data[artwork] = temp;
@@ -109,7 +113,7 @@
 }
 
 - (UICollectionView *)collectionViewFromCell:(UICollectionViewCell *)cell {
-    return [cell superview];
+    return (UICollectionView *)[cell superview];
 }
 
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
@@ -158,6 +162,7 @@
 }
 
 - (void)handlePlaylistSection:(KBSection *)section completion:(void(^)(BOOL loaded, NSString *error))completionBlock {
+    DLOG_SELF;
     //DLog(@"section uniqueID: %@ title: %@", section.uniqueId, section.title);
     if (section.uniqueId) {
         [[TYAuthUserManager sharedInstance] getPlaylistItems:section.uniqueId completion:^(NSArray<KBYTSearchResult *> *playlistItems, NSString *error) {
@@ -307,6 +312,13 @@
     // Do any additional setup after loading the view.
     _userDataChanged = false;
     [self listenForUserNotification];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if ([self firstLoad]) {
+        [self userDataChanged:nil];
+    }
 }
 
 - (void)listenForUserNotification {
