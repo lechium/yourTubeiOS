@@ -8,7 +8,6 @@
 
 #import "TYBaseGridViewController.h"
 #import "TYAuthUserManager.h"
-#import "KBYTGridChannelViewController.h"
 #import "YTTVPlaylistViewController.h"
 #import "YTTVPlayerViewController.h"
 #import "UIColor+Additions.h"

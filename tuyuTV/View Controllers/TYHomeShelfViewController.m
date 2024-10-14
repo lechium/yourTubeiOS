@@ -7,8 +7,9 @@
 
 #import "TYHomeShelfViewController.h"
 #import "SVProgressHUD.h"
-#import "KBYTGridChannelViewController.h"
+#import "KBYourTube.h"
 #import "TYChannelShelfViewController.h"
+#import "TYTVHistoryManager.h"
 #import "EXTScope.h"
 #import "TYAuthUserManager.h"
 

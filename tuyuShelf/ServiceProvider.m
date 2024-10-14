@@ -53,6 +53,9 @@
 }
 
 - (void)loadDetailsFromDictionary:(NSDictionary *)dictionary {
+    [self.channels removeAllObjects];
+    [self.playlists removeAllObjects];
+    NSString *channelID = dictionary[@"channelID"];
     NSArray <KBYTSearchResult *> *results = dictionary[@"results"];
     NSArray <KBYTSearchResult *> *rChannels = dictionary[@"channels"];
     [results enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -68,7 +71,16 @@
         
     }];
     [self.channels addObjectsFromArray:rChannels];
-    [[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(KBYTChannel *channel) {
+        [self.menuItems removeAllObjects];
+        //self.menuItems = [channel.videos mutableCopy];
+        TLog(@"channel videos: %@", channel.videos);
+        [self.menuItems addObjectsFromArray:channel.videos];
+        [[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+    } failureBlock:^(NSString *error) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+    }];
 }
 
 - (void)testGetYTScience {
@@ -92,14 +104,7 @@
             //TLog(@"cookie: %@", cookie);
         }
     }
-    
-    [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.menuItems = [channel.allSectionItems mutableCopy];
-        });
-    } failureBlock:^(NSString *error) {
-        
-    }];
+  
     
     if ([[KBYourTube sharedInstance] isSignedIn] == YES) {
         TLog(@"is signed in, get those sciences too!");
@@ -116,6 +121,16 @@
             
         } failureBlock:^(NSString *error) {
             //
+        }];
+    } else {
+        
+        [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.menuItems = [channel.allSectionItems mutableCopy];
+                TLog(@"menuItems: %@", self.menuItems);
+            });
+        } failureBlock:^(NSString *error) {
+            
         }];
     }
     
@@ -193,9 +208,9 @@
         [sectionItems addObject:pItem];
     }
     
-    TVContentIdentifier *section = [[TVContentIdentifier alloc] initWithIdentifier:@"science" container:nil];
+    TVContentIdentifier *section = [[TVContentIdentifier alloc] initWithIdentifier:@"videos" container:nil];
     TVContentItem * sectionItem = [[TVContentItem alloc] initWithContentIdentifier:section];
-    sectionItem.title = @"Suggestions";
+    sectionItem.title = @"Videos";
     
     [self.menuItems enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
@@ -210,7 +225,7 @@
     }];
     sectionItem.topShelfItems = suggestedItems;
     [sectionItems addObject:sectionItem];
-    TLog(@"sectionItems: %@", sectionItem);
+    TLog(@"sectionItem: %@", sectionItem);
     return sectionItems;
 }
 

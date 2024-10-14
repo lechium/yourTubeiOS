@@ -7,7 +7,7 @@
 
 #import "TYBaseShelfViewController.h"
 #import "SVProgressHUD.h"
-#import "KBYTGridChannelViewController.h"
+#import "TYTVHistoryManager.h"
 #import "TYChannelShelfViewController.h"
 #import "YTTVPlaylistViewController.h"
 #import "KBYTQueuePlayer.h"

@@ -16,7 +16,7 @@
 #import "TYTVHistoryManager.h"
 #import "UIView+RecursiveFind.h"
 #import "TYAuthUserManager.h"
-#import "KBYTGridChannelViewController.h"
+#import "YTTVPlayerViewController.h"
 #import "TYChannelShelfViewController.h"
 
 @interface KBYTSearchResultsViewController () <UISearchBarDelegate>
@@ -100,7 +100,6 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)goToChannelOfResult:(KBYTSearchResult *)searchResult {
     TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.channelId];
-    //KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.channelId];
     [self presentViewController:cv animated:true completion:nil];
 }
 
@@ -551,7 +550,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
         
         [SVProgressHUD dismiss];
-        YTKBPlayerViewController *playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
+        YTTVPlayerViewController *playerView = [[YTTVPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
         [playerView addObjectsToPlayerQueue:videoArray];
         [self presentViewController:playerView animated:YES completion:nil];
         [[playerView player] play];

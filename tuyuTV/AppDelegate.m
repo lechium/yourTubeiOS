@@ -7,7 +7,7 @@
 //
 
 
-#import "KBYTGridChannelViewController.h"
+
 #import "TYChannelShelfViewController.h"
 #import "AppDelegate.h"
 #import "KBYourTube.h"
@@ -16,11 +16,10 @@
 #import "WebViewController.h"
 #import "AboutViewController.h"
 #import "TYBaseGridViewController.h"
-#import "TYGridUserViewController.h"
-#import "TYHomeViewController.h"
 #import "TYTVHistoryManager.h"
 #import "TYSettingsViewController.h"
 #import "YTTVPlaylistViewController.h"
+#import "YTTVPlayerViewController.h"
 #import "AFOAuthCredential.h"
 #import "TYAuthUserManager.h"
 #import <unistd.h>
@@ -350,41 +349,6 @@
          [ns domain], [ns type], [ns name], errorDict);
 }
 
-- (TYGridUserViewController *)loggedInUserGridViewFromResults:(NSDictionary *)outputResults {
-    NSArray *results = outputResults[@"results"];
-    NSMutableArray *_backingSectionLabels = [NSMutableArray new];
-    
-    for (KBYTSearchResult *result in results) {
-        if (result.resultType ==kYTSearchResultTypePlaylist) {
-            [_backingSectionLabels addObject:result.title];
-        }
-    }
-    
-    //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
-    
-    if (outputResults[@"channels"] != nil) {
-        [_backingSectionLabels addObject:@"Channels"];
-    }
-    
-    NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
-    
-    if ([historyObjects count] > 0) {
-        [_backingSectionLabels addObject:@"Channel History"];
-        //  playlists[@"Channel History"] = historyObjects;
-    }
-    
-    NSArray *videoHistory = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
-    
-    if ([videoHistory count] > 0) {
-        [_backingSectionLabels addObject:@"Video History"];
-        //  playlists[@"Channel History"] = historyObjects;
-    }
-    
-    return [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
-}
-
-
-
 - (void)updateForSignedIn {
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     if ([viewControllers count] == 5) { return; }
@@ -450,7 +414,7 @@ void UncaughtExceptionHandler(NSException *exception) {
     
     YTSearchResultType type = [KBYourTube resultTypeForString:url.host];
     
-    if (type ==kYTSearchResultTypeVideo)
+    if (type == kYTSearchResultTypeVideo)
     {
         [SVProgressHUD show];
         [[KBYourTube sharedInstance] getVideoDetailsForID:url.path.lastPathComponent completionBlock:^(KBYTMedia *videoDetails) {
@@ -517,7 +481,7 @@ void UncaughtExceptionHandler(NSException *exception) {
 
 
 - (void)showChannel:(NSString *)videoId {
-    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:videoId];
+    TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:videoId];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self presentViewController:cv animated:true completion:nil];
     });
@@ -552,7 +516,6 @@ void UncaughtExceptionHandler(NSException *exception) {
     NSMutableArray *viewControllers = [NSMutableArray new];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
-    //TYHomeViewController *homeViewController = [[TYHomeViewController alloc] initWithData:[[KBYourTube sharedInstance] homeScreenData]];//[[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
     TYHomeShelfViewController *homeViewController = [self homeShelfViewController];
     UIViewController *searchViewController = [self packagedSearchController];
     //[viewControllers removeObjectAtIndex:0];

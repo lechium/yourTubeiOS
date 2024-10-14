@@ -23,7 +23,7 @@
     NSMutableDictionary *_newDict = [NSMutableDictionary new];
     [self enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
         if ([obj isKindOfClass:NSDictionary.class]) {
-            _newDict[key] = [NSObject objectFromDictionary:obj];
+            _newDict[key] = [NSObject objectFromDictionary:obj usingClass:NSDictionary.class];
         } else if ([obj isKindOfClass:NSNumber.class] || [obj isKindOfClass:NSString.class]) {
             _newDict[key] = obj;
         } else if ([obj isKindOfClass:NSArray.class]){
@@ -39,7 +39,9 @@
         //DLog(@"processing key: %@", key);
         if ([obj isKindOfClass:NSArray.class]){
             _newDict[key] = [obj convertArrayToDictionaries];
-        } else {
+        } else if ([obj isKindOfClass:NSNumber.class] || [obj isKindOfClass:NSString.class]) {
+            _newDict[key] = obj;
+        } else{
             _newDict[key] = [obj dictionaryRepresentation];
         }
     }];
@@ -72,7 +74,11 @@
 - (NSMutableArray *)convertArrayToDictionaries {
     __block NSMutableArray *_newArray = [NSMutableArray new];
     [self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [_newArray addObject:[obj dictionaryRepresentation]];
+        if ([obj isKindOfClass:NSDictionary.class]) {
+            [_newArray addObject:obj];
+        } else {
+            [_newArray addObject:[obj dictionaryRepresentation]];
+        }
     }];
     return _newArray;
 }

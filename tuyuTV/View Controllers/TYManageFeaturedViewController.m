@@ -7,7 +7,6 @@
 
 #import "TYManageFeaturedViewController.h"
 #import "KBYourTube.h"
-#import "KBYTGridChannelViewController.h"
 #import "TYChannelShelfViewController.h"
 
 @interface TYManageFeaturedViewController ()

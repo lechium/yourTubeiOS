@@ -34,6 +34,7 @@
 #import "UIImageView+WebCache.h"
 #import "SVProgressHUD.h"
 #import "TYAuthUserManager.h"
+#import "YTTVPlayerViewController.h"
 
 @implementation PlaylistTableViewCell
 
@@ -169,7 +170,7 @@
 @end
 
 @interface PlaylistTableViewController ()
-@property (nonatomic, strong) YTKBPlayerViewController *playerView;
+@property (nonatomic, strong) YTTVPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTQueuePlayer *player;
 @property (readwrite, assign) NSInteger currentPage;
 
@@ -467,7 +468,7 @@
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
         
         [SVProgressHUD dismiss];
-        self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
+        self.playerView = [[YTTVPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
         [self.playerView addObjectsToPlayerQueue:videoArray];
         [self presentViewController:self.playerView animated:YES completion:nil];
         [[self.playerView player] play];
