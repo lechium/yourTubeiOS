@@ -8,6 +8,7 @@
 
 #import "ServiceProvider.h"
 #import "NSDictionary+serialize.h"
+#import "TYTVHistoryManager.h"
 @interface ServiceProvider ()
 
 
@@ -164,6 +165,11 @@
     __block NSMutableArray *playlistItems = [NSMutableArray new];
     __block NSMutableArray *sectionItems = [NSMutableArray new];
     
+    TVContentItem *historyItem = [self videoHistoryItem];
+    if (historyItem.topShelfItems.count > 0) {
+        [sectionItems addObject:historyItem];
+    }
+    
     if (self.channels.count > 0) {
         TLog(@"channels are greater than 0: %lu", self.channels.count);
         TVContentIdentifier *csection = [[TVContentIdentifier alloc] initWithIdentifier:@"channels" container:nil];
@@ -227,6 +233,25 @@
     [sectionItems addObject:sectionItem];
     TLog(@"sectionItem: %@", sectionItem);
     return sectionItems;
+}
+
+- (TVContentItem *)videoHistoryItem {
+    TVContentIdentifier *section = [[TVContentIdentifier alloc] initWithIdentifier:@"history" container:nil];
+    TVContentItem * sectionItem = [[TVContentItem alloc] initWithContentIdentifier:section];
+    sectionItem.title = @"Video History";
+    NSMutableArray *historyItems = [NSMutableArray new];
+    NSArray <KBYTSearchResult*> *videoHistoryItems = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
+    for (KBYTSearchResult *result in videoHistoryItems) {
+        TVContentIdentifier *cid = [[TVContentIdentifier alloc] initWithIdentifier:result.videoId container:nil];
+        TVContentItem * ci = [[TVContentItem alloc] initWithContentIdentifier:cid];
+        ci.title = result.title;
+        ci.imageURL = [NSURL URLWithString:result.imagePath];
+        ci.displayURL = [self urlForIdentifier:result.videoId type:result.readableSearchType];
+        [historyItems addObject:ci];
+    }
+    sectionItem.topShelfItems = historyItems;
+    return sectionItem;
+    
 }
 
 @end

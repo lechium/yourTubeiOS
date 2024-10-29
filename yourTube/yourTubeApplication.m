@@ -1,6 +1,7 @@
 
 
 #import "yourTubeApplication.h"
+#import "KBYourTube.h"
 
 
 @implementation yourTubeApplication
@@ -10,21 +11,21 @@
 {
     [[KBYTMessagingCenter sharedInstance] stopDownloadListener];
     NSData *cookieData = [NSKeyedArchiver archivedDataWithRootObject:[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
-    [[NSUserDefaults standardUserDefaults] setObject:cookieData forKey:@"ApplicationCookie"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[KBYourTube sharedUserDefaults] setObject:cookieData forKey:@"ApplicationCookie"];
+    [[KBYourTube sharedUserDefaults] synchronize];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     NSData *cookieData = [NSKeyedArchiver archivedDataWithRootObject:[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]];
-    [[NSUserDefaults standardUserDefaults] setObject:cookieData forKey:@"ApplicationCookie"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[KBYourTube sharedUserDefaults] setObject:cookieData forKey:@"ApplicationCookie"];
+    [[KBYourTube sharedUserDefaults] synchronize];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     [[KBYTMessagingCenter sharedInstance] startDownloadListener];
-    NSData *cookieData = [[NSUserDefaults standardUserDefaults] objectForKey:@"ApplicationCookie"];
+    NSData *cookieData = [[KBYourTube sharedUserDefaults] objectForKey:@"ApplicationCookie"];
     if ([cookieData length] > 0) {
         NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
         for (NSHTTPCookie *cookie in cookies) {
@@ -35,7 +36,7 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    NSData *cookieData = [[NSUserDefaults standardUserDefaults] objectForKey:@"ApplicationCookie"];
+    NSData *cookieData = [[KBYourTube sharedUserDefaults] objectForKey:@"ApplicationCookie"];
     if ([cookieData length] > 0) {
         NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
         for (NSHTTPCookie *cookie in cookies) {
@@ -57,7 +58,7 @@
     [_window setRootViewController:  self.nav];
 	[_window makeKeyAndVisible];
   
-    NSData *cookieData = [[NSUserDefaults standardUserDefaults] objectForKey:@"ApplicationCookie"];
+    NSData *cookieData = [[KBYourTube sharedUserDefaults] objectForKey:@"ApplicationCookie"];
    // DLog(@"cookieData: %@", cookieData);
     if ([cookieData length] > 0) {
         NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
@@ -69,7 +70,7 @@
     NSString *macUserAgent = @"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8";
     
     NSDictionary *dictionnary = [[NSDictionary alloc] initWithObjectsAndKeys:macUserAgent, @"UserAgent", nil];
-    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionnary];
+    [[KBYourTube sharedUserDefaults] registerDefaults:dictionnary];
     */
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     

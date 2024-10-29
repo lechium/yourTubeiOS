@@ -178,10 +178,6 @@
                     AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
                     credential.refreshToken = refreshToken;
                     [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-                    //TLog(@"token response: %@", tokenResponse);
-                    //TLog(@"credential: %@", credential);
-                    //NSString *userId = tokenResponse[@"UserId"];
-                    //[UD setValue:userId forKey:kNTVPortalAuthUserName];
                     self.tokenData = tokenResponse;
                     self.authorized = true;
                     self.finishedBlock(self.tokenData, nil);
@@ -795,8 +791,8 @@ snippet =             {
     [AFOAuthCredential deleteCredentialWithIdentifier:@"default"];
     self.tokenData = nil;
     self.authorized = NO;
-    [UD removeObjectForKey:@"access_token"];
-    [UD removeObjectForKey:@"refresh_token"];
+    [[KBYourTube sharedUserDefaults] removeObjectForKey:@"access_token"];
+    [[KBYourTube sharedUserDefaults] removeObjectForKey:@"refresh_token"];
 }
 
 - (BOOL)checkAndSetCredential {
@@ -954,9 +950,9 @@ snippet =             {
         [self setCredential:newCred];
         self.authorized = true;
         [AFOAuthCredential storeCredential:newCred withIdentifier:@"default"];
-        [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
-        [UD setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
-        [UD synchronize];
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
+        [[KBYourTube sharedUserDefaults] synchronize];
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
         } failureBlock:^(NSString *error) {
@@ -1011,7 +1007,7 @@ snippet =             {
         credential.refreshToken = refreshToken;
         [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
         //TLog(@"refreshed credential: %@", credential);
-        [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         
     }
     return jsonDict;
@@ -1230,9 +1226,9 @@ snippet =             {
         //DLog(@"newcred: %@", newCred);
         [self setCredential:newCred];
         [AFOAuthCredential storeCredential:newCred withIdentifier:@"default"];
-        [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
-        [UD setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
-        [UD synchronize];
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
+        [[KBYourTube sharedUserDefaults] synchronize];
         
         
     }

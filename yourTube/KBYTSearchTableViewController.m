@@ -108,7 +108,7 @@
     self.currentPage = 1;
     NSString *scope = searchBar.scopeButtonTitles[selectedScope];
     DLog(@"scope changed: %lu: %@", selectedScope, scope);
-    [UD setValue:scope forKey:@"filterType"];
+    [[KBYourTube sharedUserDefaults] setValue:scope forKey:@"filterType"];
     [self searchBarSearchButtonClicked:searchBar];
 }
 

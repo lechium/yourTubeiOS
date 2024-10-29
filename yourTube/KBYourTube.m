@@ -1260,7 +1260,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     static NSUserDefaults* shared = nil;
     
     dispatch_once(&pred, ^{
-        shared = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.nito.tuyuTV"];
+        shared = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.tuyu"];
     });
     
     return shared;
@@ -1470,18 +1470,18 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 + (id)sharedInstance {
     
     static dispatch_once_t onceToken;
-    static KBYourTube *shared;
-    if (!shared){
+    static KBYourTube *sharedInst;
+    if (!sharedInst){
         dispatch_once(&onceToken, ^{
-            shared = [KBYourTube new];
-            [shared startReachabilityMonitoring];
-            shared.writeDebugJSONFiles = FALSE;
-            shared.printCurlCommands = TRUE;
-            shared.deviceController = [[APDeviceController alloc] init];
+            sharedInst = [KBYourTube new];
+            [sharedInst startReachabilityMonitoring];
+            sharedInst.writeDebugJSONFiles = FALSE;
+            sharedInst.printCurlCommands = TRUE;
+            sharedInst.deviceController = [[APDeviceController alloc] init];
         });
     }
     
-    return shared;
+    return sharedInst;
     
 }
 

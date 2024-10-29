@@ -199,9 +199,9 @@
 #elif TARGET_OS_TV
     if (currentTime + 5 >= currentPlayerItem.durationDouble && currentPlayerItem.durationDouble > 0){
         TLog(@"near the end: %.0f for %@", currentTime, currentItem.videoId);
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:currentItem.videoId];
+        [[KBYourTube sharedUserDefaults] removeObjectForKey:currentItem.videoId];
     } else {
-        [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithDouble:currentTime] forKey:currentItem.videoId];
+        [[KBYourTube sharedUserDefaults] setObject:[NSNumber numberWithDouble:currentTime] forKey:currentItem.videoId];
     }
 #endif
     
@@ -216,7 +216,7 @@
     KBYTMedia *theMedia = (KBYTMedia*)[(YTPlayerItem *)item associatedMedia];
     if (theMedia){
         [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
-        CGFloat duration = [[[NSUserDefaults standardUserDefaults] valueForKey:theMedia.videoId] floatValue];
+        CGFloat duration = [[[KBYourTube sharedUserDefaults] valueForKey:theMedia.videoId] floatValue];
         TLog(@"current time offset for %@: %.0f", theMedia.videoId, duration);
         CMTime newtime = CMTimeMakeWithSeconds(duration, 600);
         [player seekToTime:newtime];

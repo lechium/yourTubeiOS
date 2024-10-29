@@ -440,7 +440,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (NSInteger)segmentIndexForDefault {
-    NSString *filterType = [UD valueForKey:@"filterType"];
+    NSString *filterType = [[KBYourTube sharedUserDefaults] valueForKey:@"filterType"];
     if (!filterType) return 0;
     if ([filterType isEqualToString:@"All"]) return 0;
     else if ([filterType isEqualToString:@"Playlists"]) return 1;
@@ -449,7 +449,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (KBYTSearchType)searchTypeForSettings {
-    NSString *filterType = [UD valueForKey:@"filterType"];
+    NSString *filterType = [[KBYourTube sharedUserDefaults] valueForKey:@"filterType"];
     if (!filterType){
         return KBYTSearchTypeAll;
     }

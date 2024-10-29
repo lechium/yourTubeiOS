@@ -32,7 +32,7 @@
         mainMenuItem = @{@"name": @"Sign In", @"imagePath": @"YTPlaceholder", @"detail": @"", @"detailOptions": @[], @"description": @"Sign in to your YouTube account."};
     }
     
-    NSString *filterType = [UD valueForKey:@"filterType"];
+    NSString *filterType = [[KBYourTube sharedUserDefaults] valueForKey:@"filterType"];
     if (!filterType){
         filterType = @"All";
     }
@@ -211,7 +211,7 @@
     MetaDataAsset *asset = [self.items lastObject];
     NSString *detail = [asset detail];
     TLog(@"asset detail: %@", detail);
-    [UD setValue:detail forKey:@"filterType"];
+    [[KBYourTube sharedUserDefaults] setValue:detail forKey:@"filterType"];
 }
 
 

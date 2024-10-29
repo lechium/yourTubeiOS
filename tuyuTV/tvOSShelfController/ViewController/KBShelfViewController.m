@@ -101,20 +101,20 @@
 }
 
 + (void)initialize {
-    [[NSUserDefaults standardUserDefaults] registerDefaults:@{kShelfControllerRoundedEdges: @(true)}];
+    [[KBYourTube sharedUserDefaults] registerDefaults:@{kShelfControllerRoundedEdges: @(true)}];
 }
 
 - (void)setUseRoundedEdges:(BOOL)useRoundedEdges {
-    [[NSUserDefaults standardUserDefaults] setBool:useRoundedEdges forKey:kShelfControllerRoundedEdges];
+    [[KBYourTube sharedUserDefaults] setBool:useRoundedEdges forKey:kShelfControllerRoundedEdges];
     [self.tableView reloadData];
 }
 
 + (BOOL)useRoundedEdges {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kShelfControllerRoundedEdges];
+    return [[KBYourTube sharedUserDefaults] boolForKey:kShelfControllerRoundedEdges];
 }
 
 - (BOOL)useRoundedEdges {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kShelfControllerRoundedEdges];
+    return [[KBYourTube sharedUserDefaults] boolForKey:kShelfControllerRoundedEdges];
 }
 
 

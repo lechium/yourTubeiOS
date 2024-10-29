@@ -491,12 +491,12 @@ void UncaughtExceptionHandler(NSException *exception) {
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
+    // [[KBYourTube sharedUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
     NSSetUncaughtExceptionHandler (&UncaughtExceptionHandler);
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (iPad; CPU OS 9_1 like Mac OS X) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0 Mobile/12B410 Safari/601.2.7", @"UserAgent", nil];
-    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[KBYourTube sharedUserDefaults] registerDefaults:dictionary];
+    [[KBYourTube sharedUserDefaults] setBool:YES forKey:@"MobileMode"];
+    [[KBYourTube sharedUserDefaults] synchronize];
     LOG_SELF;
     TLog(@"app support: %@", [self appSupportFolder]);
     self.tabBar = (UITabBarController *)self.window.rootViewController;
@@ -536,19 +536,19 @@ void UncaughtExceptionHandler(NSException *exception) {
         }];
         
     }
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"MobileMode"]) {
+    if ([[KBYourTube sharedUserDefaults] boolForKey:@"MobileMode"]) {
         NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (iPad; CPU OS 9_1 like Mac OS X) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0 Mobile/12B410 Safari/601.2.7", @"UserAgent", nil];
-        [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [[KBYourTube sharedUserDefaults] registerDefaults:dictionary];
+        [[KBYourTube sharedUserDefaults] setBool:YES forKey:@"MobileMode"];
+        [[KBYourTube sharedUserDefaults] synchronize];
     }
     else {
         NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.7", @"UserAgent", nil];
-        [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"MobileMode"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [[KBYourTube sharedUserDefaults] registerDefaults:dictionary];
+        [[KBYourTube sharedUserDefaults] setBool:NO forKey:@"MobileMode"];
+        [[KBYourTube sharedUserDefaults] synchronize];
     }
-    NSData *cookieData = [[NSUserDefaults standardUserDefaults] objectForKey:@"ApplicationCookie"];
+    NSData *cookieData = [[KBYourTube sharedUserDefaults] objectForKey:@"ApplicationCookie"];
     if ([cookieData length] > 0) {
         NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
         for (NSHTTPCookie *cookie in cookies) {
