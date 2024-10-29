@@ -276,7 +276,8 @@
 - (void)playAllSearchResults:(NSArray *)searchResults {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
-    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
+    KBYTSearchResult *first = [searchResults firstObject];
+    [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[first] completionBlock:^(NSArray *videoArray) {
         
         [SVProgressHUD dismiss];
         self.playerView = [[YTTVPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
@@ -288,8 +289,8 @@
         NSDate *myStart = [NSDate date];
         [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:subarray completionBlock:^(NSArray *videoArray) {
             
-            //TLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
-            //TLog(@"first object: %@", subarray.firstObject);
+            TLog(@"video details fetched in %@", [myStart timeStringFromCurrentDate]);
+            TLog(@"first object: %@", first.title);
             [self.playerView addObjectsToPlayerQueue:videoArray];
             
         } failureBlock:^(NSString *error) {

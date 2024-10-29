@@ -169,7 +169,7 @@
         [self queuePlayerHasMultipleItems:(KBYTQueuePlayer*)self.player];
     }
     [(KBYTQueuePlayer *)self.player setDelegate:self];
-    [(KBYTQueuePlayer *)self.player setMultipleItemsDelegateCalled:TRUE ];
+    [(KBYTQueuePlayer *)self.player setMultipleItemsDelegateCalled:TRUE];
     self.view.frame = frame;
     return self;
 }
@@ -178,6 +178,10 @@
 - (void)setNowPlayingInfo {
     NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
     YTPlayerItem *currentPlayerItem = [playerItems firstObject];
+    if (currentPlayerItem.status != AVPlayerItemStatusReadyToPlay) {
+        NSLog(@"current player item is not ready to play, bail!");
+        return;
+    }
     double currentTime = currentPlayerItem.currentTime.value/currentPlayerItem.currentTime.timescale;
     NSObject <YTPlayerItemProtocol> *currentItem = [currentPlayerItem associatedMedia];
     //NSLog(@"currentItem: %@", currentItem);

@@ -13,6 +13,7 @@
 #import "KBYTDownloadManager.h"
 #import "TYAuthUserManager.h"
 #import <SafariServices/SafariServices.h>
+#import "AuthViewController.h"
 
 @interface KBYTDownloadsTableViewController () <SFSafariViewControllerDelegate> {
     ScaleAnimation *_scaleAnimationController;
@@ -169,6 +170,25 @@
     return signOut;
 }
 
+- (void)storeAuth {
+    TYAuthUserManager *shared = [TYAuthUserManager sharedInstance];
+    [shared startAuthAndGetUserCodeDetails:^(NSDictionary *deviceCodeDict) {
+        AuthViewController *avc = [[AuthViewController alloc] initWithUserCodeDetails:deviceCodeDict];
+        [self presentViewController:avc animated:true completion:nil];
+    } completion:^(NSDictionary *tokenDict, NSError *error) {
+        NSLog(@"inside here???");
+        if ([[tokenDict allKeys] containsObject:@"access_token"]){
+            NSLog(@"we good: %@", tokenDict );
+            //AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            //[ad updateForSignedIn];
+            [self dismissViewControllerAnimated:true completion:nil];
+        } else {
+            NSLog(@"show error alert here");
+            [self dismissViewControllerAnimated:true completion:nil];
+        }
+    }];
+}
+
 - (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index {
     
     [sidebar dismissAnimated:YES completion:^(BOOL finished) {
@@ -183,6 +203,8 @@
                     [self presentViewController:ovc animated:true completion:nil];
                     return;
                 } else {
+                    [self storeAuth];
+                    /*
                     ovc = (KBYTWebViewController*)[[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:[TYAuthUserManager suastring]]];
                     //ovc = [TYAuthUserManager OAuthWebViewController];
                     [[TYAuthUserManager sharedInstance] createAndStartWebserverWithCompletion:^(BOOL success) {
@@ -190,7 +212,7 @@
                             [[self navigationController] popViewControllerAnimated:true];
                         });
                     }];
-                    
+                    */
                 }
                 [self.navigationController pushViewController:ovc animated:true];
                 

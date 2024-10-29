@@ -68,9 +68,16 @@
     self.generalInfoLabel.numberOfLines = 0;
     [self.generalInfoLabel autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self.view withMultiplier:0.7];
     self.generalInfoLabel.lineBreakMode = NSLineBreakByWordWrapping;
+#if TARGET_OS_TV
     self.generalInfoLabel.font = [UIFont systemFontOfSize:52];
     self.authCodeLabel.font = [UIFont boldSystemFontOfSize:180];
     self.webSiteLabel.font = [UIFont systemFontOfSize:48];
+#else
+    self.generalInfoLabel.font = [UIFont systemFontOfSize:18];
+    self.authCodeLabel.font = [UIFont boldSystemFontOfSize:42];
+    self.webSiteLabel.font = [UIFont systemFontOfSize:16];
+    self.view.backgroundColor = [UIColor blackColor];
+#endif
     self.generalInfoLabel.textColor = [UIColor grayColor];
     self.authCodeLabel.textColor = [UIColor colorFromHex:@"FF0000"];
     //self.webSiteLabel.textColor = [UIColor colorFromHex:@"FFBD24"];

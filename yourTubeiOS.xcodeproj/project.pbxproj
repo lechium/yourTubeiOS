@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -23,7 +23,6 @@
 		32221603285299C300F3EE8A /* TYManageFeaturedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32221602285299C300F3EE8A /* TYManageFeaturedViewController.m */; };
 		323CF8D9284E57AF00559FF7 /* GCDWebServers.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; };
 		323CF8DA284E57AF00559FF7 /* GCDWebServers.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 324693A028404C65002D91F0 /* AppSupport.tbd */; };
 		324693AA2841EE8A002D91F0 /* AuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 324693A82841EE8A002D91F0 /* AuthViewController.m */; };
 		3246AF8A28569686008678D4 /* EXTScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 3246AF8628569686008678D4 /* EXTScope.m */; };
 		3246AF8B28569686008678D4 /* EXTRuntimeExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3246AF8728569686008678D4 /* EXTRuntimeExtensions.m */; };
@@ -118,6 +117,8 @@
 		4B379BD32CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */; };
 		4B379BD42CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */; };
 		4B379BD52CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */; };
+		4B5AE3EA2CD065D000B5C109 /* AppSupportiOS.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5AE3E92CD065D000B5C109 /* AppSupportiOS.tbd */; };
+		4B5AE3EB2CD06E2100B5C109 /* AuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 324693A82841EE8A002D91F0 /* AuthViewController.m */; };
 		4B9C254B2CADFD930037AB16 /* TYChannelShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */; };
 		4BBC78FA2C9535C7005EB5D4 /* KBDataItemCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */; };
 		4BBC78FB2C9535C8005EB5D4 /* KBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D22C9535C6005EB5D4 /* KBTableViewCell.m */; };
@@ -743,6 +744,7 @@
 		4B379BCA2CAB766B00453DBC /* UIColor+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Additions.h"; sourceTree = "<group>"; };
 		4B379BCB2CAB766B00453DBC /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Scale.m"; sourceTree = "<group>"; };
 		4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLRequest+cURL.m"; sourceTree = "<group>"; };
+		4B5AE3E92CD065D000B5C109 /* AppSupportiOS.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupportiOS.tbd; sourceTree = SOURCE_ROOT; };
 		4B9C25492CADFD930037AB16 /* TYChannelShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYChannelShelfViewController.h; sourceTree = "<group>"; };
 		4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYChannelShelfViewController.m; sourceTree = "<group>"; };
 		4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBDataItemCollectionViewCell.m; sourceTree = "<group>"; };
@@ -1206,7 +1208,7 @@
 				892669151C88AD5200082B31 /* libxml2.2.dylib in Frameworks */,
 				89A83AD61C88AB7100E1987E /* AVKit.framework in Frameworks */,
 				89A83AD41C88AB6B00E1987E /* AVFoundation.framework in Frameworks */,
-				324693A128404C65002D91F0 /* AppSupport.tbd in Frameworks */,
+				4B5AE3EA2CD065D000B5C109 /* AppSupportiOS.tbd in Frameworks */,
 				89A83AD21C88AB6600E1987E /* MapKit.framework in Frameworks */,
 				89A83AD01C88AB5F00E1987E /* AudioToolbox.framework in Frameworks */,
 				89A83ACE1C88AB4300E1987E /* Accelerate.framework in Frameworks */,
@@ -2219,6 +2221,7 @@
 		89B9D4211C44F49F00740BF1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4B5AE3E92CD065D000B5C109 /* AppSupportiOS.tbd */,
 				323CF8D8284E57AF00559FF7 /* GCDWebServers.xcframework */,
 				324693A028404C65002D91F0 /* AppSupport.tbd */,
 				32D2A1581F424F56006F24B3 /* libz.tbd */,
@@ -2410,7 +2413,6 @@
 				TargetAttributes = {
 					328E337D1E4F868C00C544ED = {
 						CreatedOnToolsVersion = 7.2.1;
-						DevelopmentTeam = 9EUFEA5U7G;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -2423,7 +2425,6 @@
 					};
 					898E92651C8D056700B34DAA = {
 						CreatedOnToolsVersion = 7.2.1;
-						DevelopmentTeam = 9EUFEA5U7G;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -2436,8 +2437,6 @@
 					};
 					89A83A181C88A89300E1987E = {
 						CreatedOnToolsVersion = 7.2.1;
-						DevelopmentTeam = 9EUFEA5U7G;
-						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -2988,6 +2987,7 @@
 				4BBC7A032C9542B8005EB5D4 /* SDWebImagePrefetcher.m in Sources */,
 				4BBC7A572C9542B9005EB5D4 /* UIButton+WebCache.m in Sources */,
 				4BBC7A2D2C9542B8005EB5D4 /* SDWebImageTransition.m in Sources */,
+				4B5AE3EB2CD06E2100B5C109 /* AuthViewController.m in Sources */,
 				4BBC79CD2C9542B7005EB5D4 /* SDAnimatedImageView.m in Sources */,
 				8926691D1C88B1A900082B31 /* MarqueeLabel.m in Sources */,
 				4B340E772CBB734100B131AA /* KBPlayerViewController.m in Sources */,
@@ -3097,7 +3097,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 9EUFEA5U7G;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3156,7 +3156,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 9EUFEA5U7G;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3212,6 +3212,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9EUFEA5U7G;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3286,6 +3287,7 @@
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 9EUFEA5U7G;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -3351,10 +3353,11 @@
 				CODE_SIGN_ENTITLEMENTS = tuyu/tuyu.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 9EUFEA5U7G;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9EUFEA5U7G;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -3391,7 +3394,7 @@
 					"$SRCROOT/tuyu/**",
 				);
 				INFOPLIST_FILE = tuyu/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3407,6 +3410,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "tuyu iOS";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3433,10 +3437,11 @@
 				CODE_SIGN_ENTITLEMENTS = tuyu/tuyu.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 9EUFEA5U7G;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9EUFEA5U7G;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -3467,7 +3472,7 @@
 					"$SRCROOT/tuyu/**",
 				);
 				INFOPLIST_FILE = tuyu/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3482,6 +3487,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "tuyu iOS";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

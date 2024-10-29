@@ -721,6 +721,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     images[@"medium"] = imageArray[imageCount-1][@"url"];
     //images[@"standard"] = imageArray[imageCount-3][@"url"];
     self.images = images;
+    /*
     NSMutableArray *videoArray = [NSMutableArray new];
     NSArray *formats = streamingData[@"formats"];
     //NSLog(@"adaptiveFormats: %@", adaptiveFormats);
@@ -760,6 +761,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     //NSLog(@"videoArray: %@", videoArray);
     self.streams = videoArray;
     [self matchAudioStreams];
+     */
     return true;
 }
 
@@ -2080,6 +2082,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     searchItem.channelId = containerChannel.channelID;
     searchItem.imagePath = imagePath;
     searchItem.originalImagePath = originalImagePath;
+    TLog(@"originalImagePath: %@", originalImagePath);
     searchItem.resultType = kYTSearchResultTypeChannel;
     searchItem.thumbnailSize = size;
     searchItem.details = [channel recursiveObjectForKey:@"navigationEndpoint"][@"browseEndpoint"][@"canonicalBaseUrl"];
@@ -3176,10 +3179,49 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         @autoreleasepool {
-            NSMutableArray *finalArray = [NSMutableArray new];
-            //NSMutableDictionary *rootInfo = [NSMutableDictionary new];
+            __block NSMutableArray *finalArray = [NSMutableArray new];
             __block NSString *errorString = @"";
-
+            [searchResults enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull result, NSUInteger idx, BOOL * _Nonnull stop) {
+                
+                if (!result.videoId){
+                    TLog(@"missing video id: %@ bail!", result);
+                    
+                } else {
+                    NSString *url = [self playerURL];
+                    DLog(@"url: %@ videoID: %@", url, result.videoId);
+                    //get the post body from the url above, gets the initial raw info we work with
+                    NSDictionary *params = [self paramsForVideo:result.videoId];
+                    NSString *body = [self stringFromPostRequest:url withParams:params];
+                    NSData *jsonData = [body dataUsingEncoding:NSUTF8StringEncoding];
+                    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments|NSJSONReadingMutableLeaves error:nil];
+                    NSError *error = nil;
+                    //NSLog(@"body: %@ for: %@ %@", jsonDict, url, params);
+                    KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict error:&error];
+                    TLog(@"currentMedia: %@", currentMedia.title);
+                    if (error) {
+                        TLog(@"error: %@", error);
+                    }
+                    if(currentMedia) {
+                        [finalArray addObject:currentMedia];
+                    }
+                }
+                TLog(@"idx: %lu, count: %lu", idx, searchResults.count);
+                if (idx == searchResults.count-1) {
+                    DLog(@"at the end?: %lu", idx);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if([finalArray count] > 0){
+                            completionBlock(finalArray);
+                        } else {
+                            failureBlock(errorString);
+                        }
+                    });
+                }
+                
+                
+                
+                
+            }];
+            return;
             for (KBYTSearchResult *result in searchResults) {
                 
                 if (!result.videoId){
@@ -3197,6 +3239,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 NSError *error = nil;
                 //NSLog(@"body: %@ for: %@ %@", jsonDict, url, params);
                 KBYTMedia *currentMedia = [[KBYTMedia alloc] initWithJSON:jsonDict error:&error];
+                TLog(@"currentMedia: %@", currentMedia.title);
+                if (error) {
+                    TLog(@"error: %@", error);
+                }
                 if(currentMedia) {
                     [finalArray addObject:currentMedia];
                 }

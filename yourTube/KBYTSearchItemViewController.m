@@ -146,7 +146,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	
-    //return 3;
+    return 1;
     NSInteger sections = 3;
     
     if ([aircontrolServers count] > 0)
@@ -303,7 +303,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 			cell.accessoryType = UITableViewCellAccessoryNone;
 			cell.textLabel.textAlignment = UITextAlignmentCenter;
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-            stream = [ytMedia.streams objectAtIndex:indexPath.row];
+            stream = [ytMedia.streams firstObject];//[ytMedia.streams objectAtIndex:indexPath.row];
             cell.textLabel.text = stream.format;
             
 			return cell;

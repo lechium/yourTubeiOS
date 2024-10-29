@@ -885,7 +885,11 @@
                 break;
                 
             default:
-                TLog(@"unhandled type: %lu", press.type);
+                TLog(@"unhandled type: %lu key: %@", press.type, press.key);
+                switch (press.key.keyCode) {
+                    case UIKeyboardHIDUsageKeyboardReturnOrEnter:
+                        break;
+                }
                 [super pressesEnded:presses withEvent:event];
                 break;
                 
@@ -897,6 +901,13 @@
 - (void)setNowPlayingInfo {
     NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
     YTPlayerItem *currentPlayerItem = [playerItems firstObject];
+    if (currentPlayerItem.status != AVPlayerItemStatusReadyToPlay) {
+        NSLog(@"current player item is not ready to play, bail!");
+        if (self.avInfoViewController.playerItem != currentPlayerItem) {
+            self.avInfoViewController.playerItem = currentPlayerItem;
+        }
+        return;
+    }
     double currentTime = currentPlayerItem.currentTime.value/currentPlayerItem.currentTime.timescale;
     NSObject <YTPlayerItemProtocol> *currentItem = [currentPlayerItem associatedMedia];
     //NSLog(@"currentItem: %@", currentItem);

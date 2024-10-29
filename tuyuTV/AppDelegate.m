@@ -13,7 +13,6 @@
 #import "KBYourTube.h"
 #import "KBYourTube+Categories.h"
 #import "KBYTSearchResultsViewController.h"
-#import "WebViewController.h"
 #import "AboutViewController.h"
 #import "TYBaseGridViewController.h"
 #import "TYTVHistoryManager.h"
@@ -377,20 +376,9 @@
 - (void)updateForSignedOut {
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     [self.tabBar setSelectedIndex:0];
-    if ([viewControllers count] == 5)
-    {
+    if ([viewControllers count] == 5) {
         [viewControllers removeObjectAtIndex:1];
     }
-    /*
-     [viewControllers removeLastObject];
-     [viewControllers removeLastObject];
-     WebViewController *wvc = [[WebViewController alloc] init];
-     wvc.title = @"sign in";
-     [viewControllers addObject:wvc];
-     AboutViewController *avc = [AboutViewController new];
-     avc.title = @"about";
-     [viewControllers addObject:avc];
-     */
     self.tabBar.viewControllers = viewControllers;
     [[KBYourTube sharedInstance] setUserDetails:nil];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] clearAllCookies];
