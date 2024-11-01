@@ -38,11 +38,20 @@
 #define READ_TIMEOUT_EXTENSION 10.0
 
 @interface AppDelegate ()
-
+@property (nonatomic, strong) YTTVPlayerViewController *playerView;
+@property (nonatomic, strong) KBYTQueuePlayer *player;
 @end
 
 @implementation AppDelegate
 
+- (void)handleVideoMedia:(KBYTMedia *)media {
+    UIApplication *app = UIApplication.sharedApplication;
+    UIViewController *rvc = app.keyWindow.rootViewController;
+    
+    self.playerView = [[YTTVPlayerViewController alloc] initWithMedia:media];//[[YTTVPlayerViewController alloc] initWithFrame:rvc.view.frame usingStreamingMediaArray:@[searchResult]];
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    [[self.playerView player] play];
+}
 
 - (TYHomeShelfViewController *)homeShelfViewController {
     NSMutableArray <KBSectionProtocol> *sections = [[[KBYourTube sharedInstance] homeScreenData] convertArrayToObjects];
@@ -408,7 +417,8 @@ void UncaughtExceptionHandler(NSException *exception) {
         [[KBYourTube sharedInstance] getVideoDetailsForID:url.path.lastPathComponent completionBlock:^(KBYTMedia *videoDetails) {
             
             [SVProgressHUD dismiss];
-            
+            [self handleVideoMedia:videoDetails];
+            /*
             UIViewController *rvc = app.keyWindow.rootViewController;
             
             //NSURL *playURL = [[videoDetails.streams firstObject] url];
@@ -421,7 +431,7 @@ void UncaughtExceptionHandler(NSException *exception) {
             [playerView.player play];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
             
-            
+            */
         } failureBlock:^(NSString *error) {
             //
         }];
@@ -490,13 +500,10 @@ void UncaughtExceptionHandler(NSException *exception) {
 
 - (void)itemDidFinishPlaying:(NSNotification *)n {
     UIViewController *rvc = [[UIApplication sharedApplication]keyWindow].rootViewController;
-    if ([rvc isKindOfClass:AVPlayerViewController.class])
-    {
+    if ([rvc isKindOfClass:AVPlayerViewController.class]) {
         [rvc dismissViewControllerAnimated:true completion:nil];
-        
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
-    
 }
 
 

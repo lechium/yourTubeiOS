@@ -8,6 +8,9 @@
 
 #import <AVKit/AVKit.h>
 #import "KBYTQueuePlayer.h"
+
+@class KBYTMedia;
+
 #import "KBYourTube.h"
 #import "KBVideoPlaybackProtocol.h"
 
@@ -24,6 +27,7 @@
 - (BOOL)setMediaURL:(NSURL *)mediaURL;
 - (NSURL *)mediaURL;
 
+- (id)initWithMedia:(KBYTMedia *)media;
 - (id)initWithFrame:(CGRect)frame usingStreamingMediaArray:(NSArray *)streamingMedia;
 - (id)initWithFrame:(CGRect)frame  usingLocalMediaArray:(NSArray *)localMediaArray;
 

@@ -108,6 +108,19 @@
     }];
 }
 
+- (id)initWithMedia:(KBYTMedia *)media {
+    self = [super init];
+    mediaIsLocal = false; //prob
+    YTPlayerItem *playerItem = [media playerItemRepresentation];
+    playerItem.associatedMedia = media;
+    if (playerItem != nil) {
+        self.player = [KBYTQueuePlayer queuePlayerWithItems:@[playerItem]];
+        [(KBYTQueuePlayer *)self.player setDelegate:self];
+    }
+    self.view.frame = UIScreen.mainScreen.bounds;
+    return self;
+}
+
 - (id)initWithFrame:(CGRect)frame usingStreamingMediaArray:(NSArray *)streamingMedia {
     self = [super init];
     mediaIsLocal = false;
