@@ -2490,7 +2490,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 return;
             }
             recursiveObjectsLike(@"itemSectionRenderer", jsonDict, sect);
-            DLog(@"section count: %lu", sect.count);
+            //DLog(@"section count: %lu", sect.count);
             //NSArray *sect = [jsonDict recursiveObjectsLikeKey:@"itemSectionRenderer"];
             if (sect.count == 0 || activeIndex > 0) {
                 NSDictionary *richGridRenderer = [jsonDict recursiveObjectLikeKey:@"richGridRenderer"];
@@ -2498,7 +2498,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 if (tempSect.count > 0){
                     sect = tempSect;
                     defaultDisplayType = ChannelDisplayTypeGrid;
-                    DLog(@"rich grid count: %lu", sect.count);
+                    //DLog(@"rich grid count: %lu", sect.count);
                 }
                 //TLog(@"no content for some retarded reason");
             }
@@ -2516,7 +2516,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     }
                     backup.title = title;
                     //KBSection *section = [KBSection defaultSection];
-                    DLog(@"cardArray count: %lu for title: %@", cardArray.count, title);
+                    //DLog(@"cardArray count: %lu for title: %@", cardArray.count, title);
                     [cardArray enumerateObjectsUsingBlock:^(id  _Nonnull card, NSUInteger cardIdx, BOOL * _Nonnull cardStop) {
                         NSDictionary *cardObject = [card recursiveObjectForKey:@"videoCardRenderer"];
                         if (!cardObject) {
@@ -2643,7 +2643,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                                     }];
                                                 } else { //alt shorts route
                                                     recursiveObjectsLike(@"reelItemRenderer", obj, shorts);
-                                                    DLog(@"reelItemRenderer: %lu", shorts.count);
+                                                    //DLog(@"reelItemRenderer: %lu", shorts.count);
                                                     if (shorts.count > 0) {
                                                         [shorts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                                             KBYTSearchResult *res = [self searchResultFromReelRenderer:obj inChannel:channel];

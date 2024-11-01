@@ -98,6 +98,7 @@
 @property (nonatomic, strong) NSString *viewTitle;
 @property (nonatomic, strong) UIColor *backgroundColor;
 @property (nonatomic, strong) NSString *loadMoreHREF;
+@property (nonatomic, strong) UILabel *titleView;
 
 
 @property (copy, nonatomic) NSArray *viewControllers;

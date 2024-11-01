@@ -411,7 +411,8 @@ void UncaughtExceptionHandler(NSException *exception) {
             
             UIViewController *rvc = app.keyWindow.rootViewController;
             
-            NSURL *playURL = [[videoDetails.streams firstObject] url];
+            //NSURL *playURL = [[videoDetails.streams firstObject] url];
+            NSURL *playURL = [NSURL URLWithString:[videoDetails hlsManifest]];
             AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
             AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
             
@@ -449,6 +450,16 @@ void UncaughtExceptionHandler(NSException *exception) {
     
 }
 
+- (void)pushViewController:(UIViewController *)vc animated:(BOOL)isAnimated completion:(void (^ __nullable)(void))completion {
+    UIViewController *rvc = UIApplication.sharedApplication.keyWindow.rootViewController;
+    if ([rvc navigationController]) {
+        [[rvc navigationController] pushViewController:vc animated:true];
+    } else {
+        [self presentViewController:vc animated:isAnimated completion:completion];
+    }
+}
+
+
 - (void)showPlaylist:(NSString *)videoID named:(NSString *)name {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
@@ -459,7 +470,8 @@ void UncaughtExceptionHandler(NSException *exception) {
         //NSString *nextHREF = searchDetails[@"loadMoreREF"];
         YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:name backgroundColor:[UIColor blackColor] withPlaylistItems:playlist.videos];
         //playlistViewController.loadMoreHREF = nextHREF;
-        [self presentViewController:playlistViewController animated:YES completion:nil];
+        [self pushViewController:playlistViewController animated:true completion:nil];
+        //[self presentViewController:playlistViewController animated:YES completion:nil];
         // [[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
         
     } failureBlock:^(NSString *error) {

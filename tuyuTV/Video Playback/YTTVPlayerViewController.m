@@ -176,7 +176,7 @@
 }
 
 - (KBMenu *)createPlaylistMenu {
-    LOG_CMD;
+    //LOG_CMD;
     @weakify(self);
     __block NSMutableArray *items = [NSMutableArray new];
     if ([[self queuePlayer] hasPreviousItem]){
@@ -191,7 +191,7 @@
         }];
         [items addObject:nextItem];
     }
-    TLog(@"item count: %lu", items.count);
+    //TLog(@"item count: %lu", items.count);
     return [KBMenu menuWithTitle:@"Playlist" image:[KBSliderImages playlistImage] identifier:nil options:KBMenuOptionsDisplayInline children:items];
 }
 
