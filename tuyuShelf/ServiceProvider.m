@@ -137,22 +137,17 @@
     
 }
 
-/*
- 
- private func urlForIdentifier(identifier: String) -> NSURL {
- let components = NSURLComponents()
- components.scheme = "newsapp"
- components.queryItems = [NSURLQueryItem(name: "identifier",
- value: identifier)] return components.URL!
- }*/
-
 
 - (NSURL *)urlForSearchResult:(KBYTSearchResult *)result {
+    if (result.resultType == kYTSearchResultTypePlaylist) {
+        NSURLComponents *comp = [NSURLComponents componentsWithString:[NSString stringWithFormat:@"tuyu://%@/%@", result.readableSearchType, result.videoId]];
+        comp.query = [NSString stringWithFormat:@"title=%@", result.title];
+        TLog(@"url: %@", comp.URL);
+        return comp.URL;
+    } else {
+        return [NSURL URLWithString:[NSString stringWithFormat:@"tuyu://%@/%@", result.readableSearchType, result.videoId]];
+    }
     return [NSURL URLWithString:[NSString stringWithFormat:@"tuyu://%@/%@", result.readableSearchType, result.videoId]];
-}
-
-- (NSURL *)urlForIdentifier:(NSString*)identifier type:(NSString *)type {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"tuyu://%@/%@", type, identifier]];
 }
 
 
@@ -207,11 +202,7 @@
             TVContentItem * ci = [[TVContentItem alloc] initWithContentIdentifier:cid];
             ci.title = result.title;
             ci.imageURL = [NSURL URLWithString:result.imagePath];
-            
-            NSURLComponents *comp = [NSURLComponents componentsWithString:[NSString stringWithFormat:@"tuyu://%@/%@", result.readableSearchType, result.videoId]];
-            comp.query = [NSString stringWithFormat:@"title=%@", result.title];
-            TLog(@"url: %@", comp.URL);
-            ci.displayURL = comp.URL;
+            ci.displayURL = [self urlForSearchResult:result];
             [playlistItems addObject:ci];
             
         }];
@@ -230,7 +221,7 @@
         TVContentItem * ci = [[TVContentItem alloc] initWithContentIdentifier:cid];
         ci.title = result.title;
         ci.imageURL = [NSURL URLWithString:result.imagePath];
-        ci.displayURL = [self urlForSearchResult:result];//[self urlForIdentifier:result.videoId type:result.readableSearchType];
+        ci.displayURL = [self urlForSearchResult:result];
         [suggestedItems addObject:ci];
         
     }];
