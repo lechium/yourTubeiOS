@@ -73,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface NSObject  (convenience)
+- (NSString *)absoluteDownloadFolder;
 - (UIViewController *)topViewController;
 #if TARGET_OS_TV
 - (BOOL)darkMode;

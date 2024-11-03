@@ -85,11 +85,14 @@
   
     
     NSLog(@"app support: %@", [self appSupportFolder]);
+    NSArray *contents = [FM directoryContentsAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Downloads"]];
+    TLog(@"contents: %@", contents);
     NSLog(@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8");
    
     [[KBYTMessagingCenter sharedInstance] startDownloadListener];
     [[KBYTMessagingCenter sharedInstance] registerDownloadListener];
     //[[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
     if ([[KBYourTube sharedInstance] isSignedIn] == true)
     {
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
@@ -105,7 +108,9 @@
         NSLog(@"is not signed in");
     }
     
-   
+    TLog(@"adl: %@", [self absoluteDownloadFolder]);
+    NSArray *conts = [FM contentsOfDirectoryAtPath:[self absoluteDownloadFolder] error:nil];
+    TLog(@"contents: %@", conts);
     
     /*
  

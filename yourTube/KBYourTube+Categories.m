@@ -765,6 +765,16 @@
     return dict;
 }
 
+- (NSString *)absoluteDownloadFolder {
+    NSString *libraryFolder = [NSHomeDirectory() stringByAppendingPathComponent:@"Library"];
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"self like[c] %@ || self contains[c] %@", @"com.apple.UserManagedAssets", @"com.apple.UserManagedAssets"];
+    NSString *userDataFolder = [[[FM directoryContentsAtPath:libraryFolder] filteredArrayUsingPredicate:pred] firstObject];
+    //TLog(@"userDataFolder: %@", userDataFolder);
+    NSString *fullPath = [libraryFolder stringByAppendingPathComponent:userDataFolder];
+    //TLog(@"adf: %@", fullPath);
+    return fullPath;
+}
+
 - (BOOL)vanillaApp {
     NSArray *paths =
     NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,

@@ -13,7 +13,7 @@
 @interface KBYTDownloadOperation ()
 
 @property (nonatomic) NSURLSession *session;
-@property (nonatomic) NSURLSessionDownloadTask *downloadTask;
+@property (nonatomic) AVAssetDownloadTask *downloadTask;
 @end
 
 //download operation class, handles file downloads.
@@ -152,10 +152,55 @@
 #endif
 }
 
+- (void)downloadCurrentMedia:(KBYTMedia *)media {
+    NSURL *url = [NSURL URLWithString:[media hlsManifest]];
+    NSString *title = media.title;
+    NSURL *imageURL = [NSURL URLWithString:media.images[@"high"]];
+    NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+    self.downloadIdentifier = media.videoId;
+    [self setupAssetDownloadWithURL:url withTitle:title andArtworkData:imageData];
+}
+
+- (void)setupAssetDownloadWithURL:(NSURL*)url withTitle:(NSString *)assetTitle andArtworkData:(NSData *)artworkData {
+    LOG_SELF;
+#if TARGET_OS_IOS
+    // Create new background session configuration.
+    _sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:_downloadIdentifier];
+    
+    // Create a new AVAssetDownloadURLSession with background configuration, delegate, and queue
+    self.downloadSession = [AVAssetDownloadURLSession sessionWithConfiguration:_sessionConfiguration assetDownloadDelegate:self delegateQueue:NSOperationQueue.mainQueue];
+    
+    AVURLAsset *asset = [AVURLAsset assetWithURL:url];
+    
+    // Create new AVAssetDownloadTask for the desired asset
+    AVAssetDownloadTask *downloadTask = [_downloadSession assetDownloadTaskWithURLAsset:asset assetTitle:assetTitle assetArtworkData:artworkData options:nil];
+    
+    // Start task and begin download
+    [downloadTask resume];
+#endif
+}
+
+- (void)restorePendingDownloads {
+    LOG_SELF;
+    // Create session configuration with ORIGINAL download identifier
+    _sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:_downloadIdentifier];
+    
+    // Create a new AVAssetDownloadURLSession
+    _downloadSession = [AVAssetDownloadURLSession sessionWithConfiguration:_sessionConfiguration assetDownloadDelegate:self delegateQueue:NSOperationQueue.mainQueue];
+ 
+    // Grab all the pending tasks associated with the downloadSession
+    [_downloadSession getAllTasksWithCompletionHandler:^(NSArray<__kindof NSURLSessionTask *> * _Nonnull tasks) {
+        // For each task, restore the state in the app
+        for (AVAssetDownloadTask *task in tasks) {
+            // Restore asset, progress indicators, state, etc...
+            AVURLAsset *asset = [task URLAsset];
+        }
+    }];
+}
 
 - (void)start
 {
-    self.session = [self backgroundSessionWithId:self.downloadInfo[@"title"]];
+    //self.session = [self backgroundSessionWithId:self.downloadInfo[@"title"]];
     
     if (self.downloadTask)
     {
@@ -167,9 +212,50 @@
      Create a new download task using the URL session. Tasks start in the “suspended” state; to start a task you need to explicitly call -resume on a task after creating it.
      */
     NSURL *downloadURL = [NSURL URLWithString:downloadInfo[@"url"]];
+    /*
     NSURLRequest *request = [NSURLRequest requestWithURL:downloadURL];
     self.downloadTask = [self.session downloadTaskWithRequest:request];
     [self.downloadTask resume];
+     */
+    _sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.downloadInfo[@"title"]];
+    
+    // Create a new AVAssetDownloadURLSession with background configuration, delegate, and queue
+    self.downloadSession = [AVAssetDownloadURLSession sessionWithConfiguration:_sessionConfiguration assetDownloadDelegate:self delegateQueue:NSOperationQueue.mainQueue];
+    
+    AVURLAsset *asset = [AVURLAsset assetWithURL:downloadURL];
+    
+    // Create new AVAssetDownloadTask for the desired asset
+    self.downloadTask = [_downloadSession assetDownloadTaskWithURLAsset:asset assetTitle:self.downloadInfo[@"title"] assetArtworkData:nil options:nil];
+    
+    // Start task and begin download
+    [self.downloadTask resume];
+}
+
+- (void)URLSession:(NSURLSession *)session assetDownloadTask:(AVAssetDownloadTask *)assetDownloadTask didLoadTimeRange:(CMTimeRange)timeRange totalTimeRangesLoaded:(NSArray<NSValue *> *)loadedTimeRanges timeRangeExpectedToLoad:(CMTimeRange)timeRangeExpectedToLoad {
+    LOG_SELF;
+    CGFloat percentComplete = 0.0;
+    // Iterate through the loaded time ranges
+    for (NSValue *value in loadedTimeRanges) {
+        // Unwrap the CMTimeRange from the NSValue
+        CMTimeRange loadedTimeRange = [value CMTimeRangeValue];
+        // Calculate the percentage of the total expected asset duration
+        percentComplete += CMTimeGetSeconds(loadedTimeRange.duration) / CMTimeGetSeconds(timeRangeExpectedToLoad.duration);
+    }
+    percentComplete *= 100;
+    DLog(@"percent complete: %.0f", percentComplete);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //[self setDownloadProgress:percentComplete];
+        //self.progressLabel.stringValue = @"Downloading video...";
+#if TARGET_OS_IOS
+            yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
+            if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
+            {
+                NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
+                [(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] updateDownloadProgress:info];
+            }
+#endif
+    });
+    // Update UI state: post notification, update KVO state, invoke callback, etc.
 }
 
 
@@ -198,6 +284,35 @@
     }
 }
 
+- (void)URLSession:(NSURLSession *)session assetDownloadTask:(AVAssetDownloadTask *)assetDownloadTask didFinishDownloadingToURL:(NSURL *)location {
+    LOG_SELF;
+    DLog(@"finished downloading file to URL: %@ path: %@", location, location.path);
+    self.assetDownloadURL = location;
+    dispatch_async(dispatch_get_main_queue(), ^{
+#if TARGET_OS_IOS
+        if (self.CompletedBlock != nil) {
+            DLog(@"relative path: %@", location.relativePath);
+            self.downloadLocation = location.relativePath;
+            self.CompletedBlock(location.relativePath);
+        }
+        yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
+        if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
+        {
+            //NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:100] };
+            //[(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] updateDownloadProgress:info];
+            [(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] delayedReloadData];
+        }
+#endif
+    });
+    [[NSUserDefaults standardUserDefaults] setValue:location.relativePath forKey:@"assetPath"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        AVURLAsset *asset = [AVURLAsset assetWithURL:location];
+        AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
+        
+    });
+
+}
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)downloadURL
 {

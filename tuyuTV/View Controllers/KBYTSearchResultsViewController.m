@@ -39,7 +39,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
     NSString *scope = searchBar.scopeButtonTitles[selectedScope];
     TLog(@"scope changed: %lu: %@", selectedScope, scope);
-    [UD setValue:scope forKey:@"filterType"];
+    [[KBYourTube sharedUserDefaults] setValue:scope forKey:@"filterType"];
     _lastSearchResult = nil;
     
 }
@@ -69,7 +69,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         return;
     }
     
-    // DLog(@"at: %@", [UD valueForKey:@"access_token"]);
+    // DLog(@"at: %@", [[KBYourTube sharedUserDefaults] valueForKey:@"access_token"]);
     if (![[KBYourTube sharedInstance] isSignedIn]) {
         return;
     }
@@ -463,18 +463,22 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     self.currentPage = 1; //reset for new search
     self.continuationToken = nil;
-    if ([_lastSearchResult isEqualToString:searchController.searchBar.text] || searchController.searchBar.text.length == 0) {
+    if ([_lastSearchResult isEqualToString:searchController.searchBar.text]) {
         //no need to refresh a search with an old string...
         return;
     }
+    
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[self searchResults] removeAllObjects];
     self.filterString = searchController.searchBar.text;
     _lastSearchResult = self.filterString;
-    
+    if (searchController.searchBar.text.length == 0) {
+        [SVProgressHUD dismiss];
+        return;
+    }
     KBYTSearchType type = [self searchTypeForSettings];
-    //TLog(@"search type: %lu", type);
+    TLog(@"search type: %lu", type);
     [[KBYourTube sharedInstance] apiSearch:self.filterString type:type continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
         //TLog(@"search results: %@", result.videos);
         self.continuationToken = result.continuationToken;
@@ -499,6 +503,12 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     
     self.focusedCollectionCell = (UICollectionViewCell *)context.nextFocusedView;
+    if ([self.focusedCollectionCell isKindOfClass:[YTTVStandardCollectionViewCell class]]){
+        TLog(@"is that kind of class: %@", [(YTTVStandardCollectionViewCell*)self.focusedCollectionCell overlayInfo].text);
+        NSIndexPath *indexPath = [self.collectionView indexPathForCell:self.focusedCollectionCell];
+        KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
+        TLog(@"currentItem: %@", currentItem);
+    }
     //YTTVStandardCollectionViewCell *selectedCell = (YTTVStandardCollectionViewCell*)context.nextFocusedView;
     //self.selectedItem=  [[self collectionView] indexPathForCell:selectedCell];
 }

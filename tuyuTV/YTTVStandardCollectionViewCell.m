@@ -25,6 +25,7 @@
     self.title.holdScrolling = true;
     self.title.alpha = 1;
     DLog(@"dl: %@", self.durationLabel);
+    self.overlayInfo.enablesMarqueeWhenAncestorFocused = true;
 }
 
 
@@ -69,6 +70,7 @@
     [super awakeFromNib];
     self.title.alpha = 1;
     self.title.holdScrolling = true;
+    self.overlayInfo.enablesMarqueeWhenAncestorFocused = true;
 }
 
 @end

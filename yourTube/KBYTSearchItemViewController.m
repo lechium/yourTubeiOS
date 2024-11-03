@@ -146,7 +146,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	
-    return 1;
+    //return 1;
     NSInteger sections = 3;
     
     if ([aircontrolServers count] > 0)
@@ -303,8 +303,8 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 			cell.accessoryType = UITableViewCellAccessoryNone;
 			cell.textLabel.textAlignment = UITextAlignmentCenter;
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-            stream = [ytMedia.streams firstObject];//[ytMedia.streams objectAtIndex:indexPath.row];
-            cell.textLabel.text = stream.format;
+            //stream = [ytMedia.streams firstObject];//[ytMedia.streams objectAtIndex:indexPath.row];
+            cell.textLabel.text = @"Highest Quality";//stream.format;
             
 			return cell;
 			break;
@@ -315,10 +315,10 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 				cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
 			cell.accessoryType = UITableViewCellAccessoryNone;
 			cell.textLabel.textAlignment = UITextAlignmentCenter;
-				cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-                stream = [ytMedia.streams objectAtIndex:indexPath.row];
-                cell.textLabel.text = stream.format;
-            
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+                //stream = [ytMedia.streams objectAtIndex:indexPath.row];
+                //cell.textLabel.text = stream.format;
+            cell.textLabel.text = @"Highest Quality";
 			return cell;
 			break;
             
@@ -406,7 +406,33 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     return false;
     
 }
-
+- (IBAction)playMedia {
+    LOG_SELF;
+    NSURL *playURL = [NSURL URLWithString:[self.ytMedia hlsManifest]];
+    NSLog(@"play url: %@", playURL);
+    if ([self isPlaying] == true  ){
+        return;
+    }
+    self.playerView = [YTKBPlayerViewController alloc];
+    YTPlayerItem *playItem = [[YTPlayerItem alloc] initWithURL:playURL];
+    playItem.associatedMedia = self.ytMedia;
+    self.playerView.showsPlaybackControls = true;
+    //AVPlayerItem *playItem = [[AVPlayerItem alloc] initWithURL:playURL];
+    self.player = [[KBYTQueuePlayer alloc] initWithItems:@[playItem]];
+    self.playerView.player = self.player;
+    
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    self.playerView.view.frame = self.view.frame;
+  //  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
+    
+    [self.player play];
+  
+    //NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    ;
+    //[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : ytMedia.title, MPMediaItemPropertyPlaybackDuration: [numberFormatter numberFromString:ytMedia.duration]};
+    
+    
+}
 - (IBAction)playStream:(KBYTStream *)stream {
     LOG_SELF;
     NSURL *playURL = [stream url];
@@ -494,13 +520,15 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             break;
             
 		case 1:
-            currentStream = ytMedia.streams[indexPath.row];;
-            [self playStream:currentStream];
-			[tableView deselectRowAtIndexPath:indexPath animated:YES];
+            //currentStream = ytMedia.streams[indexPath.row];;
+            //[self playStream:currentStream];
+            [self playMedia];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
 			break;
 		case 2:
-            currentStream = ytMedia.streams[indexPath.row];
-            [self downloadStream:currentStream];
+            //currentStream = ytMedia.streams[indexPath.row];
+            //[self downloadStream:currentStream];
+            [self downloadMedia];
             [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
 			[tableView deselectRowAtIndexPath:indexPath animated:YES];
             [self showDownloadStartedAlert];
@@ -542,6 +570,30 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 }
 
 //offload the downloading into the mobile substrate tweak so it can run in the background without timing out.
+
+- (void)downloadMedia {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    NSMutableDictionary *streamDict = [[self.ytMedia dictionaryRepresentation] mutableCopy];
+    //streamDict[@"duration"] = self.ytMedia.duration;
+    //streamDict[@"author"] = self.ytMedia.author;
+    //streamDict[@"images"] = self.ytMedia.images;
+    streamDict[@"inProgress"] = [NSNumber numberWithBool:true];
+    //streamDict[@"videoId"] = self.ytMedia.videoId;
+    //streamDict[@"views"]= self.ytMedia.views;
+    NSString *stringURL = self.ytMedia.hlsManifest;
+    streamDict[@"url"] = stringURL;
+    TLog(@"streamDict: %@", streamDict);
+    [self updateDownloadsDictionary:streamDict];
+    if ([self vanillaApp])
+    {
+        [[KBYTDownloadManager sharedInstance] addDownloadToQueue:streamDict];
+    } else {
+#if TARGET_OS_IOS
+        [[KBYTMessagingCenter sharedInstance] addDownload:streamDict];
+
+#endif
+    }
+}
 
 - (void)downloadStream:(KBYTStream *)stream {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];

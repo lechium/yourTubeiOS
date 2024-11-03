@@ -278,7 +278,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     extension = inputDict[@"extension"];
     format = inputDict[@"format"];
     outputFilename = inputDict[@"outputFilename"];
-    filePath = [[self downloadFolder] stringByAppendingPathComponent:outputFilename];
+    filePath = inputDict[@"filePath"];//[[self downloadFolder] stringByAppendingPathComponent:outputFilename];
     return self;
 }
 
@@ -291,7 +291,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if (self.outputFilename == nil)self.outputFilename = @"Unavailable";
     if (self.format == nil)self.format = @"Unavailable";
     if (self.images == nil)self.images = @{};
-    return @{@"title": self.title, @"author": self.author, @"outputFilename": self.outputFilename, @"images": self.images, @"videoId": self.videoId, @"duration": self.duration, @"inProgress": [NSNumber numberWithBool:self.inProgress], @"views": self.views, @"extension": self.extension, @"format": self.format};
+    if (self.extension == nil)self.extension = @"Unavailable";
+    if (self.filePath == nil)self.filePath = @"Unavailable";
+    return @{@"title": self.title, @"author": self.author, @"outputFilename": self.outputFilename, @"images": self.images, @"videoId": self.videoId, @"duration": self.duration, @"inProgress": [NSNumber numberWithBool:self.inProgress], @"views": self.views, @"extension": self.extension, @"format": self.format, @"filePath": self.filePath};
 }
 
 - (NSString *)description {
@@ -1477,7 +1479,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             [sharedInst startReachabilityMonitoring];
             sharedInst.writeDebugJSONFiles = FALSE;
             sharedInst.printCurlCommands = TRUE;
-            sharedInst.deviceController = [[APDeviceController alloc] init];
+            //sharedInst.deviceController = [[APDeviceController alloc] init];
         });
     }
     
@@ -1938,7 +1940,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
              continuation:(NSString *)continuationToken
           completionBlock:(void(^)(KBYTPlaylist *playlist))completionBlock
              failureBlock:(void(^)(NSString *error))failureBlock {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         
         @autoreleasepool {
             NSString *errorString = nil;

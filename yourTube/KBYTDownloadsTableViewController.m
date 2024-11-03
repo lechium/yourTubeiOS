@@ -42,8 +42,8 @@
     return self;
 }
 
-- (void)delayedReloadData
-{
+- (void)delayedReloadData {
+    LOG_SELF;
     [self performSelector:@selector(reloadData) withObject:nil afterDelay:3];
 }
 
@@ -420,6 +420,9 @@
         
         
         NSString *filePath = theMedia.filePath;
+        if (![FM fileExistsAtPath:filePath]) {
+            filePath = [NSHomeDirectory() stringByAppendingPathComponent:filePath];
+        }
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
         [mutableArray removeObject:theMedia];
@@ -541,7 +544,7 @@
     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };//, MPMediaItemPropertyArtwork: artwork };
     
     NSURL *playURL = [NSURL fileURLWithPath:outputFile];
-    NSLog(@"play url: %@", playURL);
+    TLog(@"play url: %@", playURL);
     if ([self isPlaying] == true  ){
         return;
     }

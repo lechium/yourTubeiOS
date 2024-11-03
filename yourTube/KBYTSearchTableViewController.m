@@ -47,7 +47,7 @@
 }
 
 - (KBYTSearchType)searchTypeForSettings {
-    NSString *filterType = [UD valueForKey:@"filterType"];
+    NSString *filterType = [[KBYourTube sharedUserDefaults] valueForKey:@"filterType"];
     if (!filterType){
         return KBYTSearchTypeAll;
     }

@@ -34,6 +34,15 @@
 
 //add a download to our NSOperationQueue
 
+/*
+ streamDict[@"duration"] = self.ytMedia.duration;
+ streamDict[@"author"] = self.ytMedia.author;
+ streamDict[@"images"] = self.ytMedia.images;
+ streamDict[@"inProgress"] = [NSNumber numberWithBool:true];
+ streamDict[@"videoId"] = self.ytMedia.videoId;
+ streamDict[@"views"]= self.ytMedia.views;
+ */
+
 - (void)addDownloadToQueue:(NSDictionary *)downloadInfo
 {
     KBYTDownloadOperation *downloadOp = [[KBYTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
@@ -43,6 +52,12 @@
             NSLog(@"no downloaded file, either cancelled or failed!");
             return;
         }
+        NSMutableDictionary *mutableCopy = [downloadInfo mutableCopy];
+        [mutableCopy setValue:downloadedFile.lastPathComponent forKey:@"outputFilename"];
+        [mutableCopy setValue:downloadedFile forKey:@"filePath"];
+        [mutableCopy setValue:[NSNumber numberWithBool:false] forKey:@"inProgress"];
+        [self updateDownloadsProgress:mutableCopy];
+        /*
         if (![[downloadedFile pathExtension] isEqualToString:[downloadInfo[@"outputFilename"] pathExtension]])
         {
             NSMutableDictionary *mutableCopy = [downloadInfo mutableCopy];
@@ -51,9 +66,9 @@
             [self updateDownloadsProgress:mutableCopy];
         } else {
             [self updateDownloadsProgress:downloadInfo];
-        }
+        }*/
         
-        NSLog(@"download completed!");
+        TLog(@"download completed: %@", mutableCopy);
         [[self operations] removeObject:downloadOp];
         [self playCompleteSound];
         
@@ -101,20 +116,20 @@
     if ([man fileExistsAtPath:dlplist])
     {
         currentArray = [[NSMutableArray alloc] initWithContentsOfFile:dlplist];
-        NSMutableDictionary *updateObject = [[currentArray filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.title == %@", streamDictionary[@"title"]]]lastObject];
+        NSPredicate *titlePredicate = [NSPredicate predicateWithFormat:@"SELF.title == %@", streamDictionary[@"title"]];
+        NSMutableDictionary *updateObject = [[currentArray filteredArrayUsingPredicate:titlePredicate]lastObject];
         NSInteger objectIndex = [currentArray indexOfObject:updateObject];
-        if (objectIndex != NSNotFound)
-        {
-            if ([[streamDictionary[@"outputFilename"]pathExtension] isEqualToString:@"m4a"])
-            {
+        if (objectIndex != NSNotFound) {
+            if ([[streamDictionary[@"outputFilename"]pathExtension] isEqualToString:@"m4a"]) {
                 [currentArray replaceObjectAtIndex:objectIndex withObject:streamDictionary];
-                // [currentArray removeObject:updateObject];
-                
             } else {
                 [updateObject setValue:[NSNumber numberWithBool:false] forKey:@"inProgress"];
-                [currentArray replaceObjectAtIndex:objectIndex withObject:updateObject];
+                [currentArray replaceObjectAtIndex:objectIndex withObject:streamDictionary];
                 
             }
+        } else {
+            TLog(@"index not found!!");
+
         }
         
     } else {

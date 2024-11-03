@@ -518,6 +518,7 @@ void UncaughtExceptionHandler(NSException *exception) {
     [[KBYourTube sharedUserDefaults] synchronize];
     LOG_SELF;
     TLog(@"app support: %@", [self appSupportFolder]);
+
     self.tabBar = (UITabBarController *)self.window.rootViewController;
     // self.tabBar.tabBar.translucent = false;
     NSMutableArray *viewControllers = [NSMutableArray new];
