@@ -60,6 +60,13 @@ NS_ASSUME_NONNULL_BEGIN
 ///--------------------------------------------
 
 /**
+ Create an OAuth credential from a token dictionary.
+
+ @param dict The OAuth token dictionary.
+ */
++ (instancetype)credentialWithOAuthDictionary:(NSDictionary *)dict;
+
+/**
  Create an OAuth credential from a token string, with a specified type.
 
  @param token The OAuth token string.

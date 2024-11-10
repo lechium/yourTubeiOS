@@ -174,9 +174,18 @@
                 self.authorized = false;
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    NSString *refreshToken = [tokenResponse valueForKey:@"refresh_token"];
-                    AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
+                    //NSString *refreshToken = [tokenResponse valueForKey:@"refresh_token"];
+                    AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthDictionary:tokenResponse];//[AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
+                    /*
                     credential.refreshToken = refreshToken;
+                    NSInteger expireTime = [tokenResponse[@"expires_in"]integerValue];
+                    NSInteger currentEpoch = [[NSDate date] timeIntervalSince1970];
+                    NSInteger expires = expireTime + currentEpoch;
+                    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:expires];
+                    TLog(@"currentDate: %@ expireDate: %@",[NSDate date], expireDate);
+                    [credential setExpiration:expireDate];
+                     */
+                    TLog(@"setting credential: %@", credential);
                     [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
                     self.tokenData = tokenResponse;
                     self.authorized = true;
@@ -399,7 +408,9 @@
     
     //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
     id token = [self refreshAuthToken];
-    TLog(@"refreshed token: %@", token);
+    if (token) {
+        TLog(@"refreshed token: %@", token);
+    }
     NSString *urlString = [NSString stringWithFormat:@"%@&key=%@", command, ytClientID];
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
@@ -979,7 +990,12 @@ snippet =             {
     NSString* post = nil;
     
     AFOAuthCredential *token = [self defaultCredential];
-    
+    if ([token isExpired]){
+        TLog(@"token is expired!");
+    } else {
+        TLog(@"token is NOT expired!");
+        return nil;
+    }
     post = [NSString stringWithFormat:@"refresh_token=%@&client_id=%@&scope=&client_secret=%@&grant_type=refresh_token&&", token.refreshToken, ytClientID, ytSecretKey];
     
     // NSLog(@"postString: %@", post);
@@ -1017,10 +1033,18 @@ snippet =             {
     } else {
         //TLog(@"refreshedToken: %@", jsonDict);
         NSString *refreshToken = token.refreshToken;
-        AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[jsonDict valueForKey:@"access_token"] tokenType:[jsonDict valueForKey:@"token_type"]];
+        AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthDictionary:jsonDict];//[AFOAuthCredential credentialWithOAuthToken:jsonDict[@"access_token"] tokenType:jsonDict[@"token_type"]];
         credential.refreshToken = refreshToken;
+        /*
+        NSInteger expireTime = [jsonDict[@"expires_in"]integerValue];
+        NSInteger currentEpoch = [[NSDate date] timeIntervalSince1970];
+        NSInteger expires = expireTime + currentEpoch;
+        NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:expires];
+        TLog(@"currentDate: %@ expireDate: %@",[NSDate date], expireDate);
+        [credential setExpiration:expireDate];
+         */
         [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-        //TLog(@"refreshed credential: %@", credential);
+        TLog(@"refreshed credential: %@", credential);
         [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         
     }
