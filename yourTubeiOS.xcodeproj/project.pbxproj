@@ -434,8 +434,6 @@
 		898E93031C8D564100B34DAA /* APDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A261C5E8B3D00F50BC2 /* APDocument.m */; };
 		898E93041C8D564300B34DAA /* APElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 897B4A281C5E8B3D00F50BC2 /* APElement.m */; };
 		898E93051C8D564600B34DAA /* ONOXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 8912FA561C6EE29400FB6D67 /* ONOXMLDocument.m */; };
-		898E93061C8D565300B34DAA /* KBYTDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF31C8A27ED000FFCA0 /* KBYTDownloadOperation.m */; };
-		898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A35CF01C8A222A000FFCA0 /* KBYTDownloadManager.m */; };
 		898E93081C8D565800B34DAA /* KBYTQueuePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A83A121C8781DA00E1987E /* KBYTQueuePlayer.m */; };
 		898E93091C8D565B00B34DAA /* KBYourTube.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD71C499EFF00B8D1C4 /* KBYourTube.m */; };
 		898E930A1C8D566000B34DAA /* KBYTDownloadStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E06BD91C499EFF00B8D1C4 /* KBYTDownloadStream.m */; };
@@ -2752,7 +2750,6 @@
 				32D2A1431F424805006F24B3 /* AFURLResponseSerialization.m in Sources */,
 				4BBC79B32C9542B7005EB5D4 /* SDAnimatedImageView+WebCache.m in Sources */,
 				32D6A626285695CC006BF25C /* KBContextMenuRepresentation.m in Sources */,
-				898E93071C8D565600B34DAA /* KBYTDownloadManager.m in Sources */,
 				32D2A14B1F424805006F24B3 /* AFOAuthCredential.m in Sources */,
 				4BBC7A3D2C9542B9005EB5D4 /* SDImageCacheDefine.m in Sources */,
 				321DAC012849EA64002D07B6 /* KBBulletinView.m in Sources */,
@@ -2767,7 +2764,6 @@
 				32D6A62E285695CC006BF25C /* KBAVMetaData.m in Sources */,
 				4BBC79FB2C9542B8005EB5D4 /* SDImageAPNGCoder.m in Sources */,
 				4B379BCE2CAB766C00453DBC /* UIColor+Additions.m in Sources */,
-				898E93061C8D565300B34DAA /* KBYTDownloadOperation.m in Sources */,
 				4BBC7A192C9542B8005EB5D4 /* SDWebImageDownloaderConfig.m in Sources */,
 				8998766F1CDEA423006A639E /* UIView+RecursiveFind.m in Sources */,
 				4BBC7A372C9542B9005EB5D4 /* UIImageView+WebCache.m in Sources */,

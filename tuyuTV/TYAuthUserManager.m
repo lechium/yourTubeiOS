@@ -399,7 +399,7 @@
     
     //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
     id token = [self refreshAuthToken];
-    //TLog(@"refreshed token: %@", token);
+    TLog(@"refreshed token: %@", token);
     NSString *urlString = [NSString stringWithFormat:@"%@&key=%@", command, ytClientID];
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
@@ -411,7 +411,10 @@
     [request setHTTPMethod:@"GET"];
     
     NSHTTPURLResponse *theResponse = nil;
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     NSError* error = nil;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
     
@@ -928,6 +931,11 @@ snippet =             {
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:postData];
+    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     NSHTTPURLResponse *theResponse = nil;
     
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
@@ -990,6 +998,11 @@ snippet =             {
     [request setHTTPBody:postData];
     NSHTTPURLResponse *theResponse = nil;
     
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
+    
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
     
     
@@ -1002,6 +1015,7 @@ snippet =             {
     {
         return jsonDict;
     } else {
+        TLog(@"refreshedToken: %@", jsonDict);
         NSString *refreshToken = token.refreshToken;
         AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[jsonDict valueForKey:@"access_token"] tokenType:[jsonDict valueForKey:@"token_type"]];
         credential.refreshToken = refreshToken;

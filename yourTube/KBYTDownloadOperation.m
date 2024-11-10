@@ -241,16 +241,15 @@
         // Calculate the percentage of the total expected asset duration
         percentComplete += CMTimeGetSeconds(loadedTimeRange.duration) / CMTimeGetSeconds(timeRangeExpectedToLoad.duration);
     }
-    percentComplete *= 100;
-    DLog(@"percent complete: %.0f", percentComplete);
+    //percentComplete *= 100;
+    //DLog(@"percent complete: %.0f", percentComplete);
     dispatch_async(dispatch_get_main_queue(), ^{
         //[self setDownloadProgress:percentComplete];
         //self.progressLabel.stringValue = @"Downloading video...";
 #if TARGET_OS_IOS
             yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
-            if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
-            {
-                NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
+            if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]]) {
+                NSDictionary *info = @{@"videoId": self.downloadInfo[@"videoID"],@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
                 [(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] updateDownloadProgress:info];
             }
 #endif

@@ -413,7 +413,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     if ([self isPlaying] == true  ){
         return;
     }
-    self.playerView = [YTKBPlayerViewController alloc];
+    self.playerView = [[YTKBPlayerViewController alloc] initWithMedia:self.ytMedia];
     YTPlayerItem *playItem = [[YTPlayerItem alloc] initWithURL:playURL];
     playItem.associatedMedia = self.ytMedia;
     self.playerView.showsPlaybackControls = true;
@@ -578,7 +578,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     //streamDict[@"author"] = self.ytMedia.author;
     //streamDict[@"images"] = self.ytMedia.images;
     streamDict[@"inProgress"] = [NSNumber numberWithBool:true];
-    //streamDict[@"videoId"] = self.ytMedia.videoId;
+    streamDict[@"videoId"] = self.ytMedia.videoId;
     //streamDict[@"views"]= self.ytMedia.views;
     NSString *stringURL = self.ytMedia.hlsManifest;
     streamDict[@"url"] = stringURL;

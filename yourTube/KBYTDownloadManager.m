@@ -45,10 +45,8 @@
 
 - (void)addDownloadToQueue:(NSDictionary *)downloadInfo
 {
-    KBYTDownloadOperation *downloadOp = [[KBYTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
-        
-        if (downloadedFile == nil)
-        {
+    __block KBYTDownloadOperation *downloadOp = [[KBYTDownloadOperation alloc] initWithInfo:downloadInfo completed:^(NSString *downloadedFile) {
+        if (downloadedFile == nil){
             NSLog(@"no downloaded file, either cancelled or failed!");
             return;
         }

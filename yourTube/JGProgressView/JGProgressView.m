@@ -543,6 +543,7 @@ NS_INLINE void updateSharedProgressViewList(BOOL complete) {
         _cachedProgress = progress;
     }
     else {
+        TLog(@"progress: %f", progress);
         [super setProgress:progress];
     }
 }

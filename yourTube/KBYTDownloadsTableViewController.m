@@ -65,24 +65,25 @@
     
 }
 
-- (void)updateDownloadProgress:(NSDictionary *)theDict
-{
-    NSString *title = [theDict[@"file"] lastPathComponent];
-    NSDictionary *theObject = [[self.activeDownloads filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.outputFilename == %@", title]]lastObject];
-    if (theObject != nil)
-    {
-        
-        
+- (void)updateDownloadProgress:(NSDictionary *)theDict {
+    //LOG_SELF;
+    NSString *title = [theDict[@"videoId"] lastPathComponent];
+    //TLog(@"active: %@", self.activeDownloads);
+    //TLog(@"searching for: %@", theDict);
+    NSDictionary *theObject = [[self.activeDownloads filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.videoId == %@", title]]lastObject];
+    if (theObject != nil) {
+        //TLog(@"found object: %@", theObject);
         NSInteger index = [self.activeDownloads indexOfObject:theObject];
-        if (index != NSNotFound)
-        {
+        //TLog(@"found index: %lu", index);
+        if (index != NSNotFound) {
             NSIndexPath *path = [NSIndexPath indexPathForRow:index inSection:0];
             KBYTDownloadCell *cell = [[self tableView] cellForRowAtIndexPath:path];
             [cell.progressView setProgress:[theDict[@"completionPercent"] floatValue]];
-            if ([theDict[@"completionPercent"] integerValue] == 1)
-            {
+            if ([theDict[@"completionPercent"] integerValue] == 1) {
                 [cell.progressView setIndeterminate:true];
             }
+        } else {
+            TLog(@"didnt find index!");
         }
     }
 }
@@ -396,45 +397,41 @@
  }
  */
 
-- (void)deleteMedia:(KBYTLocalMedia *)theMedia fromSection:(NSInteger)section
-{
+- (void)deleteMedia:(KBYTLocalMedia *)theMedia fromSection:(NSInteger)section {
     if (section == 0) //active download, no file to delete
     {
-     
-        if ([self vanillaApp])
-        {
+        if ([self vanillaApp]) {
             [[KBYTDownloadManager sharedInstance] removeDownloadFromQueue:[theMedia dictionaryValue]];
         } else {
             [[KBYTMessagingCenter sharedInstance] stopDownload:[theMedia dictionaryValue]];
-            
-            
         }
-        
         NSMutableArray *mutableArray = [[self activeDownloads] mutableCopy];
         [mutableArray removeObject:theMedia];
         self.activeDownloads = mutableArray;
         //NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
-        
-        
     } else {
-        
-        
         NSString *filePath = theMedia.filePath;
         if (![FM fileExistsAtPath:filePath]) {
             filePath = [NSHomeDirectory() stringByAppendingPathComponent:filePath];
         }
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
+        NSInteger index = [mutableArray indexOfObject:theMedia];
+        TLog(@"index: %lu", index);
+        if (index == NSNotFound) {
+            TLog(@"object: %@", theMedia);
+            TLog(@"mutableArray: %@", mutableArray);
+        }
         [mutableArray removeObject:theMedia];
         self.downloadArray = [mutableArray copy]; //this needs to be a copy otherwise when we add the item
-        //below top make sure the download plist file stays current the items being added during
+        //below to make sure the download plist file stays current the items being added during
         //download throw off the size of the table section arrays and it leads to a crash
         
-        if ([self.activeDownloads count] > 0)
-        {
+        if ([self.activeDownloads count] > 0) {
             [mutableArray addObjectsFromArray:self.activeDownloads];
         }
-        [mutableArray writeToFile:[self downloadFile] atomically:true];
+        
+        [[mutableArray convertArrayToDictionaries] writeToFile:[self downloadFile] atomically:true];
     }
 }
 
