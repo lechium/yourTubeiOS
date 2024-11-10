@@ -1015,12 +1015,12 @@ snippet =             {
     if ([jsonDict valueForKey:@"error"] != nil) {
         return jsonDict;
     } else {
-        TLog(@"refreshedToken: %@", jsonDict);
+        //TLog(@"refreshedToken: %@", jsonDict);
         NSString *refreshToken = token.refreshToken;
         AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[jsonDict valueForKey:@"access_token"] tokenType:[jsonDict valueForKey:@"token_type"]];
         credential.refreshToken = refreshToken;
         [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-        TLog(@"refreshed credential: %@", credential);
+        //TLog(@"refreshed credential: %@", credential);
         [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         
     }
