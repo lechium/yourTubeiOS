@@ -2,7 +2,7 @@
 
 #import "yourTubeApplication.h"
 #import "KBYourTube.h"
-
+#import "TYAuthUserManager.h"
 
 @implementation yourTubeApplication
 @synthesize window = _window;
@@ -53,9 +53,16 @@
     _window.backgroundColor = [UIColor whiteColor];
     _searchViewController = [[KBYTDownloadsTableViewController alloc] init];
     self.nav = [[UINavigationController alloc] initWithRootViewController:_searchViewController];
-
-     [[UINavigationBar appearance] setTintColor:[UIColor redColor]];
-    [_window setRootViewController:  self.nav];
+    [[UINavigationBar appearance] setTintColor:[UIColor redColor]];
+    if (@available(iOS 15.0, *)) {
+        //[UINavigationBar appearance].scrollEdgeAppearance = [[UINavigationBarAppearance alloc] init];
+        UINavigationBarAppearance *navBarAppearance = [[UINavigationBarAppearance alloc] init];
+        [navBarAppearance configureWithOpaqueBackground];
+        //navBarAppearance.backgroundColor = [UIColor redColor];
+        [UINavigationBar appearance].standardAppearance = navBarAppearance;
+        [UINavigationBar appearance].scrollEdgeAppearance = navBarAppearance;
+    }
+    [_window setRootViewController:self.nav];
 	[_window makeKeyAndVisible];
   
     NSData *cookieData = [[KBYourTube sharedUserDefaults] objectForKey:@"ApplicationCookie"];
@@ -93,16 +100,12 @@
     [[KBYTMessagingCenter sharedInstance] registerDownloadListener];
     //[[NSURLCache sharedURLCache] removeAllCachedResponses];
     
-    if ([[KBYourTube sharedInstance] isSignedIn] == true)
-    {
+    if ([[KBYourTube sharedInstance] isSignedIn] == true) {
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
-            //
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
-            
         } failureBlock:^(NSString *error) {
-            
             NSLog(@"failed fetching user details with error: %@", error);
-            
+            [[TYAuthUserManager sharedInstance] signOut];
         }];
     } else {
         NSLog(@"is not signed in");

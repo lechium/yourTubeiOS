@@ -217,7 +217,7 @@
     self.downloadTask = [self.session downloadTaskWithRequest:request];
     [self.downloadTask resume];
      */
-    _sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.downloadInfo[@"title"]];
+    _sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.downloadInfo[@"videoId"]];
     
     // Create a new AVAssetDownloadURLSession with background configuration, delegate, and queue
     self.downloadSession = [AVAssetDownloadURLSession sessionWithConfiguration:_sessionConfiguration assetDownloadDelegate:self delegateQueue:NSOperationQueue.mainQueue];
@@ -225,10 +225,10 @@
     AVURLAsset *asset = [AVURLAsset assetWithURL:downloadURL];
     
     // Create new AVAssetDownloadTask for the desired asset
-    self.downloadTask = [_downloadSession assetDownloadTaskWithURLAsset:asset assetTitle:self.downloadInfo[@"title"] assetArtworkData:nil options:nil];
+    AVAssetDownloadTask *dlTask = [_downloadSession assetDownloadTaskWithURLAsset:asset assetTitle:self.downloadInfo[@"title"] assetArtworkData:nil options:nil];
     
     // Start task and begin download
-    [self.downloadTask resume];
+    [dlTask resume];
 }
 
 - (void)URLSession:(NSURLSession *)session assetDownloadTask:(AVAssetDownloadTask *)assetDownloadTask didLoadTimeRange:(CMTimeRange)timeRange totalTimeRangesLoaded:(NSArray<NSValue *> *)loadedTimeRanges timeRangeExpectedToLoad:(CMTimeRange)timeRangeExpectedToLoad {

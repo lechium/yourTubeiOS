@@ -209,7 +209,7 @@
 }
 
 - (AFOAuthCredential *)defaultCredential {
-    return [AFOAuthCredential retrieveCredentialWithIdentifier:@"default" accessGroup:nil];
+    return [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
 }
 
 + (id)sharedInstance {
@@ -222,7 +222,7 @@
             //shared = [TYAuthUserManager new];
             NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
             
-            AFOAuthCredential * credential =  [AFOAuthCredential retrieveCredentialWithIdentifier:@"default" accessGroup:nil];
+            AFOAuthCredential * credential = [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
             
             
             
@@ -794,6 +794,7 @@ snippet =             {
     [AFOAuthCredential deleteCredentialWithIdentifier:@"default"];
     self.tokenData = nil;
     self.authorized = NO;
+    [self setCredential:nil];
     [[KBYourTube sharedUserDefaults] removeObjectForKey:@"access_token"];
     [[KBYourTube sharedUserDefaults] removeObjectForKey:@"refresh_token"];
 }
@@ -1011,8 +1012,7 @@ snippet =             {
     //JSON data
     
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
-    if ([jsonDict valueForKey:@"error"] != nil)
-    {
+    if ([jsonDict valueForKey:@"error"] != nil) {
         return jsonDict;
     } else {
         TLog(@"refreshedToken: %@", jsonDict);
@@ -1020,7 +1020,7 @@ snippet =             {
         AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[jsonDict valueForKey:@"access_token"] tokenType:[jsonDict valueForKey:@"token_type"]];
         credential.refreshToken = refreshToken;
         [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-        //TLog(@"refreshed credential: %@", credential);
+        TLog(@"refreshed credential: %@", credential);
         [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         
     }

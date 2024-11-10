@@ -182,6 +182,12 @@
             NSLog(@"we good: %@", tokenDict );
             //AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
             //[ad updateForSignedIn];
+            [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+                [[KBYourTube sharedInstance] setUserDetails:outputResults];
+            } failureBlock:^(NSString *error) {
+                NSLog(@"failed fetching user details with error: %@", error);
+                //[[TYAuthUserManager sharedInstance] signOut];
+            }];
             [self dismissViewControllerAnimated:true completion:nil];
         } else {
             NSLog(@"show error alert here");
