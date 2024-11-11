@@ -14,6 +14,7 @@
 #import "TYAuthUserManager.h"
 #import <SafariServices/SafariServices.h>
 #import "AuthViewController.h"
+#import "NSFileManager+Size.h"
 
 @interface KBYTDownloadsTableViewController () <SFSafariViewControllerDelegate> {
     ScaleAnimation *_scaleAnimationController;
@@ -78,7 +79,13 @@
         if (index != NSNotFound) {
             NSIndexPath *path = [NSIndexPath indexPathForRow:index inSection:0];
             KBYTDownloadCell *cell = [[self tableView] cellForRowAtIndexPath:path];
-            [cell.progressView setProgress:[theDict[@"completionPercent"] floatValue]];
+            CGFloat completionPercent = [theDict[@"completionPercent"] floatValue];
+            cell.completionPercent = completionPercent;
+            [cell.progressView setProgress:completionPercent];
+            if (theDict[@"estimatedDuration"]) {
+                cell.detailTextLabel.text = theDict[@"estimatedDuration"];
+                cell.marqueeDetailTextLabel.text = theDict[@"estimatedDuration"];
+            }
             if ([theDict[@"completionPercent"] integerValue] == 1) {
                 [cell.progressView setIndeterminate:true];
             }
@@ -352,12 +359,10 @@
     KBYTLocalMedia *currentItem = nil;
     BOOL downloading = false;
     
-    if ([[self activeDownloads] count] == 0)
-    {
+    if ([[self activeDownloads] count] == 0) {
         currentItem = [self.downloadArray objectAtIndex:indexPath.row];
         downloading = false;
     } else {
-        
         switch (indexPath.section) {
             case 0:
                 currentItem = [self.activeDownloads objectAtIndex:indexPath.row];
@@ -371,17 +376,16 @@
     }
    // NSString *duration = [NSString stringFromTimeInterval:[currentItem[@"duration"]integerValue]];
     cell.duration = [NSString stringFromTimeInterval:[currentItem.duration integerValue]];
+    NSString *fileSize = FANCY_BYTES(currentItem.fileSize);
+    TLog(@"%@ fileSize: %@", currentItem.title, fileSize);
     cell.detailTextLabel.text = currentItem.author;
     cell.textLabel.text = currentItem.title;
     cell.detailTextLabel.textColor = [UIColor grayColor];
-    if (currentItem.format != nil && downloading == false)
-    {
+    if (currentItem.format != nil && downloading == false) {
         //cell.views = [currentItem[@"views"] stringByAppendingString:@" Views"];
         cell.views = currentItem.format;
     }
-    
-    if (downloading == true)
-    {
+    if (downloading == true) {
         cell.views = @"";
     }
     cell.downloading = downloading;
@@ -390,8 +394,6 @@
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
     cell.imageView.autoresizingMask = ( UIViewAutoresizingNone );
     [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
-    
- 
     return cell;
 }
 

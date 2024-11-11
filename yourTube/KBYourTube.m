@@ -19,6 +19,7 @@
 //#ifndef SHELF_EXT
 #import "TYAuthUserManager.h"
 #import "EXTScope.h"
+#import "NSFileManager+Size.h"
 //#endif
 
 #if TARGET_OS_TV
@@ -298,6 +299,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 - (NSString *)description {
     return [[self dictionaryValue] description];
+}
+
+- (NSUInteger)fileSize {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:self.filePath]){
+        return [NSFileManager sizeForFolderAtPath:self.filePath];
+    }
+    NSString *fullPath = [NSHomeDirectory() stringByAppendingPathComponent:self.filePath];
+    return [NSFileManager sizeForFolderAtPath:fullPath];
 }
 
 @end

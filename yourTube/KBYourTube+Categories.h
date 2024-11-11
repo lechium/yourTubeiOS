@@ -49,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSArray (strings)
 - (NSString *)runsToString;
+- (CGFloat)floatSum;
+- (CGFloat)floatAverage;
 @end
 
 @interface NSString (TSSAdditions)

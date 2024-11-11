@@ -29,6 +29,7 @@
 #define LOG_SELF        TLog(@"%@ %@", self, NSStringFromSelector(_cmd))
 #define LOG_CMD         TLog(@"[%@ %@]",[self class], NSStringFromSelector(_cmd))
 #define DLOG_SELF DLog(@"%@ %@", self, NSStringFromSelector(_cmd))
+#define FANCY_BYTES(B) [NSByteCountFormatter stringFromByteCount:B countStyle:NSByteCountFormatterCountStyleFile]
 
 static NSString *const KBYTMessageIdentifier   =  @"org.nito.importscience";
 static NSString *const KBYTDownloadIdentifier  =  @"org.nito.dllistener";

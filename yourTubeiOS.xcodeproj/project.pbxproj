@@ -119,6 +119,8 @@
 		4B379BD52CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */; };
 		4B5AE3EA2CD065D000B5C109 /* AppSupportiOS.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5AE3E92CD065D000B5C109 /* AppSupportiOS.tbd */; };
 		4B5AE3EB2CD06E2100B5C109 /* AuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 324693A82841EE8A002D91F0 /* AuthViewController.m */; };
+		4B5AE3EE2CE1717700B5C109 /* NSFileManager+Size.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5AE3EC2CE1717500B5C109 /* NSFileManager+Size.m */; };
+		4B5AE3EF2CE1717700B5C109 /* NSFileManager+Size.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5AE3EC2CE1717500B5C109 /* NSFileManager+Size.m */; };
 		4B9C254B2CADFD930037AB16 /* TYChannelShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */; };
 		4BBC78FA2C9535C7005EB5D4 /* KBDataItemCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */; };
 		4BBC78FB2C9535C8005EB5D4 /* KBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D22C9535C6005EB5D4 /* KBTableViewCell.m */; };
@@ -743,6 +745,8 @@
 		4B379BCB2CAB766B00453DBC /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Scale.m"; sourceTree = "<group>"; };
 		4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLRequest+cURL.m"; sourceTree = "<group>"; };
 		4B5AE3E92CD065D000B5C109 /* AppSupportiOS.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; path = AppSupportiOS.tbd; sourceTree = SOURCE_ROOT; };
+		4B5AE3EC2CE1717500B5C109 /* NSFileManager+Size.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+Size.m"; sourceTree = "<group>"; };
+		4B5AE3ED2CE1717600B5C109 /* NSFileManager+Size.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+Size.h"; sourceTree = "<group>"; };
 		4B9C25492CADFD930037AB16 /* TYChannelShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYChannelShelfViewController.h; sourceTree = "<group>"; };
 		4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYChannelShelfViewController.m; sourceTree = "<group>"; };
 		4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBDataItemCollectionViewCell.m; sourceTree = "<group>"; };
@@ -1500,6 +1504,8 @@
 		4B379BC62CAB766B00453DBC /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				4B5AE3ED2CE1717600B5C109 /* NSFileManager+Size.h */,
+				4B5AE3EC2CE1717500B5C109 /* NSFileManager+Size.m */,
 				4B379BC92CAB766B00453DBC /* NSURLRequest+cURL.h */,
 				4B379BCC2CAB766B00453DBC /* NSURLRequest+cURL.m */,
 				4B379BCA2CAB766B00453DBC /* UIColor+Additions.h */,
@@ -2856,6 +2862,7 @@
 				3246AF8A28569686008678D4 /* EXTScope.m in Sources */,
 				4BBC7A672C9542B9005EB5D4 /* SDDeviceHelper.m in Sources */,
 				898E930F1C8D568B00B34DAA /* APDeviceController.m in Sources */,
+				4B5AE3EF2CE1717700B5C109 /* NSFileManager+Size.m in Sources */,
 				4BBC78FB2C9535C8005EB5D4 /* KBTableViewCell.m in Sources */,
 				898E93101C8D569100B34DAA /* Reachability.m in Sources */,
 				4BBC7A432C9542B9005EB5D4 /* SDImageCacheConfig.m in Sources */,
@@ -3046,6 +3053,7 @@
 				4BBC7A692C9542B9005EB5D4 /* SDWeakProxy.m in Sources */,
 				89A83AAE1C88A97700E1987E /* YTKBPlayerViewController.m in Sources */,
 				4BBC7A152C9542B8005EB5D4 /* UIImage+ExtendedCacheData.m in Sources */,
+				4B5AE3EE2CE1717700B5C109 /* NSFileManager+Size.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

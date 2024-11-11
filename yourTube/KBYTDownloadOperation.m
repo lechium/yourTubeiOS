@@ -9,11 +9,13 @@
 #import "KBYTDownloadOperation.h"
 #import "yourTubeApplication.h"
 #import "KBYTDownloadsTableViewController.h"
+#import "NSFileManager+Size.h"
 
 @interface KBYTDownloadOperation ()
 
 @property (nonatomic) NSURLSession *session;
 @property (nonatomic) AVAssetDownloadTask *downloadTask;
+@property (readwrite, assign) NSTimeInterval startTime;
 @end
 
 //download operation class, handles file downloads.
@@ -225,21 +227,68 @@
     AVURLAsset *asset = [AVURLAsset assetWithURL:downloadURL];
     
     // Create new AVAssetDownloadTask for the desired asset
-    AVAssetDownloadTask *dlTask = [_downloadSession assetDownloadTaskWithURLAsset:asset assetTitle:self.downloadInfo[@"title"] assetArtworkData:nil options:nil];
+    self.downloadTask = [_downloadSession assetDownloadTaskWithURLAsset:asset assetTitle:self.downloadInfo[@"title"] assetArtworkData:nil options:nil];
     
     // Start task and begin download
-    [dlTask resume];
+    [self.downloadTask resume];
+    self.startTime = 0;
 }
 
+- (NSArray *)sampleRange {
+    return @[@"0.00", @"0.00", @"3.59", @"3.56", @"3.55", @"3.53", @"3.58", @"3.56", @"3.69", @"3.67", @"3.72", @"3.70", @"3.89", @"3.88", @"3.97", @"3.95", @"4.02", @"4.00", @"4.19", @"4.17", @"4.27", @"4.25", @"4.36", @"4.34", @"4.40", @"4.38", @"4.46", @"4.44", @"4.50", @"4.47", @"4.53", @"4.48", @"4.55", @"4.37", @"4.43", @"4.36", @"4.21", @"4.02", @"3.81", @"3.78", @"3.76", @"3.74", @"3.77", @"3.76", @"3.81", @"3.81", @"3.82", @"3.82", @"3.86", @"3.84", @"3.88", @"3.78", @"3.29", @"3.22", @"3.34", @"3.30", @"3.86", @"3.78", @"3.51", @"3.47", @"3.72", @"3.71", @"4.01", @"3.98", @"3.99", @"3.98", @"4.32", @"4.25", @"4.61", @"4.59", @"4.57", @"4.56", @"4.62", @"4.61", @"4.74", @"4.73", @"4.78", @"4.75", @"4.82", @"4.80", @"4.89", @"4.96", @"5.03", @"4.97", @"5.07", @"5.02", @"5.02", @"5.20", @"5.24", @"5.28", @"5.19", @"5.19", @"5.39", @"5.39", @"5.31", @"5.34", @"5.51", @"5.50", @"5.48", @"5.45", @"5.52", @"5.47", @"5.66", @"5.62", @"5.52", @"5.47", @"5.56", @"5.74", @"5.71", @"5.67", @"5.62", @"5.61", @"5.78", @"5.76", @"5.69", @"5.69", @"5.84", @"5.83", @"5.82", @"5.82", @"5.83", @"5.83", @"5.93", @"5.92", @"5.89", @"5.92", @"5.94", @"5.93", @"5.97", @"5.96", @"5.94", @"5.93", @"6.03", @"6.12", @"6.04", @"6.07", @"6.05", @"6.07", @"6.07", @"6.08", @"6.07", @"6.21", @"6.22", @"6.12", @"6.11", @"6.31", @"6.31"];
+}
+
+- (CGFloat)exponentialMovingAverage:(NSArray *)data smoothing:(CGFloat)smoothing {
+    if (data.count == 1) {
+        return [[data firstObject] floatValue];
+    }
+    NSInteger samples = [data count];
+    CGFloat average = [data floatAverage];
+    TLog(@"average: %f", average);
+    CGFloat lastSpeed = [[data lastObject] floatValue];
+    return (smoothing * lastSpeed) + ((1 - smoothing) * average);
+}
+
+/*
+ def exponential_moving_average(data, samples=0, smoothing=0.02):
+     '''
+     data: an array of all values.
+     samples: how many previous data samples are avraged. Set to 0 to average all data points.
+     smoothing: a value between 0-1, 1 being a linear average (no falloff).
+     '''
+
+     if len(data) == 1:
+         return data[0]
+         
+     if samples == 0 or samples > len(data):
+         samples = len(data)
+
+     average = sum(data[-samples:]) / samples
+     last_speed = data[-1]
+     return (smoothing * last_speed) + ((1 - smoothing) * average)
+ */
+
+
 - (void)URLSession:(NSURLSession *)session assetDownloadTask:(AVAssetDownloadTask *)assetDownloadTask didLoadTimeRange:(CMTimeRange)timeRange totalTimeRangesLoaded:(NSArray<NSValue *> *)loadedTimeRanges timeRangeExpectedToLoad:(CMTimeRange)timeRangeExpectedToLoad {
-    LOG_SELF;
+    //LOG_SELF;
     CGFloat percentComplete = 0.0;
+    CGFloat estRemainingDuration = 0.0;
+    if (self.startTime == 0) {
+        self.startTime = [NSDate timeIntervalSinceReferenceDate];
+    }
     // Iterate through the loaded time ranges
     for (NSValue *value in loadedTimeRanges) {
         // Unwrap the CMTimeRange from the NSValue
         CMTimeRange loadedTimeRange = [value CMTimeRangeValue];
         // Calculate the percentage of the total expected asset duration
-        percentComplete += CMTimeGetSeconds(loadedTimeRange.duration) / CMTimeGetSeconds(timeRangeExpectedToLoad.duration);
+        Float64 loadedTime = CMTimeGetSeconds(loadedTimeRange.duration);
+        Float64 fullTime = CMTimeGetSeconds(timeRangeExpectedToLoad.duration);
+        CGFloat speed = loadedTime / ([NSDate timeIntervalSinceReferenceDate] - self.startTime);
+        CGFloat totalEstDuration = fullTime / speed;
+        percentComplete += loadedTime / fullTime;
+        CGFloat remainingDuration = fullTime - loadedTime;
+        estRemainingDuration = remainingDuration / speed;
+        TLog(@"speed: %.2f fullTime: %.2f totalEstDuration: %.2f estRemainingDuration: %.2f", speed, fullTime, totalEstDuration, estRemainingDuration);
     }
     //percentComplete *= 100;
     //DLog(@"percent complete: %.0f", percentComplete);
@@ -247,10 +296,13 @@
         //[self setDownloadProgress:percentComplete];
         //self.progressLabel.stringValue = @"Downloading video...";
 #if TARGET_OS_IOS
-            yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
-            if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]]) {
-                NSDictionary *info = @{@"videoId": self.downloadInfo[@"videoID"],@"completionPercent": [NSNumber numberWithFloat:percentComplete] };
-                [(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] updateDownloadProgress:info];
+        yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
+        KBYTDownloadsTableViewController *visibleView = (KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController];
+            if ([visibleView isKindOfClass:[KBYTDownloadsTableViewController class]]) {
+                NSDictionary *info = @{@"videoId": self.downloadInfo[@"videoID"],
+                                       @"completionPercent": [NSNumber numberWithFloat:percentComplete],
+                                       @"estimatedDuration": [NSString stringWithFormat:@"ETA: %@ second(s)", [NSNumber numberWithFloat:estRemainingDuration]] };
+                [visibleView updateDownloadProgress:info];
             }
 #endif
     });

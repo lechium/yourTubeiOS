@@ -101,7 +101,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 - (id)initWithDictionary:(NSDictionary *)inputDict;
 - (NSDictionary *)dictionaryValue;
-
+- (NSUInteger)fileSize;
 @end
 
 @interface YTPlayerItem: AVPlayerItem

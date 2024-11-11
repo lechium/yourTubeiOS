@@ -163,6 +163,19 @@
 
 @implementation NSArray (strings)
 
+- (CGFloat)floatSum {
+    __block CGFloat sum = 0;
+    [self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        sum += [obj floatValue];
+    }];
+    return sum;
+}
+
+- (CGFloat)floatAverage {
+    return [self floatSum] / self.count;
+    
+}
+
 - (NSString *)runsToString {
     __block NSMutableString *newString = [NSMutableString new];
     [self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {

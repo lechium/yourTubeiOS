@@ -7,3 +7,4 @@
 static NSString * const KBYTHomeDataChangedNotification = @"KBYTHomeDataChangedNotification";
 static NSString * const KBYTUserDataChangedNotification = @"KBYTUserDataChangedNotification";
 #import "KBYourTube.h"
+#define FANCY_BYTES(B) [NSByteCountFormatter stringFromByteCount:B countStyle:NSByteCountFormatterCountStyleFile]
