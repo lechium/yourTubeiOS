@@ -166,7 +166,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 }
 
 - (NSArray <M3U8ExtXStreamInf *>*)hlsArray {
-    return [[self.ytMedia streamList] allStreams];
+    return [[self.ytMedia streamList] bandwithSortedAVCFilteredStreams];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

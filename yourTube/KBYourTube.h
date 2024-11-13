@@ -27,6 +27,11 @@
 @interface M3U8ExtXStreamInf (Extras)
 - (NSString *)format;
 - (NSString *)quality;
+- (NSString *)codec;
+@end
+
+@interface M3U8ExtXStreamInfList (Extras)
+- (NSArray <M3U8ExtXStreamInf*> *)bandwithSortedAVCFilteredStreams;
 @end
 
 #endif

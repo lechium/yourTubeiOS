@@ -34,6 +34,11 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 #if TARGET_OS_IOS
 @implementation M3U8ExtXStreamInf (Extras)
+
+- (NSString *)codec {
+    return [[[[self codecs] firstObject] componentsSeparatedByString:@"."] firstObject];
+}
+
 - (NSString *)format {
     NSString *codec = [[[self.codecs firstObject] componentsSeparatedByString:@"."] firstObject];
     return [NSString stringWithFormat:@"%.0fp %@", self.resolution.height, codec];
@@ -61,6 +66,15 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return [NSString stringWithFormat:@"%@%@", hd,q2];
 }
 @end
+
+@implementation M3U8ExtXStreamInfList (Extras)
+- (NSArray <M3U8ExtXStreamInf*> *)bandwithSortedAVCFilteredStreams {
+    [self sortByBandwidthInOrder:NSOrderedDescending];
+    NSArray *allStreams = [self allStreams];
+    return [allStreams filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"codec contains[c] %@", @"avc1"]];
+}
+@end
+
 #endif
 /**
  

@@ -57,10 +57,7 @@
                 self.CompletedBlock(self.downloadLocation);
             }
             yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
-            if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
-            {
-                //NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:100] };
-                //[(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] updateDownloadProgress:info];
+            if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]]){
                 [(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] delayedReloadData];
             }
 #endif
