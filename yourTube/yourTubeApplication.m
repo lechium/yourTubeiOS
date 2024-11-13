@@ -87,11 +87,6 @@
     if (error == nil) {
         [audioSession setActive:YES error:&error];
     }
-    
-   
-    
-  
-    
     NSLog(@"app support: %@", [self appSupportFolder]);
     NSArray *contents = [FM directoryContentsAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Downloads"]];
     TLog(@"contents: %@", contents);
@@ -126,6 +121,7 @@
             [contsUpdated removeObject:found];
         }
     }
+    /*
     TLog(@"adl: %@", [self absoluteDownloadFolder]);
     NSUInteger size = [NSFileManager sizeForFolderAtPath:[self absoluteDownloadFolder]];
     NSString *fancy = FANCY_BYTES(size);
@@ -139,6 +135,7 @@
     size = [NSFileManager sizeForFolderAtPath:[self absoluteDownloadFolder]];
     fancy = FANCY_BYTES(size);
     TLog(@"updated size: %@", fancy);
+     */
     /*
  
     NSDate *myStart = [NSDate date];

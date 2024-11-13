@@ -14,7 +14,10 @@
 @import ffmpegkit;
 @import M3U8Kit;
 
-@interface KBYTDownloadOperation ()
+@interface KBYTDownloadOperation () {
+    BOOL _finished;
+    BOOL _executing;
+}
 
 @property (nonatomic) NSURLSession *session;
 @property (nonatomic) AVAssetDownloadTask *downloadTask;
@@ -35,6 +38,10 @@
     DLog(@"self.downloadLocation: %@", self.downloadLocation);
     NSString *commandLineUlt = [NSString stringWithFormat:@"-y -i %@ -map 0:p:%lu -c copy '%@'", url, pid, self.downloadLocation];
     DLog(@"commandLine: %@", commandLineUlt);
+    NSInteger currentLogLevel = [FFmpegKitConfig getLogLevel];
+    NSString *lls = [FFmpegKitConfig logLevelToString:currentLogLevel];
+    DLog(@"currentLogLevel: %lu string: %@", currentLogLevel, lls);
+    [FFmpegKitConfig setLogLevel:LevelAVLogQuiet];
     self.ffmpegSession = [FFmpegKit executeAsync:commandLineUlt withCompleteCallback:^(FFmpegSession* session){
         SessionState state = [session getState];
         ReturnCode *returnCode = [session getReturnCode];
@@ -42,6 +49,8 @@
         // CALLED WHEN SESSION IS EXECUTED
         
         DLog(@"FFmpeg process exited with state %@ and rc %@.%@", [FFmpegKitConfig sessionStateToString:state], returnCode, [session getFailStackTrace]);
+        [self setExecuting:false];
+        [self setFinished:true];
         dispatch_async(dispatch_get_main_queue(), ^{
 #if TARGET_OS_IOS
             if (self.CompletedBlock != nil) {
@@ -121,13 +130,31 @@
  }
  */
 
-- (BOOL)isAsynchronous
-{
+- (void)setExecuting:(BOOL)executing {
+    [self willChangeValueForKey:@"isExecuting"];
+    _executing = executing;
+    [self didChangeValueForKey:@"isExecuting"];
+}
+
+- (void)setFinished:(BOOL)finished {
+    [self willChangeValueForKey:@"isFinished"];
+    _finished = finished;
+    [self didChangeValueForKey:@"isFinished"];
+}
+
+- (BOOL)isFinished {
+    return _finished;
+}
+
+- (BOOL)isExecuting {
+    return _executing;
+}
+
+- (BOOL)isAsynchronous {
     return true;
 }
 
-- (id)initWithInfo:(NSDictionary *)downloadDictionary completed:(DownloadCompletedBlock)theBlock
-{
+- (id)initWithInfo:(NSDictionary *)downloadDictionary completed:(DownloadCompletedBlock)theBlock {
     self = [super init];
     DLog(@"init with info: %@", downloadDictionary);
     downloadInfo = downloadDictionary;
@@ -149,16 +176,14 @@
     return self;
 }
 
-- (void)cancel
-{
+- (void)cancel {
     [super cancel];
     //[self.downloader cancel];
     [self.ffmpegSession cancel];
     [[self downloadTask] cancel];
 }
 
-- (void)main
-{
+- (void)main {
     [self start];
     /*
     NSURL *url = [NSURL URLWithString:downloadInfo[@"url"]];
@@ -168,58 +193,26 @@
      */
 }
 
-- (void)urlDownloader:(URLDownloader *)urlDownloader didChangeStateTo:(URLDownloaderState)state
-{
+- (void)urlDownloader:(URLDownloader *)urlDownloader didChangeStateTo:(URLDownloaderState)state {
     NSLog(@"Download state: %u", state);
 }
 
-- (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithError:(NSError *)error
-{
+- (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithError:(NSError *)error {
     self.CompletedBlock(nil);
 }
 
-- (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithNotConnectedToInternetError:(NSError *)error
-{
+- (void)urlDownloader:(URLDownloader *)urlDownloader didFailWithNotConnectedToInternetError:(NSError *)error {
 }
 
-- (void)urlDownloader:(URLDownloader *)urlDownloader didFinishWithData:(NSData *)data
-{
+- (void)urlDownloader:(URLDownloader *)urlDownloader didFinishWithData:(NSData *)data {
     [data writeToFile:[self downloadLocation] atomically:TRUE];
-    
-    //if we are dealing with an audio file we need to re-encode it in ffmpeg to get a playable file. (and to bump volume)
-    /*
-    if ([downloadLocation.pathExtension isEqualToString:@"aac"])
-    {
-        
-        //for now the audio is bumped to a static 256 increase, this may change later to be customizable.
-        NSInteger volumeInt = 256;
-        
-        //do said re-encoding in ffmpeg
-        [[YTBrowserHelper sharedInstance] fixAudio:downloadLocation volume:volumeInt completionBlock:^(NSString *newFile) {
-            
-            if (self.CompletedBlock != nil)
-            {
-                //import the file to the music library using JODebox
-                [[YTBrowserHelper sharedInstance] importFileWithJO:newFile duration:self.trackDuration];
-                [self sendAudioCompleteMessage];
-                self.CompletedBlock(newFile);
-            }
-        }];
-        return;
-    }
-    */
-    //all other media goes through here, no conversion and imports necessary.
-    if (self.CompletedBlock != nil)
-    {
+
+    if (self.CompletedBlock != nil)     {
         self.CompletedBlock(downloadLocation);
     }
-    
-    
-    
 }
 
-- (void)sendAudioCompleteMessage
-{
+- (void)sendAudioCompleteMessage {
     #if TARGET_OS_IOS
     CPDistributedMessagingCenter *center = [CPDistributedMessagingCenter centerNamed:@"org.nito.dllistener"];
     NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent};
@@ -230,8 +223,7 @@
 
 //use CPDistributedMessagingCenter to relay progress details back to the yourTube/tuyu application.
 
-- (void)urlDownloader:(URLDownloader *)urlDownloader didReceiveData:(NSData *)data
-{
+- (void)urlDownloader:(URLDownloader *)urlDownloader didReceiveData:(NSData *)data {
     //
     float percentComplete = [urlDownloader downloadCompleteProcent];
     // NSLog(@"percentComplete: %f", percentComplete);
@@ -271,30 +263,15 @@
 #endif
 }
 
-- (void)restorePendingDownloads {
-    LOG_SELF;
-    // Create session configuration with ORIGINAL download identifier
-    _sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:_downloadIdentifier];
-    
-    // Create a new AVAssetDownloadURLSession
-    _downloadSession = [AVAssetDownloadURLSession sessionWithConfiguration:_sessionConfiguration assetDownloadDelegate:self delegateQueue:NSOperationQueue.mainQueue];
- 
-    // Grab all the pending tasks associated with the downloadSession
-    [_downloadSession getAllTasksWithCompletionHandler:^(NSArray<__kindof NSURLSessionTask *> * _Nonnull tasks) {
-        // For each task, restore the state in the app
-        for (AVAssetDownloadTask *task in tasks) {
-            // Restore asset, progress indicators, state, etc...
-            AVURLAsset *asset = [task URLAsset];
-        }
-    }];
-}
-
 - (void)start {
-    //self.session = [self backgroundSessionWithId:self.downloadInfo[@"title"]];
+    [self setExecuting:true];
+    if (self.ffmpegSession) {
+        return;
+    }
     [self ffmpegDownload];
     return;
-    if (self.downloadTask)
-    {
+    
+    if (self.downloadTask) {
         return;
     }
     
@@ -390,8 +367,7 @@
 }
 
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
-{
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
     /*
      Report progress on the task.
      If you created more than one task, you might keep references to them and report on them individually.
