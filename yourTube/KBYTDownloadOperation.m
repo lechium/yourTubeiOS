@@ -10,12 +10,16 @@
 #import "yourTubeApplication.h"
 #import "KBYTDownloadsTableViewController.h"
 #import "NSFileManager+Size.h"
+#import "KBSlider.h"
+@import ffmpegkit;
+@import M3U8Kit;
 
 @interface KBYTDownloadOperation ()
 
 @property (nonatomic) NSURLSession *session;
 @property (nonatomic) AVAssetDownloadTask *downloadTask;
 @property (readwrite, assign) NSTimeInterval startTime;
+@property (nonatomic) FFmpegSession *ffmpegSession;
 @end
 
 //download operation class, handles file downloads.
@@ -24,6 +28,85 @@
 @implementation KBYTDownloadOperation
 
 @synthesize downloadInfo, downloader, downloadLocation, trackDuration, CompletedBlock;
+
+- (void)ffmpegDownload {
+    NSString *url = downloadInfo[@"url"];
+    NSInteger pid = [downloadInfo[@"programId"] integerValue];
+    DLog(@"self.downloadLocation: %@", self.downloadLocation);
+    NSString *commandLineUlt = [NSString stringWithFormat:@"-y -i %@ -map 0:p:%lu -c copy '%@'", url, pid, self.downloadLocation];
+    DLog(@"commandLine: %@", commandLineUlt);
+    self.ffmpegSession = [FFmpegKit executeAsync:commandLineUlt withCompleteCallback:^(FFmpegSession* session){
+        SessionState state = [session getState];
+        ReturnCode *returnCode = [session getReturnCode];
+        
+        // CALLED WHEN SESSION IS EXECUTED
+        
+        DLog(@"FFmpeg process exited with state %@ and rc %@.%@", [FFmpegKitConfig sessionStateToString:state], returnCode, [session getFailStackTrace]);
+        dispatch_async(dispatch_get_main_queue(), ^{
+#if TARGET_OS_IOS
+            if (self.CompletedBlock != nil) {
+                self.CompletedBlock(self.downloadLocation);
+            }
+            yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
+            if ([[[appDelegate nav] visibleViewController] isKindOfClass:[KBYTDownloadsTableViewController class]])
+            {
+                //NSDictionary *info = @{@"file": self.downloadLocation.lastPathComponent,@"completionPercent": [NSNumber numberWithFloat:100] };
+                //[(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] updateDownloadProgress:info];
+                [(KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController] delayedReloadData];
+            }
+#endif
+        });
+    } withLogCallback:^(Log *log) {
+        
+        // CALLED WHEN SESSION PRINTS LOGS
+        //DLog(@"log: %@", log.getMessage);
+        //NSDictionary *status = [log.getMessage ffmpegStatus];
+        //DLog(@"status: %@", status);
+    } withStatisticsCallback:^(Statistics *statistics) {
+        
+        // CALLED WHEN SESSION GENERATES STATISTICS
+        double duration = [downloadInfo[@"duration"] doubleValue];
+        double elapsedSeconds = statistics.getTime / 1000.0;
+        double remainingTime = duration - elapsedSeconds;
+        double estimatedTime = remainingTime / statistics.getSpeed;
+        double percentComplete = elapsedSeconds / duration;
+        DLog(@"frame: %d time: %.2f, speed: %f ETA: %.f %.2f complete", statistics.getVideoFrameNumber, elapsedSeconds, statistics.getSpeed, estimatedTime, percentComplete);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //[self setDownloadProgress:percentComplete];
+            //self.progressLabel.stringValue = @"Downloading video...";
+#if TARGET_OS_IOS
+            yourTubeApplication *appDelegate = (yourTubeApplication *)[[UIApplication sharedApplication] delegate];
+            KBYTDownloadsTableViewController *visibleView = (KBYTDownloadsTableViewController*)[[appDelegate nav] visibleViewController];
+            if ([visibleView isKindOfClass:[KBYTDownloadsTableViewController class]]) {
+                NSDictionary *info = @{@"videoId": self.downloadInfo[@"videoID"],
+                                       @"completionPercent": [NSNumber numberWithFloat:percentComplete],
+                                       @"estimatedDuration": [NSString stringWithFormat:@"ETA: %@", [[KBYTDownloadOperation elapsedTimeFormatter] stringFromTimeInterval:estimatedTime]] };
+                [visibleView updateDownloadProgress:info];
+            }
+#endif
+        });
+        //[self setDownloadProgress:percentComplete*100];
+    }];
+}
+
+- (void)parseM3U8URL:(NSURL *)url completion:(void(^)(NSDictionary *m3uDict, NSString *error))completionBlock {
+    NSError *error = nil;
+    M3U8PlaylistModel *model = [[M3U8PlaylistModel alloc] initWithURL:url error:&error];
+    M3U8MasterPlaylist *master = [model masterPlaylist];
+    DLog(@"%@", [master m3u8PlainString]);
+    //DLog(@"master xStreamList: %@ xMediaList: %@", [master xStreamList], [master xMediaList]);
+    M3U8ExtXStreamInfList *xtlist = [master xStreamList];
+    [xtlist sortByBandwidthInOrder:NSOrderedDescending];
+    //DLog(@"xStreamList: %@", xtlist);
+    M3U8ExtXStreamInf *firstStream = [xtlist firstStreamInf];
+    //DLog(@"%@ first stream url: %@", firstStream, [[firstStream m3u8URL] absoluteString]);
+    M3U8ExtXMedia *audio = [[[master xMediaList] audioList] suitableAudio];
+    //DLog(@"audio: %@", [[audio m3u8URL] absoluteString]);
+    NSDictionary *M3U8Dictionary = @{@"video": [[firstStream m3u8URL] absoluteString], @"audio": [[audio m3u8URL] absoluteString]};
+    if (completionBlock) {
+        completionBlock(M3U8Dictionary, nil);
+    }
+}
 
 /*
  - (NSString *)downloadFolder
@@ -46,10 +129,15 @@
 - (id)initWithInfo:(NSDictionary *)downloadDictionary completed:(DownloadCompletedBlock)theBlock
 {
     self = [super init];
-    NSLog(@"init with info");
+    DLog(@"init with info: %@", downloadDictionary);
     downloadInfo = downloadDictionary;
     self.name = downloadInfo[@"title"];
-    self.downloadLocation = [[self downloadFolder] stringByAppendingPathComponent:downloadDictionary[@"outputFilename"]];
+    NSString *codec = downloadInfo[@"codec"];
+    NSString *suffix = @"mp4";
+    if ([codec containsString:@"vp09"]){
+        suffix = @"ts";
+    }
+    self.downloadLocation = [[[self downloadFolder] stringByAppendingPathComponent:self.name] stringByAppendingPathExtension:suffix];
     NSString *imageURL = downloadInfo[@"images"][@"standard"];
     NSData *downloadData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]];
     NSString *outputJPEG = [[[self downloadLocation] stringByDeletingPathExtension] stringByAppendingPathExtension:@"jpg"];
@@ -65,6 +153,7 @@
 {
     [super cancel];
     //[self.downloader cancel];
+    [self.ffmpegSession cancel];
     [[self downloadTask] cancel];
 }
 
@@ -200,10 +289,10 @@
     }];
 }
 
-- (void)start
-{
+- (void)start {
     //self.session = [self backgroundSessionWithId:self.downloadInfo[@"title"]];
-    
+    [self ffmpegDownload];
+    return;
     if (self.downloadTask)
     {
         return;
@@ -234,9 +323,6 @@
     self.startTime = 0;
 }
 
-- (NSArray *)sampleRange {
-    return @[@"0.00", @"0.00", @"3.59", @"3.56", @"3.55", @"3.53", @"3.58", @"3.56", @"3.69", @"3.67", @"3.72", @"3.70", @"3.89", @"3.88", @"3.97", @"3.95", @"4.02", @"4.00", @"4.19", @"4.17", @"4.27", @"4.25", @"4.36", @"4.34", @"4.40", @"4.38", @"4.46", @"4.44", @"4.50", @"4.47", @"4.53", @"4.48", @"4.55", @"4.37", @"4.43", @"4.36", @"4.21", @"4.02", @"3.81", @"3.78", @"3.76", @"3.74", @"3.77", @"3.76", @"3.81", @"3.81", @"3.82", @"3.82", @"3.86", @"3.84", @"3.88", @"3.78", @"3.29", @"3.22", @"3.34", @"3.30", @"3.86", @"3.78", @"3.51", @"3.47", @"3.72", @"3.71", @"4.01", @"3.98", @"3.99", @"3.98", @"4.32", @"4.25", @"4.61", @"4.59", @"4.57", @"4.56", @"4.62", @"4.61", @"4.74", @"4.73", @"4.78", @"4.75", @"4.82", @"4.80", @"4.89", @"4.96", @"5.03", @"4.97", @"5.07", @"5.02", @"5.02", @"5.20", @"5.24", @"5.28", @"5.19", @"5.19", @"5.39", @"5.39", @"5.31", @"5.34", @"5.51", @"5.50", @"5.48", @"5.45", @"5.52", @"5.47", @"5.66", @"5.62", @"5.52", @"5.47", @"5.56", @"5.74", @"5.71", @"5.67", @"5.62", @"5.61", @"5.78", @"5.76", @"5.69", @"5.69", @"5.84", @"5.83", @"5.82", @"5.82", @"5.83", @"5.83", @"5.93", @"5.92", @"5.89", @"5.92", @"5.94", @"5.93", @"5.97", @"5.96", @"5.94", @"5.93", @"6.03", @"6.12", @"6.04", @"6.07", @"6.05", @"6.07", @"6.07", @"6.08", @"6.07", @"6.21", @"6.22", @"6.12", @"6.11", @"6.31", @"6.31"];
-}
 
 - (CGFloat)exponentialMovingAverage:(NSArray *)data smoothing:(CGFloat)smoothing {
     if (data.count == 1) {
@@ -249,25 +335,19 @@
     return (smoothing * lastSpeed) + ((1 - smoothing) * average);
 }
 
-/*
- def exponential_moving_average(data, samples=0, smoothing=0.02):
-     '''
-     data: an array of all values.
-     samples: how many previous data samples are avraged. Set to 0 to average all data points.
-     smoothing: a value between 0-1, 1 being a linear average (no falloff).
-     '''
-
-     if len(data) == 1:
-         return data[0]
-         
-     if samples == 0 or samples > len(data):
-         samples = len(data)
-
-     average = sum(data[-samples:]) / samples
-     last_speed = data[-1]
-     return (smoothing * last_speed) + ((1 - smoothing) * average)
- */
-
++ (NSDateComponentsFormatter *)elapsedTimeFormatter {
+    static dispatch_once_t minOnceToken;
+    static NSDateComponentsFormatter *elapsedTimer = nil;
+    if(elapsedTimer == nil) {
+        dispatch_once(&minOnceToken, ^{
+            elapsedTimer = [[NSDateComponentsFormatter alloc] init];
+            elapsedTimer.unitsStyle = NSDateComponentsFormatterUnitsStylePositional;
+            elapsedTimer.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorPad;
+            elapsedTimer.allowedUnits = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+        });
+    }
+    return elapsedTimer;
+}
 
 - (void)URLSession:(NSURLSession *)session assetDownloadTask:(AVAssetDownloadTask *)assetDownloadTask didLoadTimeRange:(CMTimeRange)timeRange totalTimeRangesLoaded:(NSArray<NSValue *> *)loadedTimeRanges timeRangeExpectedToLoad:(CMTimeRange)timeRangeExpectedToLoad {
     //LOG_SELF;
@@ -288,7 +368,7 @@
         percentComplete += loadedTime / fullTime;
         CGFloat remainingDuration = fullTime - loadedTime;
         estRemainingDuration = remainingDuration / speed;
-        TLog(@"speed: %.2f fullTime: %.2f totalEstDuration: %.2f estRemainingDuration: %.2f", speed, fullTime, totalEstDuration, estRemainingDuration);
+        //TLog(@"speed: %.2f fullTime: %.2f totalEstDuration: %.2f estRemainingDuration: %.2f", speed, fullTime, totalEstDuration, estRemainingDuration);
     }
     //percentComplete *= 100;
     //DLog(@"percent complete: %.0f", percentComplete);
@@ -301,7 +381,7 @@
             if ([visibleView isKindOfClass:[KBYTDownloadsTableViewController class]]) {
                 NSDictionary *info = @{@"videoId": self.downloadInfo[@"videoID"],
                                        @"completionPercent": [NSNumber numberWithFloat:percentComplete],
-                                       @"estimatedDuration": [NSString stringWithFormat:@"ETA: %@ second(s)", [NSNumber numberWithFloat:estRemainingDuration]] };
+                                       @"estimatedDuration": [NSString stringWithFormat:@"ETA: %@", [[KBYTDownloadOperation elapsedTimeFormatter] stringFromTimeInterval:estRemainingDuration]] };
                 [visibleView updateDownloadProgress:info];
             }
 #endif

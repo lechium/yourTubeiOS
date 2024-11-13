@@ -12,7 +12,14 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 	return 32.0f;
 }
 
+@interface KBYTSearchItemViewController ()
+
+@property (nonatomic, strong) NSArray <M3U8ExtXStreamInf *> *hlsStreams;
+
+@end
+
 @implementation KBYTSearchItemViewController
+
 
 
 #pragma mark -
@@ -42,7 +49,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
         self.title = media.title;
         ytMedia = media;
         NSLog(@"ytmedia: %@", ytMedia);
-        
+        self.hlsStreams = [self hlsArray];
     }
     return self;
 }
@@ -158,15 +165,18 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     return sections;
 }
 
+- (NSArray <M3U8ExtXStreamInf *>*)hlsArray {
+    return [[self.ytMedia streamList] allStreams];
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
 		case 0:
 			return 7;
-		case 1:
-			return ([ytMedia.streams count] > 0) ? [ytMedia.streams count] : 1;
+        case 1:
+            return ([ytMedia.streams count] > 0) ? [ytMedia.streams count] : 1;
 		case 2:
-			return ([ytMedia.streams count] > 0) ? [ytMedia.streams count] : 1;
+            return ([self.hlsStreams count] > 0) ? [self.hlsStreams count] : 1;
         case 3:
             return ([airplayServers count] > 0) ? [airplayServers count] : 1;
         case 4:
@@ -219,7 +229,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *CellIdentifier = @"Cell";
 	UITableViewCell *cell = nil;
-    KBYTStream *stream = nil;
+    M3U8ExtXStreamInf *stream = nil;
 	switch (indexPath.section) {
 		case 0:
 			switch (indexPath.row) {
@@ -305,8 +315,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
             //stream = [ytMedia.streams firstObject];//[ytMedia.streams objectAtIndex:indexPath.row];
             cell.textLabel.text = @"Highest Quality";//stream.format;
-            
-			return cell;
+            return cell;
 			break;
             
 		case 2:
@@ -318,8 +327,10 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
                 //stream = [ytMedia.streams objectAtIndex:indexPath.row];
                 //cell.textLabel.text = stream.format;
-            cell.textLabel.text = @"Highest Quality";
-			return cell;
+            //cell.textLabel.text = @"Highest Quality";
+            stream = self.hlsStreams[indexPath.row];
+            cell.textLabel.text = stream.format;
+            return cell;
 			break;
             
         case 3:
@@ -485,8 +496,8 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    KBYTStream *currentStream = nil;
+    M3U8ExtXStreamInf *currentStream = nil;
+    //KBYTStream *currentStream = nil;
     self.airplayIP = nil;
     NSString *airdeviceName = nil;
     
@@ -528,7 +539,8 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 		case 2:
             //currentStream = ytMedia.streams[indexPath.row];
             //[self downloadStream:currentStream];
-            [self downloadMedia];
+            currentStream = self.hlsStreams[indexPath.row];
+            [self downloadMedia:currentStream];
             [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
 			[tableView deselectRowAtIndexPath:indexPath animated:YES];
             [self showDownloadStartedAlert];
@@ -539,7 +551,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             airdeviceName = airplayServers[indexPath.row];
            self.airplayIP = [[[KBYourTube sharedInstance] deviceController] deviceIPFromName:airdeviceName andType:0];
             [[KBYourTube sharedInstance] setAirplayIP:self.airplayIP];
-            [[KBYourTube sharedInstance] airplayStream:[[currentStream url] absoluteString] ToDeviceIP:self.airplayIP ];
+            //[[KBYourTube sharedInstance] airplayStream:[[currentStream url] absoluteString] ToDeviceIP:self.airplayIP ];
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             break;
             
@@ -559,8 +571,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     NSFileManager *man = [NSFileManager defaultManager];
     NSString *dlplist = [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads.plist"];
     NSMutableArray *currentArray = nil;
-    if ([man fileExistsAtPath:dlplist])
-    {
+    if ([man fileExistsAtPath:dlplist]){
         currentArray = [[NSMutableArray alloc] initWithContentsOfFile:dlplist];
     } else {
         currentArray = [NSMutableArray new];
@@ -571,7 +582,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 
 //offload the downloading into the mobile substrate tweak so it can run in the background without timing out.
 
-- (void)downloadMedia {
+- (void)downloadMedia:(M3U8ExtXStreamInf *)stream {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     NSMutableDictionary *streamDict = [[self.ytMedia dictionaryRepresentation] mutableCopy];
     //streamDict[@"duration"] = self.ytMedia.duration;
@@ -582,15 +593,17 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     //streamDict[@"views"]= self.ytMedia.views;
     NSString *stringURL = self.ytMedia.hlsManifest;
     streamDict[@"url"] = stringURL;
+    streamDict[@"programId"] = @(stream.programId);
+    streamDict[@"format"] = stream.format;
+    NSString *codec = stream.codecs.firstObject;
+    streamDict[@"codec"] = [[codec componentsSeparatedByString:@"."] firstObject];
     TLog(@"streamDict: %@", streamDict);
     [self updateDownloadsDictionary:streamDict];
-    if ([self vanillaApp])
-    {
+    if ([self vanillaApp]) {
         [[KBYTDownloadManager sharedInstance] addDownloadToQueue:streamDict];
     } else {
 #if TARGET_OS_IOS
         [[KBYTMessagingCenter sharedInstance] addDownload:streamDict];
-
 #endif
     }
 }

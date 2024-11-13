@@ -3,6 +3,7 @@
 #import "yourTubeApplication.h"
 #import "KBYourTube.h"
 #import "TYAuthUserManager.h"
+#import "NSFileManager+Size.h"
 
 @implementation yourTubeApplication
 @synthesize window = _window;
@@ -110,11 +111,34 @@
     } else {
         NSLog(@"is not signed in");
     }
-    
-    TLog(@"adl: %@", [self absoluteDownloadFolder]);
+    NSArray *fullArray = [NSArray arrayWithContentsOfFile:[self downloadFile]];
+    TLog(@"fullArray %@", fullArray);
     NSArray *conts = [FM contentsOfDirectoryAtPath:[self absoluteDownloadFolder] error:nil];
-    TLog(@"contents: %@", conts);
+    NSMutableArray *contsUpdated = [conts mutableCopy];
+    NSMutableArray *fileArray = [NSMutableArray new];
+    for (NSDictionary *itemDict in fullArray) {
+        //KBYTLocalMedia *localMedia = [[KBYTLocalMedia alloc] initWithDictionary:itemDict];
+        //[fileArray addObject:localMedia];
+        NSPredicate *pred = [NSPredicate predicateWithFormat:@"self == %@", itemDict[@"outputFilename"]];
+        NSDictionary *found = [[conts filteredArrayUsingPredicate:pred] firstObject];
+        if (found) {
+            [fileArray addObject:found];
+            [contsUpdated removeObject:found];
+        }
+    }
+    TLog(@"adl: %@", [self absoluteDownloadFolder]);
+    NSUInteger size = [NSFileManager sizeForFolderAtPath:[self absoluteDownloadFolder]];
+    NSString *fancy = FANCY_BYTES(size);
     
+    TLog(@"size: %@\ncontents: %@\ncontents unassociated: %@", fancy, conts, contsUpdated);
+    [contsUpdated enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *fullPath = [[self absoluteDownloadFolder] stringByAppendingPathComponent:obj];
+        TLog(@"removing: %@", fullPath);
+        //[FM removeItemAtPath:fullPath error:nil];
+    }];
+    size = [NSFileManager sizeForFolderAtPath:[self absoluteDownloadFolder]];
+    fancy = FANCY_BYTES(size);
+    TLog(@"updated size: %@", fancy);
     /*
  
     NSDate *myStart = [NSDate date];

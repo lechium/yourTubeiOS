@@ -48,25 +48,18 @@
         
         CGFloat textFieldWidth = self.frame.size.width - 148 - 10;
         //recreate the marquee labels each time, probably not efficient but it works smoothly.
-        if ([self marqueeTextLabel] != nil)
-        {
+        if ([self marqueeTextLabel] != nil) {
             [[self marqueeTextLabel] removeFromSuperview];
         }
-        if ([self marqueeDetailTextLabel] != nil)
-        {
+        if ([self marqueeDetailTextLabel] != nil) {
             [[self marqueeDetailTextLabel] removeFromSuperview];
         }
-        
-        if ([self durationLabel] != nil)
-        {
+        if ([self durationLabel] != nil) {
             [[self durationLabel] removeFromSuperview];
         }
-        
-        if ([self viewsLabel] != nil)
-        {
+        if ([self viewsLabel] != nil){
             [[self viewsLabel] removeFromSuperview];
         }
-        
         self.textLabel.frame = CGRectMake(148 ,self.textLabel.frame.origin.y-10,textFieldWidth,self.textLabel.frame.size.height);
         self.marqueeTextLabel = [[MarqueeLabel alloc] initWithFrame:self.textLabel.frame];
         self.marqueeTextLabel.font = self.textLabel.font;
@@ -74,22 +67,22 @@
         self.marqueeTextLabel.text = self.textLabel.text;
         self.marqueeTextLabel.holdScrolling = true;
         self.textLabel.hidden = true;
-      
+        
         UIFont *theFont = [UIFont systemFontOfSize:14];
         
         if (self.duration.length > 0){
-        CGRect durationFrame = CGRectMake(100, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height+2, 25, self.detailTextLabel.frame.size.height);
-        self.durationLabel = [[UILabel alloc] initWithFrame:durationFrame];
-        //NSLog(@"font: %@", self.detailTextLabel.font);
-        self.durationLabel.font = self.detailTextLabel.font;
-        self.durationLabel.textColor = [UIColor whiteColor];
-        self.durationLabel.backgroundColor = [UIColor blackColor];
-        self.durationLabel.text = self.duration;
-        [self.durationLabel sizeToFit];
-        durationFrame = self.durationLabel.frame;
-        durationFrame.origin.x = 133 - durationFrame.size.width - 5;
-        self.durationLabel.frame = durationFrame;
-        [[self contentView] addSubview:self.durationLabel];
+            CGRect durationFrame = CGRectMake(100, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height+2, 25, self.detailTextLabel.frame.size.height);
+            self.durationLabel = [[UILabel alloc] initWithFrame:durationFrame];
+            //NSLog(@"font: %@", self.detailTextLabel.font);
+            self.durationLabel.font = self.detailTextLabel.font;
+            self.durationLabel.textColor = [UIColor whiteColor];
+            self.durationLabel.backgroundColor = [UIColor blackColor];
+            self.durationLabel.text = self.duration;
+            [self.durationLabel sizeToFit];
+            durationFrame = self.durationLabel.frame;
+            durationFrame.origin.x = 133 - durationFrame.size.width - 5;
+            self.durationLabel.frame = durationFrame;
+            [[self contentView] addSubview:self.durationLabel];
         }
         CGRect viewsFrame = CGRectMake(148, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height+2, 100, self.detailTextLabel.frame.size.height);
         self.viewsLabel = [[UILabel alloc] initWithFrame:viewsFrame];
@@ -126,24 +119,21 @@
         self.marqueeDetailTextLabel.frame =  self.detailTextLabel.frame;
         self.detailTextLabel.hidden = true;
         
-        if ([self progressView] != nil)
-        {
+        if ([self progressView] != nil){
             [[self progressView] removeFromSuperview];
         }
         
-        if (self.downloading == true)
-        {
+        if (self.downloading == true){
+            self.marqueeTextLabel.holdScrolling = true;
             self.progressView = [[JGProgressView alloc] initWithFrame:CGRectMake(148, self.detailTextLabel.frame.origin.y + self.textLabel.frame.size.height + 5, textFieldWidth, 2)];
             [[self contentView] addSubview:self.progressView];
             [self.progressView setProgress:self.completionPercent];
             self.viewsLabel.hidden = true;
         } else {
+            self.marqueeTextLabel.holdScrolling = false;
             self.viewsLabel.hidden = false;
         }
     }
-    
-    
-    
 }
 
 - (void)prepareForReuse {

@@ -74,10 +74,9 @@
     [[self operations] addObject:downloadOp];
     
     [self.operationQueue addOperation:downloadOp];
-    if ([downloadOp isExecuting])
-    {
+    if ([downloadOp isExecuting]) {
     } else {
-        [downloadOp main];
+         [downloadOp main];
     }
 }
 

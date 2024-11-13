@@ -26,11 +26,42 @@
 #import "TYTVHistoryManager.h"
 #endif
 #import "NSURLRequest+cURL.h"
+
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 static NSString * const hardcodedTimestamp = @"16864";
 static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
+#if TARGET_OS_IOS
+@implementation M3U8ExtXStreamInf (Extras)
+- (NSString *)format {
+    NSString *codec = [[[self.codecs firstObject] componentsSeparatedByString:@"."] firstObject];
+    return [NSString stringWithFormat:@"%.0fp %@", self.resolution.height, codec];
+}
+
+- (NSString *)quality {
+    NSInteger width = self.resolution.width;
+    NSInteger height = self.resolution.height;
+    NSString *hd = @"";
+    NSString *q2 = @"";
+    if (width >= 1280) {
+        hd = @"hd";
+        q2 = [NSString stringWithFormat:@"%lu", height];
+    } else {
+        if (width == 854) {
+            q2 = @"High";
+        } else if (width == 640) {
+            q2 = @"Medium";
+        } else if (width == 426) {
+            q2 = @"Low";
+        } else if (width == 256) {
+            q2 = @"Tiny";
+        }
+    }
+    return [NSString stringWithFormat:@"%@%@", hd,q2];
+}
+@end
+#endif
 /**
  
  out of pure laziness I put the implementation KBYTStream and KBYTMedia classes in this file and their interfaces
@@ -149,6 +180,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 @implementation KBYTSearchResults
 
+
+
 - (NSString *)description {
     NSString *desc = [super description];
     return [NSString stringWithFormat:@"%@ videos: %@ playlists: %@ channels: %@ cc: %@ results count: %lu", desc, _videos, _playlists, _channels, _continuationToken, _estimatedResults];
@@ -210,7 +243,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                 //TLog(@"pl item: %@", searchItem);
             }
             /*
-             NSString *outputFile = [[NSHomeDirectory() stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
+             NSString *outputFile = [[  () stringByAppendingPathComponent:searchItem.title] stringByAppendingPathExtension:@"plist"];
              [current writeToFile:outputFile atomically:true];
              TLog(@"writing playlist: %@", outputFile);
              */
@@ -305,7 +338,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     if ([[NSFileManager defaultManager] fileExistsAtPath:self.filePath]){
         return [NSFileManager sizeForFolderAtPath:self.filePath];
     }
-    NSString *fullPath = [NSHomeDirectory() stringByAppendingPathComponent:self.filePath];
+    NSString *fullPath = [[self downloadFolder] stringByAppendingPathComponent:self.outputFilename];
     return [NSFileManager sizeForFolderAtPath:fullPath];
 }
 
@@ -322,6 +355,8 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 @implementation KBYTSearchResult
 
 @synthesize title, author, details, imagePath, videoId, duration, age, views, resultType;
+
+
 
 -(instancetype)initWithTitle:(NSString *)title imagePath:(NSString *)path uniqueID:(NSString *)unique type:(YTSearchResultType)type {
     KBYTSearchResult *result = [KBYTSearchResult new];
@@ -607,6 +642,19 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
  */
 
 @implementation KBYTMedia
+
+#if TARGET_OS_IOS
+- (M3U8ExtXStreamInfList *)streamList {
+    NSError *error = nil;
+    M3U8PlaylistModel *model = [[M3U8PlaylistModel alloc] initWithURL:[NSURL URLWithString:[self hlsManifest]] error:&error];
+    M3U8MasterPlaylist *master = [model masterPlaylist];
+    //DLog(@"%@", [master m3u8PlainString]);
+    //DLog(@"master xStreamList: %@ xMediaList: %@", [master xStreamList], [master xMediaList]);
+    M3U8ExtXStreamInfList *xtlist = [master xStreamList];
+    [xtlist sortByBandwidthInOrder:NSOrderedDescending];
+    return xtlist;
+}
+#endif
 
 - (AVMetadataItem *)metadataItemWithIdentifier:(NSString *)identifier value:(id<NSObject, NSCopying>) value {
     AVMutableMetadataItem *item = [[AVMutableMetadataItem alloc]init];

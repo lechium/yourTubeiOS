@@ -170,7 +170,7 @@
         TLog(@"file: %@ home: %@", file.filePath, NSHomeDirectory());
         if (![FM fileExistsAtPath:filePath]) {
             TLog(@"DOESN'T EXIST BRUH");
-            filePath = [NSHomeDirectory() stringByAppendingPathComponent:filePath];
+            filePath = [[self downloadFolder] stringByAppendingPathComponent:file.outputFilename];
         }
         NSURL *playURL = [NSURL fileURLWithPath:filePath];
         YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:playURL];

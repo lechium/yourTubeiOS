@@ -420,7 +420,7 @@
     } else {
         NSString *filePath = theMedia.filePath;
         if (![FM fileExistsAtPath:filePath]) {
-            filePath = [NSHomeDirectory() stringByAppendingPathComponent:filePath];
+            filePath = [[self downloadFolder] stringByAppendingPathComponent:theMedia.outputFilename];//[NSHomeDirectory() stringByAppendingPathComponent:filePath];
         }
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];

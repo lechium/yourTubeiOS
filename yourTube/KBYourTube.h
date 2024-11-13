@@ -21,6 +21,16 @@
 #import "KBProtocols.h"
 #import "KBSection.h"
 
+#if TARGET_OS_IOS
+@import M3U8Kit;
+
+@interface M3U8ExtXStreamInf (Extras)
+- (NSString *)format;
+- (NSString *)quality;
+@end
+
+#endif
+
 @class KBYTSearchResult, MetaDataAsset;
 
 // Logging
@@ -142,6 +152,11 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (BOOL)isExpired;
 - (NSDictionary *)dictionaryRepresentation;
 - (YTPlayerItem *)playerItemRepresentation;
+
+#if TARGET_OS_IOS
+- (M3U8ExtXStreamInfList *)streamList;
+#endif
+
 @end
 
 @interface KBYTSearchResult: NSObject <KBCollectionItemProtocol>
