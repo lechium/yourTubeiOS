@@ -194,8 +194,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 @implementation KBYTSearchResults
 
-
-
 - (NSString *)description {
     NSString *desc = [super description];
     return [NSString stringWithFormat:@"%@ videos: %@ playlists: %@ channels: %@ cc: %@ results count: %lu", desc, _videos, _playlists, _channels, _continuationToken, _estimatedResults];
@@ -204,9 +202,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 - (void)processJSON:(NSDictionary *)jsonData {
     [self processJSON:jsonData filter:KBYTSearchTypeAll];
 }
-
-
-
 
 - (void)processJSON:(NSDictionary *)jsonDict filter:(KBYTSearchType)filter {
     
@@ -690,8 +685,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
 
 #endif
 
-
-
 - (YTPlayerItem *)playerItemRepresentation {
     KBYTStream *firstStream = [[self streams] firstObject];
     NSURL *streamURL = firstStream.url;
@@ -926,14 +919,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             [videoArray addObject:processed];
         }
     }
-    
-    
     self.streams = videoArray;
-    
     //adaptive streams aren't multiplexed, so we need to match the audio with the video
     
     [self matchAudioStreams];
-    
     return TRUE;
     
 }
@@ -2005,7 +1994,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     });
     
 }
-
 
 - (void)getPlaylistVideos:(NSString *)listID
              continuation:(NSString *)continuationToken

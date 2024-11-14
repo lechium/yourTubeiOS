@@ -381,9 +381,11 @@
     cell.detailTextLabel.text = currentItem.author;
     cell.textLabel.text = currentItem.title;
     cell.detailTextLabel.textColor = [UIColor grayColor];
+    cell.viewsLabel.textColor = [UIColor grayColor];
+    cell.viewsLabel.text = fileSize;
     if (currentItem.format != nil && downloading == false) {
         //cell.views = [currentItem[@"views"] stringByAppendingString:@" Views"];
-        cell.views = currentItem.format;
+        cell.views = [NSString stringWithFormat:@"%@ - %@", currentItem.format, fileSize];
     }
     if (downloading == true) {
         cell.views = @"";

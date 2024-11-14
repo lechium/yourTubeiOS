@@ -9,14 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "Download/URLDownloader.h"
 
-@interface KBYTDownloadOperation: NSOperation <URLDownloaderDelegate, NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate, AVAssetDownloadDelegate>
+@interface KBYTDownloadOperation: NSOperation 
 
 typedef void(^DownloadCompletedBlock)(NSString *downloadedFile);
 
-@property (nonatomic, strong) NSURLSessionConfiguration *sessionConfiguration;
-#if TARGET_OS_IOS
-@property (nonatomic, strong) AVAssetDownloadURLSession *downloadSession;
-#endif
 @property (nonatomic, strong) NSString *downloadIdentifier;
 @property (nonatomic, strong) NSURL *assetDownloadURL;
 @property (nonatomic, strong) NSDictionary *downloadInfo;

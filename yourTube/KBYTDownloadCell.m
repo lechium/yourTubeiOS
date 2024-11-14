@@ -87,7 +87,7 @@
         CGRect viewsFrame = CGRectMake(148, self.detailTextLabel.frame.origin.y + self.detailTextLabel.frame.size.height+2, 100, self.detailTextLabel.frame.size.height);
         self.viewsLabel = [[UILabel alloc] initWithFrame:viewsFrame];
         self.viewsLabel.font = self.detailTextLabel.font;
-        self.viewsLabel.textColor = [UIColor blackColor];
+        self.viewsLabel.textColor = [UIColor grayColor];
         self.viewsLabel.text = self.views;
         [self.viewsLabel sizeToFit];
         [[self contentView] addSubview:self.viewsLabel];
