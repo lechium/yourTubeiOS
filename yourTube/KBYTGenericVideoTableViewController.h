@@ -15,7 +15,7 @@
 
 #define kGenericLoadingCellTag 600
 
-@interface KBYTGenericVideoTableViewController : UITableViewController <KBYTSearchItemViewControllerDelegate>
+@interface KBYTGenericVideoTableViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, KBYTSearchItemViewControllerDelegate,UITabBarDelegate>
 
 @property (readwrite, assign) YTSearchResultType tableType;
 
@@ -35,15 +35,19 @@
 @property (nonatomic, strong) KBYTPlaylist *playlist;
 @property (nonatomic, strong) KBYTChannel *channel;
 @property (nonatomic, strong) KBYTSearchResult *searchResult;
-
+@property (nonatomic, strong) NSLayoutConstraint *tableTopConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *tabBarTopConstraint;
 @property (nonatomic, strong) KBYTMedia *ytMedia;
 @property (nonatomic, strong) AVQueuePlayer *player;
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
 @property (nonatomic, strong) NSMutableArray *currentPlaybackArray;
+@property (nonatomic, strong) UITabBar *tabBar;
+@property (nonatomic, strong) UITableView *tableView;
 
 @property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
 @property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 
+- (NSInteger)selectedTabIndex;
 - (id)initWithSearchResult:(KBYTSearchResult *)result;
 - (id)initForType:(YTSearchResultType)detailsType;
 - (id)initForType:(YTSearchResultType)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier;

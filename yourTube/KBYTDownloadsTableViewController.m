@@ -95,14 +95,12 @@
     }
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.navigationItem.title = @"";
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     self.navigationItem.title = @"Downloads";
     [super viewWillAppear:animated];
     [self reloadData];
@@ -141,8 +139,7 @@
     
 }
 
-- (void)showHamburgerMenu
-{
+- (void)showHamburgerMenu {
     NSArray *images = @[
                         [UIImage imageNamed:@"profile"],
                         [UIImage imageNamed:@"popular"],
@@ -267,24 +264,16 @@
 
 - (void)showSearchView:(id)sender
 {
-    if (![Reachability checkInternetConnectionWithAlert])
-    {
+    if (![Reachability checkInternetConnectionWithAlert]) {
         return;
     }
     KBYTSearchTableViewController *searchView = [[KBYTSearchTableViewController alloc] init];
     _scaleAnimationController.viewForInteraction = searchView.view;
-    
     [self.navigationController pushViewController:searchView animated:true];
-    //[self presentViewController:searchView animated:true completion:^{
-    
-    //
-    // }];
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     NSString *name = nil;
-    
     switch (section) {
         case 0: //
             
@@ -324,17 +313,14 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    if ([[self activeDownloads] count] == 0)
-    {
+    if ([[self activeDownloads] count] == 0) {
         return [[self downloadArray] count];
     }
     switch (section) {
         case 0:
-            
             return [[self activeDownloads] count];
             
         case 1:
-            
             return [[self downloadArray] count];
             
             
@@ -342,11 +328,9 @@
     return [self.downloadArray count];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 100;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";

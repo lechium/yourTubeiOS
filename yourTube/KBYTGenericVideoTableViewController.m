@@ -12,9 +12,15 @@
 #import "KBYTSearchItemViewController.h"
 #import "TYAuthUserManager.h"
 
+#define TABLE_TOP 100.0
+#define TAB_TOP 50.0
+
+
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-@interface KBYTGenericVideoTableViewController ()
+@interface KBYTGenericVideoTableViewController () {
+    NSArray <KBYTTab *>*_tabDetails;
+}
 
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
@@ -27,6 +33,47 @@
 @implementation KBYTGenericVideoTableViewController
 
 @synthesize tableType, customTitle, customId, currentPlaybackArray;
+
+- (void)setTabDetails:(NSArray <KBYTTab*> *)tabDetails {
+    _tabDetails = tabDetails;
+    [self setupTabBar];
+}
+
+- (void)setupTabBar {
+    if (!self.tabBar) {
+        self.tabBar = [[UITabBar alloc] initForAutoLayout];
+        [self.view addSubview:self.tabBar];
+        [self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+        [self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+        [self.tabBar autoCenterVerticallyInSuperview];
+        
+        [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
+        self.tabBarTopConstraint = [self.tabBar autoPinEdgeToSuperviewMargin:ALEdgeTop];
+        self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar withOffset:100];
+        NSMutableArray *tabBarItems = [NSMutableArray new];
+        /*
+        [self.tabDetails enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:obj image:nil tag:idx];
+            [tabBarItems addObject:item];
+        }];*/
+        [self.tabDetails enumerateObjectsUsingBlock:^(KBYTTab * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:obj.title image:nil tag:idx];
+            [tabBarItems addObject:item];
+        }];
+        [self.tabBar setItems:tabBarItems animated:true];
+        self.tabBar.delegate = self;
+        [self afterSetupTabBar];
+    }
+}
+
+- (void)afterSetupTabBar {
+    
+}
+
+- (NSArray <KBYTTab *>*)tabDetails {
+    return _tabDetails;
+}
+
 
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -42,6 +89,14 @@
     [super viewDidLoad];
     
     self.extendedLayoutIncludesOpaqueBars = NO;
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView.translatesAutoresizingMaskIntoConstraints = FALSE;
+    [self.view addSubview:self.tableView];
+    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.tableView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
+    self.tableTopConstraint =  [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeTop];
 #if !TARGET_OS_TV
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 #endif
@@ -58,6 +113,32 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self updateTable];
     self.title = self.customTitle;
+}
+
+- (KBYTTab *)selectedTab {
+    if (self.tabBar) {
+        UITabBarItem *selectedItem = self.tabBar.selectedItem;
+        TLog(@"selectedItem: %@", selectedItem);
+        NSInteger index = [self.tabBar.items indexOfObject:selectedItem];
+        TLog(@"did select item at index: %lu", index);
+        if (index != NSNotFound) {
+            KBYTTab *tab = self.tabDetails[@(index)];
+            return tab;
+        }
+    }
+    return nil;
+}
+
+- (NSInteger)selectedTabIndex {
+    if (!self.tabBar) {
+        return NSNotFound;
+    }
+    return [self.tabBar.items indexOfObject:self.tabBar.selectedItem];
+}
+
+- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
+    LOG_SELF;
+    DLog(@"selectedTab: %@", [self selectedTab]);
 }
 
 - (void)addLongPressToCell:(KBYTDownloadCell *)cell {
@@ -234,20 +315,21 @@
 }
 
 - (id)initWithSearchResult:(KBYTSearchResult *)result {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super init];
     self.searchResult = result;
     return self;
 }
 
 - (id)initWithForAuthUser {
-    self = [super initWithStyle:UITableViewStylePlain];
+    //self = [super initWithStyle:UITableViewStylePlain];
+    self = [super init];
     tableType = kYTSearchResultTypeAuthUser;
     _userData = [[KBYourTube sharedInstance] userDetails];
     return self;
 }
 
 - (id)initForType:(YTSearchResultType)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super init];
     tableType = detailsType;
     customTitle = theTitle;
     customId = identifier;
@@ -256,7 +338,7 @@
 
 
 - (id)initForType:(YTSearchResultType)detailsType {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super init];
     tableType = detailsType;
     return self;
 }
