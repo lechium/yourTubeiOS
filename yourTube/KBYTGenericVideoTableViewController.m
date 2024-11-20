@@ -291,6 +291,12 @@
 
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
+    BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:result.videoId];
+    if (isSubbed) {
+        TLog(@"is subbed to channel: %@", result);
+    } else {
+        TLog(@"is not subbed to channel: %@", result);
+    }
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
                                           message: @"Subscribe to this channel?"
@@ -773,6 +779,12 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (currentResult.resultType == kYTSearchResultTypeChannel) {
         
         KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypeChannel withTitle:currentResult.title withId:currentResult.videoId];
+        BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:currentResult.videoId];
+        if (isSubbed){
+            TLog(@"is subbed to channel: %@", currentResult.title);
+        } else {
+            TLog(@"is not subbed to channel: %@", currentResult.title);
+        }
         [[self navigationController] pushViewController:genericTableView animated:true];
         return;
     } else if (currentResult.resultType == kYTSearchResultTypePlaylist) {

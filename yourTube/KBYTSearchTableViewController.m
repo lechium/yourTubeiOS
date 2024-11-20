@@ -566,6 +566,12 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     {
         
         KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypeChannel withTitle:currentResult.title withId:currentResult.videoId];
+        BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:currentResult.videoId];
+        if (isSubbed){
+            TLog(@"is subbed to channel: %@", currentResult.title);
+        } else {
+            TLog(@"is not subbed to channel: %@", currentResult.title);
+        }
         [[self navigationController] pushViewController:genericTableView animated:true];
         
     } else if (currentResult.resultType == kYTSearchResultTypePlaylist)

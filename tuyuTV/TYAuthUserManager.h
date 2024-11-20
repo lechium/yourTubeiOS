@@ -35,7 +35,8 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 - (BOOL)checkAndSetCredential;
 - (void)signOut;
 + (NSString *)ytAuthURL;
-
+- (NSArray *)subbedChannelIDs;
+- (BOOL)isSubscribedToChannel:(NSString *)channelID;
 #if TARGET_OS_IOS
 + (KBYTWebViewController *)ytAuthWebViewController;
 - (void)createAndStartWebserverWithCompletion:(void(^)(BOOL success))block;

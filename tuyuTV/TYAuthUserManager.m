@@ -923,6 +923,14 @@ snippet =             {
     return searchResult;
 }
 
+- (BOOL)isSubscribedToChannel:(NSString *)channelID {
+    return [[self subbedChannelIDs] containsObject:channelID];
+}
+
+- (NSArray *)subbedChannelIDs {
+    return [[KBYourTube sharedInstance]userDetails][@"channelIDs"];
+}
+
 - (void)postCodeToGoogle:(NSString *)code completion:(void(^)(NSDictionary *returnData))block {
     
     // LOG_SELF;

@@ -141,6 +141,11 @@
 		4B5AE4832CE305F800B5C109 /* M3U8Kit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5AE4802CE303EB00B5C109 /* M3U8Kit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4B7729932CEC5CD500A9F8BA /* UIView+AL.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A610285695CC006BF25C /* UIView+AL.m */; };
 		4B7729972CEDAD2B00A9F8BA /* HMSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7729952CEDAD2B00A9F8BA /* HMSegmentedControl.m */; };
+		4B77299A2CEDB30600A9F8BA /* OCTotallyLazy.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7729982CEDB2F600A9F8BA /* OCTotallyLazy.xcframework */; };
+		4B77299B2CEDB30700A9F8BA /* OCTotallyLazy.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7729982CEDB2F600A9F8BA /* OCTotallyLazy.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4B77299D2CEDB31700A9F8BA /* OCTotallyLazy.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */; };
+		4B77299E2CEDB31800A9F8BA /* OCTotallyLazy.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4B7729A02CEDB38A00A9F8BA /* OCTotallyLazy.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */; };
 		4B9C254B2CADFD930037AB16 /* TYChannelShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */; };
 		4BBC78FA2C9535C7005EB5D4 /* KBDataItemCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */; };
 		4BBC78FB2C9535C8005EB5D4 /* KBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D22C9535C6005EB5D4 /* KBTableViewCell.m */; };
@@ -603,6 +608,7 @@
 				4B5AE47F2CE3025200B5C109 /* libswscale.framework in Embed Frameworks */,
 				4B5AE4832CE305F800B5C109 /* M3U8Kit.xcframework in Embed Frameworks */,
 				4B5AE47B2CE3024E00B5C109 /* libavutil.framework in Embed Frameworks */,
+				4B77299B2CEDB30700A9F8BA /* OCTotallyLazy.xcframework in Embed Frameworks */,
 				4B5AE4732CE3024600B5C109 /* libavcodec.framework in Embed Frameworks */,
 				4B5AE4712CE3024500B5C109 /* ffmpegkit.framework in Embed Frameworks */,
 				4B5AE4792CE3024C00B5C109 /* libavformat.framework in Embed Frameworks */,
@@ -623,6 +629,17 @@
 				328E33881E4F868C00C544ED /* tuyuShelf.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B77299F2CEDB31900A9F8BA /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4B77299E2CEDB31800A9F8BA /* OCTotallyLazy.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -787,6 +804,8 @@
 		4B5AE4802CE303EB00B5C109 /* M3U8Kit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = M3U8Kit.xcframework; sourceTree = "<group>"; };
 		4B7729942CEDAD2B00A9F8BA /* HMSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HMSegmentedControl.h; sourceTree = "<group>"; };
 		4B7729952CEDAD2B00A9F8BA /* HMSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HMSegmentedControl.m; sourceTree = "<group>"; };
+		4B7729982CEDB2F600A9F8BA /* OCTotallyLazy.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OCTotallyLazy.xcframework; sourceTree = "<group>"; };
+		4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OCTotallyLazy.xcframework; path = tuyuTV/Frameworks/OCTotallyLazy.xcframework; sourceTree = SOURCE_ROOT; };
 		4B9C25492CADFD930037AB16 /* TYChannelShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYChannelShelfViewController.h; sourceTree = "<group>"; };
 		4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYChannelShelfViewController.m; sourceTree = "<group>"; };
 		4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBDataItemCollectionViewCell.m; sourceTree = "<group>"; };
@@ -1222,6 +1241,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B7729A02CEDB38A00A9F8BA /* OCTotallyLazy.xcframework in Frameworks */,
 				320400051E4F8DDD00D3B8B0 /* libxml2.tbd in Frameworks */,
 				328E33801E4F868C00C544ED /* TVServices.framework in Frameworks */,
 			);
@@ -1237,6 +1257,7 @@
 				898E92FD1C8D560F00B34DAA /* Foundation.framework in Frameworks */,
 				898E92FB1C8D560800B34DAA /* AVFoundation.framework in Frameworks */,
 				898E92F91C8D560200B34DAA /* Accelerate.framework in Frameworks */,
+				4B77299D2CEDB31700A9F8BA /* OCTotallyLazy.xcframework in Frameworks */,
 				898E92F71C8D55FE00B34DAA /* AVKit.framework in Frameworks */,
 				898E92F51C8D55EF00B34DAA /* libxml2.tbd in Frameworks */,
 			);
@@ -1249,6 +1270,7 @@
 				32D2A1591F424F56006F24B3 /* libz.tbd in Frameworks */,
 				892669151C88AD5200082B31 /* libxml2.2.dylib in Frameworks */,
 				89A83AD61C88AB7100E1987E /* AVKit.framework in Frameworks */,
+				4B77299A2CEDB30600A9F8BA /* OCTotallyLazy.xcframework in Frameworks */,
 				4B5AE4822CE305F800B5C109 /* M3U8Kit.xcframework in Frameworks */,
 				89A83AD41C88AB6B00E1987E /* AVFoundation.framework in Frameworks */,
 				4B5AE3EA2CD065D000B5C109 /* AppSupportiOS.tbd in Frameworks */,
@@ -2284,6 +2306,8 @@
 		89B9D4211C44F49F00740BF1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4B7729982CEDB2F600A9F8BA /* OCTotallyLazy.xcframework */,
+				4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */,
 				4B5AE4802CE303EB00B5C109 /* M3U8Kit.xcframework */,
 				4B5AE4632CE3023700B5C109 /* ffmpegkit.framework */,
 				4B5AE4662CE3023800B5C109 /* libavcodec.framework */,
@@ -2447,6 +2471,7 @@
 				898E92641C8D056700B34DAA /* Resources */,
 				328E338C1E4F868C00C544ED /* Embed App Extensions */,
 				8929758F1CB02987003D7473 /* ShellScript */,
+				4B77299F2CEDB31900A9F8BA /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

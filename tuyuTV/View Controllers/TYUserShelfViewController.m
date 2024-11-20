@@ -227,6 +227,7 @@
 - (void)removeChannel:(KBYTSearchResult *)searchResult inCollectionView:(UICollectionView *)cv {
     TLog(@"deleting %@ in %@", searchResult, cv);
     [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:searchResult.stupidId];
+    [[KBYourTube sharedInstance] removeChannelFromUserDetails:searchResult];
     [cv performBatchUpdates:^{
         KBSection *section = self.sections[cv.section];
         KBYTChannel *channel = section.channel;

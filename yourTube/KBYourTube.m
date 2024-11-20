@@ -27,6 +27,8 @@
 #endif
 #import "NSURLRequest+cURL.h"
 
+@import OCTotallyLazy;
+
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 static NSString * const hardcodedTimestamp = @"16864";
@@ -1361,7 +1363,14 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     }
     [channels insertObject:channel atIndex:0];//add it to the front/top.
     [(NSMutableDictionary*)self.userDetails setObject:channels forKey:@"channels"];
-    
+    NSArray *channelIDs = [channels map:^(KBYTSearchResult *item) { return [item videoId];}];
+    [(NSMutableDictionary*)self.userDetails setObject:channelIDs forKey:@"channelIDs"];
+}
+
+- (void)removeChannelFromUserDetails:(KBYTSearchResult *)channel {
+    NSMutableArray *cids = [[[TYAuthUserManager sharedInstance] subbedChannelIDs] mutableCopy];
+    [cids removeObject:channel.videoId];
+    [(NSMutableDictionary*)self.userDetails setObject:cids forKey:@"channelIDs"];
 }
 
 - (NSString *)nextURL {
@@ -1742,6 +1751,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         TLog(@"got channels");
                         if (channels.count > 0) {
                             returnDict[@"channels"] = channels;
+                            NSArray *channelIDs = [channels map:^(KBYTSearchResult *item) { return [item videoId];}];
+                            //TLog(@"subbed channels: %@", channelIDs);
+                            returnDict[@"channelIDs"] = channelIDs;
                         }
                         [authManager getProfileDetailsWithCompletion:^(NSDictionary *profileDetails, NSString *error) {
                             if (error) {
