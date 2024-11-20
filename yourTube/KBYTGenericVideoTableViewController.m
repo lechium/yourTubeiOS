@@ -308,7 +308,22 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            if (isSubbed) {
+                NSString *stupidId = [result stupidId];
+                if (!stupidId) {
+                    stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:result.videoId];
+                    TLog(@"found stupid id: %@", stupidId);
+                }
+                if (stupidId){
+                    [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:result.stupidId];
+                    [[KBYourTube sharedInstance] removeChannelFromUserDetails:result];
+                } else {
+                    TLog(@"failed to unsub! couldnt find stupid id!");
+                }
+            } else {
+                [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            }
+            
         });
         
         
@@ -470,7 +485,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 - (void)updateRightTabBarItem {
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    if (![[TYAuthUserManager sharedInstance] isSignedIn]){
+    if (![[KBYourTube sharedInstance] isSignedIn]){
         self.navigationItem.rightBarButtonItem = nil;
         return;
     }
@@ -496,6 +511,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         TLog(@"is subbed, attempt to get stupid id!");
         NSString *stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:self.customId];
         TLog(@"stupid id: %@", stupidId);
+        [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:stupidId];
+        [[KBYourTube sharedInstance] removeChannelIDFromUserDetails:self.customId];
+    } else {
+        [[TYAuthUserManager sharedInstance] subscribeToChannel:self.customId];
     }
 }
 

@@ -393,6 +393,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP;
 - (void)addChannelToUserDetails:(KBYTSearchResult *)channel;
 - (void)removeChannelFromUserDetails:(KBYTSearchResult *)channel;
+- (void)removeChannelIDFromUserDetails:(NSString *)channelID;
 #if TARGET_OS_IOS
 - (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP;
 - (void)pauseAirplay;

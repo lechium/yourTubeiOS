@@ -923,12 +923,20 @@ snippet =             {
     return searchResult;
 }
 
++ (KBYTSearchResult *)subbedChannelForChannelID:(NSString *)channelID {
+    return [[self sharedInstance] subbedChannelForChannelID:channelID];
+}
+
+- (KBYTSearchResult *)subbedChannelForChannelID:(NSString *)channelID {
+    return [[[self subbedChannels] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.videoId == %@", channelID]] firstObject];
+}
+
 - (NSString *)channelStupidIdForChannelID:(NSString *)channelID {
     if (![self isSubscribedToChannel:channelID]) {
         TLog(@"not subscribed to channel: %@", channelID);
         return nil;
     }
-    return [[[[self subbedChannels] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.videoId == %@", channelID]] firstObject] stupidId];
+    return [[self subbedChannelForChannelID:channelID] stupidId];
 }
 
 - (BOOL)isSubscribedToChannel:(NSString *)channelID {

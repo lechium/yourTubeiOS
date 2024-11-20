@@ -1367,7 +1367,25 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     [(NSMutableDictionary*)self.userDetails setObject:channelIDs forKey:@"channelIDs"];
 }
 
+- (void)removeChannelIDFromUserDetails:(NSString *)channelID {
+    KBYTSearchResult *found = [TYAuthUserManager subbedChannelForChannelID:channelID];
+    if (found){
+        NSMutableArray *channels = [self.userDetails[@"channels"] mutableCopy];
+        [channels removeObject:found];
+        [(NSMutableDictionary*)self.userDetails setObject:channels forKey:@"channels"];
+    }
+    NSMutableArray *cids = [[[TYAuthUserManager sharedInstance] subbedChannelIDs] mutableCopy];
+    [cids removeObject:channelID];
+    [(NSMutableDictionary*)self.userDetails setObject:cids forKey:@"channelIDs"];
+}
+
 - (void)removeChannelFromUserDetails:(KBYTSearchResult *)channel {
+    KBYTSearchResult *found = [TYAuthUserManager subbedChannelForChannelID:channel.videoId];
+    if (found){
+        NSMutableArray *channels = [self.userDetails[@"channels"] mutableCopy];
+        [channels removeObject:found];
+        [(NSMutableDictionary*)self.userDetails setObject:channels forKey:@"channels"];
+    }
     NSMutableArray *cids = [[[TYAuthUserManager sharedInstance] subbedChannelIDs] mutableCopy];
     [cids removeObject:channel.videoId];
     [(NSMutableDictionary*)self.userDetails setObject:cids forKey:@"channelIDs"];
