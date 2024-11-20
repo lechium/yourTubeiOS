@@ -50,22 +50,25 @@
             };
         }];
         DLog(@"tabBarItems: %@ dark: %d", tabBarItems, self.darkMode);
-        self.tabSegment = [[UISegmentedControl alloc] initWithItems:tabBarItems];
+        self.tabSegment = [[HMSegmentedControl alloc] initWithSectionTitles:tabBarItems];//[[UISegmentedControl alloc] initWithItems:tabBarItems];
         NSDictionary *nattrs = @{NSFontAttributeName: [UIFont systemFontOfSize:14], NSForegroundColorAttributeName: [UIColor labelColor]};
         NSDictionary *sattrs = @{NSFontAttributeName: [UIFont systemFontOfSize:14], NSForegroundColorAttributeName: [UIColor secondaryLabelColor]};
         [self.tabSegment setTintColor:[UIColor lightTextColor]];
-        [self.tabSegment setTitleTextAttributes:nattrs forState:UIControlStateNormal];
-        [self.tabSegment setTitleTextAttributes:sattrs forState:UIControlStateSelected];
+        self.tabSegment.selectionIndicatorLocation = HMSegmentedControlSelectionIndicatorLocationNone;
+        [self.tabSegment setTitleTextAttributes:nattrs];//[self.tabSegment setTitleTextAttributes:nattrs forState:UIControlStateNormal];
+        [self.tabSegment setSelectedTitleTextAttributes:sattrs];
+        //[self.tabSegment setTitleTextAttributes:sattrs forState:UIControlStateSelected];
        
         //[self.tabSegment setDividerImage:[UIImage imageWithColor:[UIColor whiteColor] andSize:CGSizeMake(1.0, 1.0)] forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
        
-        [self.tabSegment setBackgroundColor:[UIColor clearColor]];
-        [self.tabSegment setBackgroundImage:[UIImage imageWithColor:[UIColor systemBackgroundColor] andSize:CGSizeMake(1.0, 40)] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+        [self.tabSegment setBackgroundColor:[UIColor systemBackgroundColor]];
+        //[self.tabSegment setBackgroundImage:[UIImage imageWithColor:[UIColor systemBackgroundColor] andSize:CGSizeMake(1.0, 40)] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
         self.tabSegment.translatesAutoresizingMaskIntoConstraints = false;
         [self.view addSubview:self.tabSegment];
         [self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeLeading];
         [self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
         [self.tabSegment autoCenterVerticallyInSuperview];
+        [self.tabSegment autoSetDimension:ALDimensionHeight toSize:60];
         
         [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
         self.tabBarTopConstraint = [self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeTop];

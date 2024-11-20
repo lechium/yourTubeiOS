@@ -42,7 +42,7 @@
 @property (nonatomic, strong) AVQueuePlayer *player;
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
 @property (nonatomic, strong) NSMutableArray *currentPlaybackArray;
-@property (nonatomic, strong) UISegmentedControl *tabSegment;
+@property (nonatomic, strong) HMSegmentedControl *tabSegment;
 @property (nonatomic, strong) UITableView *tableView;
 
 @property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
