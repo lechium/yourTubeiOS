@@ -513,8 +513,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         TLog(@"stupid id: %@", stupidId);
         [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:stupidId];
         [[KBYourTube sharedInstance] removeChannelIDFromUserDetails:self.customId];
+        [self updateRightTabBarItem];
     } else {
         [[TYAuthUserManager sharedInstance] subscribeToChannel:self.customId];
+        [self updateRightTabBarItem];
     }
 }
 
