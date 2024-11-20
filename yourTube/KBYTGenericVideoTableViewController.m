@@ -63,8 +63,8 @@
         [self.tabSegment setBackgroundImage:[UIImage imageWithColor:[UIColor systemBackgroundColor] andSize:CGSizeMake(1.0, 40)] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
         self.tabSegment.translatesAutoresizingMaskIntoConstraints = false;
         [self.view addSubview:self.tabSegment];
-        //[self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-        //[self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+        [self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+        [self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
         [self.tabSegment autoCenterVerticallyInSuperview];
         
         [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
