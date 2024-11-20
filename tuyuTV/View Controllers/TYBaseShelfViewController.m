@@ -496,16 +496,36 @@
 
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
+    BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:result.videoId];
+    NSString *message = @"Subscribe to this channel?";
+    NSString *title = @"Subscribe";
+    if (isSubbed) {
+        TLog(@"is subbed to channel: %@", result);
+        message = @"Unsubscribe from this channel?";
+        title = @"Unsubscribe";
+    }
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
-                                          message: @"Subscribe to this channel?"
+                                          message: message
                                           preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            if (isSubbed) {
+                NSString *stupidId = [result stupidId];
+                if (!stupidId) {
+                    stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:result.videoId];
+                    TLog(@"found stupid id: %@", stupidId);
+                }
+                if (stupidId){
+                    [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:result.stupidId];
+                    [[KBYourTube sharedInstance] removeChannelFromUserDetails:result];
+                } else {
+                    TLog(@"failed to unsub! couldnt find stupid id!");
+                }
+            } else {
+                [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            }
         });
-        
     }];
     [alertController addAction:yesAction];
     UIAlertAction *homeScreenAction = [UIAlertAction actionWithTitle:@"Add to Home screen" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
