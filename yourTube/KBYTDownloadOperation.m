@@ -130,7 +130,7 @@
     if ([codec containsString:@"vp09"]){
         suffix = @"ts";
     }
-    self.downloadLocation = [[[self downloadFolder] stringByAppendingPathComponent:self.name] stringByAppendingPathExtension:suffix];
+    self.downloadLocation = [[[self downloadFolder] stringByAppendingPathComponent:[self.name stringByReplacingOccurrencesOfString:@"/" withString:@" "]] stringByAppendingPathExtension:suffix];
     NSString *imageURL = downloadInfo[@"images"][@"standard"];
     NSData *downloadData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]];
     NSString *outputJPEG = [[[self downloadLocation] stringByDeletingPathExtension] stringByAppendingPathExtension:@"jpg"];

@@ -12,6 +12,7 @@
 #import "KBYTPreferences.h"
 #import "KBYourTube.h"
 #import "KBYTSearchItemViewController.h"
+#import "HMSegmentedControl.h"
 
 #define kGenericLoadingCellTag 600
 
@@ -41,16 +42,16 @@
 @property (nonatomic, strong) AVQueuePlayer *player;
 @property (nonatomic, strong) YTKBPlayerViewController *playerView;
 @property (nonatomic, strong) NSMutableArray *currentPlaybackArray;
-@property (nonatomic, strong) UITabBar *tabBar;
+@property (nonatomic, strong) UISegmentedControl *tabSegment;
 @property (nonatomic, strong) UITableView *tableView;
 
 @property (nonatomic, strong) void (^alertHandler)(UIAlertAction *action);
 @property (nonatomic, strong) void (^channelAlertHandler)(UIAlertAction *action);
 
-- (NSInteger)selectedTabIndex;
 - (id)initWithSearchResult:(KBYTSearchResult *)result;
 - (id)initForType:(YTSearchResultType)detailsType;
 - (id)initForType:(YTSearchResultType)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier;
 - (void)playFromIndex:(NSInteger)index;
 - (id)initWithForAuthUser;
+- (void)afterSetupTabSegment;
 @end

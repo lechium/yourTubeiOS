@@ -139,6 +139,8 @@
 		4B5AE47F2CE3025200B5C109 /* libswscale.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5AE4652CE3023800B5C109 /* libswscale.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4B5AE4822CE305F800B5C109 /* M3U8Kit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5AE4802CE303EB00B5C109 /* M3U8Kit.xcframework */; };
 		4B5AE4832CE305F800B5C109 /* M3U8Kit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5AE4802CE303EB00B5C109 /* M3U8Kit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4B7729932CEC5CD500A9F8BA /* UIView+AL.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A610285695CC006BF25C /* UIView+AL.m */; };
+		4B7729972CEDAD2B00A9F8BA /* HMSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7729952CEDAD2B00A9F8BA /* HMSegmentedControl.m */; };
 		4B9C254B2CADFD930037AB16 /* TYChannelShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */; };
 		4BBC78FA2C9535C7005EB5D4 /* KBDataItemCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */; };
 		4BBC78FB2C9535C8005EB5D4 /* KBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D22C9535C6005EB5D4 /* KBTableViewCell.m */; };
@@ -783,6 +785,8 @@
 		4B5AE4662CE3023800B5C109 /* libavcodec.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libavcodec.framework; sourceTree = "<group>"; };
 		4B5AE4672CE3023800B5C109 /* libavdevice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libavdevice.framework; sourceTree = "<group>"; };
 		4B5AE4802CE303EB00B5C109 /* M3U8Kit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = M3U8Kit.xcframework; sourceTree = "<group>"; };
+		4B7729942CEDAD2B00A9F8BA /* HMSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HMSegmentedControl.h; sourceTree = "<group>"; };
+		4B7729952CEDAD2B00A9F8BA /* HMSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HMSegmentedControl.m; sourceTree = "<group>"; };
 		4B9C25492CADFD930037AB16 /* TYChannelShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYChannelShelfViewController.h; sourceTree = "<group>"; };
 		4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYChannelShelfViewController.m; sourceTree = "<group>"; };
 		4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBDataItemCollectionViewCell.m; sourceTree = "<group>"; };
@@ -1560,6 +1564,16 @@
 			);
 			name = Categories;
 			path = yourTube/Categories;
+			sourceTree = "<group>";
+		};
+		4B7729962CEDAD2B00A9F8BA /* HMSegmentedControl */ = {
+			isa = PBXGroup;
+			children = (
+				4B7729942CEDAD2B00A9F8BA /* HMSegmentedControl.h */,
+				4B7729952CEDAD2B00A9F8BA /* HMSegmentedControl.m */,
+			);
+			name = HMSegmentedControl;
+			path = yourTube/HMSegmentedControl;
 			sourceTree = "<group>";
 		};
 		4BBC78CD2C9535C5005EB5D4 /* tvOSShelfController */ = {
@@ -2365,6 +2379,7 @@
 		89E06BCC1C499ED400B8D1C4 /* yourTube */ = {
 			isa = PBXGroup;
 			children = (
+				4B7729962CEDAD2B00A9F8BA /* HMSegmentedControl */,
 				4B379BC62CAB766B00453DBC /* Categories */,
 				4BBC791A2C9542B1005EB5D4 /* SDWebImage */,
 				892A2C381C6A8400003724D6 /* yourTubeApplication.h */,
@@ -2986,6 +3001,7 @@
 				89A83ABD1C88AAF200E1987E /* KBYTDownloadsTableViewController.m in Sources */,
 				32D2A1441F424805006F24B3 /* AFURLSessionManager.m in Sources */,
 				89A83ABC1C88AAF200E1987E /* KBYTDownloadCell.m in Sources */,
+				4B7729932CEC5CD500A9F8BA /* UIView+AL.m in Sources */,
 				4B379BD32CAB766C00453DBC /* NSURLRequest+cURL.m in Sources */,
 				4BBC79AF2C9542B7005EB5D4 /* NSImage+Compatibility.m in Sources */,
 				4BBC7A0F2C9542B8005EB5D4 /* SDDiskCache.m in Sources */,
@@ -3098,6 +3114,7 @@
 				4BBC7A362C9542B9005EB5D4 /* UIImageView+WebCache.m in Sources */,
 				322215F328503F2C00F3EE8A /* UIView+RecursiveFind.m in Sources */,
 				4BBC7A602C9542B9005EB5D4 /* SDImageCachesManagerOperation.m in Sources */,
+				4B7729972CEDAD2B00A9F8BA /* HMSegmentedControl.m in Sources */,
 				324CDA491FC24B2E003B3A0F /* TYAuthUserManager.m in Sources */,
 				32D2A1481F424805006F24B3 /* AFOAuth2Manager.m in Sources */,
 				8998765F1CDE77A5006A639E /* NSArray+PureLayout.m in Sources */,

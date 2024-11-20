@@ -110,36 +110,6 @@
     }
 }
 
-/*
-- (void)setupBlocks {
-    [super setupBlocks];
-    @weakify(self);
-    self.itemFocusedBlock = ^(NSInteger row, NSInteger section, UICollectionView * _Nonnull collectionView) {
-        //DLog(@"item focused: %lu in section: %lu", row,section);
-        KBSection *currentSection = self_weak_.sections[section]; //TODO: crash proof with categories
-        KBYTChannel *channel = currentSection.channel;
-        //DLog(@"channel: %@", channel);
-        if (currentSection.params) {
-            DLog(@"channel section params: %@", currentSection.params);
-            DLog(@"channel section browseId: %@", currentSection.browseId);
-            if (row+1 == currentSection.content.count) {
-                TLog(@"get a new page maybe?");
-                [[KBYourTube sharedInstance] getChannelSection:channel section:currentSection params:currentSection.params continuation:nil completionBlock:^(KBYTChannel *channel) {
-                    
-                } failureBlock:^(NSString *error) {
-                    
-                }];
-                [[KBYourTube sharedInstance] getChannelVideosAlt:currentSection.browseId params:currentSection.params continuation:nil completionBlock:^(KBYTChannel *channel) {
-                    
-                } failureBlock:^(NSString *error) {
-                    
-                }];
-                //[self_weak_ getNextPage:channel inCollectionView:collectionView];
-            }
-        }
-    };
-}
-*/
 - (void)_performChannelUpdates {
     self.headerview.subscriberLabel.text = self.channel.subscribers;
     //self.headerview.subscriberLabel.text = channel.subscribers ? channel.subscribers : channel.subtitle;

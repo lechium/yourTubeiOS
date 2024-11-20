@@ -11,6 +11,7 @@
 #import "SVProgressHUD/SVIndefiniteAnimatedView.h"
 #import "KBYTSearchItemViewController.h"
 #import "TYAuthUserManager.h"
+#import "UIImage+Scale.h"
 
 #define TABLE_TOP 100.0
 #define TAB_TOP 50.0
@@ -20,6 +21,7 @@
 
 @interface KBYTGenericVideoTableViewController () {
     NSArray <KBYTTab *>*_tabDetails;
+    NSInteger selectedSegment;
 }
 
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
@@ -36,37 +38,57 @@
 
 - (void)setTabDetails:(NSArray <KBYTTab*> *)tabDetails {
     _tabDetails = tabDetails;
-    [self setupTabBar];
+    [self setupTabSegment];
 }
 
-- (void)setupTabBar {
-    if (!self.tabBar) {
-        self.tabBar = [[UITabBar alloc] initForAutoLayout];
-        [self.view addSubview:self.tabBar];
-        [self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-        [self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-        [self.tabBar autoCenterVerticallyInSuperview];
+- (void)setupTabSegment {
+    if (!self.tabSegment) {
+        NSMutableArray *tabBarItems = [NSMutableArray new];
+        [self.tabDetails enumerateObjectsUsingBlock:^(KBYTTab * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj.title){
+                [tabBarItems addObject:obj.title];
+            };
+        }];
+        DLog(@"tabBarItems: %@ dark: %d", tabBarItems, self.darkMode);
+        self.tabSegment = [[UISegmentedControl alloc] initWithItems:tabBarItems];
+        NSDictionary *nattrs = @{NSFontAttributeName: [UIFont systemFontOfSize:14], NSForegroundColorAttributeName: [UIColor labelColor]};
+        NSDictionary *sattrs = @{NSFontAttributeName: [UIFont systemFontOfSize:14], NSForegroundColorAttributeName: [UIColor secondaryLabelColor]};
+        [self.tabSegment setTintColor:[UIColor lightTextColor]];
+        [self.tabSegment setTitleTextAttributes:nattrs forState:UIControlStateNormal];
+        [self.tabSegment setTitleTextAttributes:sattrs forState:UIControlStateSelected];
+       
+        //[self.tabSegment setDividerImage:[UIImage imageWithColor:[UIColor whiteColor] andSize:CGSizeMake(1.0, 1.0)] forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+       
+        [self.tabSegment setBackgroundColor:[UIColor clearColor]];
+        [self.tabSegment setBackgroundImage:[UIImage imageWithColor:[UIColor systemBackgroundColor] andSize:CGSizeMake(1.0, 40)] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+        self.tabSegment.translatesAutoresizingMaskIntoConstraints = false;
+        [self.view addSubview:self.tabSegment];
+        //[self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+        //[self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+        [self.tabSegment autoCenterVerticallyInSuperview];
         
         [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
-        self.tabBarTopConstraint = [self.tabBar autoPinEdgeToSuperviewMargin:ALEdgeTop];
-        self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabBar withOffset:100];
-        NSMutableArray *tabBarItems = [NSMutableArray new];
-        /*
-        [self.tabDetails enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:obj image:nil tag:idx];
-            [tabBarItems addObject:item];
-        }];*/
-        [self.tabDetails enumerateObjectsUsingBlock:^(KBYTTab * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:obj.title image:nil tag:idx];
-            [tabBarItems addObject:item];
-        }];
-        [self.tabBar setItems:tabBarItems animated:true];
-        self.tabBar.delegate = self;
-        [self afterSetupTabBar];
+        self.tabBarTopConstraint = [self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabSegment withOffset:5];
+        [self.tabSegment setSelectedSegmentIndex:0];
+        [self.tabSegment addTarget:self action:@selector(segmentSelected:) forControlEvents:UIControlEventValueChanged];
+        [self afterSetupTabSegment];
     }
 }
 
-- (void)afterSetupTabBar {
+- (void)segmentSelected:(UISegmentedControl *)sender {
+    TLog(@"did select item at index: %lu current Index: %lu", sender.selectedSegmentIndex, selectedSegment);
+    if (selectedSegment == sender.selectedSegmentIndex) {
+        TLog(@"dont!");
+        return;
+    }
+    selectedSegment = sender.selectedSegmentIndex;
+    KBYTTab *tab = self.tabDetails[@(sender.selectedSegmentIndex)];
+    TLog(@"found tab: %@ params: %@", tab.title, tab.params);
+    [self fetchChannelDetails:tab];
+}
+
+- (void)afterSetupTabSegment {
     
 }
 
@@ -92,6 +114,7 @@
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.translatesAutoresizingMaskIntoConstraints = FALSE;
     [self.view addSubview:self.tableView];
+    self.view.backgroundColor = [UIColor systemBackgroundColor];
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -116,10 +139,8 @@
 }
 
 - (KBYTTab *)selectedTab {
-    if (self.tabBar) {
-        UITabBarItem *selectedItem = self.tabBar.selectedItem;
-        TLog(@"selectedItem: %@", selectedItem);
-        NSInteger index = [self.tabBar.items indexOfObject:selectedItem];
+    if (self.tabSegment) {
+        NSInteger index = self.tabSegment.selectedSegmentIndex;
         TLog(@"did select item at index: %lu", index);
         if (index != NSNotFound) {
             KBYTTab *tab = self.tabDetails[@(index)];
@@ -129,16 +150,37 @@
     return nil;
 }
 
-- (NSInteger)selectedTabIndex {
-    if (!self.tabBar) {
-        return NSNotFound;
-    }
-    return [self.tabBar.items indexOfObject:self.tabBar.selectedItem];
-}
 
-- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
-    LOG_SELF;
-    DLog(@"selectedTab: %@", [self selectedTab]);
+- (void)fetchChannelDetails:(KBYTTab *)tab {
+    NSInteger selectedTabIndex = [[self tabDetails] indexOfObject:tab];
+    [[KBYourTube sharedInstance] getChannelVideosAlt:self.channel.channelID params:[tab params] continuation:nil completionBlock:^(KBYTChannel *channel) {
+        if (channel.isAboutDetails) {
+            self.channel.aboutDetails = channel.aboutDetails;
+            //aboutView.alpha = 1.0;
+            //aboutDescription.text = channel.aboutDetails;
+        } else {
+            //aboutView.alpha = 0.0;
+            //self.channel = channel;
+        }
+        NSInteger tabIndex = [self.channel.tabs indexOfObject:tab];
+        if (tabIndex > 0) {
+            DLog(@"isnt the first tab: %lu title: %@", tabIndex, tab.title);
+            
+        }
+        self.channel = channel;
+        [self setTabDetails:channel.tabs];
+        KBYTTab *selectedTab = channel.tabs[@(selectedTabIndex)];
+        if (selectedTab) {
+            DLog(@"selectedTab: %@ content count: %lu", selectedTab, selectedTab.contents.count);
+            self.searchResults = [[self.channel allSectionItems] mutableCopy];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView reloadData];
+            });
+        }
+        //[self.tableView reloadData];
+    } failureBlock:^(NSString *error) {
+        DLog(@"fetch channel failed with error: %@", error);
+    }];
 }
 
 - (void)addLongPressToCell:(KBYTDownloadCell *)cell {
@@ -355,11 +397,15 @@
     self.currentPage++;
     
     if (self.channel) {
-        [[KBYourTube sharedInstance] getChannelVideosAlt:self.channel.channelID params:nil continuation:self.channel.continuationToken completionBlock:^(KBYTChannel *channel) {
-            //[self.channel mergeChannelVideos:channel];
-        } failureBlock:^(NSString *error) {
-            
-        }];
+        if (self.channel.tabs.count > 0) {
+            [self setTabDetails:self.channel.tabs];
+        } else {
+            [[KBYourTube sharedInstance] getChannelVideosAlt:self.channel.channelID params:nil continuation:self.channel.continuationToken completionBlock:^(KBYTChannel *channel) {
+                //[self.channel mergeChannelVideos:channel];
+            } failureBlock:^(NSString *error) {
+                
+            }];
+        }
     }
     
     if (self.playlist) {
@@ -418,6 +464,9 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
         [[KBYourTube sharedInstance] getChannelVideosAlt:self.customId params:nil continuation:nil completionBlock:^(KBYTChannel *channel) {
             [SVProgressHUD dismiss];
             self.channel = channel;
+            if (channel.tabs.count > 0) {
+                [self setTabDetails:channel.tabs];
+            }
             self.title = channel.title;
             self.searchResults = [[self.channel allSectionItems] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
