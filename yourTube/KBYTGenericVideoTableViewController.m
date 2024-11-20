@@ -292,23 +292,23 @@
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:result.videoId];
+    NSString *message = @"Subscribe to this channel?";
+    NSString *title = @"Subscribe";
     if (isSubbed) {
         TLog(@"is subbed to channel: %@", result);
-    } else {
-        TLog(@"is not subbed to channel: %@", result);
+        message = @"Unsubscribe from this channel?";
+        title = @"Unsubscribe";
     }
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
-                                          message: @"Subscribe to this channel?"
+                                          message: message
                                           preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
-            
-            
         });
         
         
@@ -467,6 +467,38 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     return cell;
 }
 
+- (void)updateRightTabBarItem {
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    if (![[TYAuthUserManager sharedInstance] isSignedIn]){
+        self.navigationItem.rightBarButtonItem = nil;
+        return;
+    }
+    if (self.tableType == kYTSearchResultTypeChannel) {
+        BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:self.customId];
+        NSString *title = @"Subscribe";
+        if (isSubbed) {
+            title = @"Unsubscribe";
+        }
+        UIBarButtonItem *subUnsubItem = [[UIBarButtonItem alloc] initWithTitle:title style:UIBarButtonItemStylePlain target:self action:@selector(toggleSub:)];
+        self.navigationItem.rightBarButtonItem = subUnsubItem;
+    } else {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+    
+}
+
+- (void)toggleSub:(id)sender {
+    LOG_SELF;
+    TLog(@"sender: %@", sender);
+    BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:self.customId];
+    if (isSubbed) {
+        TLog(@"is subbed, attempt to get stupid id!");
+        NSString *stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:self.customId];
+        TLog(@"stupid id: %@", stupidId);
+    }
+}
+
 - (void)updateTable {
     [SVProgressHUD show];
     if (self.tableType == kYTSearchResultTypeChannel) {
@@ -480,6 +512,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             self.searchResults = [[self.channel allSectionItems] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.tableView reloadData];
+                [self updateRightTabBarItem];
             });
         } failureBlock:^(NSString *error) {
             TLog(@"error: %@", error);
@@ -492,6 +525,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             self.searchResults = [[self.playlist videos] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.tableView reloadData];
+                [self updateRightTabBarItem];
             });
         } failureBlock:^(NSString *error) {
             TLog(@"error: %@", error);
@@ -511,6 +545,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                 self.title = self.userData[@"userName"];
                 [SVProgressHUD dismiss];
                 [self.tableView reloadData];
+                [self updateRightTabBarItem];
             });
         } failureBlock:^(NSString *error) {
             TLog(@"error: %@", error);

@@ -923,8 +923,20 @@ snippet =             {
     return searchResult;
 }
 
+- (NSString *)channelStupidIdForChannelID:(NSString *)channelID {
+    if (![self isSubscribedToChannel:channelID]) {
+        TLog(@"not subscribed to channel: %@", channelID);
+        return nil;
+    }
+    return [[[[self subbedChannels] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.videoId == %@", channelID]] firstObject] stupidId];
+}
+
 - (BOOL)isSubscribedToChannel:(NSString *)channelID {
     return [[self subbedChannelIDs] containsObject:channelID];
+}
+
+- (NSArray <KBYTSearchResult *> *)subbedChannels {
+    return [[KBYourTube sharedInstance]userDetails][@"channels"];
 }
 
 - (NSArray *)subbedChannelIDs {
