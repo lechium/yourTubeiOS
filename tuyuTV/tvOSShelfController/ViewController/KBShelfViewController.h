@@ -52,6 +52,7 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 - (void)handleSectionsUpdated;
 - (BOOL)firstLoad;
 - (void)handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer;
+-(void)handleLongPress:(UILongPressGestureRecognizer *)sender; //dont override
 - (void)afterSetupTabBar;
 @end
 

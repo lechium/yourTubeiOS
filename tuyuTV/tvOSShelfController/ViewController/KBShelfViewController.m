@@ -392,7 +392,7 @@
 }
 
 - (void)handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
-    LOG_SELF;
+
     if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
         return;
     }

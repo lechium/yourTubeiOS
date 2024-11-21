@@ -497,13 +497,8 @@
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:result.videoId];
-    NSString *message = @"Subscribe to this channel?";
-    NSString *title = @"Subscribe";
-    if (isSubbed) {
-        TLog(@"is subbed to channel: %@", result);
-        message = @"Unsubscribe from this channel?";
-        title = @"Unsubscribe";
-    }
+    NSString *message = !isSubbed ? @"Subscribe to this channel?" : @"Unsubscribe from this channel?";
+    NSString *title = !isSubbed ? @"Subscribe" : @"Unsubscribe";
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
                                           message: message

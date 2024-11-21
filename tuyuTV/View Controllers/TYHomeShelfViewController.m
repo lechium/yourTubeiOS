@@ -63,5 +63,12 @@
     return [[self appSupportFolder] stringByAppendingPathComponent:@"newhome.plist"];
 }
 
+- (void)handleLongpressMethod:(UILongPressGestureRecognizer *)gestureRecognizer {
+    [super handleLongpressMethod:gestureRecognizer];
+    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+        return;
+    }
+    [self handleLongPress:gestureRecognizer];
+}
 
 @end

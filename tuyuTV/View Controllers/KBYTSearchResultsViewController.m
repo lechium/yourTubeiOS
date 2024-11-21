@@ -261,13 +261,8 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
     BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:result.videoId];
-    NSString *message = @"Subscribe to this channel?";
-    NSString *title = @"Subscribe";
-    if (isSubbed) {
-        TLog(@"is subbed to channel: %@", result);
-        message = @"Unsubscribe from this channel?";
-        title = @"Unsubscribe";
-    }
+    NSString *message = !isSubbed ? @"Subscribe to this channel?" : @"Unsubscribe from this channel?";
+    NSString *title = !isSubbed ? @"Subscribe" : @"Unsubscribe";
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
                                           message: message
@@ -291,6 +286,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
             }
         });
     }];
+    
     [alertController addAction:yesAction];
     UIAlertAction *homeScreenAction = [UIAlertAction actionWithTitle:@"Add to Home screen" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
