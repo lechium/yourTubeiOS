@@ -145,7 +145,8 @@
 		4B77299B2CEDB30700A9F8BA /* OCTotallyLazy.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7729982CEDB2F600A9F8BA /* OCTotallyLazy.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4B77299D2CEDB31700A9F8BA /* OCTotallyLazy.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */; };
 		4B77299E2CEDB31800A9F8BA /* OCTotallyLazy.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		4B7729A02CEDB38A00A9F8BA /* OCTotallyLazy.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */; };
+		4B92A4B22CEDD8CB0047B94E /* OCTotallyLazy.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */; };
+		4B92A4B32CEDD8CB0047B94E /* OCTotallyLazy.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B77299C2CEDB31700A9F8BA /* OCTotallyLazy.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4B9C254B2CADFD930037AB16 /* TYChannelShelfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B9C254A2CADFD930037AB16 /* TYChannelShelfViewController.m */; };
 		4BBC78FA2C9535C7005EB5D4 /* KBDataItemCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78CF2C9535C6005EB5D4 /* KBDataItemCollectionViewCell.m */; };
 		4BBC78FB2C9535C8005EB5D4 /* KBTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78D22C9535C6005EB5D4 /* KBTableViewCell.m */; };
@@ -638,6 +639,17 @@
 			dstSubfolderSpec = 10;
 			files = (
 				4B77299E2CEDB31800A9F8BA /* OCTotallyLazy.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B92A4B42CEDD8CC0047B94E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4B92A4B32CEDD8CB0047B94E /* OCTotallyLazy.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1241,7 +1253,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B7729A02CEDB38A00A9F8BA /* OCTotallyLazy.xcframework in Frameworks */,
+				4B92A4B22CEDD8CB0047B94E /* OCTotallyLazy.xcframework in Frameworks */,
 				320400051E4F8DDD00D3B8B0 /* libxml2.tbd in Frameworks */,
 				328E33801E4F868C00C544ED /* TVServices.framework in Frameworks */,
 			);
@@ -2452,6 +2464,7 @@
 				328E337A1E4F868C00C544ED /* Sources */,
 				328E337B1E4F868C00C544ED /* Frameworks */,
 				328E337C1E4F868C00C544ED /* Resources */,
+				4B92A4B42CEDD8CC0047B94E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2470,8 +2483,8 @@
 				898E92631C8D056700B34DAA /* Frameworks */,
 				898E92641C8D056700B34DAA /* Resources */,
 				328E338C1E4F868C00C544ED /* Embed App Extensions */,
-				8929758F1CB02987003D7473 /* ShellScript */,
 				4B77299F2CEDB31900A9F8BA /* Embed Frameworks */,
+				8929758F1CB02987003D7473 /* ShellScript */,
 			);
 			buildRules = (
 			);
