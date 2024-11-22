@@ -941,6 +941,14 @@
     return [regex stringByReplacingMatchesInString:self options:0 range:[first range] withTemplate:[NSString stringWithFormat:@"%@",@"maxresdefault.jpg"]];
 }
 
+- (NSString *)urlByAppendingHTTPsIfNecessary {
+    NSString *original = self;
+    if ([self rangeOfString:@"https:"].location == NSNotFound) {
+        original = [NSString stringWithFormat:@"https:%@", self];
+    }
+    return original;
+}
+
 - (NSString *)highResChannelURL {
     //=s([\d]*)
     //NSString *lowRes = @"https://yt3.ggpht.com/nCOmA7RfWNA-UU-4HsTXkWt2LWZHvU-3E2sHc-vJV0H981_J5oH8zmnisUjElCMUni-nDrbvwOU=s176-c-k-c0x00ffffff-no-rj-mo";

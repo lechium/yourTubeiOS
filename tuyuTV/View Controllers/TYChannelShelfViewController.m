@@ -11,6 +11,7 @@
 #import "EXTScope.h"
 #import "TYTVHistoryManager.h"
 #import "KBTableViewCell.h"
+#import "UIView+RecursiveFind.h"
 
 @interface TYChannelShelfViewController () {
     KBYTChannelHeaderView *__headerView;
@@ -117,6 +118,15 @@
     self.sections = self.channel.sections;
     UIImage *banner = [UIImage imageNamed:@"Banner"];
     NSURL *imageURL =  [NSURL URLWithString:self.channel.banner];
+    if (!imageURL) {
+        [self.headerview.avatarImageView sd_setImageWithURL:[NSURL URLWithString:self.channel.avatar] placeholderImage:nil options:SDWebImageAvoidAutoSetImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            UIImage *roundedImage = [image roundedBorderImage:image.size.width/2 borderColor:nil borderWidth:0];
+            self.headerview.avatarImageView.image = roundedImage;
+        }]; /*
+        [self.headerview.avatarImageView sd_setImageWithURL:[NSURL URLWithString:self.channel.avatar] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            [self.headerview updateRounding];
+        }];*/
+    }
     [self.headerview.bannerImageView sd_setImageWithURL:imageURL placeholderImage:banner options:SDWebImageAllowInvalidSSLCertificates];
     [[TYTVHistoryManager sharedInstance] addChannelToHistory:[self.channel dictionaryRepresentation]];
     if (self.channel.tabs.count > 1) {

@@ -445,17 +445,13 @@
     self.alertHandler = ^(UIAlertAction *action) {
         NSString *playlistID = nil;
         
-        for (KBYTSearchResult *result in playlistArray)
-        {
-            if ([result.title isEqualToString:action.title])
-            {
+        for (KBYTSearchResult *result in playlistArray) {
+            if ([result.title isEqualToString:action.title]) {
                 playlistID = result.videoId;
             }
         }
-        
         [weakSelf addVideo:result toPlaylist:playlistID];
     };
-    
     for (KBYTSearchResult *result in playlistArray) {
         UIAlertAction *plAction = [UIAlertAction actionWithTitle:result.title style:UIAlertActionStyleDefault handler:self.alertHandler];
         [alertController addAction:plAction];
@@ -472,9 +468,26 @@
     }];
     [alertController addAction:goToChannel];
     if ([[KBYourTube sharedInstance] isSignedIn]) {
-        UIAlertAction *subToChannel = [UIAlertAction actionWithTitle:@"Subscribe To Channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:result.channelId];
+        NSString *title = !isSubbed ? @"Subscribe to channel" : @"Unsubscribe from channel";
+        UIAlertAction *subToChannel = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                [[TYAuthUserManager sharedInstance] subscribeToChannel:result.channelId];
+                if (isSubbed) {
+                    NSString *stupidId = [result stupidId];
+                    if (!stupidId) {
+                        stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:result.channelId];
+                        TLog(@"found stupid id: %@", stupidId);
+                    }
+                    if (stupidId){
+                        [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:stupidId];
+                        [[KBYourTube sharedInstance] removeChannelFromUserDetails:result];
+                    } else {
+                        TLog(@"failed to unsub! couldnt find stupid id for: %@", result.channelId);
+                        TLog(@"subbedChannels: %@", [[TYAuthUserManager sharedInstance] subbedChannelIDs])
+                        ;                    }
+                } else {
+                    [[TYAuthUserManager sharedInstance] subscribeToChannel:result.channelId];
+                }//[[TYAuthUserManager sharedInstance] subscribeToChannel:result.channelId];
             });
         }];
         [alertController addAction:subToChannel];
@@ -512,7 +525,7 @@
                     TLog(@"found stupid id: %@", stupidId);
                 }
                 if (stupidId){
-                    [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:result.stupidId];
+                    [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:stupidId];
                     [[KBYourTube sharedInstance] removeChannelFromUserDetails:result];
                 } else {
                     TLog(@"failed to unsub! couldnt find stupid id!");

@@ -70,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSURL (QSParameters)
 - (NSURL *)highResVideoURL;
+- (NSString *)urlByAppendingHTTPsIfNecessary;
 - (NSArray *)parameterArray;
 - (NSDictionary *)parameterDictionary;
 @end

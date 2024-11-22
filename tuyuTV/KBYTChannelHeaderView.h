@@ -14,9 +14,10 @@
 @property (readwrite, assign) NSInteger subscriberCount;
 @property (nonatomic, strong) NSString *bannerURL;
 @property (nonatomic, strong) UIImageView *bannerImageView;
+@property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *authorLabel;
 @property (nonatomic, strong) UILabel *subscriberLabel;
 
 - (void)setupView;
-
+- (void)updateRounding;
 @end
