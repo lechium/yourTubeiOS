@@ -12,6 +12,8 @@
 #import "TYTVHistoryManager.h"
 #import "KBTableViewCell.h"
 #import "UIView+RecursiveFind.h"
+#import "UIViewController+FocusHelper.h"
+#import "TYAuthUserManager.h"
 
 @interface TYChannelShelfViewController () {
     KBYTChannelHeaderView *__headerView;
@@ -19,6 +21,7 @@
     BOOL _tabBarSetup;
     UIView *aboutView;
     UILabel *aboutDescription;
+    UIButton *subButton;
 }
 @end
 
@@ -118,20 +121,60 @@
     self.sections = self.channel.sections;
     UIImage *banner = [UIImage imageNamed:@"Banner"];
     NSURL *imageURL =  [NSURL URLWithString:self.channel.banner];
+    self.headerview.subToggledBlock = nil;
+    self.headerview.subToggledBlock = ^{
+        TLog(@"toggle sub value");
+    };
     if (!imageURL) {
-        [self.headerview.avatarImageView sd_setImageWithURL:[NSURL URLWithString:self.channel.avatar] placeholderImage:nil options:SDWebImageAvoidAutoSetImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-            UIImage *roundedImage = [image roundedBorderImage:image.size.width/2 borderColor:nil borderWidth:0];
-            self.headerview.avatarImageView.image = roundedImage;
-        }]; /*
-        [self.headerview.avatarImageView sd_setImageWithURL:[NSURL URLWithString:self.channel.avatar] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-            [self.headerview updateRounding];
-        }];*/
+        if ([self.channelID isEqualToString:KBYTPopularChannelID]) {
+            UIImage *trending = [UIImage imageNamed:@"trending"];
+            //UIImage *trending = [UIImage imageNamed:@"trending_animated.webp"];
+            TLog(@"trending: %@", trending);
+            self.headerview.avatarImageView.image = [UIImage imageNamed:@"trending"];
+        } else if ([self.channelID isEqualToString:KBYTSportsChannelID]){
+            self.headerview.avatarImageView.image = [[UIImage imageNamed:@"sports"] roundedBorderImage:176/2 borderColor:nil borderWidth:0];
+        } else if ([self.channelID isEqualToString:KBYTFashionAndBeautyID]){
+            self.headerview.avatarImageView.image = [UIImage imageNamed:@"fashion"];
+        } else if ([self.channelID isEqualToString:KBYTGamingChannelID]){
+            self.headerview.avatarImageView.image = [UIImage imageNamed:@"gaming"];
+        } else {
+            [self.headerview.avatarImageView sd_setImageWithURL:[NSURL URLWithString:self.channel.avatar] placeholderImage:nil options:SDWebImageAvoidAutoSetImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+                TLog(@"width: %f", image.size.width);
+                UIImage *roundedImage = [image roundedBorderImage:image.size.width/2 borderColor:nil borderWidth:0];
+                self.headerview.avatarImageView.image = roundedImage;
+            }];
+        }
+        /*
+         [self.headerview.avatarImageView sd_setImageWithURL:[NSURL URLWithString:self.channel.avatar] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+         [self.headerview updateRounding];
+         }];*/
     }
     [self.headerview.bannerImageView sd_setImageWithURL:imageURL placeholderImage:banner options:SDWebImageAllowInvalidSSLCertificates];
     [[TYTVHistoryManager sharedInstance] addChannelToHistory:[self.channel dictionaryRepresentation]];
     if (self.channel.tabs.count > 1) {
         [self setTabDetails:self.channel.tabs];
     }
+}
+
+- (void)focusFailed:(NSNotification *)n {
+    LOG_SELF;
+    TLog(@"focus failed: %@", n);
+    UIFocusUpdateContext *updateContext = (UIFocusUpdateContext*)[n userInfo][UIFocusUpdateContextKey];
+    TLog(@"context: %@", updateContext);
+    UIView *nextFocus = [updateContext nextFocusedItem];
+    if ([updateContext focusHeading] == UIFocusHeadingUp) {
+        TLog(@"were moving on up!");
+        if (!nextFocus) {
+            TLog(@"no next focus for you!");
+            [self setViewToFocus:subButton];
+        }
+        
+    }
+    //[self showFocusDebugAlertController];
+}
+
+- (void)showFocusDealy:(id)sender {
+    [self showFocusDebugAlertController];
 }
 
 - (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
@@ -165,8 +208,42 @@
     aboutDescription.lineBreakMode = NSLineBreakByWordWrapping;
     [aboutDescription.widthAnchor constraintEqualToAnchor:aboutView.widthAnchor multiplier:0.75].active = true;
     aboutView.userInteractionEnabled = false;
+    if ([[KBYourTube sharedInstance] isSignedIn]){
+        BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:self.channelID];
+        if (!subButton) {
+            subButton = [UIButton buttonWithType:UIButtonTypeSystem];
+            subButton.translatesAutoresizingMaskIntoConstraints = false;
+            [self.view addSubview:subButton];
+            //[subButton.centerYAnchor constraintEqualToAnchor:self.tabBar.centerYAnchor].active = true;
+            [subButton setTitle:isSubbed ? @"UnSubscribe" : @"Subscribe" forState:UIControlStateNormal];
+            [subButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-40].active = true;
+            [subButton.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:40].active = true;
+            [subButton addTarget:self action:@selector(toggleSub:) forControlEvents:UIControlEventPrimaryActionTriggered];
+            [self.view bringSubviewToFront:subButton];
+        }
+    }
 }
 
+- (void)toggleSub:(id)sender {
+    LOG_SELF;
+    BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:self.channelID];
+    if (isSubbed) {
+        NSString *stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:self.channelID];
+        TLog(@"found stupid id: %@", stupidId);
+        if (stupidId){
+            [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:stupidId];
+            [[KBYourTube sharedInstance] removeChannelIDFromUserDetails:self.channelID];
+            [subButton setTitle:@"Subscribe" forState:UIControlStateNormal];
+            //[[KBYourTube sharedInstance] removeChannelFromUserDetails:result];
+        } else {
+            TLog(@"failed to unsub! couldnt find stupid id for: %@", self.channelID);
+            TLog(@"subbedChannels: %@", [[TYAuthUserManager sharedInstance] subbedChannelIDs])
+            ;                    }
+    } else {
+        [[TYAuthUserManager sharedInstance] subscribeToChannel:self.channelID];
+        [subButton setTitle:@"UnSubscribe" forState:UIControlStateNormal];
+    }
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -174,17 +251,23 @@
     aboutDescription = [[UILabel alloc] initForAutoLayout];
     [self.view addSubview:aboutView];
     [aboutView addSubview:aboutDescription];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(focusFailed:) name:UIFocusMovementDidFailNotification object:nil];
     // Do any additional setup after loading the view.
 }
 
-/*
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if (!_tabBarSetup) {
-        [self setTabDetails:@[@"Videos", @"Playlists", @"Shorts"]];
-        _tabBarSetup = true;
-    }
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIFocusMovementDidFailNotification object:nil];
 }
+
+/*
+ - (void)viewDidAppear:(BOOL)animated {
+ [super viewDidAppear:animated];
+ if (!_tabBarSetup) {
+ [self setTabDetails:@[@"Videos", @"Playlists", @"Shorts"]];
+ _tabBarSetup = true;
+ }
+ }
  */
 
 - (KBYTChannelHeaderView *)headerview {
@@ -230,7 +313,14 @@
     }
 }
 
-
+/*
+- (NSArray *) preferredFocusEnvironments {
+    NSArray *sup = [super preferredFocusEnvironments];
+    TLog(@"sup pref: %@", sup);
+    return @[self.headerview.subButton];
+    return sup;
+}
+ */
 /*
 #pragma mark - Navigation
 

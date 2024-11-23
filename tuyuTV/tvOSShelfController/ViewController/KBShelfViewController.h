@@ -43,6 +43,8 @@ typedef NS_ENUM(NSInteger, ScrollDirection) {
 @property (nonatomic, strong) UITabBar *tabBar;
 @property (nonatomic, strong) NSArray <KBYTTab *> *tabDetails;
 
+- (void)setViewToFocus:(UIView *)view;
+- (UIView *)viewToFocus;
 - (NSInteger)selectedTabIndex;
 - (NSArray *)arrayForSection:(NSInteger)section;
 - (KBYTChannelHeaderView *)headerview;

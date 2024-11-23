@@ -20,8 +20,7 @@
 @implementation KBYTChannelHeaderView
 
 
-- (id)initForAutoLayout
-{
+- (id)initForAutoLayout {
     self = [super initForAutoLayout];
     //[self setupView];
     return self;
@@ -53,6 +52,7 @@
     UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[self.authorLabel, self.subscriberLabel]];
     UIStackView *horizontalStackView = [[UIStackView alloc] initWithArrangedSubviews:@[self.avatarImageView, stackView]];
     horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
+    horizontalStackView.alignment = UIStackViewAlignmentCenter;
     stackView.axis = UILayoutConstraintAxisVertical;
     horizontalStackView.spacing = 15.0;
     [self.bannerImageView addSubview:horizontalStackView];
@@ -69,7 +69,30 @@
     self.subscriberLabel.textColor = [UIColor whiteColor];
     [self.subscriberLabel shadowify];
     [self.authorLabel shadowify];
-    
+    /*
+    self.subButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    self.subButton.translatesAutoresizingMaskIntoConstraints = false;
+    [self.bannerImageView addSubview:self.subButton];
+    [self.subButton autoCenterHorizontallyInSuperview];
+    [self.subButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:25.0];
+    [self.subButton setTitle:@"Subscribe" forState:UIControlStateNormal];
+    UIFocusGuide *focusGuideTop = [[UIFocusGuide alloc] init];
+    [self.bannerImageView addLayoutGuide:focusGuideTop];
+    [focusGuideTop.widthAnchor constraintEqualToAnchor:self.bannerImageView.widthAnchor].active = true;
+    [focusGuideTop.heightAnchor constraintEqualToConstant:1].active = true;
+    [focusGuideTop.bottomAnchor constraintEqualToAnchor:self.bannerImageView.bottomAnchor].active = true;
+    [focusGuideTop.leadingAnchor constraintEqualToAnchor:self.bannerImageView.leadingAnchor].active = true;
+    [focusGuideTop.trailingAnchor constraintEqualToAnchor:self.bannerImageView.trailingAnchor].active = true;
+    focusGuideTop.preferredFocusEnvironments = @[self.subButton];
+    [self.subButton addTarget:self action:@selector(subButtonPressed:) forControlEvents:UIControlEventPrimaryActionTriggered];
+     */
+}
+
+- (void)subButtonPressed:(id)sender {
+    LOG_SELF;
+    if (self.subToggledBlock) {
+        self.subToggledBlock();
+    }
 }
 
 - (void)updateRounding {
@@ -79,7 +102,7 @@
         self.avatarImageView.layer.masksToBounds = YES;
     }
 }
-
+/*
 - (void)layoutSubviews {
     LOG_SELF;
     [super layoutSubviews];
@@ -88,7 +111,7 @@
         self.avatarImageView.layer.masksToBounds = YES;
     }
 }
-
+*/
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

@@ -102,6 +102,13 @@
 		32D6A63B285695CC006BF25C /* KBTextPresentationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A616285695CC006BF25C /* KBTextPresentationViewController.m */; };
 		32D6A63D285695CC006BF25C /* NSString+Truncate.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A61C285695CC006BF25C /* NSString+Truncate.m */; };
 		32D6A63E285695CC006BF25C /* KBMoreButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A61D285695CC006BF25C /* KBMoreButton.m */; };
+		4B2B9F622CF02DE300F1C64C /* trending_animated.webp in Resources */ = {isa = PBXBuildFile; fileRef = 4B2B9F602CF02DE300F1C64C /* trending_animated.webp */; };
+		4B2B9F652CF0301100F1C64C /* trending.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B2B9F632CF0301100F1C64C /* trending.png */; };
+		4B2B9F6B2CF034A000F1C64C /* live.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B2B9F662CF0349F00F1C64C /* live.png */; };
+		4B2B9F6F2CF034A000F1C64C /* fashion.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B2B9F682CF034A000F1C64C /* fashion.png */; };
+		4B2B9F712CF034A000F1C64C /* sports.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4B2B9F692CF034A000F1C64C /* sports.jpg */; };
+		4B2B9F722CF0354100F1C64C /* gaming.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A421C88A90000E1987E /* gaming.png */; };
+		4B2B9F732CF0354700F1C64C /* gaming.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B2B9F672CF0349F00F1C64C /* gaming.png */; };
 		4B340E772CBB734100B131AA /* KBPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A5E5285695CC006BF25C /* KBPlayerViewController.m */; };
 		4B340E782CBB740F00B131AA /* NSURLRequest+IgnoreSSL.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78EF2C9535C6005EB5D4 /* NSURLRequest+IgnoreSSL.m */; };
 		4B340E792CBB741300B131AA /* UIView+RecursiveFind.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BBC78F02C9535C6005EB5D4 /* UIView+RecursiveFind.m */; };
@@ -139,6 +146,10 @@
 		4B5AE47F2CE3025200B5C109 /* libswscale.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5AE4652CE3023800B5C109 /* libswscale.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4B5AE4822CE305F800B5C109 /* M3U8Kit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5AE4802CE303EB00B5C109 /* M3U8Kit.xcframework */; };
 		4B5AE4832CE305F800B5C109 /* M3U8Kit.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5AE4802CE303EB00B5C109 /* M3U8Kit.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4B5F89662CF1B236007E2B22 /* KBFocusHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F895C2CF1B235007E2B22 /* KBFocusHelper.m */; };
+		4B5F89672CF1B236007E2B22 /* UIFocusGuide+Visualize.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F895E2CF1B235007E2B22 /* UIFocusGuide+Visualize.m */; };
+		4B5F89682CF1B236007E2B22 /* UIView+Focus.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F89612CF1B235007E2B22 /* UIView+Focus.m */; };
+		4B5F89692CF1B236007E2B22 /* UIViewController+FocusHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F89632CF1B235007E2B22 /* UIViewController+FocusHelper.m */; };
 		4B7729932CEC5CD500A9F8BA /* UIView+AL.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6A610285695CC006BF25C /* UIView+AL.m */; };
 		4B7729972CEDAD2B00A9F8BA /* HMSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B7729952CEDAD2B00A9F8BA /* HMSegmentedControl.m */; };
 		4B77299A2CEDB30600A9F8BA /* OCTotallyLazy.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B7729982CEDB2F600A9F8BA /* OCTotallyLazy.xcframework */; };
@@ -406,7 +417,6 @@
 		8926692E1C88B2F500082B31 /* error.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A3F1C88A90000E1987E /* error.png */; };
 		8926692F1C88B2F500082B31 /* error@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A401C88A90000E1987E /* error@2x.png */; };
 		892669301C88B2F500082B31 /* error@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A411C88A90000E1987E /* error@3x.png */; };
-		892669311C88B2F500082B31 /* gaming.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A421C88A90000E1987E /* gaming.png */; };
 		892669321C88B2F500082B31 /* gear.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A431C88A90000E1987E /* gear.png */; };
 		892669331C88B2F500082B31 /* gear@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A441C88A90000E1987E /* gear@2x.png */; };
 		892669341C88B2F500082B31 /* GenericArtwork.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A451C88A90000E1987E /* GenericArtwork.png */; };
@@ -487,7 +497,6 @@
 		898E93231C8D56A700B34DAA /* error.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A3F1C88A90000E1987E /* error.png */; };
 		898E93241C8D56A700B34DAA /* error@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A401C88A90000E1987E /* error@2x.png */; };
 		898E93251C8D56A700B34DAA /* error@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A411C88A90000E1987E /* error@3x.png */; };
-		898E93261C8D56A700B34DAA /* gaming.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A421C88A90000E1987E /* gaming.png */; };
 		898E93271C8D56A700B34DAA /* gear.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A431C88A90000E1987E /* gear.png */; };
 		898E93281C8D56A700B34DAA /* gear@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A441C88A90000E1987E /* gear@2x.png */; };
 		898E932A1C8D56A700B34DAA /* globe.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A461C88A90000E1987E /* globe.png */; };
@@ -511,7 +520,6 @@
 		898E933C1C8D56AC00B34DAA /* popular.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A591C88A90000E1987E /* popular.png */; };
 		898E933D1C8D56AC00B34DAA /* profile.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A5A1C88A90000E1987E /* profile.png */; };
 		898E933E1C8D56AC00B34DAA /* profile@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A5B1C88A90000E1987E /* profile@2x.png */; };
-		898E933F1C8D56AC00B34DAA /* sports.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A5C1C88A90000E1987E /* sports.png */; };
 		898E93401C8D56AC00B34DAA /* star.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A5D1C88A90000E1987E /* star.png */; };
 		898E93411C8D56AC00B34DAA /* star@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A5E1C88A90000E1987E /* star@2x.png */; };
 		898E93421C8D56AC00B34DAA /* success.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A83A5F1C88A90000E1987E /* success.png */; };
@@ -792,6 +800,12 @@
 		32D6A61E285695CC006BF25C /* NSString+Truncate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Truncate.h"; sourceTree = "<group>"; };
 		32D6A61F285695CC006BF25C /* KBPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBPlayerViewController.h; sourceTree = "<group>"; };
 		32D6A620285695CC006BF25C /* KBVideoPlaybackProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBVideoPlaybackProtocol.h; sourceTree = "<group>"; };
+		4B2B9F602CF02DE300F1C64C /* trending_animated.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = trending_animated.webp; sourceTree = "<group>"; };
+		4B2B9F632CF0301100F1C64C /* trending.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trending.png; sourceTree = "<group>"; };
+		4B2B9F662CF0349F00F1C64C /* live.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = live.png; sourceTree = "<group>"; };
+		4B2B9F672CF0349F00F1C64C /* gaming.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gaming.png; sourceTree = "<group>"; };
+		4B2B9F682CF034A000F1C64C /* fashion.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fashion.png; sourceTree = "<group>"; };
+		4B2B9F692CF034A000F1C64C /* sports.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sports.jpg; sourceTree = "<group>"; };
 		4B379BC02CA8EA6100453DBC /* TYBaseShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYBaseShelfViewController.h; sourceTree = "<group>"; };
 		4B379BC12CA8EA6100453DBC /* TYBaseShelfViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TYBaseShelfViewController.m; sourceTree = "<group>"; };
 		4B379BC32CA8EEF900453DBC /* TYUserShelfViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TYUserShelfViewController.h; sourceTree = "<group>"; };
@@ -814,6 +828,15 @@
 		4B5AE4662CE3023800B5C109 /* libavcodec.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libavcodec.framework; sourceTree = "<group>"; };
 		4B5AE4672CE3023800B5C109 /* libavdevice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libavdevice.framework; sourceTree = "<group>"; };
 		4B5AE4802CE303EB00B5C109 /* M3U8Kit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = M3U8Kit.xcframework; sourceTree = "<group>"; };
+		4B5F895B2CF1B235007E2B22 /* KBFocusHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KBFocusHelper.h; sourceTree = "<group>"; };
+		4B5F895C2CF1B235007E2B22 /* KBFocusHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBFocusHelper.m; sourceTree = "<group>"; };
+		4B5F895D2CF1B235007E2B22 /* UIFocusGuide+Visualize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIFocusGuide+Visualize.h"; sourceTree = "<group>"; };
+		4B5F895E2CF1B235007E2B22 /* UIFocusGuide+Visualize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFocusGuide+Visualize.m"; sourceTree = "<group>"; };
+		4B5F895F2CF1B235007E2B22 /* UIFocusPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIFocusPrivate.h; sourceTree = "<group>"; };
+		4B5F89602CF1B235007E2B22 /* UIView+Focus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Focus.h"; sourceTree = "<group>"; };
+		4B5F89612CF1B235007E2B22 /* UIView+Focus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Focus.m"; sourceTree = "<group>"; };
+		4B5F89622CF1B235007E2B22 /* UIViewController+FocusHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+FocusHelper.h"; sourceTree = "<group>"; };
+		4B5F89632CF1B235007E2B22 /* UIViewController+FocusHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+FocusHelper.m"; sourceTree = "<group>"; };
 		4B7729942CEDAD2B00A9F8BA /* HMSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HMSegmentedControl.h; sourceTree = "<group>"; };
 		4B7729952CEDAD2B00A9F8BA /* HMSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HMSegmentedControl.m; sourceTree = "<group>"; };
 		4B7729982CEDB2F600A9F8BA /* OCTotallyLazy.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OCTotallyLazy.xcframework; sourceTree = "<group>"; };
@@ -1600,6 +1623,22 @@
 			path = yourTube/Categories;
 			sourceTree = "<group>";
 		};
+		4B5F89642CF1B235007E2B22 /* UIFocusHelper */ = {
+			isa = PBXGroup;
+			children = (
+				4B5F895B2CF1B235007E2B22 /* KBFocusHelper.h */,
+				4B5F895C2CF1B235007E2B22 /* KBFocusHelper.m */,
+				4B5F895D2CF1B235007E2B22 /* UIFocusGuide+Visualize.h */,
+				4B5F895E2CF1B235007E2B22 /* UIFocusGuide+Visualize.m */,
+				4B5F895F2CF1B235007E2B22 /* UIFocusPrivate.h */,
+				4B5F89602CF1B235007E2B22 /* UIView+Focus.h */,
+				4B5F89612CF1B235007E2B22 /* UIView+Focus.m */,
+				4B5F89622CF1B235007E2B22 /* UIViewController+FocusHelper.h */,
+				4B5F89632CF1B235007E2B22 /* UIViewController+FocusHelper.m */,
+			);
+			path = UIFocusHelper;
+			sourceTree = "<group>";
+		};
 		4B7729962CEDAD2B00A9F8BA /* HMSegmentedControl */ = {
 			isa = PBXGroup;
 			children = (
@@ -2029,6 +2068,7 @@
 		898E92671C8D056700B34DAA /* tuyuTV */ = {
 			isa = PBXGroup;
 			children = (
+				4B5F89642CF1B235007E2B22 /* UIFocusHelper */,
 				4BBC78CD2C9535C5005EB5D4 /* tvOSShelfController */,
 				32CE1AFB2861341700206C81 /* Merhaba */,
 				32B32D3F285C636200285FC5 /* CocoaAsyncSocket */,
@@ -2079,7 +2119,13 @@
 		898E92831C8D254F00B34DAA /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				4B2B9F682CF034A000F1C64C /* fashion.png */,
+				4B2B9F672CF0349F00F1C64C /* gaming.png */,
+				4B2B9F662CF0349F00F1C64C /* live.png */,
+				4B2B9F692CF034A000F1C64C /* sports.jpg */,
+				4B2B9F632CF0301100F1C64C /* trending.png */,
 				898E93751C90AFAA00B34DAA /* Banner.png */,
+				4B2B9F602CF02DE300F1C64C /* trending_animated.webp */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -2598,27 +2644,30 @@
 				898E93241C8D56A700B34DAA /* error@2x.png in Resources */,
 				898E932B1C8D56A700B34DAA /* globe@2x.png in Resources */,
 				898E93191C8D56A700B34DAA /* activityMovie.png in Resources */,
+				4B2B9F622CF02DE300F1C64C /* trending_animated.webp in Resources */,
 				898E93351C8D56A700B34DAA /* Indeterminate@2x.png in Resources */,
 				898E931D1C8D56A700B34DAA /* angle-mask@2x.png in Resources */,
 				898E93421C8D56AC00B34DAA /* success.png in Resources */,
 				898E935E1C8D62B000B34DAA /* YTPlaceholder.png in Resources */,
 				898E931C1C8D56A700B34DAA /* angle-mask.png in Resources */,
+				4B2B9F732CF0354700F1C64C /* gaming.png in Resources */,
 				898E93221C8D56A700B34DAA /* Default-568h@2x.png in Resources */,
 				898E93161C8D56A700B34DAA /* activityAudio.png in Resources */,
 				898E93341C8D56A700B34DAA /* Indeterminate.png in Resources */,
 				898E93201C8D56A700B34DAA /* burger@2x.png in Resources */,
+				4B2B9F712CF034A000F1C64C /* sports.jpg in Resources */,
 				898E93441C8D56AC00B34DAA /* success@3x.png in Resources */,
 				898E93251C8D56A700B34DAA /* error@3x.png in Resources */,
 				898E931A1C8D56A700B34DAA /* activityMovie@2x.png in Resources */,
-				898E933F1C8D56AC00B34DAA /* sports.png in Resources */,
 				899876691CDE7BEE006A639E /* YTTVStandardCollectionViewCell.xib in Resources */,
 				898E93151C8D56A700B34DAA /* 360.png in Resources */,
 				898E93281C8D56A700B34DAA /* gear@2x.png in Resources */,
+				4B2B9F6B2CF034A000F1C64C /* live.png in Resources */,
 				898E932D1C8D56A700B34DAA /* grey_arrow_right.png in Resources */,
 				898E93321C8D56A700B34DAA /* Icon.png in Resources */,
 				898E93301C8D56A700B34DAA /* Icon-Small.png in Resources */,
+				4B2B9F6F2CF034A000F1C64C /* fashion.png in Resources */,
 				898E933B1C8D56AC00B34DAA /* music.png in Resources */,
-				898E93261C8D56A700B34DAA /* gaming.png in Resources */,
 				898E93451C8D56B000B34DAA /* YTPlaceHolderImage.png in Resources */,
 				898E93211C8D56A700B34DAA /* complete.aif in Resources */,
 				898E933E1C8D56AC00B34DAA /* profile@2x.png in Resources */,
@@ -2629,6 +2678,7 @@
 				898E93411C8D56AC00B34DAA /* star@2x.png in Resources */,
 				898E93431C8D56AC00B34DAA /* success@2x.png in Resources */,
 				898E93401C8D56AC00B34DAA /* star.png in Resources */,
+				4B2B9F652CF0301100F1C64C /* trending.png in Resources */,
 				898E931E1C8D56A700B34DAA /* angle-mask@3x.png in Resources */,
 				898E931F1C8D56A700B34DAA /* burger.png in Resources */,
 				898E931B1C8D56A700B34DAA /* activityMovie@3x.png in Resources */,
@@ -2682,6 +2732,7 @@
 				892669201C88B2F500082B31 /* 360.png in Resources */,
 				892669461C88B2F500082B31 /* info@3x.png in Resources */,
 				892669471C88B2F500082B31 /* music.png in Resources */,
+				4B2B9F722CF0354100F1C64C /* gaming.png in Resources */,
 				8926692A1C88B2F500082B31 /* burger.png in Resources */,
 				8926694A1C88B2F500082B31 /* profile@2x.png in Resources */,
 				8926692E1C88B2F500082B31 /* error.png in Resources */,
@@ -2698,7 +2749,6 @@
 				8926693D1C88B2F500082B31 /* Icon.png in Resources */,
 				892669261C88B2F500082B31 /* activityMovie@3x.png in Resources */,
 				8926694E1C88B2F500082B31 /* success.png in Resources */,
-				892669311C88B2F500082B31 /* gaming.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2841,6 +2891,7 @@
 				32D6A621285695CC006BF25C /* KBSlider.m in Sources */,
 				4BBC79BF2C9542B7005EB5D4 /* SDWebImageDownloaderDecryptor.m in Sources */,
 				32CE1AFE2861341700206C81 /* MRBServer.m in Sources */,
+				4B5F89692CF1B236007E2B22 /* UIViewController+FocusHelper.m in Sources */,
 				32D2A1391F424805006F24B3 /* AFgzipRequestSerializer.m in Sources */,
 				4BBC7A612C9542B9005EB5D4 /* SDImageCachesManagerOperation.m in Sources */,
 				898E93711C8E245F00B34DAA /* KBYTSearchResultCollectionViewCell.m in Sources */,
@@ -2865,6 +2916,7 @@
 				32D6A626285695CC006BF25C /* KBContextMenuRepresentation.m in Sources */,
 				32D2A14B1F424805006F24B3 /* AFOAuthCredential.m in Sources */,
 				4BBC7A3D2C9542B9005EB5D4 /* SDImageCacheDefine.m in Sources */,
+				4B5F89682CF1B236007E2B22 /* UIView+Focus.m in Sources */,
 				321DAC012849EA64002D07B6 /* KBBulletinView.m in Sources */,
 				4BBC7A7C2C9542BA005EB5D4 /* SDAssociatedObject.m in Sources */,
 				32D6A63A285695CC006BF25C /* UIView+AL.m in Sources */,
@@ -2940,6 +2992,7 @@
 				32D6A623285695CC006BF25C /* KBMediaAsset.m in Sources */,
 				4BBC7A252C9542B8005EB5D4 /* SDWebImageDownloaderOperation.m in Sources */,
 				32D2A1451F424805006F24B3 /* AFURLSessionManager.m in Sources */,
+				4B5F89662CF1B236007E2B22 /* KBFocusHelper.m in Sources */,
 				898E935A1C8D56D800B34DAA /* RNFrostedSidebar.m in Sources */,
 				4BBC79192C954024005EB5D4 /* FPScrollingBanner.m in Sources */,
 				4B9C254B2CADFD930037AB16 /* TYChannelShelfViewController.m in Sources */,
@@ -2971,6 +3024,7 @@
 				898E930F1C8D568B00B34DAA /* APDeviceController.m in Sources */,
 				4B5AE3EF2CE1717700B5C109 /* NSFileManager+Size.m in Sources */,
 				4BBC78FB2C9535C8005EB5D4 /* KBTableViewCell.m in Sources */,
+				4B5F89672CF1B236007E2B22 /* UIFocusGuide+Visualize.m in Sources */,
 				898E93101C8D569100B34DAA /* Reachability.m in Sources */,
 				4BBC7A432C9542B9005EB5D4 /* SDImageCacheConfig.m in Sources */,
 				898E93031C8D564100B34DAA /* APDocument.m in Sources */,

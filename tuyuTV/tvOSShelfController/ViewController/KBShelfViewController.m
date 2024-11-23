@@ -28,6 +28,7 @@
     NSArray <KBSectionProtocol> *sections_;
     NSMutableArray *_cells;
     NSArray <KBYTTab *>*_tabDetails;
+    UIView *_viewToFocus;
 }
 @property (nonatomic, assign) CGFloat lastScrollViewOffsetX;
 @property (nonatomic, assign) CGFloat lastScrollViewOffsetY;
@@ -42,6 +43,25 @@
 
 @implementation KBShelfViewController
 
+
+- (NSArray *) preferredFocusEnvironments {
+    NSArray *sup = [super preferredFocusEnvironments];
+    if (_viewToFocus) {
+        return @[_viewToFocus];
+    }
+    return sup;
+}
+
+- (void)setViewToFocus:(UIView *)view {
+    _viewToFocus = view;
+    [self setNeedsFocusUpdate];
+    [self updateFocusIfNeeded];
+}
+
+- (UIView *)viewToFocus {
+    return _viewToFocus;
+}
+
 - (void)setTabDetails:(NSArray <KBYTTab*> *)tabDetails {
     _tabDetails = tabDetails;
     [self setupTabBar];
@@ -54,9 +74,17 @@
         [self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeLeading];
         [self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
         [self.tabBar autoCenterVerticallyInSuperview];
-        
+        /*
+        UIFocusGuide *focusGuideTop = [[UIFocusGuide alloc] init];
+        [self.tabBar addLayoutGuide:focusGuideTop];
+        [focusGuideTop.widthAnchor constraintEqualToAnchor:self.tabBar.widthAnchor].active = true;
+        [focusGuideTop.heightAnchor constraintEqualToConstant:1].active = true;
+        [focusGuideTop.topAnchor constraintEqualToAnchor:self.tabBar.topAnchor].active = true;
+        [focusGuideTop.leadingAnchor constraintEqualToAnchor:self.tabBar.leadingAnchor].active = true;
+        [focusGuideTop.trailingAnchor constraintEqualToAnchor:self.tabBar.trailingAnchor].active = true; */
         [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
         if (self.headerview) {
+            //focusGuideTop.preferredFocusEnvironments = @[self.headerview.subButton, self.tabBar];
             self.tabBarTopConstraint = [self.tabBar autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerview withOffset:TAB_TOP];
         } else {
             //[self.tabBar autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:100];
