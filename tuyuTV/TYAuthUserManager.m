@@ -700,6 +700,7 @@ snippet =             {
             }
             NSString *title = snippet[@"title"];
             NSString *subtitle = snippet[@"videoOwnerChannelTitle"];
+            NSString *channelID = snippet[@"videoOwnerChannelId"];
             KBYTSearchResult *searchResult = [KBYTSearchResult new];
             searchResult.videoId = videoId;
             searchResult.stupidId = stupidId;
@@ -707,6 +708,7 @@ snippet =             {
             searchResult.playlistId = playlistId;
             searchResult.imagePath = maxRes;
             searchResult.title = title;
+            searchResult.channelId = channelID;
             searchResult.author = subtitle;
             searchResult.details = subtitle;
             searchResult.resultType = kYTSearchResultTypeVideo;

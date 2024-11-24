@@ -693,7 +693,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     //TLog(@"firstStream: %@ in %@", [self streams], NSStringFromSelector(_cmd));
     if (self.hlsManifest) {
         streamURL = [NSURL URLWithString:self.hlsManifest];
-        //DLog(@"using streamURL :%@", streamURL);
+        DLog(@"using streamURL :%@", streamURL);
     }
     YTPlayerItem *mediaItem = [[YTPlayerItem alloc] initWithURL:streamURL];
     mediaItem.associatedMedia = self;
@@ -1240,7 +1240,21 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     vr.subtitle = @"Learn more at https://vr.youtube.com";
     vr.imagePath = @"https://yt3.ggpht.com/Cw_5o8wcghBvDl-oCq9-ehGBezoxo3gOdz2yE5jt74ZdAWpvH6UyADqtQLxql9Ud_NRU4sYV4g=s900-c-k-c0x00ffffff-no-rj-mo";
     
-    return @[spotlight, popular, music, sports, gaming, fb, vr];
+    KBSection *live = [KBSection new];
+    live.type = @"standard";
+    live.size = @"320x240";
+    live.infinite = false;
+    live.autoScroll = false;
+    live.sectionResultType = kYTSearchResultTypeChannel;
+    live.order = 7;
+    live.title = @"Live";
+    live.className = @"KBSection";
+    live.uniqueId = KBYTLiveChannelID;
+    live.subtitle = @"Popular Live Streams";
+    //vr.imagePath = @"https://yt3.ggpht.com/Cw_5o8wcghBvDl-oCq9-ehGBezoxo3gOdz2yE5jt74ZdAWpvH6UyADqtQLxql9Ud_NRU4sYV4g=s900-c-k-c0x00ffffff-no-rj-mo";
+    
+    
+    return @[spotlight, popular, music, sports, gaming, fb, vr, live];
 }
 
 - (NSDictionary *)createDefaultSections {

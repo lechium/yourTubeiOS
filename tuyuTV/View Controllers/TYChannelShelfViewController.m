@@ -137,6 +137,8 @@
             self.headerview.avatarImageView.image = [UIImage imageNamed:@"fashion"];
         } else if ([self.channelID isEqualToString:KBYTGamingChannelID]){
             self.headerview.avatarImageView.image = [UIImage imageNamed:@"gaming"];
+        } else if ([self.channelID isEqualToString:KBYTLiveChannelID]){
+            self.headerview.avatarImageView.image = [UIImage imageNamed:@"live"];
         } else {
             [self.headerview.avatarImageView sd_setImageWithURL:[NSURL URLWithString:self.channel.avatar] placeholderImage:nil options:SDWebImageAvoidAutoSetImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
                 TLog(@"width: %f", image.size.width);

@@ -126,7 +126,10 @@
       @"type": @(kYTSearchResultTypeChannel) },
     @{@"title": @"360",
       @"id": KBYT360ChannelID,
-      @"type": @(kYTSearchResultTypeChannel) }, 
+      @"type": @(kYTSearchResultTypeChannel) },
+    @{@"title": @"Live",
+      @"id": KBYTLiveChannelID,
+      @"type": @(kYTSearchResultTypeChannel) },
     ];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -146,10 +149,12 @@
                         [UIImage imageNamed:@"music"],
                         [UIImage imageNamed:@"sports"],
                         [UIImage imageNamed:@"360"],
+                        [UIImage imageNamed:@"live"],
                         [UIImage imageNamed:@"globe"]];
     
     
     NSArray *colors = @[
+                        [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
                         [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
                         [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
                         [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
@@ -207,7 +212,7 @@
             if (![Reachability checkInternetConnectionWithAlert]) {
                 return;
             }
-            if (index == 5) { //sign out or in
+            if (index == 6) { //sign out or in
                 UIViewController *ovc  = nil;
                 if ([[KBYourTube sharedInstance] isSignedIn]) {
                     ovc = [self signOutAlert];

@@ -146,13 +146,20 @@
     if ([[KBYourTube sharedInstance] isSignedIn]) {
         if (self.focusedCollectionCell != nil) {
             UICollectionView *cv = (UICollectionView *)[self.focusedCollectionCell superview];
-            if (cv.section == 0) return;
+            if (cv.section == 0) {
+                [self handleLongPress:gestureRecognizer];
+                return;
+            }
             if (_isBeingReordered == false) {
                 KBSection *section = self.sections[cv.section];
                 KBYTPlaylist *channel = section.playlist;
                 NSIndexPath *ip = [cv indexPathForCell:self.focusedCollectionCell];
                 KBYTSearchResult *result = section.content[ip.item];
-                [self startReordering: (result.resultType == kYTSearchResultTypeVideo && [channel isKindOfClass:KBYTPlaylist.class])];
+                if (result.resultType == kYTSearchResultTypeVideo && [channel isKindOfClass:KBYTPlaylist.class]) {
+                    [self startReordering: (result.resultType == kYTSearchResultTypeVideo && [channel isKindOfClass:KBYTPlaylist.class])];
+                } else {
+                    [self handleLongPress:gestureRecognizer];
+                }
             } else {
                 // [cv.visibleCells makeObjectsPerformSelector:@selector(stopJiggling)];
                 [self stopReordering];
@@ -286,7 +293,7 @@
             [[KBYourTube sharedInstance] setFeaturedResult:result];
         }];
         [alertCon addAction:featured];
-    } else if (result.resultType == kYTSearchResultTypeVideo) {
+    } else if (result.resultType == kYTSearchResultTypeVideo && result.channelId) {
         UIAlertAction *goToChannel = [UIAlertAction actionWithTitle:@"Go to Channel" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [self goToChannelOfResult:result];
         }];
