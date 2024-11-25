@@ -33,6 +33,8 @@
     [self addSubview:self.bannerImageView];
     self.bannerImageView.contentMode = UIViewContentModeScaleAspectFill;
     self.avatarImageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.avatarImageView.widthAnchor constraintLessThanOrEqualToConstant:176].active = true;
+    [self.avatarImageView.heightAnchor constraintLessThanOrEqualToConstant:176].active = true;
     [self.bannerImageView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero];
     [self.bannerImageView autoMatchDimension:ALDimensionWidth toDimension:ALDimensionWidth ofView:self];
     self.bannerImageView.clipsToBounds = true;

@@ -1584,6 +1584,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             [sharedInst startReachabilityMonitoring];
             sharedInst.writeDebugJSONFiles = FALSE;
             sharedInst.printCurlCommands = TRUE;
+            sharedInst.printRendererCounts = FALSE;
             //sharedInst.deviceController = [[APDeviceController alloc] init];
         });
     }
@@ -2303,7 +2304,7 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return searchItem;
 }
 
-- (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current {
+- (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current logThumb:(BOOL)logThumb {
     NSString *lengthText = current[@"lengthText"][@"simpleText"];
     if (!lengthText){
         lengthText = [[current recursiveObjectForKey:@"thumbnailOverlayTimeStatusRenderer"] recursiveObjectForKey:@"simpleText"];
@@ -2322,6 +2323,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     NSString *vid = [current recursiveObjectForKey:@"videoId"];//current[@"videoId"];
     NSString *viewCountText = current[@"viewCountText"][@"simpleText"];
     NSArray *thumbnails = current[@"thumbnail"][@"thumbnails"] ? current[@"thumbnail"][@"thumbnails"] : [current recursiveObjectForKey:@"thumbnail"][@"thumbnails"];
+    if (logThumb) {
+        TLog(@"thumbnails: %@", thumbnails);
+        TLog(@"current: %@", current);
+    }
     //https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg
     NSDictionary *thumb = thumbnails.lastObject;
     NSString *imagePath = thumb[@"url"];
@@ -2362,6 +2367,10 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
     return searchItem;
 }
 
+- (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current {
+    return [self searchResultFromVideoRenderer:current logThumb:false];
+}
+
 - (void)getChannelVideosAlt:(NSString *)channelID
                      params:(NSString *)params
             completionBlock:(void(^)(KBYTChannel *channel))completionBlock
@@ -2397,9 +2406,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             //[self obtainKeyPaths:jsonDict intoArray:arr withString:nil];
             if ([[KBYourTube sharedInstance] writeDebugJSONFiles]) {
                 NSString *fileName = [channelID stringByAppendingPathExtension:@"plist"];
-                DLog(@"file: %@", [NSHomeDirectory() stringByAppendingPathComponent:fileName]);
+                DLog(@"file: %@", [[self appSupportFolder] stringByAppendingPathComponent:fileName]);
                 
-                [jsonDict writeToFile:[NSHomeDirectory() stringByAppendingPathComponent:fileName] atomically:true];
+                [jsonDict writeToFile:[[self appSupportFolder] stringByAppendingPathComponent:fileName] atomically:true];
             }
             NSArray *tabs = jsonDict[@"contents"][@"twoColumnBrowseResultsRenderer"][@"tabs"];
             __block NSMutableArray *channelTabs = [NSMutableArray new];
@@ -2420,12 +2429,16 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                     activeIndex = idx;
                     activeTitle = tabTitle;
                     activeSectionContinuationToken = [activeTab recursiveObjectForKey:@"continuationCommand"][@"token"];
-                    DLog(@"activeSectionContinuationToken: %@ length: %lu", activeSectionContinuationToken, activeSectionContinuationToken.length);
+                    if (activeSectionContinuationToken) {
+                        DLog(@"activeSectionContinuationToken: %@ length: %lu", activeSectionContinuationToken, activeSectionContinuationToken.length);
+                    }
                     if (activeSectionContinuationToken.length < 1000) {
                         activeSectionContinuationToken = nil;
                     }
                     activeSectionParms = activeTab[@"endpoint"][@"browseEndpoint"][@"params"];
-                    DLog(@"activeSectionParms: %@", activeSectionParms);
+                    if (activeSectionParms) {
+                        DLog(@"activeSectionParms: %@", activeSectionParms);
+                    }
                     //DLog(@"continuation command: %@ for %@", cc, activeTitle);
                     //*stop = TRUE;
                     if ([activeTitle isEqualToString:@"About"]) {
@@ -2466,19 +2479,21 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
             NSString *imagePath = [thumb[@"url"] highResChannelURL];
             //contentMetadataViewModel
             NSDictionary *pageHeader = [jsonDict recursiveObjectForKey:@"pageHeaderRenderer"];
-            if (!details) {
-                TLog(@"Details is nil!");
+            if (!details && pageHeader != nil) {
+                //TLog(@"Details is nil!");
                 title = pageHeader[@"pageTitle"];
                 if (!title) {
                     title = jsonDict[@"header"][@"interactiveTabbedHeaderRenderer"][@"title"][@"simpleText"];
                 }
                 NSDictionary *imageContainer = [[[pageHeader recursiveObjectForKey:@"image"] recursiveObjectForKey:@"image"][@"sources"] lastObject];
                 //DLog(@"imageContainer: %@", imageContainer);
-                imagePath = imageContainer[@"url"];
-                if (![imagePath containsString:@"http"]) {
-                    imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
+                if (imageContainer) {
+                    imagePath = imageContainer[@"url"];
+                    if (![imagePath containsString:@"http"]) {
+                        imagePath = [NSString stringWithFormat:@"https:%@", imagePath];
+                    }
+                    DLog(@"imagePath: %@", imagePath);
                 }
-                DLog(@"imagePath: %@", imagePath);
             }
             
             __block KBYTChannel *channel = [KBYTChannel new];
@@ -2651,7 +2666,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                             } else {
                                 //TLog(@"no channel renderer, videos or continuation commands");
                                 recursiveObjectsLike(@"shortsLockupViewModel", obj, shorts);
-                                //DLog(@"reels: %lu", shorts.count);
+                                if ([self printRendererCounts]) {
+                                    DLog(@"shortsLockupViewModel: %lu", shorts.count);
+                                }
                                 if (shorts.count > 0) {
                                     [shorts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                         KBYTSearchResult *res = [self searchResultFromShortRenderer:obj inChannel:channel];
@@ -2661,7 +2678,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                     }];
                                 } else { //no shorts check channel
                                     recursiveObjectsLike(@"channelRenderer", obj, channelRenderers);
-                                    //DLog(@"channelRenderers: %lu", channelRenderers.count);
+                                    if ([self printRendererCounts]) {
+                                        DLog(@"channelRenderers: %lu", channelRenderers.count);
+                                    }
                                     if (channelRenderers.count > 0) {
                                         [channelRenderers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                             KBYTSearchResult *res = [self searchResultFromChannelRenderer:obj inChannel:channel];
@@ -2669,7 +2688,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                         }];
                                     } else { //no channel, check playlist
                                         recursiveObjectsLike(@"playlistRenderer", obj, playlistRenderers);
-                                        //DLog(@"playlistRenderers: %lu", playlistRenderers.count);
+                                        if ([self printRendererCounts]) {
+                                            DLog(@"playlistRenderers: %lu", playlistRenderers.count);
+                                        }
                                         if (playlistRenderers.count > 0) {
                                             [playlistRenderers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                                 KBYTSearchResult *res = [self searchResultFromPlaylistRenderer:obj inChannelID:channel.channelID];
@@ -2677,7 +2698,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                             }];
                                         } else { //no playlist renderer, check station
                                             recursiveObjectsLike(@"stationRenderer", obj, stationRenderers);
-                                            //DLog(@"stationRenderers: %lu", stationRenderers.count);
+                                            if ([self printRendererCounts]) {
+                                                DLog(@"stationRenderers: %lu", stationRenderers.count);
+                                            }
                                             if (stationRenderers.count > 0) {
                                                 [stationRenderers enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                                     KBYTSearchResult *res = [self searchResultFromStationRenderer:obj inChannel:channel];
@@ -2686,7 +2709,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                             } else {
                                                 //DLog(@"NO SOUP FOR YOU!");
                                                 recursiveObjectsLike(@"lockupViewModel", obj, podcastModels);
-                                                //DLog(@"podcastModels: %lu", podcastModels.count);
+                                                if ([self printRendererCounts]) {
+                                                    DLog(@"podcastModels: %lu", podcastModels.count);
+                                                }
                                                 if (podcastModels.count > 0) {
                                                     [podcastModels enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                                         KBYTSearchResult *res = [KBYTSearchResult new];
@@ -2703,7 +2728,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                                     }];
                                                 } else { //alt shorts route
                                                     recursiveObjectsLike(@"reelItemRenderer", obj, shorts);
-                                                    //DLog(@"reelItemRenderer: %lu", shorts.count);
+                                                    if ([self printRendererCounts]) {
+                                                        DLog(@"reelItemRenderer: %lu", shorts.count);
+                                                    }
                                                     if (shorts.count > 0) {
                                                         [shorts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                                             KBYTSearchResult *res = [self searchResultFromReelRenderer:obj inChannel:channel];
@@ -2764,25 +2791,26 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         
                         //DLog(@"idx %lu shelf: %@", idx, section.title);
                         
-                        NSArray *videos = [shelf recursiveObjectsLikeKey:@"videoRenderer"];
+                        //NSArray *videos = [shelf recursiveObjectsLikeKey:@"videoRenderer"];
+                        recursiveObjectsLike(@"videoRenderer", shelf, videos);
                         //DLog(@"videos: %@", videos);
                         __block NSMutableArray *content = [NSMutableArray new];
-                        if (videos){
-                            //DLog(@"videos: %lu", videos.count);
+                        if (videos.count > 0){
+                            if ([self printRendererCounts]) {
+                                DLog(@"videos: %lu", videos.count);
+                            }
                             [videos enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                                NSString *first = [[obj allKeys] firstObject];
-                                NSDictionary *vid = obj[first];
-                                if (vid){
-                                    KBYTSearchResult *video = [self searchResultFromVideoRenderer:vid];
-                                    video.channelId = channel.channelID;
-                                    //NSLog(@"video: %@", video);
-                                    [content addObject:video];
-                                }
+                                KBYTSearchResult *video = [self searchResultFromVideoRenderer:obj];
+                                video.channelId = channel.channelID;
+                                //NSLog(@"video: %@", video);
+                                [content addObject:video];
                             }];
                         } else { //no videos
                             NSArray *stations = [shelf recursiveObjectsLikeKey:@"stationRenderer"];
                             if (stations.count > 0){
-                                //DLog(@"stations: %lu", stations.count);
+                                if ([self printRendererCounts]) {
+                                    DLog(@"stations: %lu", stations.count);
+                                }
                                 [stations enumerateObjectsUsingBlock:^(id  _Nonnull station, NSUInteger idx, BOOL * _Nonnull stop) {
                                     NSString *firstKey = [[station allKeys] firstObject];
                                     NSDictionary *playlist = station[firstKey];
@@ -2794,8 +2822,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 
                                 NSArray *playlistRenders = [shelf recursiveObjectsLikeKey:@"playlistRenderer"];
                                 if (playlistRenders.count > 0){
-                                    
-                                    //DLog(@"playlists count: %lu", stations.count);
+                                    if ([self printRendererCounts]) {
+                                        DLog(@"playlists count: %lu", stations.count);
+                                    }
                                     [playlistRenders enumerateObjectsUsingBlock:^(id  _Nonnull station, NSUInteger idx, BOOL * _Nonnull stop) {
                                         NSString *firstKey = [[station allKeys] firstObject];
                                         NSDictionary *playlist = station[firstKey];
@@ -2806,7 +2835,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                 } else { //no videos & no stations & no playlists
                                     playlistRenders = [shelf recursiveObjectsLikeKey:@"channelRenderer"];
                                     if (playlistRenders.count > 0){
-                                        //DLog(@"channels count: %lu", stations.count);
+                                        if ([self printRendererCounts]) {
+                                            DLog(@"channels count: %lu", stations.count);
+                                        }
                                         [playlistRenders enumerateObjectsUsingBlock:^(id  _Nonnull channelObj, NSUInteger idx, BOOL * _Nonnull stop) {
                                             NSString *firstKey = [[channelObj allKeys] firstObject];
                                             NSDictionary *channelDict = channelObj[firstKey];
@@ -2818,7 +2849,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                     } else { //shorts maybe?
                                         //NSLog(@"rend: %@", rend);
                                         recursiveObjectsLike(@"shortsLockupViewModel", shelf, shorts);
-                                        //DLog(@"reels: %lu", shorts.count);
+                                        if ([self printRendererCounts]) {
+                                            DLog(@"shortsLockupViewModel: %lu", shorts.count);
+                                        }
                                         if (shorts.count == 0){
                                             //NSLog(@"rend: %@", shelf);
                                         }
@@ -2833,7 +2866,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                             }];
                                         } else { //alt shorts route
                                             recursiveObjectsLike(@"reelItemRenderer", obj, shorts);
-                                            DLog(@"reelItemRenderer: %lu", shorts.count);
+                                            if ([self printRendererCounts]) {
+                                                DLog(@"reelItemRenderer: %lu", shorts.count);
+                                            }
                                             if (shorts.count > 0) {
                                                 [shorts enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                                     KBYTSearchResult *res = [self searchResultFromReelRenderer:obj inChannel:channel];
@@ -2844,7 +2879,9 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                                                 }];
                                             } else {
                                                 recursiveObjectsLike(@"lockupViewModel", obj, podcastModels);
-                                                DLog(@"lockupViewModel: %lu", podcastModels.count);
+                                                if ([self printRendererCounts]) {
+                                                    DLog(@"lockupViewModel: %lu", podcastModels.count);
+                                                }
                                                 if (podcastModels.count > 0) {
                                                     [podcastModels enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                                                         KBYTSearchResult *res = [KBYTSearchResult new];

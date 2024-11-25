@@ -297,6 +297,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSDictionary *userDetails;
 @property (readwrite, assign) BOOL writeDebugJSONFiles;
 @property (readwrite, assign) BOOL printCurlCommands;
+@property (readwrite, assign) BOOL printRendererCounts;
 
 + (NSUserDefaults *)sharedUserDefaults;
 - (void)startReachabilityMonitoring;

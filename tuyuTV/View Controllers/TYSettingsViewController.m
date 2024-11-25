@@ -43,13 +43,23 @@
     manageFeaturedChannels.name = @"Manage Featured Channels";
     manageFeaturedChannels.imagePath = @"YTPlaceholder.png";
     manageFeaturedChannels.assetDescription = @"Manage the channels listed in the tuyu home view";
+    
+    MetaDataAsset *forceHomeReload = [MetaDataAsset new];
+    forceHomeReload.name = @"Force Home Reload";
+    forceHomeReload.imagePath = @"YTPlaceholder.png";
+    forceHomeReload.assetDescription = @"Force the tuyu home view to reload its data.";
+    
+    MetaDataAsset *resetCacheFiles = [MetaDataAsset new];
+    resetCacheFiles.name = @"Reset Cache Files";
+    resetCacheFiles.imagePath = @"YTPlaceholder.png";
+    resetCacheFiles.assetDescription = @"Delete all existing cache files, this will reset the Home view channels to default settings.";
     /*
     NSDictionary *searchSettings = @{@"name": @"Search Filter", @"imagePath": @"YTPlaceholder.png", @"detail": filterType, @"detailOptions": @[@"All", @"Playlists", @"Channels"],  @"description": @"Filter what results come back from searches."};
     
     MetaDataAsset *search = [[MetaDataAsset alloc] initWithDictionary:searchSettings];
     
      */
-    svc.items = @[asset, manageFeaturedChannels];
+    svc.items = @[asset, manageFeaturedChannels, forceHomeReload, resetCacheFiles];
     svc.title = @"settings";
     return svc;
     //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:svc];
@@ -146,9 +156,46 @@
             //[super tableView:tableView didSelectRowAtIndexPath:indexPath];
             //[self handleToggle];
             break;
+            
+        case 2:
+            [[KBYourTube sharedInstance] postHomeDataChangedNotification];
+            break;
+            
+        case 3:
+            [self showResetCacheAlert];
+            break;
         default:
             break;
     }
+}
+
+- (void)resetCache {
+    
+    NSArray *contents = [FM contentsOfDirectoryAtPath:[self appSupportFolder] error:nil];
+    [contents enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *fp = [[self appSupportFolder] stringByAppendingPathComponent:obj];
+        TLog(@"delete file: %@", obj);
+        [FM removeItemAtPath:fp error:nil];
+    }];
+}
+
+- (void)showResetCacheAlert {
+    DLog(@"app support folder: %@", [self appSupportFolder]);
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Reset Cache"
+                                          message: @"Are you sure you want to reset the cache?"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yesAction            = [UIAlertAction
+                                           actionWithTitle:@"Yes"
+                                           style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction *action) {
+        [self resetCache];
+    }];
+    [alertController addAction:yesAction];
+    
+    UIAlertAction *noAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alertController addAction:noAction];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)doScience {
