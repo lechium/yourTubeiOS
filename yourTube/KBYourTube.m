@@ -3331,10 +3331,6 @@ static NSString * const hardcodedCipher = @"42,0,14,-3,0,-1,0,-2";
                         }
                     });
                 }
-                
-                
-                
-                
             }];
             return;
             for (KBYTSearchResult *result in searchResults) {
