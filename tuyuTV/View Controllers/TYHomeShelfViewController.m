@@ -41,6 +41,7 @@
 }
 
 - (void)homeDataChanged:(NSNotification *)n {
+    LOG_SELF;
     _homeDataChanged = true;
     self.sections = [[[KBYourTube sharedInstance] homeScreenData] convertArrayToObjects];
     dispatch_async(dispatch_get_main_queue(), ^{

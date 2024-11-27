@@ -52,7 +52,7 @@
 }
 
 - (void)loadDataWithProgress:(BOOL)progress loadingSnapshot:(BOOL)loadingSnapshot completion:(void(^)(BOOL loaded))completionBlock {
-    
+    LOG_SELF;
     if (loadingSnapshot) {
         [self loadFromSnapshot];
         progress = false;

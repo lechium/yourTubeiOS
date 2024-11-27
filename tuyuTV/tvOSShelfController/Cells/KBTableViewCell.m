@@ -68,6 +68,7 @@
             
             break;
     }
+    [layout invalidateLayout];
     [self.collectionView setCollectionViewLayout:layout animated:NO];
 }
 
@@ -85,6 +86,7 @@
 
 - (void)setSection:(KBSection *)section {
     section_ = section;
+    if (section.content.count == 0) { return; }
     if(section.sectionType == KBSectionTypeStandard) {
         [self setupLabelIfNecessary];
         [self.trayTitleLabel sizeToFit];
@@ -180,6 +182,9 @@
         layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     } else {
         [self.trayTitleLabel sizeToFit];
+        if (section_.content.count > 0) {
+            self.trayTitleLabel.text = section_.title;
+        }
         layout.itemSize = defaultSize;//CGSizeMake(308, 250);
         layout.scrollDirection = scrollDirection;
         layout.sectionInset = UIEdgeInsetsMake(0, 40, bottomInset, 20);

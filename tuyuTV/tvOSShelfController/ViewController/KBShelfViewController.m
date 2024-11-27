@@ -467,6 +467,7 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     KBSection *section = self.sections[indexPath.section];
+    if (section.content.count == 0) { return 0; }
     if (section.sectionType == KBSectionTypeBanner){
         return section.imageHeight + 100;
     } else {
