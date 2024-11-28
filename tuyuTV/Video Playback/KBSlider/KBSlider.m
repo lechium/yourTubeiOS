@@ -1710,7 +1710,7 @@
     //DLOG_CMD;
     UIPress *firstPress = presses.allObjects.firstObject;
     if (firstPress.type == UIPressTypeMenu || firstPress.key.keyCode == UIKeyboardHIDUsageKeyboardEscape || !self.isFocused) {
-        DLog(@"discard menu events");
+        //DLog(@"discard menu events");
         [super pressesBegan:presses withEvent:event];
         return;
     }

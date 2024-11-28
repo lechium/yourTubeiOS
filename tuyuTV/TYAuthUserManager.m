@@ -6,12 +6,15 @@
 //
 // https://developers.google.com/youtube/v3/guides/auth/installed-apps#ios <-- for 'macOS' / desktop. just dont want to use their crap.
 
-
 #import "TYAuthUserManager.h"
 #import "YTCreds.h"
 #import "KBYourTube.h"
 #if TARGET_OS_IOS
 #import <GCDWebServers/GCDWebServers.h>
+#endif
+#import "NSURLRequest+cURL.h"
+#if TARGET_OS_TV
+#import "KBBulletinView.h"
 #endif
 
 @interface TYAuthUserManager() {
@@ -69,7 +72,6 @@
 - (void)createAndStartWebserverWithCompletion:(void(^)(BOOL success))block {
     // Create server
       _webServer = [[GCDWebServer alloc] init];
-      
     __weak __typeof(self) weakSelf = self;
       // Add a handler to respond to GET requests on any URL
       [_webServer addDefaultHandlerForMethod:@"GET"
@@ -111,7 +113,6 @@
 }
 
 - (void)stopTime {
-    
     [self.pollingTimer invalidate];
     self.pollingTimer = nil;
 }
@@ -144,21 +145,17 @@
     NSLog(@"interval since start: %f", interval);
     NSInteger expiresTime = 900; //15 minutes
     if (interval > expiresTime) {
-        
         [self stopTime];
         NSError *theError = [NSError errorWithDomain:@"com.nito.nitoTV4" code:2001 userInfo:nil];
         self.finishedBlock(nil,theError);
         return;
     }
-    
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     NSString *deviceCode = self.authResponse[@"device_code"];
     NSString *pollURL = @"https://oauth2.googleapis.com/token";
     NSString* post = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&device_code=%@&grant_type=%@",ytClientID, ytSecretKey, deviceCode,  [@"urn:ietf:params:oauth:grant-type:device_code" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    
     // Encode post string
     NSData* postData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:false];
-    
     // Calculate length of post data
     NSString* postLength = [NSString stringWithFormat:@"%lu",(unsigned long)[postData length]];
     
@@ -180,35 +177,31 @@
                 self.authorized = false;
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    
-                    NSString *refreshToken = [tokenResponse valueForKey:@"refresh_token"];
-                    AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
+                    //NSString *refreshToken = [tokenResponse valueForKey:@"refresh_token"];
+                    AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthDictionary:tokenResponse];//[AFOAuthCredential credentialWithOAuthToken:[tokenResponse valueForKey:@"access_token"] tokenType:[tokenResponse valueForKey:@"token_type"]];
+                    /*
                     credential.refreshToken = refreshToken;
+                    NSInteger expireTime = [tokenResponse[@"expires_in"]integerValue];
+                    NSInteger currentEpoch = [[NSDate date] timeIntervalSince1970];
+                    NSInteger expires = expireTime + currentEpoch;
+                    NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:expires];
+                    TLog(@"currentDate: %@ expireDate: %@",[NSDate date], expireDate);
+                    [credential setExpiration:expireDate];
+                     */
+                    TLog(@"setting credential: %@", credential);
                     [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-                    //TLog(@"token response: %@", tokenResponse);
-                    //TLog(@"credential: %@", credential);
-                    //NSString *userId = tokenResponse[@"UserId"];
-                    //[UD setValue:userId forKey:kNTVPortalAuthUserName];
                     self.tokenData = tokenResponse;
                     self.authorized = true;
                     self.finishedBlock(self.tokenData, nil);
                     [self stopTime];
-                    
                 });
-                
             }
         } else {
-            
             self.finishedBlock(nil, theError);
             NSLog(@"NO RETURN DATA!!, PROBABLY THROW ERROR HERE?");
-            
         }
-        
     });
-    
     //NSLog(@"token response %@", tokenResponse);
-    
-    
 }
 
 - (void)startAuthPolling {
@@ -228,7 +221,7 @@
 }
 
 - (AFOAuthCredential *)defaultCredential {
-    return [AFOAuthCredential retrieveCredentialWithIdentifier:@"default" accessGroup:nil];
+    return [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
 }
 
 + (id)sharedInstance {
@@ -241,7 +234,7 @@
             //shared = [TYAuthUserManager new];
             NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
             
-            AFOAuthCredential * credential =  [AFOAuthCredential retrieveCredentialWithIdentifier:@"default" accessGroup:nil];
+            AFOAuthCredential * credential = [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
             
             
             
@@ -269,17 +262,13 @@
 //DELETE https://www.googleapis.com/youtube/v3/subscriptions?id=Y3ufRxVp116IMX8y_Gy1238MBhIUUSvzIfjGlLit6F0&key={YOUR_API_KEY}
 
 - (id)unSubscribeFromChannel:(NSString *)subscriptionID {
-    
     TLog(@"unsubscribe with ID: %@", subscriptionID);
-    
     [self refreshAuthToken];
     NSError* error;
-    
     NSString *urlString = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/subscriptions?id=%@&key=%@", subscriptionID, ytClientID];
     
     // Create URL request and set url, method, content-length, content-type, and body
     //resourceId
-    
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
     
@@ -287,57 +276,45 @@
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
     //[request setURL:[NSURL URLWithString:@"https://gdata.youtube.com/feeds/api/users/default/favorites"]];
     [request setHTTPMethod:@"DELETE"];
-    
     // [request addValue:[[DeviceAuth sharedDeviceAuth] signatureForRequest:request] forHTTPHeaderField:@"X-GData-Device"];
-    
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     NSHTTPURLResponse *theResponse = nil;
-    
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
-    
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-    
     TLog(@"datString: %@", datString);
-    
     NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
     TLog(@"status string: %@", returnString);
-    
     //JSON data
-    
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
-    
     // NSLog(@"jsonDict: %@", jsonDict);
-    if ([jsonDict valueForKey:@"error"] != nil)
-    {
+    if ([jsonDict valueForKey:@"error"] != nil) {
         return datString;
-        
     } else {
-        
-        
     }
+#if TARGET_OS_TV
+#ifndef SHELF_EXT
+    KBBulletinView *bv = [KBBulletinView bulletinWithTitle:@"Channel Unsubscribed" description:nil image:[UIImage imageNamed:@"AppIcon"]];
+    [bv showFromController:[self topViewController] forTime:5];
+    //[bv showForTime:5];
+#endif
+#endif
     return @"Success";
-    
 }
 
 - (void)copyPlaylist:(KBYTSearchResult *)result completion:(void(^)(NSString *response))completion {
     __block  KBYTSearchResult *plResult = [self createPlaylistWithTitle:result.title andPrivacyStatus:@"public"];
     
     [[KBYourTube sharedInstance] getPlaylistVideos:result.videoId completionBlock:^(KBYTPlaylist *playlistDetails) {
-        
         // NSNumber *pageCount = playlistDetails[@"pageCount"];
-        
         //DLog(@"details: %@", playlistDetails);
-        
-        
         NSArray <KBYTSearchResult *>*results = playlistDetails.videos;
-        for (KBYTSearchResult *video in results)
-        {
+        for (KBYTSearchResult *video in results) {
             [self addVideo:video.videoId toPlaylistWithID:plResult.videoId];
         }
-        
         completion(@"science");
-        
-        
     } failureBlock:^(NSString *error) {
         //
     }];
@@ -365,17 +342,6 @@
     [self genericGetCommand:initialString completion:^(NSDictionary *jsonResponse, NSString *error) {
         NSArray *items = jsonResponse[@"items"];
         [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            /*
-             KBYTSearchResult *playlist = [KBYTSearchResult new];
-             playlist.videoId = obj[@"id"];
-             playlist.author = obj[@"snippet"][@"channelTitle"];
-             playlist.channelId = obj[@"snippet"][@"channelId"];
-             playlist.duration = [NSString stringWithFormat:@"%@ tracks", obj[@"contentDetails"][@"itemCount"]];
-             playlist.title = [obj recursiveObjectForKey:@"title"];
-             playlist.details = [obj recursiveObjectForKey:@"description"];
-             playlist.imagePath = [obj recursiveObjectForKey:@"thumbnails"][@"high"][@"url"];
-             playlist.resultType = kYTSearchResultTypePlaylist;
-             playlist.continuationToken = obj[@"nextPageToken"]; */
             KBYTSearchResult *playlist = [[KBYTSearchResult alloc] initWithYTPlaylistDictionary:obj];
             //TLog(@"playlist: %@", playlist);
             [playlists addObject:playlist];
@@ -384,70 +350,118 @@
         if (completionBlock) {
             completionBlock(playlists, error);
         }
-        
-        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/getPlaylists.plist" atomically:TRUE];
+        if ([[KBYourTube sharedInstance] writeDebugJSONFiles]) {
+            NSString *plFile = [[self appSupportFolder] stringByAppendingPathComponent:@"getPlaylists.plist"];
+            DLog(@"plfile: %@", plFile);
+            [jsonResponse writeToFile:plFile atomically:TRUE];
+        }
     }];
 }
 //https://www.googleapis.com/youtube/v3/channels?part=snippet&id='+commaSeperatedList+'&fields=items(id%2Csnippet%2Fthumbnails)&key={YOUR_API_KEY}
-- (void)getProfileThumbnail:(NSString *)profileID completion:(void(^)(NSString *thumbURL, NSString *error)) completionBlock {
-    NSString *initialString = @"https://www.googleapis.com/youtube/v3/channels?part=snippet&fields=items%2Fsnippet%2Fthumbnails&id";
-    NSString *formattedString = [NSString stringWithFormat:@"%@=%@", initialString, profileID];
-    [self genericGetCommand:formattedString completion:^(NSDictionary *jsonResponse, NSString *error) {
+- (void)getProfileDetailsWithCompletion:(void (^)(NSDictionary *, NSString *))completionBlock {
+    NSString *initialString = @"https://www.googleapis.com/youtube/v3/channels?part=snippet%2Cid&fields=items%2Fsnippet%2Citems%2Fid&mine=true";
+    TLog(@"initialString: %@", initialString);
+    [self genericGetCommand:initialString completion:^(NSDictionary *jsonResponse, NSString *error) {
         NSDictionary *thumbs = [jsonResponse recursiveObjectForKey:@"thumbnails"];
+        NSString *channelID = [jsonResponse recursiveObjectForKey:@"id"];
+        NSString *title = [jsonResponse recursiveObjectForKey:@"title"];
+        
         NSDictionary *thumb = thumbs[@"high"];
         if (!thumb) {
             thumb = thumbs[@"medium"];
         }
         NSString *url = thumb[@"url"];
-        TLog(@"url: %@", url);
+        TLog(@"title: %@ channelID: %@ error: %@", title, channelID, error);
+        if (completionBlock) {
+            NSMutableDictionary *dict = [NSMutableDictionary new];
+            if (url) dict[@"url"] = url;
+            if (channelID) dict[@"channelID"] = channelID;
+            if (title) dict[@"title"] = title;
+            completionBlock(dict, error);
+        }
+        if ([[KBYourTube sharedInstance]writeDebugJSONFiles]) {
+            NSString *profileFile = [[self appSupportFolder] stringByAppendingPathComponent:@"profile.plist"];
+            DLog(@"profileFile: %@", profileFile);
+            [jsonResponse writeToFile:profileFile atomically:TRUE];
+        }
+    }];
+}
+
+//https://www.googleapis.com/youtube/v3/channels?part=snippet&id='+commaSeperatedList+'&fields=items(id%2Csnippet%2Fthumbnails)&key={YOUR_API_KEY}
+- (void)getProfileThumbnail:(NSString *)profileID completion:(void(^)(NSString *thumbURL, NSString *error)) completionBlock {
+    NSString *initialString = @"https://www.googleapis.com/youtube/v3/channels?part=snippet%2Cid&fields=items%2Fsnippet%2Citems%2Fid&id";
+    NSString *formattedString = [NSString stringWithFormat:@"%@=%@", initialString, profileID];
+    TLog(@"formattedString: %@", formattedString);
+    [self genericGetCommand:formattedString completion:^(NSDictionary *jsonResponse, NSString *error) {
+        NSDictionary *thumbs = [jsonResponse recursiveObjectForKey:@"thumbnails"];
+        NSString *channelID = [jsonResponse recursiveObjectForKey:@"id"];
+        NSString *title = [jsonResponse recursiveObjectForKey:@"title"];
+        
+        NSDictionary *thumb = thumbs[@"high"];
+        if (!thumb) {
+            thumb = thumbs[@"medium"];
+        }
+        NSString *url = thumb[@"url"];
+        TLog(@"title: %@ channelID: %@ error: %@", title, channelID, error);
         if (completionBlock) {
             completionBlock(url, error);
         }
-        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/profile.plist" atomically:TRUE];
+        if ([[KBYourTube sharedInstance]writeDebugJSONFiles]) {
+            NSString *profileFile = [[self appSupportFolder] stringByAppendingPathComponent:@"profile.plist"];
+            DLog(@"profileFile: %@", profileFile);
+            [jsonResponse writeToFile:profileFile atomically:TRUE];
+        }
     }];
 }
 
 - (void)genericGetCommand:(NSString *)command completion:(void(^)(NSDictionary *jsonResponse, NSString *error))completionBlock {
     
     //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        id token = [self refreshAuthToken];
-        //TLog(@"refreshed token: %@", token);
-        NSString *urlString = [NSString stringWithFormat:@"%@&key=%@", command, ytClientID];
-        NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
-                                                                    cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
-        
-        AFOAuthCredential *cred = [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
-        NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
-        [request setValue:authorization forHTTPHeaderField:@"Authorization"];
-        
-        [request setHTTPMethod:@"GET"];
-        
-        NSHTTPURLResponse *theResponse = nil;
-        
-        NSError* error = nil;
-        NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
-        
-        NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-        NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
-        //TLog(@"status string: %@", returnString);
-        
-        //JSON data
-        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
-        //TLog(@"jsonDict: %@", jsonDict);
-        //dispatch_async(dispatch_get_main_queue(), ^{
-            if ([jsonDict valueForKey:@"error"] != nil) {
-                if (completionBlock) {
-                    completionBlock(nil, datString);
-                }
-                return;
-            }
-            //NSLog(@"jsonDict: %@", jsonDict);
-            [jsonDict writeToFile:@"/var/mobile/Library/Preferences/genericGetCommand.plist" atomically:TRUE];
-            if (completionBlock){
-                completionBlock(jsonDict, nil);
-            }
-        //});
-        
+    id token = [self refreshAuthToken];
+    if (token) {
+        TLog(@"refreshed token: %@", token);
+    }
+    NSString *urlString = [NSString stringWithFormat:@"%@&key=%@", command, ytClientID];
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
+                                                                cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
+    
+    AFOAuthCredential *cred = [AFOAuthCredential retrieveCredentialWithIdentifier:@"default"];
+    NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
+    [request setValue:authorization forHTTPHeaderField:@"Authorization"];
+    
+    [request setHTTPMethod:@"GET"];
+    
+    NSHTTPURLResponse *theResponse = nil;
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
+    NSError* error = nil;
+    NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
+    
+    NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
+    NSString *returnString = [NSString stringWithFormat:@"Request returned with response: \"%@\" with status code: %ld",[NSHTTPURLResponse localizedStringForStatusCode:(long)[theResponse statusCode]], (long)[theResponse statusCode] ];
+    //TLog(@"status string: %@", returnString);
+    
+    //JSON data
+    NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
+    //TLog(@"jsonDict: %@", jsonDict);
+    //dispatch_async(dispatch_get_main_queue(), ^{
+    if ([jsonDict valueForKey:@"error"] != nil) {
+        if (completionBlock) {
+            completionBlock(nil, datString);
+        }
+        return;
+    }
+    //NSLog(@"jsonDict: %@", jsonDict);
+    if ([[KBYourTube sharedInstance]writeDebugJSONFiles]) {
+        [jsonDict writeToFile:@"/var/mobile/Library/Preferences/genericGetCommand.plist" atomically:TRUE];
+    }
+    if (completionBlock){
+        completionBlock(jsonDict, nil);
+    }
+    //});
+    
     //});
 }
 
@@ -457,16 +471,6 @@
     [self genericGetCommand:initialString completion:^(NSDictionary *jsonResponse, NSString *error) {
         NSArray *items = jsonResponse[@"items"];
         [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            /*KBYTSearchResult *channel = [KBYTSearchResult new];
-             channel.videoId = [obj recursiveObjectForKey:@"resourceId"][@"channelId"];
-             channel.channelId = obj[@"snippet"][@"channelId"];
-             channel.title = [obj recursiveObjectForKey:@"title"];
-             channel.details = [obj recursiveObjectForKey:@"description"];
-             channel.imagePath = [obj recursiveObjectForKey:@"thumbnails"][@"high"][@"url"];
-             channel.resultType = kYTSearchResultTypeChannel;
-             channel.continuationToken = obj[@"nextPageToken"];
-             //TLog(@"channel: %@", channel);
-             */
             KBYTSearchResult *channel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:obj];
             [channels addObject:channel];
         }];
@@ -475,7 +479,11 @@
             completionBlock(channels, error);
         }
         
-        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/getChannelListResponse.plist" atomically:TRUE];
+        if ([[KBYourTube sharedInstance] writeDebugJSONFiles]) {
+            NSString *clr = [[self appSupportFolder] stringByAppendingPathComponent:@"getChannelListResponse.plist"];
+            DLog(@"channelListResponse: %@", clr);
+            [jsonResponse writeToFile:clr atomically:TRUE];
+        }
     }];
 }
 
@@ -520,7 +528,10 @@
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:postData];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     
     NSHTTPURLResponse *theResponse = nil;
     
@@ -544,6 +555,14 @@
     KBYTSearchResult *newChannel = [[KBYTSearchResult alloc] initWithYTChannelDictionary:jsonDict];
     TLog(@"new channel: %@", newChannel);
     [[KBYourTube sharedInstance] addChannelToUserDetails:newChannel];
+    [[KBYourTube sharedInstance] postUserDataChangedNotification];
+#if TARGET_OS_TV
+#ifndef SHELF_EXT
+    KBBulletinView *bv = [KBBulletinView bulletinWithTitle:[NSString stringWithFormat:@"Subscribed to %@", newChannel.title] description:nil image:[UIImage imageNamed:@"AppIcon"]];
+    [bv showFromController:[self topViewController] forTime:5];
+    //[bv showForTime:5];
+#endif
+#endif
     return jsonDict;
 }
 
@@ -561,7 +580,7 @@
  }
  */
 
-- (id)setPosition:(NSInteger)position forVideoID:(NSString *)videoID inPlaylist:(NSString *)playlistID {
+- (id)setPosition:(NSInteger)position forSearchItem:(KBYTSearchResult *)searchItem inPlaylist:(NSString *)playlistID {
     
     [self refreshAuthToken];
     NSError* error;
@@ -574,31 +593,35 @@
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
                                                                 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:40.0f];
     
-    NSDictionary *postDictionary = @{@"id": playlistID,
-                                     @"snippet": @{@"playlistId": @"",
-                                                   @"position": @(position)},
-                                     @"resourceId": @{@"kind": @"youtube#video",
-                                                      @"videoId": videoID
+    NSDictionary *postDictionary = @{@"id": searchItem.stupidId,
+                                     @"snippet": @{@"playlistId": playlistID,
+                                                   @"position": @(position),
+                                                   @"resourceId": @{@"kind": @"youtube#video",
+                                                                    @"videoId": searchItem.videoId
+                                                   }
                                      }
-                                     
     };
-    TLog(@"post: %@", postDictionary);
+    //TLog(@"post: %@", postDictionary);
     //NSLog(@"postString: %@", [finalDict JSONString]);
     // Encode post string
     NSData* postData = [NSJSONSerialization dataWithJSONObject:postDictionary options:NSJSONWritingPrettyPrinted error:nil];
     AFOAuthCredential *cred = [self defaultCredential];
     NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
+    //TLog(@"access token: %@", cred.accessToken);
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
     [request setHTTPMethod:@"PUT"];
     [request setHTTPBody:postData];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     NSHTTPURLResponse *theResponse = nil;
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
     NSString *datString = [[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
     //NSLog(@"datString: %@", datString);
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
     
-    // NSLog(@"jsonDict: %@", jsonDict);
+    NSLog(@"jsonDict: %@", jsonDict);
     if ([jsonDict valueForKey:@"error"] != nil){
         return datString;
     }
@@ -615,22 +638,110 @@
    --compressed
  */
 
-- (void)getPlaylistItems:(NSString *)playlistID completion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock {
-    __block NSMutableArray *channels = [NSMutableArray new];
+/*
+ {
+contentDetails =             {
+ videoId = gV39cNS6i5s;
+ videoPublishedAt = "2018-10-29T12:14:14Z";
+};
+etag = "n2YUXvSPQkNlwwH5Y-TaIAgme2U";
+id = UEx5d3IwS2U0d1pNRXgtYXJITlpnU1BZUWJrNEJ2WllhdS45NzUwQkI1M0UxNThBMkU0;
+kind = "youtube#playlistItem";
+snippet =             {
+ channelId = "UCq6mw-g_vBkNFOLmeGWIHGA";
+ channelTitle = "Kevin Bradley";
+ description = "Provided to YouTube by Universal Music Group\n\nHell Is Round The Corner (2009 Remix) \U00b7 Tricky\n\nMaxinquaye\n\n\U2117 An Island Records recording; \U2117 2009 Universal Music Operations Limited\n\nReleased on: 2009-01-01\n\nStudio  Personnel, Remixer: Gareth Bowen\nProducer, Associated  Performer, Vocalist: Tricky\nProducer: Mark Saunders\nComposer  Lyricist: Isaac Hayes\nComposer  Lyricist: Adrian Nicholas Matthews Thaws\n\nAuto-generated by YouTube.";
+ playlistId = "PLywr0Ke4wZMEx-arHNZgSPYQbk4BvZYau";
+ position = 23;
+ publishedAt = "2017-11-21T22:48:17Z";
+ resourceId =                 {
+     kind = "youtube#video";
+     videoId = gV39cNS6i5s;
+ };
+ thumbnails =                 {
+     default =                     {
+         height = 90;
+         url = "https://i.ytimg.com/vi/gV39cNS6i5s/default.jpg";
+         width = 120;
+     };
+     high =                     {
+         height = 360;
+         url = "https://i.ytimg.com/vi/gV39cNS6i5s/hqdefault.jpg";
+         width = 480;
+     };
+     maxres =                     {
+         height = 720;
+         url = "https://i.ytimg.com/vi/gV39cNS6i5s/maxresdefault.jpg";
+         width = 1280;
+     };
+     medium =                     {
+         height = 180;
+         url = "https://i.ytimg.com/vi/gV39cNS6i5s/mqdefault.jpg";
+         width = 320;
+     };
+     standard =                     {
+         height = 480;
+         url = "https://i.ytimg.com/vi/gV39cNS6i5s/sddefault.jpg";
+         width = 640;
+     };
+ };
+ title = "Hell Is Round The Corner (2009 Remix)";
+ videoOwnerChannelId = UCSuP436X3nxcLjeJQOnlOPg;
+ videoOwnerChannelTitle = "Tricky - Topic";
+};
+}
+ */
+
+- (void)getPlaylistItems:(NSString *)playlistID completion:(void(^)(NSArray <KBYTSearchResult *> *playlistItems, NSString *error))completionBlock {
+    __block NSMutableArray *playlistItems = [NSMutableArray new];
     NSString *initialString = @"https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=50&playlistId";
     NSString *getString = [NSString stringWithFormat:@"%@=%@", initialString, playlistID];
     [self genericGetCommand:getString completion:^(NSDictionary *jsonResponse, NSString *error) {
-        TLog(@"jsonResponse: %@", jsonResponse);
+        //TLog(@"jsonResponse: %@", jsonResponse);
         NSArray *items = jsonResponse[@"items"];
         [items enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            
+            NSDictionary *contentDetails = obj[@"contentDetails"];
+            NSDictionary *snippet = obj[@"snippet"];
+            NSString *videoId = contentDetails[@"videoId"];
+            NSString *stupidId = obj[@"id"];
+            NSString *videoDescription = snippet[@"description"];
+            NSString *playlistId = snippet[@"playlistId"]; //redundant
+            NSInteger position = [snippet[@"position"] integerValue];
+            NSDictionary *thumbnails = snippet[@"thumbnails"];
+            NSString *maxRes = thumbnails[@"maxres"][@"url"];
+            if (!maxRes) {
+                maxRes = thumbnails[@"high"][@"url"];
+                if (!maxRes) {
+                    maxRes = thumbnails[@"default"][@"url"];
+                }
+            }
+            NSString *title = snippet[@"title"];
+            NSString *subtitle = snippet[@"videoOwnerChannelTitle"];
+            NSString *channelID = snippet[@"videoOwnerChannelId"];
+            KBYTSearchResult *searchResult = [KBYTSearchResult new];
+            searchResult.videoId = videoId;
+            searchResult.stupidId = stupidId;
+            searchResult.itemDescription = videoDescription;
+            searchResult.playlistId = playlistId;
+            searchResult.imagePath = maxRes;
+            searchResult.title = title;
+            searchResult.channelId = channelID;
+            searchResult.author = subtitle;
+            searchResult.details = subtitle;
+            searchResult.resultType = kYTSearchResultTypeVideo;
+            [playlistItems addObject:searchResult];
         }];
         //TLog(@"count: %lu %@", channels.count, channels);
         if (completionBlock) {
-            completionBlock(channels, error);
+            completionBlock(playlistItems, error);
         }
-        
-        [jsonResponse writeToFile:@"/var/mobile/Library/Preferences/playlistItemsResponse.plist" atomically:TRUE];
+        if ([[KBYourTube sharedInstance] writeDebugJSONFiles]){
+            NSString *fileName = [NSString stringWithFormat:@"%@_playlistItemResponse.plist", playlistID];
+            NSString *playlistItemsResponse = [[self appSupportFolder] stringByAppendingPathComponent:fileName];
+            DLog(@"playlistItemsResponse: %@", playlistItemsResponse);
+            [jsonResponse writeToFile:playlistItemsResponse atomically:TRUE];
+        }
+        //[jsonResponse writeToFile:@"/var/mobile/Library/Preferences/playlistItemsResponse.plist" atomically:TRUE];
     }];
 }
 
@@ -641,7 +752,7 @@
     
     // Create URL request and set url, method, content-length, content-type, and body
     
-    NSString *urlString = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/playlistItems?id=%@&key=%@", favoriteID, ytClientID];
+    NSString *urlString = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/playlistItems?id=%@&key=%@", videoID, ytClientID];
     
     TLog(@"urlString: %@", urlString);
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]
@@ -652,7 +763,10 @@
     NSString *authorization = [NSString stringWithFormat:@"Bearer %@",cred.accessToken];
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
     [request setHTTPMethod:@"DELETE"];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     
     NSHTTPURLResponse *theResponse = nil;
     
@@ -685,7 +799,10 @@
     NSString *authorization = [NSString stringWithFormat:@"Bearer %@",[[self defaultCredential] accessToken]];
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
     [request setHTTPMethod:@"DELETE"];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     
     NSHTTPURLResponse *theResponse = nil;
     
@@ -707,8 +824,9 @@
     [AFOAuthCredential deleteCredentialWithIdentifier:@"default"];
     self.tokenData = nil;
     self.authorized = NO;
-    [UD removeObjectForKey:@"access_token"];
-    [UD removeObjectForKey:@"refresh_token"];
+    [self setCredential:nil];
+    [[KBYourTube sharedUserDefaults] removeObjectForKey:@"access_token"];
+    [[KBYourTube sharedUserDefaults] removeObjectForKey:@"refresh_token"];
 }
 
 - (BOOL)checkAndSetCredential {
@@ -780,7 +898,10 @@
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:postData];
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     
     NSHTTPURLResponse *theResponse = nil;
     
@@ -821,6 +942,34 @@
     return searchResult;
 }
 
++ (KBYTSearchResult *)subbedChannelForChannelID:(NSString *)channelID {
+    return [[self sharedInstance] subbedChannelForChannelID:channelID];
+}
+
+- (KBYTSearchResult *)subbedChannelForChannelID:(NSString *)channelID {
+    return [[[self subbedChannels] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.videoId == %@", channelID]] firstObject];
+}
+
+- (NSString *)channelStupidIdForChannelID:(NSString *)channelID {
+    if (![self isSubscribedToChannel:channelID]) {
+        TLog(@"not subscribed to channel: %@", channelID);
+        return nil;
+    }
+    return [[self subbedChannelForChannelID:channelID] stupidId];
+}
+
+- (BOOL)isSubscribedToChannel:(NSString *)channelID {
+    return [[self subbedChannelIDs] containsObject:channelID];
+}
+
+- (NSArray <KBYTSearchResult *> *)subbedChannels {
+    return [[KBYourTube sharedInstance]userDetails][@"channels"];
+}
+
+- (NSArray *)subbedChannelIDs {
+    return [[KBYourTube sharedInstance]userDetails][@"channelIDs"];
+}
+
 - (void)postCodeToGoogle:(NSString *)code completion:(void(^)(NSDictionary *returnData))block {
     
     // LOG_SELF;
@@ -841,6 +990,11 @@
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:postData];
+    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     NSHTTPURLResponse *theResponse = nil;
     
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
@@ -863,9 +1017,9 @@
         [self setCredential:newCred];
         self.authorized = true;
         [AFOAuthCredential storeCredential:newCred withIdentifier:@"default"];
-        [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
-        [UD setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
-        [UD synchronize];
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
+        [[KBYourTube sharedUserDefaults] synchronize];
         [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
             [[KBYourTube sharedInstance] setUserDetails:outputResults];
         } failureBlock:^(NSString *error) {
@@ -883,7 +1037,12 @@
     NSString* post = nil;
     
     AFOAuthCredential *token = [self defaultCredential];
-    
+    if ([token isExpired]){
+        TLog(@"token is expired!");
+    } else {
+        TLog(@"token is NOT expired!");
+        return nil;
+    }
     post = [NSString stringWithFormat:@"refresh_token=%@&client_id=%@&scope=&client_secret=%@&grant_type=refresh_token&&", token.refreshToken, ytClientID, ytSecretKey];
     
     // NSLog(@"postString: %@", post);
@@ -903,6 +1062,11 @@
     [request setHTTPBody:postData];
     NSHTTPURLResponse *theResponse = nil;
     
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
+    
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:nil];
     
     
@@ -911,16 +1075,24 @@
     //JSON data
     
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
-    if ([jsonDict valueForKey:@"error"] != nil)
-    {
+    if ([jsonDict valueForKey:@"error"] != nil) {
         return jsonDict;
     } else {
+        //TLog(@"refreshedToken: %@", jsonDict);
         NSString *refreshToken = token.refreshToken;
-        AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthToken:[jsonDict valueForKey:@"access_token"] tokenType:[jsonDict valueForKey:@"token_type"]];
+        AFOAuthCredential *credential = [AFOAuthCredential credentialWithOAuthDictionary:jsonDict];//[AFOAuthCredential credentialWithOAuthToken:jsonDict[@"access_token"] tokenType:jsonDict[@"token_type"]];
         credential.refreshToken = refreshToken;
+        /*
+        NSInteger expireTime = [jsonDict[@"expires_in"]integerValue];
+        NSInteger currentEpoch = [[NSDate date] timeIntervalSince1970];
+        NSInteger expires = expireTime + currentEpoch;
+        NSDate *expireDate = [NSDate dateWithTimeIntervalSince1970:expires];
+        TLog(@"currentDate: %@ expireDate: %@",[NSDate date], expireDate);
+        [credential setExpiration:expireDate];
+         */
         [AFOAuthCredential storeCredential:credential withIdentifier:@"default"];
-        //TLog(@"refreshed credential: %@", credential);
-        [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
+        TLog(@"refreshed credential: %@", credential);
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
         
     }
     return jsonDict;
@@ -944,15 +1116,23 @@
 - (id)addVideo:(NSString *)videoID toPlaylistWithID:(NSString *)playlistID {
     
     [self refreshAuthToken];
-    NSLog(@"adding a video: %@ to favorites: %@", videoID, playlistID);
-    
+    DLog(@"adding a video: %@ to playlistID: %@", videoID, playlistID);
+/*
     NSMutableDictionary *finalDict = [[NSMutableDictionary alloc] init];
     NSDictionary *resourceId = [NSDictionary dictionaryWithObjectsAndKeys:@"youtube#video", @"kind", videoID, @"videoId", nil];
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:playlistID, @"playlistId",resourceId , @"resourceId", nil];
     [finalDict setObject:dict forKey:@"snippet"];
+  */
     
+    NSDictionary *finalDict = @{ @"snippet": @{
+        @"playlistId": playlistID,
+        @"resourceId": @{
+            @"kind": @"youtube#video",
+            @"videoId": videoID
+        }
+    }};
     
-    NSError* error;
+    NSError* error = nil;
     
     // Encode post string
     NSData* postData = [NSJSONSerialization dataWithJSONObject:finalDict options:NSJSONWritingPrettyPrinted error:nil];
@@ -969,7 +1149,7 @@
     
     NSString *accessToken = [[self defaultCredential] accessToken];
     
-    NSLog(@"access token: %@", accessToken);
+    //DLog(@"access token: %@", accessToken);
     
     NSString *authorization = [NSString stringWithFormat:@"Bearer %@",accessToken];
     [request setValue:authorization forHTTPHeaderField:@"Authorization"];
@@ -978,7 +1158,10 @@
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:postData];
     
-    
+    NSString *curl = [request cURL];
+    if ([[KBYourTube sharedInstance] printCurlCommands]) {
+        TLog(@"curl command: %@", curl);
+    }
     NSHTTPURLResponse *theResponse = nil;
     
     NSData *returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&error];
@@ -992,13 +1175,12 @@
     
     NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:returnData options:NSJSONReadingAllowFragments error:nil];
     
-    // NSLog(@"jsonDict: %@", jsonDict);
-    if ([jsonDict valueForKey:@"error"] != nil)
-    {
+    DLog(@"jsonDict: %@", jsonDict);
+    if ([jsonDict valueForKey:@"error"] != nil) {
         return datString;
         
     }
-    
+    [[KBYourTube sharedInstance] postUserDataChangedNotification];
     return jsonDict;
 }
 
@@ -1129,9 +1311,9 @@
         //DLog(@"newcred: %@", newCred);
         [self setCredential:newCred];
         [AFOAuthCredential storeCredential:newCred withIdentifier:@"default"];
-        [UD setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
-        [UD setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
-        [UD synchronize];
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"access_token"] forKey:@"access_token"];
+        [[KBYourTube sharedUserDefaults] setObject:[jsonDict valueForKey:@"refresh_token"] forKey:@"refresh_token"];
+        [[KBYourTube sharedUserDefaults] synchronize];
         
         
     }

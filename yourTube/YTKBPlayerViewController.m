@@ -108,6 +108,19 @@
     }];
 }
 
+- (id)initWithMedia:(KBYTMedia *)media {
+    self = [super init];
+    mediaIsLocal = false; //prob
+    YTPlayerItem *playerItem = [media playerItemRepresentation];
+    playerItem.associatedMedia = media;
+    if (playerItem != nil) {
+        self.player = [KBYTQueuePlayer queuePlayerWithItems:@[playerItem]];
+        [(KBYTQueuePlayer *)self.player setDelegate:self];
+    }
+    self.view.frame = UIScreen.mainScreen.bounds;
+    return self;
+}
+
 - (id)initWithFrame:(CGRect)frame usingStreamingMediaArray:(NSArray *)streamingMedia {
     self = [super init];
     mediaIsLocal = false;
@@ -154,6 +167,11 @@
     
     for (KBYTLocalMedia *file in localMediaArray) {
         NSString *filePath = file.filePath;
+        TLog(@"file: %@ home: %@", file.filePath, NSHomeDirectory());
+        if (![FM fileExistsAtPath:filePath]) {
+            TLog(@"DOESN'T EXIST BRUH");
+            filePath = [[self downloadFolder] stringByAppendingPathComponent:file.outputFilename];
+        }
         NSURL *playURL = [NSURL fileURLWithPath:filePath];
         YTPlayerItem *playerItem = [[YTPlayerItem alloc] initWithURL:playURL];
         playerItem.associatedMedia = file;
@@ -169,7 +187,7 @@
         [self queuePlayerHasMultipleItems:(KBYTQueuePlayer*)self.player];
     }
     [(KBYTQueuePlayer *)self.player setDelegate:self];
-    [(KBYTQueuePlayer *)self.player setMultipleItemsDelegateCalled:TRUE ];
+    [(KBYTQueuePlayer *)self.player setMultipleItemsDelegateCalled:TRUE];
     self.view.frame = frame;
     return self;
 }
@@ -178,6 +196,10 @@
 - (void)setNowPlayingInfo {
     NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
     YTPlayerItem *currentPlayerItem = [playerItems firstObject];
+    if (currentPlayerItem.status != AVPlayerItemStatusReadyToPlay) {
+        NSLog(@"current player item is not ready to play, bail!");
+        return;
+    }
     double currentTime = currentPlayerItem.currentTime.value/currentPlayerItem.currentTime.timescale;
     NSObject <YTPlayerItemProtocol> *currentItem = [currentPlayerItem associatedMedia];
     //NSLog(@"currentItem: %@", currentItem);
@@ -195,9 +217,9 @@
 #elif TARGET_OS_TV
     if (currentTime + 5 >= currentPlayerItem.durationDouble && currentPlayerItem.durationDouble > 0){
         TLog(@"near the end: %.0f for %@", currentTime, currentItem.videoId);
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:currentItem.videoId];
+        [[KBYourTube sharedUserDefaults] removeObjectForKey:currentItem.videoId];
     } else {
-        [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithDouble:currentTime] forKey:currentItem.videoId];
+        [[KBYourTube sharedUserDefaults] setObject:[NSNumber numberWithDouble:currentTime] forKey:currentItem.videoId];
     }
 #endif
     
@@ -212,7 +234,7 @@
     KBYTMedia *theMedia = (KBYTMedia*)[(YTPlayerItem *)item associatedMedia];
     if (theMedia){
         [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
-        CGFloat duration = [[[NSUserDefaults standardUserDefaults] valueForKey:theMedia.videoId] floatValue];
+        CGFloat duration = [[[KBYourTube sharedUserDefaults] valueForKey:theMedia.videoId] floatValue];
         TLog(@"current time offset for %@: %.0f", theMedia.videoId, duration);
         CMTime newtime = CMTimeMakeWithSeconds(duration, 600);
         [player seekToTime:newtime];

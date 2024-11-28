@@ -41,7 +41,7 @@
     [self.view addSubview:self.packageLogoView];
     //[self.packageLogoView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:40];
     [self.packageLogoView.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:40].active = true;
-    [self.packageLogoView autoCenterHorizontallyInSuperview];
+    [self.packageLogoView autoCenterVerticallyInSuperview];
     //[self.packageLogoView autoAlignAxisToSuperviewAxis:ALAxisVertical];
     [self.packageLogoView autoConstrainToSize:CGSizeMake(222, 135)];
     

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "MarqueeLabel/MarqueeLabel.h"
-#import "SDWebImage/UIImageView+WebCache.h"
+#import "UIImageView+WebCache.h"
 #import "JGProgressView/JGProgressView.h"
 
 @interface KBYTDownloadCell: UITableViewCell
@@ -19,6 +19,7 @@
 @property (nonatomic, strong) UILabel *viewsLabel;
 @property (nonatomic, strong) JGProgressView *progressView;
 @property (readwrite, assign) BOOL downloading;
+@property (readwrite, assign) CGFloat completionPercent;
 @property (nonatomic, strong) NSString *duration;
 @property (nonatomic, strong) NSString *views;
 

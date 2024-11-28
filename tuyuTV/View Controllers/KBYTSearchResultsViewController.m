@@ -16,7 +16,8 @@
 #import "TYTVHistoryManager.h"
 #import "UIView+RecursiveFind.h"
 #import "TYAuthUserManager.h"
-#import "KBYTGridChannelViewController.h"
+#import "YTTVPlayerViewController.h"
+#import "TYChannelShelfViewController.h"
 
 @interface KBYTSearchResultsViewController () <UISearchBarDelegate>
 
@@ -38,7 +39,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope {
     NSString *scope = searchBar.scopeButtonTitles[selectedScope];
     TLog(@"scope changed: %lu: %@", selectedScope, scope);
-    [UD setValue:scope forKey:@"filterType"];
+    [[KBYourTube sharedUserDefaults] setValue:scope forKey:@"filterType"];
     _lastSearchResult = nil;
     
 }
@@ -68,7 +69,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         return;
     }
     
-    // DLog(@"at: %@", [UD valueForKey:@"access_token"]);
+    // DLog(@"at: %@", [[KBYourTube sharedUserDefaults] valueForKey:@"access_token"]);
     if (![[KBYourTube sharedInstance] isSignedIn]) {
         return;
     }
@@ -98,7 +99,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (void)goToChannelOfResult:(KBYTSearchResult *)searchResult {
-    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.channelId];
+    TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.channelId];
     [self presentViewController:cv animated:true completion:nil];
 }
 
@@ -259,17 +260,33 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
+    BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:result.videoId];
+    NSString *message = !isSubbed ? @"Subscribe to this channel?" : @"Unsubscribe from this channel?";
+    NSString *title = !isSubbed ? @"Subscribe" : @"Unsubscribe";
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
-                                          message: @"Subscribe to this channel?"
+                                          message: message
                                           preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            if (isSubbed) {
+                NSString *stupidId = [result stupidId];
+                if (!stupidId) {
+                    stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:result.videoId];
+                    TLog(@"found stupid id: %@", stupidId);
+                }
+                if (stupidId){
+                    [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:result.stupidId];
+                    [[KBYourTube sharedInstance] removeChannelFromUserDetails:result];
+                } else {
+                    TLog(@"failed to unsub! couldnt find stupid id!");
+                }
+            } else {
+                [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            }
         });
-        
     }];
+    
     [alertController addAction:yesAction];
     UIAlertAction *homeScreenAction = [UIAlertAction actionWithTitle:@"Add to Home screen" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
@@ -439,7 +456,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (NSInteger)segmentIndexForDefault {
-    NSString *filterType = [UD valueForKey:@"filterType"];
+    NSString *filterType = [[KBYourTube sharedUserDefaults] valueForKey:@"filterType"];
     if (!filterType) return 0;
     if ([filterType isEqualToString:@"All"]) return 0;
     else if ([filterType isEqualToString:@"Playlists"]) return 1;
@@ -448,7 +465,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 }
 
 - (KBYTSearchType)searchTypeForSettings {
-    NSString *filterType = [UD valueForKey:@"filterType"];
+    NSString *filterType = [[KBYourTube sharedUserDefaults] valueForKey:@"filterType"];
     if (!filterType){
         return KBYTSearchTypeAll;
     }
@@ -462,18 +479,22 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     self.currentPage = 1; //reset for new search
     self.continuationToken = nil;
-    if ([_lastSearchResult isEqualToString:searchController.searchBar.text] || searchController.searchBar.text.length == 0) {
+    if ([_lastSearchResult isEqualToString:searchController.searchBar.text]) {
         //no need to refresh a search with an old string...
         return;
     }
+    
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
     [[self searchResults] removeAllObjects];
     self.filterString = searchController.searchBar.text;
     _lastSearchResult = self.filterString;
-    
+    if (searchController.searchBar.text.length == 0) {
+        [SVProgressHUD dismiss];
+        return;
+    }
     KBYTSearchType type = [self searchTypeForSettings];
-    //TLog(@"search type: %lu", type);
+    TLog(@"search type: %lu", type);
     [[KBYourTube sharedInstance] apiSearch:self.filterString type:type continuation:self.continuationToken completionBlock:^(KBYTSearchResults *result) {
         //TLog(@"search results: %@", result.videos);
         self.continuationToken = result.continuationToken;
@@ -498,6 +519,12 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
     
     self.focusedCollectionCell = (UICollectionViewCell *)context.nextFocusedView;
+    if ([self.focusedCollectionCell isKindOfClass:[YTTVStandardCollectionViewCell class]]){
+        TLog(@"is that kind of class: %@", [(YTTVStandardCollectionViewCell*)self.focusedCollectionCell overlayInfo].text);
+        NSIndexPath *indexPath = [self.collectionView indexPathForCell:self.focusedCollectionCell];
+        KBYTSearchResult *currentItem = [self.searchResults objectAtIndex:indexPath.row];
+        TLog(@"currentItem: %@", currentItem);
+    }
     //YTTVStandardCollectionViewCell *selectedCell = (YTTVStandardCollectionViewCell*)context.nextFocusedView;
     //self.selectedItem=  [[self collectionView] indexPathForCell:selectedCell];
 }
@@ -549,7 +576,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
         
         [SVProgressHUD dismiss];
-        YTKBPlayerViewController *playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
+        YTTVPlayerViewController *playerView = [[YTTVPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
         [playerView addObjectsToPlayerQueue:videoArray];
         [self presentViewController:playerView animated:YES completion:nil];
         [[playerView player] play];
@@ -585,7 +612,7 @@ static NSString * const reuseIdentifier = @"NewStandardCell";
         [self playAllSearchResults:subarray];
     } else if (searchResult.resultType ==kYTSearchResultTypeChannel) {
         
-        KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.videoId];
+        TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.videoId];
         [self presentViewController:cv animated:true completion:nil];
         
     } else if (searchResult.resultType ==kYTSearchResultTypePlaylist) {

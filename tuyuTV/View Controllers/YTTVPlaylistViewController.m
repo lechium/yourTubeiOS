@@ -34,6 +34,8 @@
 #import "UIImageView+WebCache.h"
 #import "SVProgressHUD.h"
 #import "TYAuthUserManager.h"
+#import "YTTVPlayerViewController.h"
+#import "PureLayout.h"
 
 @implementation PlaylistTableViewCell
 
@@ -169,7 +171,7 @@
 @end
 
 @interface PlaylistTableViewController ()
-@property (nonatomic, strong) YTKBPlayerViewController *playerView;
+@property (nonatomic, strong) YTTVPlayerViewController *playerView;
 @property (nonatomic, strong) KBYTQueuePlayer *player;
 @property (readwrite, assign) NSInteger currentPage;
 
@@ -467,7 +469,7 @@
     [[KBYourTube sharedInstance] getVideoDetailsForSearchResults:@[[searchResults firstObject]] completionBlock:^(NSArray *videoArray) {
         
         [SVProgressHUD dismiss];
-        self.playerView = [[YTKBPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
+        self.playerView = [[YTTVPlayerViewController alloc] initWithFrame:self.view.frame usingStreamingMediaArray:searchResults];
         [self.playerView addObjectsToPlayerQueue:videoArray];
         [self presentViewController:self.playerView animated:YES completion:nil];
         [[self.playerView player] play];
@@ -586,6 +588,7 @@
 
 @property (strong, nonatomic, readwrite) UIBarButtonItem *collapseBarButton;
 @property (nonatomic, assign) BOOL usingCustomMasterWidth;
+@property (nonatomic, assign) BOOL didSetupConstraints;
 
 - (void)initializeSplitViewController;
 
@@ -616,6 +619,25 @@
 @synthesize viewCornerRadius = _viewCornerRadius;
 @synthesize itemNames, imageNames;
 
+- (UILabel *)titleView {
+    if (!_titleView) {
+        _titleView = [UILabel newAutoLayoutView];
+        _titleView.font = [UIFont systemFontOfSize:57.0];
+        _titleView.textColor = [UIColor grayColor];
+        _titleView.clipsToBounds = false;
+    }
+    return _titleView;
+}
+
+- (void)updateViewConstraints {
+    
+    if (!self.didSetupConstraints) {
+        [self.titleView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:56];
+        [self.titleView autoAlignAxisToSuperviewAxis:ALAxisVertical];
+        self.didSetupConstraints = true;
+    }
+    [super updateViewConstraints];
+}
 
 + (id)playlistViewControllerForPlaylist:(KBYTPlaylist *)playlist backgroundColor:(UIColor* )bgColor {
     YTTVPlaylistViewController *splitViewController = [YTTVPlaylistViewController new];
@@ -640,6 +662,7 @@
     masterTableViewController.delegate = detailViewController;
     [splitViewController setViewControllers:@[detailViewController,masterTableViewController]];
     splitViewController.title = playlist.title;
+    splitViewController.titleView.text = playlist.title;
     [splitViewController setTitle:playlist.title];
     return splitViewController;
 }
@@ -666,6 +689,7 @@
     masterTableViewController.delegate = detailViewController;
     [splitViewController setViewControllers:@[detailViewController,masterTableViewController]];
     splitViewController.title = theTitle;
+    splitViewController.titleView.text = theTitle;
     [splitViewController setTitle:theTitle];
     return splitViewController;
 }
@@ -843,7 +867,6 @@
     masterVC.view.contentMode = UIViewContentModeScaleToFill;
     masterVC.view.autoresizingMask = masterAutoResizing;
     masterVC.view.autoresizesSubviews = YES;
-    //masterVC.view.clipsToBounds = YES;
     
     masterVC.view.layer.borderWidth = self.viewBorderWidth;
     masterVC.view.layer.borderColor = [self.viewBorderColor CGColor];
@@ -852,15 +875,21 @@
     detailVC.view.contentMode = UIViewContentModeScaleToFill;
     detailVC.view.autoresizingMask = detailAutoResizing;
     detailVC.view.autoresizesSubviews = YES;
-    //detailVC.view.clipsToBounds = YES;
     
     detailVC.view.layer.borderWidth = self.viewBorderWidth;
     detailVC.view.layer.borderColor = [self.viewBorderColor CGColor];
     detailVC.view.layer.cornerRadius = self.viewCornerRadius;
     
-    [self.view addSubview:masterVC.view];
+    if (![self.view.subviews containsObject:self.titleView]) {
+        [self.view addSubview:self.titleView];
+        self.view.backgroundColor = [UIColor yellowColor];
+        [self.view addSubview:masterVC.view];
+        [self.view setNeedsUpdateConstraints];
+    } else {
+        [self.view addSubview:masterVC.view];
+    }
     [self.view addSubview:detailVC.view];
-    
+    [self.view bringSubviewToFront:self.titleView];
     [self layoutViewsForCollapsed:self.collapsed animated:NO];
 }
 

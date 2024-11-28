@@ -11,7 +11,7 @@
           "value" : "light"
         }
       ],
-      "filename" : "Play-Pause-Glyph_64x64_@1x.png",
+      "filename" : "Play-Pause-Glyph-Dark_64x64_@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -22,7 +22,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Play-Pause-Glyph-Dark_64x64_@1x.png",
+      "filename" : "Play-Pause-Glyph_64x64_@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },

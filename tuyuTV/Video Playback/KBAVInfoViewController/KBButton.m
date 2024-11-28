@@ -10,6 +10,7 @@
     BOOL _opened;
     KBMenu *_menu;
     KBContextMenuView *_contextMenuView;
+    BOOL _showsMenuAsPrimaryAction;
 
 }
 
@@ -17,7 +18,15 @@
 
 @implementation KBButton
 
-@dynamic showsMenuAsPrimaryAction;
+//@dynamic showsMenuAsPrimaryAction;
+
+- (BOOL)showsMenuAsPrimaryAction {
+    return _showsMenuAsPrimaryAction;
+}
+
+- (void)setShowsMenuAsPrimaryAction:(BOOL)showsMenuAsPrimaryAction {
+    _showsMenuAsPrimaryAction = showsMenuAsPrimaryAction;
+}
 
 - (void)selectedItem:(KBMenuElement *)item {
     //LOG_CMD;
@@ -115,7 +124,13 @@
     [super pressesEnded:presses withEvent:event];
     //DLog(@"subtype: %lu type: %lu", event.subtype, event.type);
     UIPress *first = [presses.allObjects firstObject];
-    if (first.type == UIPressTypeSelect){
+    if (first.type == UIPressTypeSelect || first.key.keyCode == UIKeyboardHIDUsageKeyboardReturnOrEnter){
+        DLog(@"self.menu.children.count: %lu ", self.menu.children.count);
+        if (self.showsMenuAsPrimaryAction == true) {
+            DLog(@"primary true");
+        } else {
+            DLog(@"primary false");
+        }
         if (self.menu.children.count > 0 && self.showsMenuAsPrimaryAction) {
             if (!self.opened){
                 [self showMenuWithCompletion:^{

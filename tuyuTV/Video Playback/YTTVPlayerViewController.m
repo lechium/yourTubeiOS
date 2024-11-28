@@ -176,7 +176,7 @@
 }
 
 - (KBMenu *)createPlaylistMenu {
-    LOG_CMD;
+    //LOG_CMD;
     @weakify(self);
     __block NSMutableArray *items = [NSMutableArray new];
     if ([[self queuePlayer] hasPreviousItem]){
@@ -191,7 +191,7 @@
         }];
         [items addObject:nextItem];
     }
-    TLog(@"item count: %lu", items.count);
+    //TLog(@"item count: %lu", items.count);
     return [KBMenu menuWithTitle:@"Playlist" image:[KBSliderImages playlistImage] identifier:nil options:KBMenuOptionsDisplayInline children:items];
 }
 
@@ -785,6 +785,21 @@
     }];
 }
 
+- (id)initWithMedia:(KBYTMedia *)media {
+    self = [super init];
+    mediaIsLocal = false; //prob
+    YTPlayerItem *playerItem = [media playerItemRepresentation];
+    playerItem.associatedMedia = media;
+    if (playerItem != nil) {
+        self.avInfoViewController.playerItem = playerItem;
+        [self createAndSetMeta:media];
+        self.player = [KBYTQueuePlayer queuePlayerWithItems:@[playerItem]];
+        [(KBYTQueuePlayer *)self.player setDelegate:self];
+    }
+    self.view.frame = UIScreen.mainScreen.bounds;
+    return self;
+}
+
 - (id)initWithFrame:(CGRect)frame usingStreamingMediaArray:(NSArray *)streamingMedia {
     self = [super init];
     mediaIsLocal = false;
@@ -885,7 +900,11 @@
                 break;
                 
             default:
-                TLog(@"unhandled type: %lu", press.type);
+                TLog(@"unhandled type: %lu key: %@", press.type, press.key);
+                switch (press.key.keyCode) {
+                    case UIKeyboardHIDUsageKeyboardReturnOrEnter:
+                        break;
+                }
                 [super pressesEnded:presses withEvent:event];
                 break;
                 
@@ -897,6 +916,13 @@
 - (void)setNowPlayingInfo {
     NSArray *playerItems = [(AVQueuePlayer *)[self player] items];
     YTPlayerItem *currentPlayerItem = [playerItems firstObject];
+    if (currentPlayerItem.status != AVPlayerItemStatusReadyToPlay) {
+        NSLog(@"current player item is not ready to play, bail!");
+        if (self.avInfoViewController.playerItem != currentPlayerItem) {
+            self.avInfoViewController.playerItem = currentPlayerItem;
+        }
+        return;
+    }
     double currentTime = currentPlayerItem.currentTime.value/currentPlayerItem.currentTime.timescale;
     NSObject <YTPlayerItemProtocol> *currentItem = [currentPlayerItem associatedMedia];
     //NSLog(@"currentItem: %@", currentItem);
@@ -911,12 +937,12 @@
     if (currentItem == nil) { return; }
     if (currentTime + 5 >= currentPlayerItem.durationDouble && currentPlayerItem.durationDouble > 0){
         //TLog(@"near the end: %.0f for %@", currentTime, currentItem.videoId);
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:currentItem.videoId];
+        [[KBYourTube sharedUserDefaults] removeObjectForKey:currentItem.videoId];
     } else {
         if (self.avInfoViewController.playerItem != currentPlayerItem) {
             self.avInfoViewController.playerItem = currentPlayerItem;
         }
-        [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithDouble:currentTime] forKey:currentItem.videoId];
+        [[KBYourTube sharedUserDefaults] setObject:[NSNumber numberWithDouble:currentTime] forKey:currentItem.videoId];
     }
     
 }
@@ -937,7 +963,7 @@
             //self.playlistButton.menu = [self createPlaylistMenu];
         }
         [[TYTVHistoryManager sharedInstance] addVideoToHistory:[theMedia dictionaryRepresentation]];
-        CGFloat duration = [[[NSUserDefaults standardUserDefaults] valueForKey:theMedia.videoId] floatValue];
+        CGFloat duration = [[[KBYourTube sharedUserDefaults] valueForKey:theMedia.videoId] floatValue];
         TLog(@"current time offset for %@: %.0f", theMedia.videoId, duration);
         CMTime newtime = CMTimeMakeWithSeconds(duration, 600);
         [player seekToTime:newtime];

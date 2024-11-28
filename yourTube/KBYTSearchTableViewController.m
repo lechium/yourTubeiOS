@@ -47,7 +47,7 @@
 }
 
 - (KBYTSearchType)searchTypeForSettings {
-    NSString *filterType = [UD valueForKey:@"filterType"];
+    NSString *filterType = [[KBYourTube sharedUserDefaults] valueForKey:@"filterType"];
     if (!filterType){
         return KBYTSearchTypeAll;
     }
@@ -108,7 +108,7 @@
     self.currentPage = 1;
     NSString *scope = searchBar.scopeButtonTitles[selectedScope];
     DLog(@"scope changed: %lu: %@", selectedScope, scope);
-    [UD setValue:scope forKey:@"filterType"];
+    [[KBYourTube sharedUserDefaults] setValue:scope forKey:@"filterType"];
     [self searchBarSearchButtonClicked:searchBar];
 }
 
@@ -394,15 +394,32 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
+    BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:result.videoId];
+    NSString *message = !isSubbed ? @"Subscribe to this channel?" : @"Unsubscribe from this channel?";
+    NSString *title = !isSubbed ? @"Subscribe" : @"Unsubscribe";
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
-                                          message: @"Subscribe to this channel?"
+                                          message: message
                                           preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            if (isSubbed) {
+                NSString *stupidId = [result stupidId];
+                if (!stupidId) {
+                    stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:result.videoId];
+                    TLog(@"found stupid id: %@", stupidId);
+                }
+                if (stupidId){
+                    [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:result.stupidId];
+                    [[KBYourTube sharedInstance] removeChannelFromUserDetails:result];
+                } else {
+                    TLog(@"failed to unsub! couldnt find stupid id!");
+                }
+            } else {
+                [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            }
         });
         
         
@@ -473,21 +490,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                                           message: @"Create a copy of this playlist to your channel?"
                                           preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Copy" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            [[TYAuthUserManager sharedInstance] copyPlaylist:result completion:^(NSString *response) {
-                
-                
-                
-                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        [[TYAuthUserManager sharedInstance] copyPlaylist:result completion:^(NSString *response) {
             }];
-            
-            
         });
-        
-        
     }];
     [alertController addAction:yesAction];
     UIAlertAction *cancelAction = [UIAlertAction
@@ -577,6 +583,12 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     {
         
         KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypeChannel withTitle:currentResult.title withId:currentResult.videoId];
+        BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:currentResult.videoId];
+        if (isSubbed){
+            TLog(@"is subbed to channel: %@", currentResult.title);
+        } else {
+            TLog(@"is not subbed to channel: %@", currentResult.title);
+        }
         [[self navigationController] pushViewController:genericTableView animated:true];
         
     } else if (currentResult.resultType == kYTSearchResultTypePlaylist)

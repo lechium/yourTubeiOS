@@ -13,6 +13,8 @@
 #import "KBYTDownloadManager.h"
 #import "TYAuthUserManager.h"
 #import <SafariServices/SafariServices.h>
+#import "AuthViewController.h"
+#import "NSFileManager+Size.h"
 
 @interface KBYTDownloadsTableViewController () <SFSafariViewControllerDelegate> {
     ScaleAnimation *_scaleAnimationController;
@@ -41,8 +43,8 @@
     return self;
 }
 
-- (void)delayedReloadData
-{
+- (void)delayedReloadData {
+    LOG_SELF;
     [self performSelector:@selector(reloadData) withObject:nil afterDelay:3];
 }
 
@@ -64,36 +66,41 @@
     
 }
 
-- (void)updateDownloadProgress:(NSDictionary *)theDict
-{
-    NSString *title = [theDict[@"file"] lastPathComponent];
-    NSDictionary *theObject = [[self.activeDownloads filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.outputFilename == %@", title]]lastObject];
-    if (theObject != nil)
-    {
-        
-        
+- (void)updateDownloadProgress:(NSDictionary *)theDict {
+    //LOG_SELF;
+    NSString *title = [theDict[@"videoId"] lastPathComponent];
+    //TLog(@"active: %@", self.activeDownloads);
+    //TLog(@"searching for: %@", theDict);
+    NSDictionary *theObject = [[self.activeDownloads filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.videoId == %@", title]]lastObject];
+    if (theObject != nil) {
+        //TLog(@"found object: %@", theObject);
         NSInteger index = [self.activeDownloads indexOfObject:theObject];
-        if (index != NSNotFound)
-        {
+        //TLog(@"found index: %lu", index);
+        if (index != NSNotFound) {
             NSIndexPath *path = [NSIndexPath indexPathForRow:index inSection:0];
             KBYTDownloadCell *cell = [[self tableView] cellForRowAtIndexPath:path];
-            [cell.progressView setProgress:[theDict[@"completionPercent"] floatValue]];
-            if ([theDict[@"completionPercent"] integerValue] == 1)
-            {
+            CGFloat completionPercent = [theDict[@"completionPercent"] floatValue];
+            cell.completionPercent = completionPercent;
+            [cell.progressView setProgress:completionPercent];
+            if (theDict[@"estimatedDuration"]) {
+                cell.detailTextLabel.text = theDict[@"estimatedDuration"];
+                cell.marqueeDetailTextLabel.text = theDict[@"estimatedDuration"];
+            }
+            if ([theDict[@"completionPercent"] integerValue] == 1) {
                 [cell.progressView setIndeterminate:true];
             }
+        } else {
+            TLog(@"didnt find index!");
         }
     }
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.navigationItem.title = @"";
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     self.navigationItem.title = @"Downloads";
     [super viewWillAppear:animated];
     [self reloadData];
@@ -119,7 +126,10 @@
       @"type": @(kYTSearchResultTypeChannel) },
     @{@"title": @"360",
       @"id": KBYT360ChannelID,
-      @"type": @(kYTSearchResultTypeChannel) }, 
+      @"type": @(kYTSearchResultTypeChannel) },
+    @{@"title": @"Live",
+      @"id": KBYTLiveChannelID,
+      @"type": @(kYTSearchResultTypeChannel) },
     ];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -132,18 +142,19 @@
     
 }
 
-- (void)showHamburgerMenu
-{
+- (void)showHamburgerMenu {
     NSArray *images = @[
                         [UIImage imageNamed:@"profile"],
                         [UIImage imageNamed:@"popular"],
                         [UIImage imageNamed:@"music"],
                         [UIImage imageNamed:@"sports"],
                         [UIImage imageNamed:@"360"],
+                        [UIImage imageNamed:@"live"],
                         [UIImage imageNamed:@"globe"]];
     
     
     NSArray *colors = @[
+                        [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
                         [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
                         [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
                         [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1],
@@ -169,6 +180,31 @@
     return signOut;
 }
 
+- (void)storeAuth {
+    TYAuthUserManager *shared = [TYAuthUserManager sharedInstance];
+    [shared startAuthAndGetUserCodeDetails:^(NSDictionary *deviceCodeDict) {
+        AuthViewController *avc = [[AuthViewController alloc] initWithUserCodeDetails:deviceCodeDict];
+        [self presentViewController:avc animated:true completion:nil];
+    } completion:^(NSDictionary *tokenDict, NSError *error) {
+        NSLog(@"inside here???");
+        if ([[tokenDict allKeys] containsObject:@"access_token"]){
+            NSLog(@"we good: %@", tokenDict );
+            //AppDelegate *ad = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+            //[ad updateForSignedIn];
+            [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+                [[KBYourTube sharedInstance] setUserDetails:outputResults];
+            } failureBlock:^(NSString *error) {
+                NSLog(@"failed fetching user details with error: %@", error);
+                //[[TYAuthUserManager sharedInstance] signOut];
+            }];
+            [self dismissViewControllerAnimated:true completion:nil];
+        } else {
+            NSLog(@"show error alert here");
+            [self dismissViewControllerAnimated:true completion:nil];
+        }
+    }];
+}
+
 - (void)sidebar:(RNFrostedSidebar *)sidebar didTapItemAtIndex:(NSUInteger)index {
     
     [sidebar dismissAnimated:YES completion:^(BOOL finished) {
@@ -176,13 +212,15 @@
             if (![Reachability checkInternetConnectionWithAlert]) {
                 return;
             }
-            if (index == 5) { //sign out or in
+            if (index == 6) { //sign out or in
                 UIViewController *ovc  = nil;
                 if ([[KBYourTube sharedInstance] isSignedIn]) {
                     ovc = [self signOutAlert];
                     [self presentViewController:ovc animated:true completion:nil];
                     return;
                 } else {
+                    [self storeAuth];
+                    /*
                     ovc = (KBYTWebViewController*)[[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:[TYAuthUserManager suastring]]];
                     //ovc = [TYAuthUserManager OAuthWebViewController];
                     [[TYAuthUserManager sharedInstance] createAndStartWebserverWithCompletion:^(BOOL success) {
@@ -190,7 +228,7 @@
                             [[self navigationController] popViewControllerAnimated:true];
                         });
                     }];
-                    
+                    */
                 }
                 [self.navigationController pushViewController:ovc animated:true];
                 
@@ -231,24 +269,16 @@
 
 - (void)showSearchView:(id)sender
 {
-    if (![Reachability checkInternetConnectionWithAlert])
-    {
+    if (![Reachability checkInternetConnectionWithAlert]) {
         return;
     }
     KBYTSearchTableViewController *searchView = [[KBYTSearchTableViewController alloc] init];
     _scaleAnimationController.viewForInteraction = searchView.view;
-    
     [self.navigationController pushViewController:searchView animated:true];
-    //[self presentViewController:searchView animated:true completion:^{
-    
-    //
-    // }];
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     NSString *name = nil;
-    
     switch (section) {
         case 0: //
             
@@ -288,17 +318,14 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    if ([[self activeDownloads] count] == 0)
-    {
+    if ([[self activeDownloads] count] == 0) {
         return [[self downloadArray] count];
     }
     switch (section) {
         case 0:
-            
             return [[self activeDownloads] count];
             
         case 1:
-            
             return [[self downloadArray] count];
             
             
@@ -306,11 +333,9 @@
     return [self.downloadArray count];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 100;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
@@ -323,12 +348,10 @@
     KBYTLocalMedia *currentItem = nil;
     BOOL downloading = false;
     
-    if ([[self activeDownloads] count] == 0)
-    {
+    if ([[self activeDownloads] count] == 0) {
         currentItem = [self.downloadArray objectAtIndex:indexPath.row];
         downloading = false;
     } else {
-        
         switch (indexPath.section) {
             case 0:
                 currentItem = [self.activeDownloads objectAtIndex:indexPath.row];
@@ -342,17 +365,18 @@
     }
    // NSString *duration = [NSString stringFromTimeInterval:[currentItem[@"duration"]integerValue]];
     cell.duration = [NSString stringFromTimeInterval:[currentItem.duration integerValue]];
+    NSString *fileSize = FANCY_BYTES(currentItem.fileSize);
+    TLog(@"%@ fileSize: %@", currentItem.title, fileSize);
     cell.detailTextLabel.text = currentItem.author;
     cell.textLabel.text = currentItem.title;
     cell.detailTextLabel.textColor = [UIColor grayColor];
-    if (currentItem.format != nil && downloading == false)
-    {
+    cell.viewsLabel.textColor = [UIColor grayColor];
+    cell.viewsLabel.text = fileSize;
+    if (currentItem.format != nil && downloading == false) {
         //cell.views = [currentItem[@"views"] stringByAppendingString:@" Views"];
-        cell.views = currentItem.format;
+        cell.views = [NSString stringWithFormat:@"%@ - %@", currentItem.format, fileSize];
     }
-    
-    if (downloading == true)
-    {
+    if (downloading == true) {
         cell.views = @"";
     }
     cell.downloading = downloading;
@@ -361,8 +385,6 @@
     [cell.imageView setContentMode:UIViewContentModeScaleAspectFit];
     cell.imageView.autoresizingMask = ( UIViewAutoresizingNone );
     [cell.imageView sd_setImageWithURL:imageURL placeholderImage:theImage options:SDWebImageAllowInvalidSSLCertificates];
-    
- 
     return cell;
 }
 
@@ -374,42 +396,41 @@
  }
  */
 
-- (void)deleteMedia:(KBYTLocalMedia *)theMedia fromSection:(NSInteger)section
-{
+- (void)deleteMedia:(KBYTLocalMedia *)theMedia fromSection:(NSInteger)section {
     if (section == 0) //active download, no file to delete
     {
-     
-        if ([self vanillaApp])
-        {
+        if ([self vanillaApp]) {
             [[KBYTDownloadManager sharedInstance] removeDownloadFromQueue:[theMedia dictionaryValue]];
         } else {
             [[KBYTMessagingCenter sharedInstance] stopDownload:[theMedia dictionaryValue]];
-            
-            
         }
-        
         NSMutableArray *mutableArray = [[self activeDownloads] mutableCopy];
         [mutableArray removeObject:theMedia];
         self.activeDownloads = mutableArray;
         //NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
-        
-        
     } else {
-        
-        
         NSString *filePath = theMedia.filePath;
+        if (![FM fileExistsAtPath:filePath]) {
+            filePath = [[self downloadFolder] stringByAppendingPathComponent:theMedia.outputFilename];//[NSHomeDirectory() stringByAppendingPathComponent:filePath];
+        }
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         NSMutableArray *mutableArray = [[self downloadArray] mutableCopy];
+        NSInteger index = [mutableArray indexOfObject:theMedia];
+        TLog(@"index: %lu", index);
+        if (index == NSNotFound) {
+            TLog(@"object: %@", theMedia);
+            TLog(@"mutableArray: %@", mutableArray);
+        }
         [mutableArray removeObject:theMedia];
         self.downloadArray = [mutableArray copy]; //this needs to be a copy otherwise when we add the item
-        //below top make sure the download plist file stays current the items being added during
+        //below to make sure the download plist file stays current the items being added during
         //download throw off the size of the table section arrays and it leads to a crash
         
-        if ([self.activeDownloads count] > 0)
-        {
+        if ([self.activeDownloads count] > 0) {
             [mutableArray addObjectsFromArray:self.activeDownloads];
         }
-        [mutableArray writeToFile:[self downloadFile] atomically:true];
+        
+        [[mutableArray convertArrayToDictionaries] writeToFile:[self downloadFile] atomically:true];
     }
 }
 
@@ -519,7 +540,7 @@
     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : file.title, MPMediaItemPropertyPlaybackDuration: file.duration };//, MPMediaItemPropertyArtwork: artwork };
     
     NSURL *playURL = [NSURL fileURLWithPath:outputFile];
-    NSLog(@"play url: %@", playURL);
+    TLog(@"play url: %@", playURL);
     if ([self isPlaying] == true  ){
         return;
     }

@@ -1,0 +1,6 @@
+framework module OCTotallyLazy {
+  umbrella header "OCTotallyLazy.h"
+  export *
+
+  module * { export * }
+}

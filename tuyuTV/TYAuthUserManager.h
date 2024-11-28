@@ -35,7 +35,11 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 - (BOOL)checkAndSetCredential;
 - (void)signOut;
 + (NSString *)ytAuthURL;
-
+- (NSArray *)subbedChannelIDs;
+- (BOOL)isSubscribedToChannel:(NSString *)channelID;
+- (KBYTSearchResult *)subbedChannelForChannelID:(NSString *)channelID;
++ (KBYTSearchResult *)subbedChannelForChannelID:(NSString *)channelID;
+- (NSString *)channelStupidIdForChannelID:(NSString *)channelID;
 #if TARGET_OS_IOS
 + (KBYTWebViewController *)ytAuthWebViewController;
 - (void)createAndStartWebserverWithCompletion:(void(^)(BOOL success))block;
@@ -47,6 +51,8 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 + (WebViewController *)OAuthWebViewController;
 #endif
  */
+
+- (void)getProfileDetailsWithCompletion:(void(^)(NSDictionary *profileDetails, NSString *error))completionBlock;
 - (void)getProfileThumbnail:(NSString *)profileID completion:(void(^)(NSString *thumbURL, NSString *error)) completionBlock;
 - (void)getPlaylistsWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *playlists, NSString *error))completionBlock;
 - (void)getChannelListWithCompletion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock;
@@ -66,6 +72,6 @@ typedef void (^DeviceCodeBlock)(NSDictionary *deviceCodeDict);
 - (void)copyPlaylist:(KBYTSearchResult *)result completion:(void(^)(NSString *response))completion;
 - (void)getOAuthCodeWithCompletion:(void(^)(NSDictionary *codeDict))block;
 - (void)startAuthAndGetUserCodeDetails:(DeviceCodeBlock)codeBlock completion:(FinishedBlock)finished;
-- (id)setPosition:(NSInteger)position forVideoID:(NSString *)videoID inPlaylist:(NSString *)playlistID;
+- (id)setPosition:(NSInteger)position forSearchItem:(KBYTSearchResult *)searchItem inPlaylist:(NSString *)playlistID;
 - (void)getPlaylistItems:(NSString *)playlistID completion:(void(^)(NSArray <KBYTSearchResult *> *channels, NSString *error))completionBlock;
 @end

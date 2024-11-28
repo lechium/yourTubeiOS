@@ -43,17 +43,14 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface NSDictionary (strings)
-- (NSMutableDictionary *)convertDictionaryToObjects;
 - (NSString *)stringValue;
 - (NSString *)JSONStringRepresentation;
-- (NSMutableDictionary *)convertObjectsToDictionaryRepresentations;
 @end
 
 @interface NSArray (strings)
 - (NSString *)runsToString;
-- (NSMutableArray *)convertArrayToObjects;
-- (NSString *)stringFromArray;
-- (NSMutableArray *)convertArrayToDictionaries;
+- (CGFloat)floatSum;
+- (CGFloat)floatAverage;
 @end
 
 @interface NSString (TSSAdditions)
@@ -73,16 +70,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSURL (QSParameters)
 - (NSURL *)highResVideoURL;
+- (NSString *)urlByAppendingHTTPsIfNecessary;
 - (NSArray *)parameterArray;
 - (NSDictionary *)parameterDictionary;
 @end
 
 @interface NSObject  (convenience)
+- (NSString *)absoluteDownloadFolder;
 - (UIViewController *)topViewController;
 #if TARGET_OS_TV
 - (BOOL)darkMode;
 #endif
-+ (id)objectFromDictionary:(NSDictionary *)dictionary;
+//+ (id)objectFromDictionary:(NSDictionary *)dictionary;
 - (NSDictionary *)dictionaryRepresentation;
 - (void)recursiveInspectObjectLikeKey:(NSString *)desiredKey saving:(NSMutableArray *)array;
 - (void)recursiveInspectObjectForKey:(NSString *)desiredKey saving:(NSMutableArray *)array;

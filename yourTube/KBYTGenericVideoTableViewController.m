@@ -11,10 +11,18 @@
 #import "SVProgressHUD/SVIndefiniteAnimatedView.h"
 #import "KBYTSearchItemViewController.h"
 #import "TYAuthUserManager.h"
+#import "UIImage+Scale.h"
+
+#define TABLE_TOP 100.0
+#define TAB_TOP 50.0
+
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-@interface KBYTGenericVideoTableViewController ()
+@interface KBYTGenericVideoTableViewController () {
+    NSArray <KBYTTab *>*_tabDetails;
+    NSInteger selectedSegment;
+}
 
 @property (nonatomic, strong) NSMutableArray *searchResults; // Filtered search results
 @property (readwrite, assign) NSInteger totalResults; // Filtered search results
@@ -27,6 +35,70 @@
 @implementation KBYTGenericVideoTableViewController
 
 @synthesize tableType, customTitle, customId, currentPlaybackArray;
+
+- (void)setTabDetails:(NSArray <KBYTTab*> *)tabDetails {
+    _tabDetails = tabDetails;
+    [self setupTabSegment];
+}
+
+- (void)setupTabSegment {
+    if (!self.tabSegment) {
+        NSMutableArray *tabBarItems = [NSMutableArray new];
+        [self.tabDetails enumerateObjectsUsingBlock:^(KBYTTab * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj.title){
+                [tabBarItems addObject:obj.title];
+            };
+        }];
+        DLog(@"tabBarItems: %@ dark: %d", tabBarItems, self.darkMode);
+        self.tabSegment = [[HMSegmentedControl alloc] initWithSectionTitles:tabBarItems];//[[UISegmentedControl alloc] initWithItems:tabBarItems];
+        NSDictionary *nattrs = @{NSFontAttributeName: [UIFont systemFontOfSize:14], NSForegroundColorAttributeName: [UIColor labelColor]};
+        NSDictionary *sattrs = @{NSFontAttributeName: [UIFont systemFontOfSize:14], NSForegroundColorAttributeName: [UIColor secondaryLabelColor]};
+        [self.tabSegment setTintColor:[UIColor lightTextColor]];
+        self.tabSegment.selectionIndicatorLocation = HMSegmentedControlSelectionIndicatorLocationNone;
+        [self.tabSegment setTitleTextAttributes:nattrs];//[self.tabSegment setTitleTextAttributes:nattrs forState:UIControlStateNormal];
+        [self.tabSegment setSelectedTitleTextAttributes:sattrs];
+        //[self.tabSegment setTitleTextAttributes:sattrs forState:UIControlStateSelected];
+       
+        //[self.tabSegment setDividerImage:[UIImage imageWithColor:[UIColor whiteColor] andSize:CGSizeMake(1.0, 1.0)] forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+       
+        [self.tabSegment setBackgroundColor:[UIColor systemBackgroundColor]];
+        //[self.tabSegment setBackgroundImage:[UIImage imageWithColor:[UIColor systemBackgroundColor] andSize:CGSizeMake(1.0, 40)] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+        self.tabSegment.translatesAutoresizingMaskIntoConstraints = false;
+        [self.view addSubview:self.tabSegment];
+        [self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+        [self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+        [self.tabSegment autoCenterVerticallyInSuperview];
+        [self.tabSegment autoSetDimension:ALDimensionHeight toSize:60];
+        
+        [NSLayoutConstraint deactivateConstraints:@[self.tableTopConstraint]];
+        self.tabBarTopConstraint = [self.tabSegment autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        self.tableTopConstraint = [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.tabSegment withOffset:5];
+        [self.tabSegment setSelectedSegmentIndex:0];
+        [self.tabSegment addTarget:self action:@selector(segmentSelected:) forControlEvents:UIControlEventValueChanged];
+        [self afterSetupTabSegment];
+    }
+}
+
+- (void)segmentSelected:(UISegmentedControl *)sender {
+    TLog(@"did select item at index: %lu current Index: %lu", sender.selectedSegmentIndex, selectedSegment);
+    if (selectedSegment == sender.selectedSegmentIndex) {
+        TLog(@"dont!");
+        return;
+    }
+    selectedSegment = sender.selectedSegmentIndex;
+    KBYTTab *tab = self.tabDetails[@(sender.selectedSegmentIndex)];
+    TLog(@"found tab: %@ params: %@", tab.title, tab.params);
+    [self fetchChannelDetails:tab];
+}
+
+- (void)afterSetupTabSegment {
+    
+}
+
+- (NSArray <KBYTTab *>*)tabDetails {
+    return _tabDetails;
+}
+
 
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -42,6 +114,15 @@
     [super viewDidLoad];
     
     self.extendedLayoutIncludesOpaqueBars = NO;
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView.translatesAutoresizingMaskIntoConstraints = FALSE;
+    [self.view addSubview:self.tableView];
+    self.view.backgroundColor = [UIColor systemBackgroundColor];
+    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.tableView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
+    self.tableTopConstraint =  [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeTop];
 #if !TARGET_OS_TV
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 #endif
@@ -58,6 +139,51 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self updateTable];
     self.title = self.customTitle;
+}
+
+- (KBYTTab *)selectedTab {
+    if (self.tabSegment) {
+        NSInteger index = self.tabSegment.selectedSegmentIndex;
+        TLog(@"did select item at index: %lu", index);
+        if (index != NSNotFound) {
+            KBYTTab *tab = self.tabDetails[@(index)];
+            return tab;
+        }
+    }
+    return nil;
+}
+
+
+- (void)fetchChannelDetails:(KBYTTab *)tab {
+    NSInteger selectedTabIndex = [[self tabDetails] indexOfObject:tab];
+    [[KBYourTube sharedInstance] getChannelVideosAlt:self.channel.channelID params:[tab params] continuation:nil completionBlock:^(KBYTChannel *channel) {
+        if (channel.isAboutDetails) {
+            self.channel.aboutDetails = channel.aboutDetails;
+            //aboutView.alpha = 1.0;
+            //aboutDescription.text = channel.aboutDetails;
+        } else {
+            //aboutView.alpha = 0.0;
+            //self.channel = channel;
+        }
+        NSInteger tabIndex = [self.channel.tabs indexOfObject:tab];
+        if (tabIndex > 0) {
+            DLog(@"isnt the first tab: %lu title: %@", tabIndex, tab.title);
+            
+        }
+        self.channel = channel;
+        [self setTabDetails:channel.tabs];
+        KBYTTab *selectedTab = channel.tabs[@(selectedTabIndex)];
+        if (selectedTab) {
+            DLog(@"selectedTab: %@ content count: %lu", selectedTab, selectedTab.contents.count);
+            self.searchResults = [[self.channel allSectionItems] mutableCopy];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.tableView reloadData];
+            });
+        }
+        //[self.tableView reloadData];
+    } failureBlock:^(NSString *error) {
+        DLog(@"fetch channel failed with error: %@", error);
+    }];
 }
 
 - (void)addLongPressToCell:(KBYTDownloadCell *)cell {
@@ -165,17 +291,33 @@
 
 - (void)showChannelAlertForSearchResult:(KBYTSearchResult *)result {
     DLOG_SELF;
+    BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:result.videoId];
+    NSString *message = !isSubbed ? @"Subscribe to this channel?" : @"Unsubscribe from this channel?";
+    NSString *title = !isSubbed ? @"Subscribe" : @"Unsubscribe";
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"Channel Options"
-                                          message: @"Subscribe to this channel?"
+                                          message: message
                                           preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:@"Subscribe" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *yesAction = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
-            
+            if (isSubbed) {
+                NSString *stupidId = [result stupidId];
+                if (!stupidId) {
+                    stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:result.videoId];
+                    TLog(@"found stupid id: %@", stupidId);
+                }
+                if (stupidId){
+                    [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:result.stupidId];
+                    [[KBYourTube sharedInstance] removeChannelFromUserDetails:result];
+                } else {
+                    TLog(@"failed to unsub! couldnt find stupid id!");
+                }
+            } else {
+                [[TYAuthUserManager sharedInstance] subscribeToChannel:result.videoId];
+            }
             
         });
         
@@ -234,20 +376,21 @@
 }
 
 - (id)initWithSearchResult:(KBYTSearchResult *)result {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super init];
     self.searchResult = result;
     return self;
 }
 
 - (id)initWithForAuthUser {
-    self = [super initWithStyle:UITableViewStylePlain];
+    //self = [super initWithStyle:UITableViewStylePlain];
+    self = [super init];
     tableType = kYTSearchResultTypeAuthUser;
     _userData = [[KBYourTube sharedInstance] userDetails];
     return self;
 }
 
 - (id)initForType:(YTSearchResultType)detailsType withTitle:(NSString *)theTitle withId:(NSString *)identifier {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super init];
     tableType = detailsType;
     customTitle = theTitle;
     customId = identifier;
@@ -256,7 +399,7 @@
 
 
 - (id)initForType:(YTSearchResultType)detailsType {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super init];
     tableType = detailsType;
     return self;
 }
@@ -273,11 +416,15 @@
     self.currentPage++;
     
     if (self.channel) {
-        [[KBYourTube sharedInstance] getChannelVideosAlt:self.channel.channelID continuation:self.channel.continuationToken completionBlock:^(KBYTChannel *channel) {
-            //[self.channel mergeChannelVideos:channel];
-        } failureBlock:^(NSString *error) {
-            
-        }];
+        if (self.channel.tabs.count > 0) {
+            [self setTabDetails:self.channel.tabs];
+        } else {
+            [[KBYourTube sharedInstance] getChannelVideosAlt:self.channel.channelID params:nil continuation:self.channel.continuationToken completionBlock:^(KBYTChannel *channel) {
+                //[self.channel mergeChannelVideos:channel];
+            } failureBlock:^(NSString *error) {
+                
+            }];
+        }
     }
     
     if (self.playlist) {
@@ -330,16 +477,58 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     return cell;
 }
 
+- (void)updateRightTabBarItem {
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    if (![[KBYourTube sharedInstance] isSignedIn]){
+        self.navigationItem.rightBarButtonItem = nil;
+        return;
+    }
+    if (self.tableType == kYTSearchResultTypeChannel) {
+        BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:self.customId];
+        NSString *title = @"Subscribe";
+        if (isSubbed) {
+            title = @"Unsubscribe";
+        }
+        UIBarButtonItem *subUnsubItem = [[UIBarButtonItem alloc] initWithTitle:title style:UIBarButtonItemStylePlain target:self action:@selector(toggleSub:)];
+        self.navigationItem.rightBarButtonItem = subUnsubItem;
+    } else {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+    
+}
+
+- (void)toggleSub:(id)sender {
+    LOG_SELF;
+    TLog(@"sender: %@", sender);
+    BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:self.customId];
+    if (isSubbed) {
+        TLog(@"is subbed, attempt to get stupid id!");
+        NSString *stupidId = [[TYAuthUserManager sharedInstance] channelStupidIdForChannelID:self.customId];
+        TLog(@"stupid id: %@", stupidId);
+        [[TYAuthUserManager sharedInstance] unSubscribeFromChannel:stupidId];
+        [[KBYourTube sharedInstance] removeChannelIDFromUserDetails:self.customId];
+        [self updateRightTabBarItem];
+    } else {
+        [[TYAuthUserManager sharedInstance] subscribeToChannel:self.customId];
+        [self updateRightTabBarItem];
+    }
+}
+
 - (void)updateTable {
     [SVProgressHUD show];
     if (self.tableType == kYTSearchResultTypeChannel) {
-        [[KBYourTube sharedInstance] getChannelVideosAlt:self.customId continuation:nil completionBlock:^(KBYTChannel *channel) {
+        [[KBYourTube sharedInstance] getChannelVideosAlt:self.customId params:nil continuation:nil completionBlock:^(KBYTChannel *channel) {
             [SVProgressHUD dismiss];
             self.channel = channel;
+            if (channel.tabs.count > 0) {
+                [self setTabDetails:channel.tabs];
+            }
             self.title = channel.title;
             self.searchResults = [[self.channel allSectionItems] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.tableView reloadData];
+                [self updateRightTabBarItem];
             });
         } failureBlock:^(NSString *error) {
             TLog(@"error: %@", error);
@@ -352,6 +541,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
             self.searchResults = [[self.playlist videos] mutableCopy];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.tableView reloadData];
+                [self updateRightTabBarItem];
             });
         } failureBlock:^(NSString *error) {
             TLog(@"error: %@", error);
@@ -371,6 +561,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
                 self.title = self.userData[@"userName"];
                 [SVProgressHUD dismiss];
                 [self.tableView reloadData];
+                [self updateRightTabBarItem];
             });
         } failureBlock:^(NSString *error) {
             TLog(@"error: %@", error);
@@ -639,6 +830,12 @@ forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (currentResult.resultType == kYTSearchResultTypeChannel) {
         
         KBYTGenericVideoTableViewController *genericTableView = [[KBYTGenericVideoTableViewController alloc] initForType:kYTSearchResultTypeChannel withTitle:currentResult.title withId:currentResult.videoId];
+        BOOL isSubbed = [[TYAuthUserManager sharedInstance] isSubscribedToChannel:currentResult.videoId];
+        if (isSubbed){
+            TLog(@"is subbed to channel: %@", currentResult.title);
+        } else {
+            TLog(@"is not subbed to channel: %@", currentResult.title);
+        }
         [[self navigationController] pushViewController:genericTableView animated:true];
         return;
     } else if (currentResult.resultType == kYTSearchResultTypePlaylist) {

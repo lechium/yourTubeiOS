@@ -26,11 +26,11 @@
 }
 
 - (void)clearChannelHistory {
-    [UD removeObjectForKey:@"ChannelHistory"];
+    [[KBYourTube sharedUserDefaults] removeObjectForKey:@"ChannelHistory"];
 }
 
 - (void)clearVideoHistory {
-    [UD removeObjectForKey:@"VideoHistory"];
+    [[KBYourTube sharedUserDefaults] removeObjectForKey:@"VideoHistory"];
 }
 
 - (NSArray *)videoHistoryObjects {
@@ -67,7 +67,9 @@
             result.title = channelDict[@"title"];
             result.resultType = kYTSearchResultTypeChannel;
             result.imagePath = channelDict[@"image"];
-            [convertedArray addObject:result];
+            if (result.title != nil) {
+                [convertedArray addObject:result];
+            }
         }
         return convertedArray;
     }
@@ -76,49 +78,61 @@
 }
 
 - (NSArray *)channelHistory {
-    return [[NSUserDefaults standardUserDefaults] arrayForKey:@"ChannelHistory"];
+    return [[KBYourTube sharedUserDefaults] arrayForKey:@"ChannelHistory"];
 }
 - (NSArray *)videoHistory {
-    return [[NSUserDefaults standardUserDefaults] arrayForKey:@"VideoHistory"];
+    return [[KBYourTube sharedUserDefaults] arrayForKey:@"VideoHistory"];
 }
 
 - (void)addChannelToHistory:(NSDictionary *)channelDetails {
+    //TLog(@"add to channel to history: %@", channelDetails);
     NSMutableDictionary *channel = [channelDetails mutableCopy];
 
     [channel removeObjectForKey:@"sections"];
     NSArray *history = [self channelHistory];
     if (history == nil) {
         NSArray *newArray = @[channel];
-        [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"ChannelHistory"];
+        [[KBYourTube sharedUserDefaults] setObject:newArray forKey:@"ChannelHistory"];
     } else {
-        if ([history containsObject:channel]){
-            return;
-        }
-        
         NSMutableArray *newArray = [history mutableCopy];
-        [newArray addObject:channel];
-        [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"ChannelHistory"];
+        NSArray *foundItems = [history filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"channelID == %@", channelDetails[@"channelID"]]];
+        if (foundItems.count > 0) {
+            //TLog(@"items already exists: %@", foundItems);
+            NSInteger index = [history indexOfObject:[foundItems firstObject]];
+            if (index == 0) {
+                return;
+            }
+            [newArray removeObjectsInArray:foundItems];
+        }
+        //[newArray addObject:channel];
+        [newArray insertObject:channel atIndex:0];
+        [[KBYourTube sharedUserDefaults] setObject:newArray forKey:@"ChannelHistory"];
     }
+    [[KBYourTube sharedInstance] postUserDataChangedNotification];
 }
 
 - (void)addVideoToHistory:(NSDictionary *)videoDetails {
     if (!videoDetails) return;
-    //TLog(@"video history: %@", videoDetails);
+    //TLog(@"add to video history: %@", videoDetails);
     NSMutableDictionary *video = [videoDetails mutableCopy];
     [video removeObjectForKey:@"streams"];
     NSArray *history = [self videoHistory];
     if (history == nil) {
         NSArray *newArray = @[video];
-        [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"VideoHistory"];
-    } else {
-        if ([history containsObject:video]) {
-            TLog(@"item already exists");
-            return;
-        }
+        [[KBYourTube sharedUserDefaults] setObject:newArray forKey:@"VideoHistory"];
+    } else { //channelID
         NSMutableArray *newArray = [history mutableCopy];
-        [newArray addObject:video];
-        [[NSUserDefaults standardUserDefaults] setObject:newArray forKey:@"VideoHistory"];
+        NSArray *foundItems = [history filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"videoID == %@", videoDetails[@"videoID"]]];
+        
+        if (foundItems.count > 0) {
+            //TLog(@"items already exists: %@", foundItems);
+            [newArray removeObjectsInArray:foundItems];
+        }
+        //[newArray addObject:video];
+        [newArray insertObject:video atIndex:0];
+        [[KBYourTube sharedUserDefaults] setObject:newArray forKey:@"VideoHistory"];
     }
+    [[KBYourTube sharedInstance] postUserDataChangedNotification];
 }
 
 @end

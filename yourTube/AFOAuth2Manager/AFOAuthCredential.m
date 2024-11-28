@@ -58,6 +58,20 @@ static NSDictionary *AFKeychainQueryDictionaryWithIdentifier(NSString *identifie
     return [[self alloc] initWithOAuthToken:token tokenType:type];
 }
 
++ (instancetype)credentialWithOAuthDictionary:(NSDictionary *)dict {
+    AFOAuthCredential *cred = [[self alloc] init];
+    if (!self) {
+        return nil;
+    }
+    
+    cred.accessToken = dict[@"access_token"];
+    cred.tokenType = dict[@"token_type"];
+    NSInteger expireTime = [dict[@"expires_in"]integerValue];
+    cred.expiration = [[NSDate date] dateByAddingTimeInterval:expireTime];
+    cred.refreshToken = dict[@"refresh_token"];
+    return cred;
+}
+
 - (id)initWithOAuthToken:(NSString *)token
                tokenType:(NSString *)type
 {
@@ -104,6 +118,7 @@ static NSDictionary *AFKeychainQueryDictionaryWithIdentifier(NSString *identifie
 }
 
 - (BOOL)isExpired {
+    if (self.expiration == nil) return TRUE;
     return [self.expiration compare:[NSDate date]] == NSOrderedAscending;
 }
 

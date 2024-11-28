@@ -32,7 +32,7 @@
         mainMenuItem = @{@"name": @"Sign In", @"imagePath": @"YTPlaceholder", @"detail": @"", @"detailOptions": @[], @"description": @"Sign in to your YouTube account."};
     }
     
-    NSString *filterType = [UD valueForKey:@"filterType"];
+    NSString *filterType = [[KBYourTube sharedUserDefaults] valueForKey:@"filterType"];
     if (!filterType){
         filterType = @"All";
     }
@@ -43,13 +43,23 @@
     manageFeaturedChannels.name = @"Manage Featured Channels";
     manageFeaturedChannels.imagePath = @"YTPlaceholder.png";
     manageFeaturedChannels.assetDescription = @"Manage the channels listed in the tuyu home view";
+    
+    MetaDataAsset *forceHomeReload = [MetaDataAsset new];
+    forceHomeReload.name = @"Force Home Reload";
+    forceHomeReload.imagePath = @"YTPlaceholder.png";
+    forceHomeReload.assetDescription = @"Force the tuyu home view to reload its data.";
+    
+    MetaDataAsset *resetCacheFiles = [MetaDataAsset new];
+    resetCacheFiles.name = @"Reset Cache Files";
+    resetCacheFiles.imagePath = @"YTPlaceholder.png";
+    resetCacheFiles.assetDescription = @"Delete all existing cache files, this will reset the Home view channels to default settings.";
     /*
     NSDictionary *searchSettings = @{@"name": @"Search Filter", @"imagePath": @"YTPlaceholder.png", @"detail": filterType, @"detailOptions": @[@"All", @"Playlists", @"Channels"],  @"description": @"Filter what results come back from searches."};
     
     MetaDataAsset *search = [[MetaDataAsset alloc] initWithDictionary:searchSettings];
     
      */
-    svc.items = @[asset, manageFeaturedChannels];
+    svc.items = @[asset, manageFeaturedChannels, forceHomeReload, resetCacheFiles];
     svc.title = @"settings";
     return svc;
     //UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:svc];
@@ -57,7 +67,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    DLog(@"dt: %@", [[KBYourTube sharedInstance] userDetails]);
+    //DLog(@"dt: %@", [[KBYourTube sharedInstance] userDetails]);
     MetaDataAsset *theAsset = self.items[0];
     if ([self signedIn] == true) {
         NSString *ourProfileImage = [[KBYourTube sharedInstance]userDetails][@"profileImage"];
@@ -146,15 +156,75 @@
             //[super tableView:tableView didSelectRowAtIndexPath:indexPath];
             //[self handleToggle];
             break;
+            
+        case 2:
+            [[KBYourTube sharedInstance] postHomeDataChangedNotification];
+            break;
+            
+        case 3:
+            [self showResetCacheAlert];
+            break;
         default:
             break;
     }
+}
+
+- (void)resetCache {
+    
+    NSArray *contents = [FM contentsOfDirectoryAtPath:[self appSupportFolder] error:nil];
+    [contents enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *fp = [[self appSupportFolder] stringByAppendingPathComponent:obj];
+        TLog(@"delete file: %@", obj);
+        [FM removeItemAtPath:fp error:nil];
+    }];
+}
+
+- (void)showResetCacheAlert {
+    DLog(@"app support folder: %@", [self appSupportFolder]);
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Reset Cache"
+                                          message: @"Are you sure you want to reset the cache?"
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *yesAction            = [UIAlertAction
+                                           actionWithTitle:@"Yes"
+                                           style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction *action) {
+        [self resetCache];
+    }];
+    [alertController addAction:yesAction];
+    
+    UIAlertAction *noAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alertController addAction:noAction];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)doScience {
 }
 
 - (void)showManageChannelsView {
+    NSArray <NSDictionary *>*savedSections = [NSArray arrayWithContentsOfFile:[[KBYourTube sharedInstance] newSectionsFile]];
+    __block NSMutableArray *sections = [NSMutableArray new];
+    [savedSections enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull section, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSDictionary *assetDict = @{@"name": section[@"title"], @"imagePath": section[@"imagePath"],  @"uniqueID": section[@"uniqueId"], @"channel": section[@"uniqueId"]};
+        NSString *objDesc = section[@"description"];
+        if (objDesc != nil){
+            assetDict = @{@"name": section[@"title"], @"imagePath": section[@"imagePath"],  @"uniqueID": section[@"uniqueId"], @"channel": section[@"uniqueId"], @"description": objDesc};
+        }
+        MetaDataAsset *asset = [[MetaDataAsset alloc] initWithDictionary:assetDict];
+        [sections addObject:asset];
+    }];
+    TYManageFeaturedViewController *featuredVC = [[TYManageFeaturedViewController alloc] initWithNames:sections];
+    featuredVC.defaultImageName = @"YTPlaceholder";
+    NSDictionary *restoreDefaults = @{@"name": @"Restore default settings", @"imagePath": @"YTPlaceholder", @"detail": @"", @"detailOptions": @[],@"selectorName":@"restoreDefaultSettings",  @"description": @"This will reset the channel listing & settings in the Home (tuyu) section to its default settings."};
+    MetaDataAsset *extraItemOne = [[MetaDataAsset alloc] initWithDictionary:restoreDefaults];
+    extraItemOne.accessory = false;
+    featuredVC.extraItems = @[extraItemOne];
+    featuredVC.extraTitle = @"Maintenance";
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:featuredVC];
+    [self presentViewController:navController animated:true completion:nil];
+}
+
+- (void)showManageChannelsViewold {
     
     NSDictionary *data =[NSDictionary dictionaryWithContentsOfFile:[[KBYourTube sharedInstance] sectionsFile]];
     __block NSMutableArray *sections = [NSMutableArray new];
@@ -188,7 +258,7 @@
     MetaDataAsset *asset = [self.items lastObject];
     NSString *detail = [asset detail];
     TLog(@"asset detail: %@", detail);
-    [UD setValue:detail forKey:@"filterType"];
+    [[KBYourTube sharedUserDefaults] setValue:detail forKey:@"filterType"];
 }
 
 

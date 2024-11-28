@@ -7,7 +7,7 @@
 
 #import "TYManageFeaturedViewController.h"
 #import "KBYourTube.h"
-#import "KBYTGridChannelViewController.h"
+#import "TYChannelShelfViewController.h"
 
 @interface TYManageFeaturedViewController ()
 
@@ -22,6 +22,24 @@
 }
 
 - (void)refreshData {
+    NSArray <NSDictionary *>*savedSections = [NSArray arrayWithContentsOfFile:[[KBYourTube sharedInstance] newSectionsFile]];
+    __block NSMutableArray *sections = [NSMutableArray new];
+    [savedSections enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull section, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSDictionary *assetDict = @{@"name": section[@"title"], @"imagePath": section[@"imagePath"],  @"uniqueID": section[@"uniqueId"], @"channel": section[@"uniqueId"]};
+        NSString *objDesc = section[@"description"];
+        if (objDesc != nil){
+            assetDict = @{@"name": section[@"title"], @"imagePath": section[@"imagePath"],  @"uniqueID": section[@"uniqueId"], @"channel": section[@"uniqueId"], @"description": objDesc};
+        }
+        MetaDataAsset *asset = [[MetaDataAsset alloc] initWithDictionary:assetDict];
+        [sections addObject:asset];
+    }];
+    self.items = sections;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[self tableView] reloadData];
+    });
+}
+
+- (void)refreshDataold {
     NSDictionary *data =[NSDictionary dictionaryWithContentsOfFile:[[KBYourTube sharedInstance] sectionsFile]];
     __block NSMutableArray *sections = [NSMutableArray new];
     [data[@"sections"] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -71,7 +89,7 @@
         [self showRestoreDefaultWarningAlert];
     } else {
         MetaDataAsset *searchResult = self.items[indexPath.row];
-        KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:searchResult.uniqueID];
+        TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:searchResult.uniqueID];
         [self presentViewController:cv animated:true completion:nil];
     }
 }

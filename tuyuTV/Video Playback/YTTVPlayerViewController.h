@@ -24,6 +24,7 @@
 - (BOOL)setMediaURL:(NSURL *)mediaURL;
 - (NSURL *)mediaURL;
 
+- (id)initWithMedia:(KBYTMedia *)media;
 - (id)initWithFrame:(CGRect)frame usingStreamingMediaArray:(NSArray *)streamingMedia;
 - (id)initWithFrame:(CGRect)frame  usingLocalMediaArray:(NSArray *)localMediaArray;
 

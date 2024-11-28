@@ -7,22 +7,28 @@
 //
 
 
-#import "KBYTGridChannelViewController.h"
+
+#import "TYChannelShelfViewController.h"
 #import "AppDelegate.h"
 #import "KBYourTube.h"
 #import "KBYourTube+Categories.h"
 #import "KBYTSearchResultsViewController.h"
-#import "WebViewController.h"
 #import "AboutViewController.h"
 #import "TYBaseGridViewController.h"
-#import "TYGridUserViewController.h"
-#import "TYHomeViewController.h"
 #import "TYTVHistoryManager.h"
 #import "TYSettingsViewController.h"
 #import "YTTVPlaylistViewController.h"
+#import "YTTVPlayerViewController.h"
 #import "AFOAuthCredential.h"
 #import "TYAuthUserManager.h"
 #import <unistd.h>
+#import "tvOSShelfController.h"
+#import "TYHomeShelfViewController.h"
+#import "TYUserShelfViewController.h"
+
+#define MODEL(n,p,i) [[KBModelItem alloc] initWithTitle:n imagePath:p uniqueID:i]
+#define SMODEL(n,p,i) [[KBYTSearchResult alloc] initWithTitle:n imagePath:p uniqueID:i type:kYTSearchResultTypeVideo]
+
 
 #define WELCOME_MSG  0
 #define ECHO_MSG     2
@@ -32,10 +38,33 @@
 #define READ_TIMEOUT_EXTENSION 10.0
 
 @interface AppDelegate ()
-
+@property (nonatomic, strong) YTTVPlayerViewController *playerView;
+@property (nonatomic, strong) KBYTQueuePlayer *player;
 @end
 
 @implementation AppDelegate
+
+- (void)handleVideoMedia:(KBYTMedia *)media {
+    UIApplication *app = UIApplication.sharedApplication;
+    UIViewController *rvc = app.keyWindow.rootViewController;
+    
+    self.playerView = [[YTTVPlayerViewController alloc] initWithMedia:media];//[[YTTVPlayerViewController alloc] initWithFrame:rvc.view.frame usingStreamingMediaArray:@[searchResult]];
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    [[self.playerView player] play];
+}
+
+- (TYHomeShelfViewController *)homeShelfViewController {
+    NSMutableArray <KBSectionProtocol> *sections = [[[KBYourTube sharedInstance] homeScreenData] convertArrayToObjects];
+    TYHomeShelfViewController *shelfViewController = [[TYHomeShelfViewController alloc] initWithSections:sections];
+    shelfViewController.useRoundedEdges = false;
+    shelfViewController.placeholderImage = [[UIImage imageNamed:@"YTPlaceholder.png"] roundedBorderImage:20.0 borderColor:nil borderWidth:0];
+    //shelfViewController.sections = [self items];//[self loadData];
+    shelfViewController.title = @"tuyu";
+    
+    return shelfViewController;
+}
+
+
 
 - (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
     // DLOG_SELF;
@@ -328,41 +357,6 @@
          [ns domain], [ns type], [ns name], errorDict);
 }
 
-- (TYGridUserViewController *)loggedInUserGridViewFromResults:(NSDictionary *)outputResults {
-    NSArray *results = outputResults[@"results"];
-    NSMutableArray *_backingSectionLabels = [NSMutableArray new];
-    
-    for (KBYTSearchResult *result in results) {
-        if (result.resultType ==kYTSearchResultTypePlaylist) {
-            [_backingSectionLabels addObject:result.title];
-        }
-    }
-    
-    //bit of a kludge to support channels, if userDetails includes a channel key we add it at the very end
-    
-    if (outputResults[@"channels"] != nil) {
-        [_backingSectionLabels addObject:@"Channels"];
-    }
-    
-    NSArray *historyObjects = [[TYTVHistoryManager sharedInstance] channelHistoryObjects];
-    
-    if ([historyObjects count] > 0) {
-        [_backingSectionLabels addObject:@"Channel History"];
-        //  playlists[@"Channel History"] = historyObjects;
-    }
-    
-    NSArray *videoHistory = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
-    
-    if ([videoHistory count] > 0) {
-        [_backingSectionLabels addObject:@"Video History"];
-        //  playlists[@"Channel History"] = historyObjects;
-    }
-    
-    return [[TYGridUserViewController alloc] initWithSections:_backingSectionLabels];
-}
-
-
-
 - (void)updateForSignedIn {
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     if ([viewControllers count] == 5) { return; }
@@ -371,47 +365,29 @@
     [viewControllers removeObjectAtIndex:1];
     UIViewController *pvc = [self packagedSearchController];
     [viewControllers insertObject:pvc atIndex:1];
-    if ([[KBYourTube sharedInstance] isSignedIn])
-    {
-        [[KBYourTube sharedInstance] getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
+    if ([[KBYourTube sharedInstance] isSignedIn]) {
+        [[KBYourTube sharedInstance] fetchUserDetailsWithCompletion:^(NSArray<KBSectionProtocol> *userDetails, NSString *userName) {
             
-            // NSLog(@"userdeets : %@", outputResults);
-            [[KBYourTube sharedInstance] setUserDetails:outputResults];
-            TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
-            
-            uvc.title = outputResults[@"userName"];
-            if ([[outputResults allKeys]containsObject:@"altUserName"])
-            {
-                uvc.title = outputResults[@"altUserName"];
-            }
-            [viewControllers insertObject:uvc atIndex:1];
-            
-            self.tabBar.viewControllers = viewControllers;
-            
-            
-        } failureBlock:^(NSString *error) {
-            //
+            dispatch_async(dispatch_get_main_queue(), ^{
+                TYUserShelfViewController *shelfViewController = [[TYUserShelfViewController alloc] initWithSections:userDetails];
+                shelfViewController.useRoundedEdges = false;
+                shelfViewController.placeholderImage = [[UIImage imageNamed:@"YTPlaceholder.png"] roundedBorderImage:20.0 borderColor:nil borderWidth:0];
+                //shelfViewController.sections = [self items];//[self loadData];
+                shelfViewController.title = userName;
+                [viewControllers insertObject:shelfViewController atIndex:1];
+                self.tabBar.viewControllers = viewControllers;
+            });
         }];
+      
     }
 }
 
 - (void)updateForSignedOut {
     NSMutableArray *viewControllers = [self.tabBar.viewControllers mutableCopy];
     [self.tabBar setSelectedIndex:0];
-    if ([viewControllers count] == 5)
-    {
+    if ([viewControllers count] == 5) {
         [viewControllers removeObjectAtIndex:1];
     }
-    /*
-     [viewControllers removeLastObject];
-     [viewControllers removeLastObject];
-     WebViewController *wvc = [[WebViewController alloc] init];
-     wvc.title = @"sign in";
-     [viewControllers addObject:wvc];
-     AboutViewController *avc = [AboutViewController new];
-     avc.title = @"about";
-     [viewControllers addObject:avc];
-     */
     self.tabBar.viewControllers = viewControllers;
     [[KBYourTube sharedInstance] setUserDetails:nil];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] clearAllCookies];
@@ -435,16 +411,18 @@ void UncaughtExceptionHandler(NSException *exception) {
     
     YTSearchResultType type = [KBYourTube resultTypeForString:url.host];
     
-    if (type ==kYTSearchResultTypeVideo)
+    if (type == kYTSearchResultTypeVideo)
     {
         [SVProgressHUD show];
         [[KBYourTube sharedInstance] getVideoDetailsForID:url.path.lastPathComponent completionBlock:^(KBYTMedia *videoDetails) {
             
             [SVProgressHUD dismiss];
-            
+            [self handleVideoMedia:videoDetails];
+            /*
             UIViewController *rvc = app.keyWindow.rootViewController;
             
-            NSURL *playURL = [[videoDetails.streams firstObject] url];
+            //NSURL *playURL = [[videoDetails.streams firstObject] url];
+            NSURL *playURL = [NSURL URLWithString:[videoDetails hlsManifest]];
             AVPlayerViewController *playerView = [[AVPlayerViewController alloc] init];
             AVPlayerItem *singleItem = [AVPlayerItem playerItemWithURL:playURL];
             
@@ -453,7 +431,7 @@ void UncaughtExceptionHandler(NSException *exception) {
             [playerView.player play];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:singleItem];
             
-            
+            */
         } failureBlock:^(NSString *error) {
             //
         }];
@@ -482,6 +460,16 @@ void UncaughtExceptionHandler(NSException *exception) {
     
 }
 
+- (void)pushViewController:(UIViewController *)vc animated:(BOOL)isAnimated completion:(void (^ __nullable)(void))completion {
+    UIViewController *rvc = UIApplication.sharedApplication.keyWindow.rootViewController;
+    if ([rvc navigationController]) {
+        [[rvc navigationController] pushViewController:vc animated:true];
+    } else {
+        [self presentViewController:vc animated:isAnimated completion:completion];
+    }
+}
+
+
 - (void)showPlaylist:(NSString *)videoID named:(NSString *)name {
     [SVProgressHUD setBackgroundColor:[UIColor clearColor]];
     [SVProgressHUD show];
@@ -492,7 +480,8 @@ void UncaughtExceptionHandler(NSException *exception) {
         //NSString *nextHREF = searchDetails[@"loadMoreREF"];
         YTTVPlaylistViewController *playlistViewController = [YTTVPlaylistViewController playlistViewControllerWithTitle:name backgroundColor:[UIColor blackColor] withPlaylistItems:playlist.videos];
         //playlistViewController.loadMoreHREF = nextHREF;
-        [self presentViewController:playlistViewController animated:YES completion:nil];
+        [self pushViewController:playlistViewController animated:true completion:nil];
+        //[self presentViewController:playlistViewController animated:YES completion:nil];
         // [[self.presentingViewController navigationController] pushViewController:playlistViewController animated:true];
         
     } failureBlock:^(NSString *error) {
@@ -502,7 +491,7 @@ void UncaughtExceptionHandler(NSException *exception) {
 
 
 - (void)showChannel:(NSString *)videoId {
-    KBYTGridChannelViewController *cv = [[KBYTGridChannelViewController alloc] initWithChannelID:videoId];
+    TYChannelShelfViewController *cv = [[TYChannelShelfViewController alloc] initWithChannelID:videoId];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self presentViewController:cv animated:true completion:nil];
     });
@@ -511,25 +500,22 @@ void UncaughtExceptionHandler(NSException *exception) {
 
 - (void)itemDidFinishPlaying:(NSNotification *)n {
     UIViewController *rvc = [[UIApplication sharedApplication]keyWindow].rootViewController;
-    if ([rvc isKindOfClass:AVPlayerViewController.class])
-    {
+    if ([rvc isKindOfClass:AVPlayerViewController.class]) {
         [rvc dismissViewControllerAnimated:true completion:nil];
-        
     }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:n.object];
-    
 }
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    // [[NSUserDefaults standardUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
+    // [[KBYourTube sharedUserDefaults] setObject:@[] forKey:@"ChannelHistory"];
     NSSetUncaughtExceptionHandler (&UncaughtExceptionHandler);
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (iPad; CPU OS 9_1 like Mac OS X) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0 Mobile/12B410 Safari/601.2.7", @"UserAgent", nil];
-    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[KBYourTube sharedUserDefaults] registerDefaults:dictionary];
+    [[KBYourTube sharedUserDefaults] setBool:YES forKey:@"MobileMode"];
+    [[KBYourTube sharedUserDefaults] synchronize];
     LOG_SELF;
     TLog(@"app support: %@", [self appSupportFolder]);
     self.tabBar = (UITabBarController *)self.window.rootViewController;
@@ -537,7 +523,7 @@ void UncaughtExceptionHandler(NSException *exception) {
     NSMutableArray *viewControllers = [NSMutableArray new];
     //UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     
-    TYHomeViewController *homeViewController = [[TYHomeViewController alloc] initWithData:[[KBYourTube sharedInstance] homeScreenData]];//[[TYHomeViewController alloc] initWithSections:sectionArray andChannelIDs:idArray];
+    TYHomeShelfViewController *homeViewController = [self homeShelfViewController];
     UIViewController *searchViewController = [self packagedSearchController];
     //[viewControllers removeObjectAtIndex:0];
     [viewControllers insertObject:homeViewController atIndex:0];
@@ -546,69 +532,50 @@ void UncaughtExceptionHandler(NSException *exception) {
     AboutViewController *avc = [AboutViewController new];
     avc.title = @"about";
     [viewControllers addObject:avc];
+    /*
+    TYHomeShelfViewController *shelfNav = [self testShelfViewController];
+    [viewControllers addObject:shelfNav];
+     */
     self.tabBar.viewControllers = viewControllers;
     KBYourTube *kbyt = [KBYourTube sharedInstance];
     if ([kbyt isSignedIn]) {
         //DLog(@"%@", [TYAuthUserManager suastring]);
         [[TYAuthUserManager sharedInstance] checkAndSetCredential];
-        if ([kbyt loadUserDetailsFromCache]) {
-            [kbyt setUserDetails:kbyt.userDetails];
-            TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:kbyt.userDetails];
-            uvc.title = kbyt.userDetails[@"userName"];
-            if ([[kbyt.userDetails allKeys]containsObject:@"altUserName"]) {
-                uvc.title = kbyt.userDetails[@"altUserName"];
-            }
-            [viewControllers insertObject:uvc atIndex:1];
-            self.tabBar.viewControllers = viewControllers;
+        [kbyt fetchUserDetailsWithCompletion:^(NSArray<KBSectionProtocol> *userDetails, NSString *userName) {
             
-            //still want to fetch fresh after this..
-            [kbyt getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
-                [kbyt setUserDetails:outputResults];
-                [uvc updateUserData:outputResults];
-            } failureBlock:^(NSString *error) {
-                
-            }];
-        } else {
-            [kbyt getUserDetailsDictionaryWithCompletionBlock:^(NSDictionary *outputResults) {
-                
-                //NSLog(@"userdeets : %@", outputResults);
-                [kbyt setUserDetails:outputResults];
-                TYGridUserViewController *uvc = [self loggedInUserGridViewFromResults:outputResults];
-                uvc.title = outputResults[@"userName"];
-                if ([[outputResults allKeys]containsObject:@"altUserName"]) {
-                    uvc.title = outputResults[@"altUserName"];
-                }
-                [viewControllers insertObject:uvc atIndex:1];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                TYUserShelfViewController *shelfViewController = [[TYUserShelfViewController alloc] initWithSections:userDetails];
+                shelfViewController.useRoundedEdges = false;
+                shelfViewController.placeholderImage = [[UIImage imageNamed:@"YTPlaceholder.png"] roundedBorderImage:20.0 borderColor:nil borderWidth:0];
+                //shelfViewController.sections = [self items];//[self loadData];
+                shelfViewController.title = userName;
+                [viewControllers insertObject:shelfViewController atIndex:1];
                 self.tabBar.viewControllers = viewControllers;
-                
-                
-            } failureBlock:^(NSString *error) {
-                //
-            }];
-        }
+            });
+        }];
         
     }
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"MobileMode"]) {
+    if ([[KBYourTube sharedUserDefaults] boolForKey:@"MobileMode"]) {
         NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (iPad; CPU OS 9_1 like Mac OS X) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0 Mobile/12B410 Safari/601.2.7", @"UserAgent", nil];
-        [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"MobileMode"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [[KBYourTube sharedUserDefaults] registerDefaults:dictionary];
+        [[KBYourTube sharedUserDefaults] setBool:YES forKey:@"MobileMode"];
+        [[KBYourTube sharedUserDefaults] synchronize];
     }
     else {
         NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.7", @"UserAgent", nil];
-        [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"MobileMode"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [[KBYourTube sharedUserDefaults] registerDefaults:dictionary];
+        [[KBYourTube sharedUserDefaults] setBool:NO forKey:@"MobileMode"];
+        [[KBYourTube sharedUserDefaults] synchronize];
     }
-    NSData *cookieData = [[NSUserDefaults standardUserDefaults] objectForKey:@"ApplicationCookie"];
+    NSData *cookieData = [[KBYourTube sharedUserDefaults] objectForKey:@"ApplicationCookie"];
     if ([cookieData length] > 0) {
         NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookieData];
         for (NSHTTPCookie *cookie in cookies) {
             [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
         }
     }
-    [self startServer];
-    
+    //[self startServer];
+   
     
     return YES;
 }

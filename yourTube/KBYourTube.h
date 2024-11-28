@@ -18,6 +18,23 @@
 #endif
 #import "YTKBPlayerViewController.h"
 #import "KBYTQueuePlayer.h"
+#import "KBProtocols.h"
+#import "KBSection.h"
+
+#if TARGET_OS_IOS
+@import M3U8Kit;
+
+@interface M3U8ExtXStreamInf (Extras)
+- (NSString *)format;
+- (NSString *)quality;
+- (NSString *)codec;
+@end
+
+@interface M3U8ExtXStreamInfList (Extras)
+- (NSArray <M3U8ExtXStreamInf*> *)bandwithSortedAVCFilteredStreams;
+@end
+
+#endif
 
 @class KBYTSearchResult, MetaDataAsset;
 
@@ -46,6 +63,10 @@ static NSString *const KBYTGamingChannelID  =  @"UCOpNcN46UbXVtpKMrmU4Abg";
 static NSString *const KBYT360ChannelID     =  @"UCzuqhhs6NWbgTzMuM09WKDQ";
 static NSString *const KBYTFashionAndBeautyID =  @"UCrpQ4p1Ql_hG8rKXIKM1MOQ";
 static NSString *const KBYTSpotlightChannelID = @"UCBR8-60-B28hp2BmDPdntcQ";
+static NSString *const KBYTLiveChannelID = @"UC4R8DWoMoI7CAwX8_LjQHig";
+static NSString *const KBYTUserChannelsID = @"USER_CHANNELS_ID";
+static NSString *const KBYTUserChannelHistoryID = @"USER_CHANNEL_HISTORY_ID";
+static NSString *const KBYTUserVideoHistoryID = @"USER_VIDEO_HISTORY_ID";
 
 @protocol YTPlayerItemProtocol <NSObject>
 - (NSString *)duration;
@@ -96,7 +117,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 - (id)initWithDictionary:(NSDictionary *)inputDict;
 - (NSDictionary *)dictionaryValue;
-
+- (NSUInteger)fileSize;
 @end
 
 @interface YTPlayerItem: AVPlayerItem
@@ -137,9 +158,14 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (BOOL)isExpired;
 - (NSDictionary *)dictionaryRepresentation;
 - (YTPlayerItem *)playerItemRepresentation;
+
+#if TARGET_OS_IOS
+- (M3U8ExtXStreamInfList *)streamList;
+#endif
+
 @end
 
-@interface KBYTSearchResult: NSObject
+@interface KBYTSearchResult: NSObject <KBCollectionItemProtocol>
 
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *author;
@@ -150,6 +176,7 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *stupidId; //youtube specific id to unsubscribe et al
 @property (nonatomic, strong) NSString *duration;
 @property (nonatomic, strong) NSString *imagePath;
+@property (nonatomic, strong) NSString *originalImagePath;
 @property (nonatomic, strong) NSString *age;
 @property (nonatomic, strong) NSString *views;
 @property (nonatomic, strong) NSString *details;
@@ -158,18 +185,37 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *itemDescription;
 @property (readwrite, assign) YTSearchResultType resultType;
 @property (nonatomic, strong) NSArray *items; //only relevant for channel list
+@property (nonatomic, strong) NSString *thumbnailSize;
+@property (nonatomic, strong) NSString *params;
 
+- (KBSection *)sectionRepresentation;
+- (NSString *)banner;
 - (id)initWithDictionary:(NSDictionary *)resultDict;
 - (id)initWithYTChannelDictionary:(NSDictionary *)channelDict;
 - (id)initWithYTPlaylistDictionary:(NSDictionary *)playlistDict;
 - (NSString *)readableSearchType;
+- (NSString *)uniqueID;
+-(instancetype)initWithTitle:(NSString *)title imagePath:(NSString *)path uniqueID:(NSString *)unique type:(YTSearchResultType)type;
 @end
 
 @interface KBYTSection: NSObject
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, strong) NSString *subtitle;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *content;
+@property (nonatomic, strong) NSString *continuationToken;
+@property (nonatomic, strong) NSString *browseId;
+
 - (void)addResult:(KBYTSearchResult *)result;
+- (void)addResults:(NSArray <KBYTSearchResult *>*)results;
+@end
+
+@interface KBYTTab: NSObject
+
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSString *browseId;
+@property (nonatomic, strong) NSString *params;
+@property (nonatomic, strong) NSArray <KBSection *>*contents;
+- (id)initWithTabDetails:(NSDictionary *)tabDetails;
 @end
 
 @interface KBYTChannel: NSObject
@@ -181,12 +227,20 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *image;
 @property (nonatomic, strong) NSString *channelID;
 @property (nonatomic, strong) NSString *continuationToken;
+@property (nonatomic, strong) NSArray *continuationTokens; //only exists if theres more than one.
 @property (nonatomic, strong) NSString *banner;
+@property (nonatomic, strong) NSString *avatar;
 @property (nonatomic, strong) NSString *subscribers;
 @property (nonatomic, strong) NSString *duration; //video count
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *videos;
 @property (nonatomic, strong) NSArray <KBYTSearchResult *> *playlists;
-@property (nonatomic, strong) NSArray <KBYTSection *> *sections;
+@property (nonatomic, strong) NSArray <KBSection *> *sections;
+@property (readwrite, assign) NSInteger activeSection; //defaults to 0
+@property (readwrite, assign) BOOL isAboutDetails;
+@property (nonatomic, strong) NSString *aboutDetails;
+@property (nonatomic, strong) NSArray <KBYTTab *> *tabs;
+- (KBSection *)sectionMatching:(KBSection *)section;
+- (BOOL)mergeSection:(KBSection *)section;
 - (NSArray <KBYTSearchResult *>*)allSectionItems;
 - (NSArray <KBYTSearchResult *>*)allSortedItems; //legacy
 - (void)mergeChannelVideos:(KBYTChannel *)channel;
@@ -229,6 +283,8 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 
 #import "Ono/ONOXMLDocument.h"
 
+
+
 @interface KBYourTube : NSObject {
     NSInteger bestTag;
 }
@@ -238,20 +294,25 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 @property (nonatomic, strong) NSString *ytkey;
 @property (nonatomic, strong) NSString *airplayIP;
 @property (nonatomic, strong) NSString *lastSearch;
-@property (nonatomic, strong) NSDictionary *userDetails; 
+@property (nonatomic, strong) NSDictionary *userDetails;
+@property (readwrite, assign) BOOL writeDebugJSONFiles;
+@property (readwrite, assign) BOOL printCurlCommands;
+@property (readwrite, assign) BOOL printRendererCounts;
 
 + (NSUserDefaults *)sharedUserDefaults;
 - (void)startReachabilityMonitoring;
 - (void)stopReachabilityMonitoring;
 - (void)resetHomeScreenToDefaults;
 - (void)postHomeDataChangedNotification;
+- (void)postUserDataChangedNotification;
 - (void)removeHomeSection:(MetaDataAsset *)asset;
 - (void)setFeaturedResult:(KBYTSearchResult *)channel;
 - (void)addHomeSection:(KBYTSearchResult *)channel;
-- (NSDictionary *)homeScreenData;
+- (NSArray *)homeScreenData;
+- (NSArray *)createDefaultSectionsArray;
 - (NSDictionary *)createDefaultSections;
 - (NSString *)sectionsFile;
-
+- (NSString *)newSectionsFile;
 - (BOOL)loadUserDetailsFromCache;
 - (KBYTSearchResult *)searchResultFromVideoRenderer:(NSDictionary *)current;
 + (YTSearchResultType)resultTypeForString:(NSString *)string;
@@ -260,6 +321,10 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 - (void)documentFromURL:(NSString *)theURL completion:(void(^)(ONOXMLDocument *document))block;
 - (ONOXMLDocument *)documentFromURL:(NSString *)theURL;
 - (NSString *)videoDescription:(NSString *)videoID;
+
+#if TARGET_OS_TV
+- (void)fetchUserDetailsWithCompletion:(void(^)(NSArray <KBSectionProtocol>*userDetails, NSString *username))completionBlock;
+#endif
 
 - (void)getUserDetailsDictionaryWithCompletionBlock:(void(^)(NSDictionary *outputResults))completionBlock
                                        failureBlock:(void(^)(NSString *error))failureBlock;
@@ -296,10 +361,23 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
                failureBlock:(void(^)(NSString *error))failureBlock;
 
 - (void)getChannelVideosAlt:(NSString *)channelID
+                     params:(NSString *)params
                continuation:(NSString *)continuationToken
             completionBlock:(void(^)(KBYTChannel *channel))completionBlock
                failureBlock:(void(^)(NSString *error))failureBlock;
 
+- (void)getSection:(KBSection *)section
+            params:(NSString *)params
+      continuation:(NSString *)continuationToken
+   completionBlock:(void(^)(KBSection *section))completionBlock
+      failureBlock:(void(^)(NSString *error))failureBlock;
+
+/*
+- (void)getChannelVideosAlt:(NSString *)channelID
+               continuation:(NSString *)continuationToken
+            completionBlock:(void(^)(KBYTChannel *channel))completionBlock
+               failureBlock:(void(^)(NSString *error))failureBlock;
+*/
 
 - (void)getVideoDetailsForSearchResults:(NSArray*)searchResults
                         completionBlock:(void(^)(NSArray* videoArray))completionBlock
@@ -317,6 +395,8 @@ typedef NS_ENUM(NSUInteger, KBYTSearchType) {
 + (NSDictionary *)formatFromTag:(NSInteger)tag;
 - (void)playMedia:(KBYTMedia *)media ToDeviceIP:(NSString *)deviceIP;
 - (void)addChannelToUserDetails:(KBYTSearchResult *)channel;
+- (void)removeChannelFromUserDetails:(KBYTSearchResult *)channel;
+- (void)removeChannelIDFromUserDetails:(NSString *)channelID;
 #if TARGET_OS_IOS
 - (void)airplayStream:(NSString *)stream ToDeviceIP:(NSString *)deviceIP;
 - (void)pauseAirplay;

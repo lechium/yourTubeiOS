@@ -12,7 +12,14 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 	return 32.0f;
 }
 
+@interface KBYTSearchItemViewController ()
+
+@property (nonatomic, strong) NSArray <M3U8ExtXStreamInf *> *hlsStreams;
+
+@end
+
 @implementation KBYTSearchItemViewController
+
 
 
 #pragma mark -
@@ -42,7 +49,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
         self.title = media.title;
         ytMedia = media;
         NSLog(@"ytmedia: %@", ytMedia);
-        
+        self.hlsStreams = [self hlsArray];
     }
     return self;
 }
@@ -146,9 +153,11 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	
-    //return 3;
+    //return 1;
     NSInteger sections = 3;
-    
+    if (self.ytMedia.duration.integerValue == 0) {
+        sections = 2;
+    }
     if ([aircontrolServers count] > 0)
         sections++;
     
@@ -158,15 +167,18 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     return sections;
 }
 
+- (NSArray <M3U8ExtXStreamInf *>*)hlsArray {
+    return [[self.ytMedia streamList] bandwithSortedAVCFilteredStreams];
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
 		case 0:
 			return 7;
-		case 1:
-			return ([ytMedia.streams count] > 0) ? [ytMedia.streams count] : 1;
+        case 1:
+            return ([ytMedia.streams count] > 0) ? [ytMedia.streams count] : 1;
 		case 2:
-			return ([ytMedia.streams count] > 0) ? [ytMedia.streams count] : 1;
+            return ([self.hlsStreams count] > 0) ? [self.hlsStreams count] : 1;
         case 3:
             return ([airplayServers count] > 0) ? [airplayServers count] : 1;
         case 4:
@@ -219,7 +231,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *CellIdentifier = @"Cell";
 	UITableViewCell *cell = nil;
-    KBYTStream *stream = nil;
+    M3U8ExtXStreamInf *stream = nil;
 	switch (indexPath.section) {
 		case 0:
 			switch (indexPath.row) {
@@ -303,10 +315,9 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 			cell.accessoryType = UITableViewCellAccessoryNone;
 			cell.textLabel.textAlignment = UITextAlignmentCenter;
             cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-            stream = [ytMedia.streams objectAtIndex:indexPath.row];
-            cell.textLabel.text = stream.format;
-            
-			return cell;
+            //stream = [ytMedia.streams firstObject];//[ytMedia.streams objectAtIndex:indexPath.row];
+            cell.textLabel.text = @"Highest Quality";//stream.format;
+            return cell;
 			break;
             
 		case 2:
@@ -315,11 +326,13 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 				cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
 			cell.accessoryType = UITableViewCellAccessoryNone;
 			cell.textLabel.textAlignment = UITextAlignmentCenter;
-				cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-                stream = [ytMedia.streams objectAtIndex:indexPath.row];
-                cell.textLabel.text = stream.format;
-            
-			return cell;
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+                //stream = [ytMedia.streams objectAtIndex:indexPath.row];
+                //cell.textLabel.text = stream.format;
+            //cell.textLabel.text = @"Highest Quality";
+            stream = self.hlsStreams[indexPath.row];
+            cell.textLabel.text = stream.format;
+            return cell;
 			break;
             
         case 3:
@@ -351,46 +364,6 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 }
 
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-
 #pragma mark -
 #pragma mark Table view delegate
 
@@ -406,7 +379,33 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     return false;
     
 }
-
+- (IBAction)playMedia {
+    LOG_SELF;
+    NSURL *playURL = [NSURL URLWithString:[self.ytMedia hlsManifest]];
+    NSLog(@"play url: %@", playURL);
+    if ([self isPlaying] == true  ){
+        return;
+    }
+    self.playerView = [[YTKBPlayerViewController alloc] initWithMedia:self.ytMedia];
+    YTPlayerItem *playItem = [[YTPlayerItem alloc] initWithURL:playURL];
+    playItem.associatedMedia = self.ytMedia;
+    self.playerView.showsPlaybackControls = true;
+    //AVPlayerItem *playItem = [[AVPlayerItem alloc] initWithURL:playURL];
+    self.player = [[KBYTQueuePlayer alloc] initWithItems:@[playItem]];
+    self.playerView.player = self.player;
+    
+    [self presentViewController:self.playerView animated:YES completion:nil];
+    self.playerView.view.frame = self.view.frame;
+  //  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player];
+    
+    [self.player play];
+  
+    //NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    ;
+    //[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = @{ MPMediaItemPropertyTitle : ytMedia.title, MPMediaItemPropertyPlaybackDuration: [numberFormatter numberFromString:ytMedia.duration]};
+    
+    
+}
 - (IBAction)playStream:(KBYTStream *)stream {
     LOG_SELF;
     NSURL *playURL = [stream url];
@@ -459,8 +458,8 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    KBYTStream *currentStream = nil;
+    M3U8ExtXStreamInf *currentStream = nil;
+    //KBYTStream *currentStream = nil;
     self.airplayIP = nil;
     NSString *airdeviceName = nil;
     
@@ -494,13 +493,16 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             break;
             
 		case 1:
-            currentStream = ytMedia.streams[indexPath.row];;
-            [self playStream:currentStream];
-			[tableView deselectRowAtIndexPath:indexPath animated:YES];
+            //currentStream = ytMedia.streams[indexPath.row];;
+            //[self playStream:currentStream];
+            [self playMedia];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
 			break;
 		case 2:
-            currentStream = ytMedia.streams[indexPath.row];
-            [self downloadStream:currentStream];
+            //currentStream = ytMedia.streams[indexPath.row];
+            //[self downloadStream:currentStream];
+            currentStream = self.hlsStreams[indexPath.row];
+            [self downloadMedia:currentStream];
             [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
 			[tableView deselectRowAtIndexPath:indexPath animated:YES];
             [self showDownloadStartedAlert];
@@ -511,7 +513,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
             airdeviceName = airplayServers[indexPath.row];
            self.airplayIP = [[[KBYourTube sharedInstance] deviceController] deviceIPFromName:airdeviceName andType:0];
             [[KBYourTube sharedInstance] setAirplayIP:self.airplayIP];
-            [[KBYourTube sharedInstance] airplayStream:[[currentStream url] absoluteString] ToDeviceIP:self.airplayIP ];
+            //[[KBYourTube sharedInstance] airplayStream:[[currentStream url] absoluteString] ToDeviceIP:self.airplayIP ];
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             break;
             
@@ -531,8 +533,7 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
     NSFileManager *man = [NSFileManager defaultManager];
     NSString *dlplist = [[self appSupportFolder] stringByAppendingPathComponent:@"Downloads.plist"];
     NSMutableArray *currentArray = nil;
-    if ([man fileExistsAtPath:dlplist])
-    {
+    if ([man fileExistsAtPath:dlplist]){
         currentArray = [[NSMutableArray alloc] initWithContentsOfFile:dlplist];
     } else {
         currentArray = [NSMutableArray new];
@@ -542,6 +543,32 @@ float calcLabelHeight(NSString *string, UIFont *font, float width) {
 }
 
 //offload the downloading into the mobile substrate tweak so it can run in the background without timing out.
+
+- (void)downloadMedia:(M3U8ExtXStreamInf *)stream {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    NSMutableDictionary *streamDict = [[self.ytMedia dictionaryRepresentation] mutableCopy];
+    //streamDict[@"duration"] = self.ytMedia.duration;
+    //streamDict[@"author"] = self.ytMedia.author;
+    //streamDict[@"images"] = self.ytMedia.images;
+    streamDict[@"inProgress"] = [NSNumber numberWithBool:true];
+    streamDict[@"videoId"] = self.ytMedia.videoId;
+    //streamDict[@"views"]= self.ytMedia.views;
+    NSString *stringURL = self.ytMedia.hlsManifest;
+    streamDict[@"url"] = stringURL;
+    streamDict[@"programId"] = @(stream.programId);
+    streamDict[@"format"] = stream.format;
+    NSString *codec = stream.codecs.firstObject;
+    streamDict[@"codec"] = [[codec componentsSeparatedByString:@"."] firstObject];
+    TLog(@"streamDict: %@", streamDict);
+    [self updateDownloadsDictionary:streamDict];
+    if ([self vanillaApp]) {
+        [[KBYTDownloadManager sharedInstance] addDownloadToQueue:streamDict];
+    } else {
+#if TARGET_OS_IOS
+        [[KBYTMessagingCenter sharedInstance] addDownload:streamDict];
+#endif
+    }
+}
 
 - (void)downloadStream:(KBYTStream *)stream {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];

@@ -7,7 +7,8 @@
 //
 
 #import "ServiceProvider.h"
-
+#import "NSDictionary+serialize.h"
+#import "TYTVHistoryManager.h"
 @interface ServiceProvider ()
 
 
@@ -53,6 +54,9 @@
 }
 
 - (void)loadDetailsFromDictionary:(NSDictionary *)dictionary {
+    [self.channels removeAllObjects];
+    [self.playlists removeAllObjects];
+    NSString *channelID = dictionary[@"channelID"];
     NSArray <KBYTSearchResult *> *results = dictionary[@"results"];
     NSArray <KBYTSearchResult *> *rChannels = dictionary[@"channels"];
     [results enumerateObjectsUsingBlock:^(KBYTSearchResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -68,7 +72,16 @@
         
     }];
     [self.channels addObjectsFromArray:rChannels];
-    [[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+    [[KBYourTube sharedInstance] getChannelVideos:channelID completionBlock:^(KBYTChannel *channel) {
+        [self.menuItems removeAllObjects];
+        //self.menuItems = [channel.videos mutableCopy];
+        TLog(@"channel videos: %@", channel.videos);
+        [self.menuItems addObjectsFromArray:channel.videos];
+        [[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+    } failureBlock:^(NSString *error) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:TVTopShelfItemsDidChangeNotification object:nil];
+    }];
 }
 
 - (void)testGetYTScience {
@@ -92,14 +105,7 @@
             //TLog(@"cookie: %@", cookie);
         }
     }
-    
-    [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.menuItems = [channel.allSectionItems mutableCopy];
-        });
-    } failureBlock:^(NSString *error) {
-        
-    }];
+  
     
     if ([[KBYourTube sharedInstance] isSignedIn] == YES) {
         TLog(@"is signed in, get those sciences too!");
@@ -117,21 +123,31 @@
         } failureBlock:^(NSString *error) {
             //
         }];
+    } else {
+        
+        [[KBYourTube sharedInstance] getChannelVideosAlt:@"UCByOQJjav0CUDwxCk-jVNRQ" completionBlock:^(KBYTChannel *channel) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.menuItems = [channel.allSectionItems mutableCopy];
+                TLog(@"menuItems: %@", self.menuItems);
+            });
+        } failureBlock:^(NSString *error) {
+            
+        }];
     }
     
 }
 
-/*
- 
- private func urlForIdentifier(identifier: String) -> NSURL {
- let components = NSURLComponents()
- components.scheme = "newsapp"
- components.queryItems = [NSURLQueryItem(name: "identifier",
- value: identifier)] return components.URL!
- }*/
 
-- (NSURL *)urlForIdentifier:(NSString*)identifier type:(NSString *)type {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"tuyu://%@/%@", type, identifier]];
+- (NSURL *)urlForSearchResult:(KBYTSearchResult *)result {
+    if (result.resultType == kYTSearchResultTypePlaylist) {
+        NSURLComponents *comp = [NSURLComponents componentsWithString:[NSString stringWithFormat:@"tuyu://%@/%@", result.readableSearchType, result.videoId]];
+        comp.query = [NSString stringWithFormat:@"title=%@", result.title];
+        TLog(@"url: %@", comp.URL);
+        return comp.URL;
+    } else {
+        return [NSURL URLWithString:[NSString stringWithFormat:@"tuyu://%@/%@", result.readableSearchType, result.videoId]];
+    }
+    return [NSURL URLWithString:[NSString stringWithFormat:@"tuyu://%@/%@", result.readableSearchType, result.videoId]];
 }
 
 
@@ -149,6 +165,11 @@
     __block NSMutableArray *playlistItems = [NSMutableArray new];
     __block NSMutableArray *sectionItems = [NSMutableArray new];
     
+    TVContentItem *historyItem = [self videoHistoryItem];
+    if (historyItem.topShelfItems.count > 0) {
+        [sectionItems addObject:historyItem];
+    }
+    
     if (self.channels.count > 0) {
         TLog(@"channels are greater than 0: %lu", self.channels.count);
         TVContentIdentifier *csection = [[TVContentIdentifier alloc] initWithIdentifier:@"channels" container:nil];
@@ -161,7 +182,7 @@
             TVContentItem * ci = [[TVContentItem alloc] initWithContentIdentifier:cid];
             ci.title = result.title;
             ci.imageURL = [NSURL URLWithString:result.imagePath];
-            ci.displayURL = [self urlForIdentifier:result.videoId type:result.readableSearchType];
+            ci.displayURL = [self urlForSearchResult:result];
             [channelItems addObject:ci];
             
         }];
@@ -181,11 +202,7 @@
             TVContentItem * ci = [[TVContentItem alloc] initWithContentIdentifier:cid];
             ci.title = result.title;
             ci.imageURL = [NSURL URLWithString:result.imagePath];
-            
-            NSURLComponents *comp = [NSURLComponents componentsWithString:[NSString stringWithFormat:@"tuyu://%@/%@", result.readableSearchType, result.videoId]];
-            comp.query = [NSString stringWithFormat:@"title=%@", result.title];
-            TLog(@"url: %@", comp.URL);
-            ci.displayURL = comp.URL;
+            ci.displayURL = [self urlForSearchResult:result];
             [playlistItems addObject:ci];
             
         }];
@@ -193,9 +210,9 @@
         [sectionItems addObject:pItem];
     }
     
-    TVContentIdentifier *section = [[TVContentIdentifier alloc] initWithIdentifier:@"science" container:nil];
+    TVContentIdentifier *section = [[TVContentIdentifier alloc] initWithIdentifier:@"videos" container:nil];
     TVContentItem * sectionItem = [[TVContentItem alloc] initWithContentIdentifier:section];
-    sectionItem.title = @"Suggestions";
+    sectionItem.title = @"Videos";
     
     [self.menuItems enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
@@ -204,14 +221,33 @@
         TVContentItem * ci = [[TVContentItem alloc] initWithContentIdentifier:cid];
         ci.title = result.title;
         ci.imageURL = [NSURL URLWithString:result.imagePath];
-        ci.displayURL = [self urlForIdentifier:result.videoId type:result.readableSearchType];
+        ci.displayURL = [self urlForSearchResult:result];
         [suggestedItems addObject:ci];
         
     }];
     sectionItem.topShelfItems = suggestedItems;
     [sectionItems addObject:sectionItem];
-    TLog(@"sectionItems: %@", sectionItem);
+    TLog(@"sectionItem: %@", sectionItem);
     return sectionItems;
+}
+
+- (TVContentItem *)videoHistoryItem {
+    TVContentIdentifier *section = [[TVContentIdentifier alloc] initWithIdentifier:@"history" container:nil];
+    TVContentItem * sectionItem = [[TVContentItem alloc] initWithContentIdentifier:section];
+    sectionItem.title = @"Video History";
+    NSMutableArray *historyItems = [NSMutableArray new];
+    NSArray <KBYTSearchResult*> *videoHistoryItems = [[TYTVHistoryManager sharedInstance] videoHistoryObjects];
+    for (KBYTSearchResult *result in videoHistoryItems) {
+        TVContentIdentifier *cid = [[TVContentIdentifier alloc] initWithIdentifier:result.videoId container:nil];
+        TVContentItem * ci = [[TVContentItem alloc] initWithContentIdentifier:cid];
+        ci.title = result.title;
+        ci.imageURL = [NSURL URLWithString:result.imagePath];
+        ci.displayURL = [self urlForSearchResult:result];
+        [historyItems addObject:ci];
+    }
+    sectionItem.topShelfItems = historyItems;
+    return sectionItem;
+    
 }
 
 @end
