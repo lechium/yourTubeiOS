@@ -13,6 +13,9 @@
 #import <GCDWebServers/GCDWebServers.h>
 #endif
 #import "NSURLRequest+cURL.h"
+#if TARGET_OS_TV
+#import "KBBulletinView.h"
+#endif
 
 @interface TYAuthUserManager() {
 #if TARGET_OS_IOS
@@ -291,6 +294,13 @@
         return datString;
     } else {
     }
+#if TARGET_OS_TV
+#ifndef SHELF_EXT
+    KBBulletinView *bv = [KBBulletinView bulletinWithTitle:@"Channel Unsubscribed" description:nil image:[UIImage imageNamed:@"AppIcon"]];
+    [bv showFromController:[self topViewController] forTime:5];
+    //[bv showForTime:5];
+#endif
+#endif
     return @"Success";
 }
 
@@ -546,6 +556,13 @@
     TLog(@"new channel: %@", newChannel);
     [[KBYourTube sharedInstance] addChannelToUserDetails:newChannel];
     [[KBYourTube sharedInstance] postUserDataChangedNotification];
+#if TARGET_OS_TV
+#ifndef SHELF_EXT
+    KBBulletinView *bv = [KBBulletinView bulletinWithTitle:[NSString stringWithFormat:@"Subscribed to %@", newChannel.title] description:nil image:[UIImage imageNamed:@"AppIcon"]];
+    [bv showFromController:[self topViewController] forTime:5];
+    //[bv showForTime:5];
+#endif
+#endif
     return jsonDict;
 }
 
